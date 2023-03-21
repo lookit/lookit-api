@@ -1,5 +1,6 @@
 {% load bootstrap_icons %}
 {% load django_bootstrap5 %}
+{% load web_extras %}
 <div class="card mb-3">
     <div class="card-header">Manage Researchers</div>
     <div class="card-body">
@@ -14,9 +15,11 @@
                                placeholder="Search lab"
                                type="text"
                                value="{{ search_query }}"/>
-                        <button class="btn btn-outline-secondary"
+                        <button class="{% button_secondary_classes %}"
                                 type="submit"
-                                aria-label="Search researchers">{% bs_icon "search" %}</button>
+                                aria-label="Search researchers">
+                            {% bs_icon "search" %}
+                        </button>
                     </div>
                 </form>
                 {% if users_result %}

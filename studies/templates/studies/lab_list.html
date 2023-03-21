@@ -2,10 +2,12 @@
 {% load django_bootstrap5 %}
 {% load bootstrap_icons %}
 {% load exp_extras %}
+{% load web_extras %}
 {% block title %}
     Labs
 {% endblock title %}
 {% block content %}
+    {% button_primary_classes "btn-sm" as btn_primary_classes %}
     <div class="d-flex justify-content-between align-items-center">
         <h1>View Labs</h1>
         <div>
@@ -72,7 +74,7 @@
                             {% else %}
                                 <form action="{% url 'exp:lab-request' pk=lab.id %}" method="post">
                                     {% csrf_token %}
-                                    {% bootstrap_button "Request to join" button_class="btn-sm btn-primary" %}
+                                    {% bootstrap_button "Request to join" button_class=btn_primary_classes %}
                                 </form>
                             {% endif %}
                         </div>

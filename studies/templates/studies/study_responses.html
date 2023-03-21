@@ -28,6 +28,8 @@
     {% query_transform request sort='-status' as sort_status_down %}
     {% query_transform request sort='date_created' as sort_date_up %}
     {% query_transform request sort='-date_created' as sort_date_down %}
+    {% button_primary_classes as btn_primary_classes %}
+    {% button_primary_classes "float-end my-3" as btn_primary_classes_create %}
     <h1>Individual Responses</h1>
     <div class="row">
         <div class="col">{% include "studies/_response_nav_tabs.html" with active="individual" %}</div>
@@ -120,7 +122,7 @@
                                                   rows="4"
                                                   cols="50"></textarea>
                                         <input type="hidden" name="response_id"/>
-                                        {% bootstrap_button "Create" button_type="submit" button_class="btn btn-primary float-end my-3" %}
+                                        {% bootstrap_button "Create" button_type="submit" button_class=btn_primary_classes_create %}
                                         <br />
                                     </section>
                                 </form>
@@ -180,9 +182,9 @@
                                                     <a target="_blank"
                                                        rel="noreferrer noopener"
                                                        href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=view"
-                                                       class="btn btn-primary btn-sm"> View </a>
+                                                       class="{% button_primary_classes %} btn-sm"> View </a>
                                                     <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
-                                                       class="btn btn-primary btn-sm"> Download </a>
+                                                       class="{% button_primary_classes %} btn-sm"> Download </a>
                                                 </div>
                                             </div>
                                         {% empty %}
@@ -230,7 +232,7 @@
                                         </option>
                                     </select>
                                     <span class="input-group-btn">
-                                        {% bootstrap_button "Download response" button_type="submit" button_class="btn btn-primary" name="download-individual-data" %}
+                                        {% bootstrap_button "Download response" button_type="submit" button_class=btn_primary_classes name="download-individual-data" %}
                                     </span>
                                 </div>
                             </div>

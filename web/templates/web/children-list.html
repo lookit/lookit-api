@@ -1,6 +1,7 @@
 {% extends "web/base.html" %}
 {% load django_bootstrap5 %}
 {% load i18n %}
+{% load web_extras %}
 {% block title %}
     {% trans "Children" %}
 {% endblock title %}
@@ -8,6 +9,7 @@
     {% trans "Update child" as trans_update_child %}
     {% trans "Add Child" as trans_add_child %}
     {% url 'web:child-add' as url_child_add %}
+    {% button_secondary_classes "btn-sm" as btn_secondary_classes %}
     <div class="row">
         <div class="col-4">{% include "accounts/_account-navigation.html" with current_page="children-list" %}</div>
         <div class="col-8">
@@ -51,7 +53,7 @@
                                         <td>{{ child.birthday }}</td>
                                         <td>
                                             {% url 'web:child-update' child.uuid as url_child_update %}
-                                            {% bootstrap_button trans_update_child href=url_child_update button_class="btn-secondary btn-sm" %}
+                                            {% bootstrap_button trans_update_child href=url_child_update button_class=btn_secondary_classes %}
                                         </td>
                                     </tr>
                                 {% endfor %}

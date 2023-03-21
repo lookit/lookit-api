@@ -20,6 +20,7 @@
 {% block content %}
     {% bs_icon "plus" as bs_icon_plus %}
     {% url 'exp:study-list' as url_cancel %}
+    {% button_secondary_classes as btn_secondary_classes %}
     <div class="container">
         <div class="row">
             <div class="col-lg-10 offset-lg-1">
@@ -33,7 +34,7 @@
                             {% include "studies/_study_fields.html" with form=form %}
                             {% include "studies/_study_type.html" with types=types create=1 %}
                             <div class="me-4 float-end">
-                                {% bootstrap_button "Cancel" button_class="btn btn-light link-secondary border-secondary" href=url_cancel %}
+                                {% bootstrap_button "Cancel" button_class=btn_secondary_classes href=url_cancel %}
                                 {% bootstrap_button bs_icon_plus|add:"Create Study" button_class="btn btn-success" button_type="submit" id="create-study-button" %}
                             </div>
                         </form>

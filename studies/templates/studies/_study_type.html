@@ -1,7 +1,9 @@
 {% load exp_extras %}
+{% load web_extras %}
 {% load django_bootstrap5 %}
 {% load bootstrap_icons %}
 {% load static %}
+{% button_secondary_classes as btn_secondary_classes %}
 <script src="{% static 'js/study-type.js' %}" defer></script>
 <div id="study-type-metadata">
     <div class="row">
@@ -74,7 +76,7 @@
                                                 <h3 class="card-subtitle my-1">
                                                     About this version
                                                     <div class="float-end me-4">
-                                                        {% bootstrap_button "Check for updates" button_class="btn btn-light link-secondary border-secondary" id="update-button" %}
+                                                        {% bootstrap_button "Check for updates" button_class=btn_secondary_classes id="update-button" %}
                                                     </div>
                                                 </h3>
                                             </div>

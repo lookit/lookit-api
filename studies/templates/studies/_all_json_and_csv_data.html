@@ -4,6 +4,7 @@
 {% load web_extras %}
 {% load static %}
 {% load bootstrap_icons %}
+{% load web_extras %}
 {% block title %}
     All Responses | {{ study.name }}
 {% endblock title %}
@@ -34,6 +35,7 @@
     {% url 'exp:study-demographics-download-json' pk=study.id as url_demographics_download_json %}
     {% url 'exp:study-demographics-download-csv' pk=study.id as url_demographics_download_csv %}
     {% url 'exp:study-demographics-download-dict-csv' pk=study.id as url_demographics_download_dict %}
+    {% button_primary_classes as btn_primary_classes %}
     <h1>All Responses</h1>
     <div class="row">
         <div class="col">{% include "studies/_response_nav_tabs.html" with active=active %}</div>
@@ -85,9 +87,9 @@
                                 <div class="text-end my-3 download-button">
                                     Data
                                     {% if n_responses %}
-                                        {% bootstrap_button bs_icon_download|add:" JSON" button_type="submit" button_class="btn btn-primary" id="download-all-data-json" formaction=url_download_all_json %}
+                                        {% bootstrap_button bs_icon_download|add:" JSON" button_type="submit" button_class=btn_primary_classes id="download-all-data-json" formaction=url_download_all_json %}
                                     {% else %}
-                                        {% bootstrap_button bs_icon_download|add:" JSON" button_type="submit" button_class="btn btn-primary" id="download-all-data-json" formaction=url_download_all_json disabled="disabled" %}
+                                        {% bootstrap_button bs_icon_download|add:" JSON" button_type="submit" button_class=btn_primary_classes id="download-all-data-json" formaction=url_download_all_json disabled="disabled" %}
                                     {% endif %}
                                 </div>
                             </div>
@@ -104,14 +106,14 @@
                                 <div class="text-end my-3 download-button">
                                     Data
                                     {% if n_responses %}
-                                        {% bootstrap_button bs_icon_download|add:" CSV" button_type="submit" button_class="btn btn-primary" id="download-all-data-csv" formaction=url_download_all_csv %}
+                                        {% bootstrap_button bs_icon_download|add:" CSV" button_type="submit" button_class=btn_primary_classes id="download-all-data-csv" formaction=url_download_all_csv %}
                                     {% else %}
-                                        {% bootstrap_button bs_icon_download|add:" CSV" button_type="submit" button_class="btn btn-primary" id="download-all-data-csv" formaction=url_download_all_csv disabled="disabled" %}
+                                        {% bootstrap_button bs_icon_download|add:" CSV" button_type="submit" button_class=btn_primary_classes id="download-all-data-csv" formaction=url_download_all_csv disabled="disabled" %}
                                     {% endif %}
                                 </div>
                                 <div class="text-end my-3 download-button">
                                     Data dictionary
-                                    {% bootstrap_button bs_icon_download|add:" CSV" button_type="submit" button_class="btn btn-primary" id="download-data-dict-csv" formaction=url_download_summary_dict %}
+                                    {% bootstrap_button bs_icon_download|add:" CSV" button_type="submit" button_class=btn_primary_classes id="download-data-dict-csv" formaction=url_download_summary_dict %}
                                 </div>
                             </div>
                         </div>
@@ -133,17 +135,17 @@
                                     <div class="text-end my-3 download-button">
                                         Data (one file per response)
                                         {% if n_responses %}
-                                            {% bootstrap_button bs_icon_download|add:" ZIP, CSVs" button_class="btn btn-primary" id="download-frame-data-csv" formaction=url_download_frame_data %}
+                                            {% bootstrap_button bs_icon_download|add:" ZIP, CSVs" button_class=btn_primary_classes id="download-frame-data-csv" formaction=url_download_frame_data %}
                                         {% else %}
-                                            {% bootstrap_button bs_icon_download|add:" ZIP, CSVs" button_class="btn btn-primary" id="download-frame-data-csv" formaction=url_download_frame_data disabled="disabled" %}
+                                            {% bootstrap_button bs_icon_download|add:" ZIP, CSVs" button_class=btn_primary_classes id="download-frame-data-csv" formaction=url_download_frame_data disabled="disabled" %}
                                         {% endif %}
                                     </div>
                                     <div class="text-end my-3 download-button">
                                         Data dictionary
                                         {% if n_responses %}
-                                            {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" id="download-frame-dict-csv" formaction=url_download_frame_data_dict %}
+                                            {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes id="download-frame-dict-csv" formaction=url_download_frame_data_dict %}
                                         {% else %}
-                                            {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" id="download-frame-dict-csv" formaction=url_download_frame_data_dict disabled="disabled" %}
+                                            {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes id="download-frame-dict-csv" formaction=url_download_frame_data_dict disabled="disabled" %}
                                         {% endif %}
                                     </div>
                                 </div>
@@ -161,17 +163,17 @@
                                 <div class="text-end my-3 download-button">
                                     Data
                                     {% if n_responses %}
-                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" id="download-child-data-csv" formaction=url_download_children_summary_data %}
+                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes id="download-child-data-csv" formaction=url_download_children_summary_data %}
                                     {% else %}
-                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" id="download-child-data-csv" formaction=url_download_children_summary_data disabled="disabled" %}
+                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes id="download-child-data-csv" formaction=url_download_children_summary_data disabled="disabled" %}
                                     {% endif %}
                                 </div>
                                 <div class="text-end my-3 download-button">
                                     Data dictionary
                                     {% if n_responses %}
-                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" id="download-child-data-dict-csv" formaction=url_download_children_summary_data_dict %}
+                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes id="download-child-data-dict-csv" formaction=url_download_children_summary_data_dict %}
                                     {% else %}
-                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" id="download-child-data-dict-csv" formaction=url_download_children_summary_data_dict disabled="disabled" %}
+                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes id="download-child-data-dict-csv" formaction=url_download_children_summary_data_dict disabled="disabled" %}
                                     {% endif %}
                                 </div>
                             </div>
@@ -186,7 +188,7 @@
                             </div>
                             <div class="col">
                                 <div class="text-end my-3 download-button">
-                                    {% bootstrap_button "Check now" button_class="btn btn-primary" id="check-for-collisions" url=url_hashed_id_collision_check %}
+                                    {% bootstrap_button "Check now" button_class=btn_primary_classes id="check-for-collisions" url=url_hashed_id_collision_check %}
                                 </div>
                                 <div class="text-end my-3" style="clear:both;">
                                     <p id="collision-indicator"></p>
@@ -208,7 +210,7 @@
                                 </div>
                                 <div class="col">
                                     <div class="text-end my-3 download-button">
-                                        {% bootstrap_button "Delete all preview data" button_type="submit" button_class="btn btn-primary" id="delete-preview-data" %}
+                                        {% bootstrap_button "Delete all preview data" button_type="submit" button_class=btn_primary_classes id="delete-preview-data" %}
                                     </div>
                                     <div class="text-end my-3" style="clear:both;">
                                         <p id="delete-preview-indicator"></p>
@@ -255,22 +257,22 @@
                                 <div class="text-end my-3 download-button">
                                     Data
                                     {% if n_responses %}
-                                        {% bootstrap_button bs_icon_download|add:" JSON" button_class="btn btn-primary" button_type="submit" id="download-all-demo-json" formaction=url_demographics_download_json %}
+                                        {% bootstrap_button bs_icon_download|add:" JSON" button_class=btn_primary_classes button_type="submit" id="download-all-demo-json" formaction=url_demographics_download_json %}
                                     {% else %}
-                                        {% bootstrap_button bs_icon_download|add:" JSON" button_class="btn btn-primary" button_type="submit" id="download-all-demo-json" formaction=url_demographics_download_json disabled="disabled" %}
+                                        {% bootstrap_button bs_icon_download|add:" JSON" button_class=btn_primary_classes button_type="submit" id="download-all-demo-json" formaction=url_demographics_download_json disabled="disabled" %}
                                     {% endif %}
                                 </div>
                                 <div class="text-end my-3 download-button">
                                     Data
                                     {% if n_responses %}
-                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" button_type="submit" id="download-all-demo-csv" formaction=url_demographics_download_csv %}
+                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes button_type="submit" id="download-all-demo-csv" formaction=url_demographics_download_csv %}
                                     {% else %}
-                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" button_type="submit" id="download-all-demo-csv" formaction=url_demographics_download_csv disabled="disabled" %}
+                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes button_type="submit" id="download-all-demo-csv" formaction=url_demographics_download_csv disabled="disabled" %}
                                     {% endif %}
                                 </div>
                                 <div class="text-end my-3 download-button">
                                     Data dictionary
-                                    {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" button_type="submit" id="download-all-demo-dict-csv" formaction=url_demographics_download_dict %}
+                                    {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes button_type="submit" id="download-all-demo-dict-csv" formaction=url_demographics_download_dict %}
                                 </div>
                             </div>
                         </div>

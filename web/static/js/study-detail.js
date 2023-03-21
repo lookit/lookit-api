@@ -1,8 +1,12 @@
+const data = document.currentScript.dataset;
+const btnPrimaryClasses = data.btnPrimaryClasses;
+const btnSecondaryClasses = data.btnSecondaryClasses;
+
 $.fn.editable.defaults.mode = 'inline';
 
 $.fn.editableform.buttons = `
-<button type="submit" class="btn btn-primary btn-sm editable-submit">&#x2713;</button>
-<button type="button" class="btn btn-secondary btn-sm editable-cancel">&#x2715;</button>
+<button type="submit" class="${btnPrimaryClasses}">&#x2713;</button>
+<button type="button" class="${btnSecondaryClasses}">&#x2715;</button>
 `
 
 function removeTooltip() {

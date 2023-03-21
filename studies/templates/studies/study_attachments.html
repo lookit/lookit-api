@@ -23,6 +23,7 @@
     {% query_transform request sort='-full_name' as sort_name_down %}
     {% query_transform request sort='created_at' as sort_date_up %}
     {% query_transform request sort='-created_at' as sort_date_down %}
+    {% button_primary_classes "mt-3" as btn_primary_classes %}
     <h1>Videos</h1>
     <div class="row">
         <div class="col">{% include "studies/_response_nav_tabs.html" with active="attachments" %}</div>
@@ -33,8 +34,8 @@
                 <span class="text-end">
                     <form method="post">
                         {% csrf_token %}
-                        {% bootstrap_button "Download all videos" button_class="btn btn-primary mt-3" button_type="submit" name="all-attachments" value="all" %}
-                        {% bootstrap_button "Download all consent videos" button_class="btn btn-primary mt-3" button_type="submit" name="all-consent-videos" value="all" %}
+                        {% bootstrap_button "Download all videos" button_class=btn_primary_classes button_type="submit" name="all-attachments" value="all" %}
+                        {% bootstrap_button "Download all consent videos" button_class=btn_primary_classes button_type="submit" name="all-consent-videos" value="all" %}
                     </form>
                 </span>
             </div>
@@ -90,7 +91,7 @@
                                     <td>{{ video.created_at|date:"n/j/Y g:i A"|default:"N/A" }}</td>
                                     <td>
                                         <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
-                                           class="btn btn-primary btn-sm"> Download </a>
+                                           class="{% button_primary_classes %} btn-sm"> Download </a>
                                     </td>
                                 </tr>
                             {% empty %}
