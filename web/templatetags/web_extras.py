@@ -205,7 +205,7 @@ def study_info_table_content_classes():
 
 @register.simple_tag
 def button_primary_classes(extra_classes=None):
-    classes = ["btn", "btn-primary", "my-3"]
+    classes = ["btn", "btn-primary"]
     if extra_classes:
         classes.extend([extra_classes])
 
@@ -214,7 +214,7 @@ def button_primary_classes(extra_classes=None):
 
 @register.simple_tag
 def button_secondary_classes(extra_classes=None):
-    classes = ["btn", "btn-light", "link-secondary", "border-secondary", "my-3"]
+    classes = ["btn", "btn-light", "link-secondary", "border-secondary"]
     if extra_classes:
         classes.extend([extra_classes])
 
