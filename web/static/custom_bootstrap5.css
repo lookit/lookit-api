@@ -26,6 +26,10 @@ tr.preview-row {
   -moz-column-count: 2;
   -webkit-column-count: 2; }
 
+body.superuser {
+  background: url("/static/images/su-mode.svg") repeat transparent;
+  background-size: 400px 400px; }
+
 /*!
    * Bootstrap  v5.2.0 (https://getbootstrap.com/)
    * Copyright 2011-2022 The Bootstrap Authors

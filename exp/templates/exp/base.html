@@ -1,15 +1,8 @@
 {% extends "web/base.html" %}
 {% load static %}
-{% block head %}
-    {% if request.user.is_superuser %}
-        <style>
-            body {
-                background: url('{% static "images/su-mode.svg" %}') repeat transparent;
-                background-size: 400px 400px;
-            }
-        </style>
-    {% endif %}
-{% endblock head %}
+{% block body_class %}
+    {{ request.user.is_superuser|yesno:"superuser,," }}
+{% endblock body_class %}
 {% block nav %}
     {% include "exp/_navigation.html" %}
 {% endblock nav %}

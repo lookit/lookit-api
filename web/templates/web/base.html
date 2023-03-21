@@ -107,7 +107,7 @@
         {% endblock head %}
         {% google_tag_manager %}
     </head>
-    <body>
+    <body class="{% block body_class %}{% endblock body_class %}">
         <div class="container">
             {% block nav %}
                 {% include "web/_navigation.html" %}
