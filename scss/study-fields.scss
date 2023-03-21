@@ -1,12 +1,16 @@
-#study-details-form .ace-overlay,
-#study-create-form .ace-overlay {
-    width: 100%;
-    margin-bottom: 1.5rem;
+#study-details-form,
+#study-create-form {
+    .ace-overlay {
+        width: 100%;
+        margin-bottom: 1.5rem;
+    }
 }
 
-#structure-container .code-container,
-#generator-container .code-container {
-    max-height: 10em;
+#structure-container,
+#generator-container {
+    .code-container {
+        max-height: 10em;
+    }
 }
 
 span.priority-highest {
