@@ -1,6 +1,7 @@
 {% extends "exp/base.html" %}
 {% load django_bootstrap5 %}
 {% load exp_extras %}
+{% load web_extras %}
 {% load static %}
 {% load bootstrap_icons %}
 {% block title %}
@@ -12,6 +13,13 @@
             type="application/javascript"
             defer></script>
 {% endblock head %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:study-list' %} Manage Studies
+    {% url 'exp:study-detail' pk=study.id %} {{ study.name }}
+    Individual Responses
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
 {% block content %}
     {% bs_icon "chevron-up" as bs_icon_up %}
     {% bs_icon "chevron-down" as bs_icon_down %}
@@ -20,17 +28,6 @@
     {% query_transform request sort='-status' as sort_status_down %}
     {% query_transform request sort='date_created' as sort_date_up %}
     {% query_transform request sort='-date_created' as sort_date_down %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-light p-2">
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:study-list' %}">Manage Studies</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:study-detail' pk=study.id %}">{{ study.name }}</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">Individual Responses</li>
-        </ol>
-    </nav>
     <h1>Individual Responses</h1>
     <div class="row">
         <div class="col">{% include "studies/_response_nav_tabs.html" with active="individual" %}</div>
@@ -207,12 +204,8 @@
                         <div class="card bg-light my-4">
                             <div class="card-body">
                                 <input type="hidden" name="response_id"/>
-                                <h5 class="card-title">
-                                    Download response
-                                </h5>
-                                <p class="card-text">
-                                    Include with response download:
-                                </p>
+                                <h5 class="card-title">Download response</h5>
+                                <p class="card-text">Include with response download:</p>
                                 <div class="two-column-list mb-3">
                                     {% include "studies/_data_options.html" with data_options=data_options %}
                                 </div>

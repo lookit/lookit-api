@@ -1,21 +1,18 @@
 {% extends "exp/base.html" %}
 {% load django_bootstrap5 %}
+{% load web_extras %}
 {% block title %}
     Update lab
 {% endblock title %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:lab-list' %} Labs
+    {% url 'exp:lab-detail' pk=lab.id %} {{ lab.name }}
+    Update Lab
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
 {% block content %}
     {% url 'exp:lab-edit' pk=lab.id as url_lab_edit %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:lab-list' %}">Labs</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:lab-detail' pk=lab.id %}">{{ lab.name }}</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">Update Lab</li>
-        </ol>
-    </nav>
     <h1>Update Lab</h1>
     <form action="" enctype="multipart/form-data" method="post">
         {% csrf_token %}
