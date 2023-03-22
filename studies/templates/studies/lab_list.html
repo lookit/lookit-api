@@ -11,7 +11,8 @@
     <div class="d-flex justify-content-between align-items-center">
         <h1>View Labs</h1>
         <div>
-            <a class="btn btn-success" href="{% url 'exp:lab-create' %}">{% bs_icon "plus" %} Create Lab</a>
+            <a class="{% button_primary_classes %}"
+               href="{% url 'exp:lab-create' %}">{% bs_icon "plus" %} Create Lab</a>
         </div>
     </div>
     <div class="my-4">

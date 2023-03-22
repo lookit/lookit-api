@@ -46,7 +46,7 @@
                             <div class="me-4 float-end">
                                 {% bootstrap_button "Cancel" button_class=btn_secondary_classes href=url_cancel %}
                                 <button type="button"
-                                        class="btn btn-success"
+                                        class="{% button_primary_classes %}"
                                         data-bs-target="#save-study-confirmation"
                                         id="save-button"
                                         data-bs-toggle="modal">
