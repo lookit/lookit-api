@@ -219,3 +219,44 @@ def button_secondary_classes(extra_classes=None):
         classes.extend([extra_classes])
 
     return " ".join(classes)
+
+
+@register.tag(name="breadcrumb")
+def breadcrumb(parser, token):
+    nodelist = parser.parse(("endbreadcrumb",))
+    parser.delete_first_token()
+    return BreadcrumbNode(nodelist)
+
+
+class BreadcrumbNode(template.Node):
+    def __init__(self, nodelist):
+        self.nodelist = nodelist
+
+    def pairwise(self, iterable):
+        "s -> (s0, s1), (s2, s3), (s4, s5), ..."
+        a = iter(iterable)
+        return zip(a, a)
+
+    def render(self, context):
+        # remove empty nodes
+        for node in self.nodelist:
+            if not node.render(context).strip():
+                self.nodelist.remove(node)
+
+        # check for odd length list
+        last_node = self.nodelist.pop()
+
+        result = [
+            '<nav aria-label="breadcrumb" class="my-2">',
+            '<ol class="breadcrumb">',
+        ]
+        for a, b in self.pairwise(self.nodelist):
+            result.append('<li class="breadcrumb-item">')
+            result.append(f'<a href="{a.render(context)}">{b.render(context)}</a>')
+            result.append("</li>")
+
+        result.append(
+            f'<li class="breadcrumb-item active" aria-current="page">{last_node.render(context)}</li>'
+        )
+        result.append("</ol></nav>")
+        return "".join(result)
