@@ -630,6 +630,8 @@ const chsLink = document.createElement('a')
 const labList = document.querySelector('#lab-list');
 
 let stateOption = document.createElement('option');
+stateOption.value = "";
+stateOption.innerHTML = "Select a state";
 let labListItem;
 let labLink;
 
