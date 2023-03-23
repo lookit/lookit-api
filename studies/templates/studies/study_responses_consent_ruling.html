@@ -78,7 +78,7 @@
                                 </p>
                             </span>
                             <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle"
+                                <button class="{% button_secondary_classes %} dropdown-toggle"
                                         type="button"
                                         id="consentJudgementDropdown"
                                         data-bs-toggle="dropdown"
@@ -131,8 +131,10 @@
                             </li>
                         </ul>
                         <input name="comments" type="hidden" value="{}"/>
-                        <button type="submit" class="btn btn-primary">Submit Rulings & Comments {% bs_icon "send" %}</button>
-                        <button id="reset-choices" type="button" class="btn btn-secondary">
+                        <button type="submit" class="{% button_primary_classes %}">Submit Rulings & Comments {% bs_icon "send" %}</button>
+                        <button id="reset-choices"
+                                type="button"
+                                class="{% button_secondary_classes %}">
                             Reset Current Choices {% bs_icon "repeat" %}
                         </button>
                     </div>

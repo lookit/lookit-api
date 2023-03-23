@@ -1,6 +1,7 @@
 {% extends "web/base.html" %}
 {% load django_bootstrap5 %}
 {% load i18n %}
+{% load web_extras %}
 {% block title %}
     {% trans "Email Preferences" %}
 {% endblock title %}
@@ -8,6 +9,8 @@
     {% trans "Cancel" as trans_cancel %}
     {% trans "Save" as trans_save %}
     {% url 'web:email-preferences' as url_email_prefs %}
+    {% button_primary_classes as btn_primary_classes %}
+    {% button_secondary_classes as btn_secondary_classes %}
     <div class="row">
         <div class="col-4">{% include "accounts/_account-navigation.html" with current_page="email-preferences" %}</div>
         <div class="col-8">
@@ -18,8 +21,8 @@
                         {% csrf_token %}
                         {% bootstrap_form_errors form %}
                         {% bootstrap_form form %}
-                        {% bootstrap_button trans_cancel href=url_email_prefs button_class="btn-secondary" %}
-                        {% bootstrap_button trans_save name="password_update" button_class="btn-success" %}
+                        {% bootstrap_button trans_cancel href=url_email_prefs button_class=btn_secondary_classes %}
+                        {% bootstrap_button trans_save name="password_update" button_class=btn_primary_classes %}
                     </form>
                 </div>
             </div>

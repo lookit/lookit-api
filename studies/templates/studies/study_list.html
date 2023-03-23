@@ -2,12 +2,15 @@
 {% load django_bootstrap5 %}
 {% load bootstrap_icons %}
 {% load exp_extras %}
+{% load web_extras %}
 {% block title %}
     Studies
 {% endblock title %}
 {% block content %}
     {% bs_icon "plus" as bs_icon_plus %}
     {% url 'exp:study-create' as url_study_create %}
+    {% query_transform request page='1' as qstring %}
+    {% set_variable "?"|add:qstring as url_query_string %}
     <div class="d-flex flex-row bd-highlight mb-4 align-items-center">
         <h1 class="me-auto">Manage Studies</h1>
         {% if can_create_study %}
@@ -30,45 +33,18 @@
     </div>
     <div class="row text-center mb-5 mt-2">
         <ul class="nav nav-pills justify-content-center">
-            <li class="nav-item">
-                <a class="nav-link{% if state == 'active' %} active{% endif %}"
-                   href="{% url 'exp:study-list-active' %}?{% query_transform request page='1' %}">Active</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link{% if state == 'paused' %} active{% endif %}"
-                   href="{% url 'exp:study-list-paused' %}?{% query_transform request page='1' %}">Paused</a>
-            </li>
+            {% nav_link request 'exp:study-list-active' 'Active' %}
+            {% nav_link request 'exp:study-list-paused' 'Paused' %}
             <li class="p-2">|</li>
-            <li class="nav-item">
-                <a class="nav-link{% if state == 'created' %} active{% endif %}"
-                   href="{% url 'exp:study-list-created' %}?{% query_transform request page='1' %}">Created</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link{% if state == 'submitted' %} active{% endif %}"
-                   href="{% url 'exp:study-list-submitted' %}?{% query_transform request page='1' %}">Submitted</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link{% if state == 'rejected' %} active{% endif %}"
-                   href="{% url 'exp:study-list-rejected' %}?{% query_transform request page='1' %}">Rejected</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link{% if state == 'approved' %} active{% endif %}"
-                   href="{% url 'exp:study-list-approved' %}?{% query_transform request page='1' %}">Approved</a>
-            </li>
+            {% nav_link request 'exp:study-list-created' 'Created' %}
+            {% nav_link request 'exp:study-list-submitted' 'Submitted' %}
+            {% nav_link request 'exp:study-list-rejected' 'Rejected' %}
+            {% nav_link request 'exp:study-list-approved' 'Approved' %}
             <li class="p-2">|</li>
-            <li class="nav-item">
-                <a class="nav-link{% if state == 'deactivated' %} active{% endif %}"
-                   href="{% url 'exp:study-list-deactivated' %}?{% query_transform request page='1' %}">Deactivated</a>
-            </li>
+            {% nav_link request 'exp:study-list-deactivated' 'Deactivated' %}
             <li class="p-2">|</li>
-            <li class="nav-item">
-                <a class="nav-link{% if state == 'myStudies' %} active{% endif %}"
-                   href="{% url 'exp:study-list-mystudies' %}?{% query_transform request page='1' %}">My Studies</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link{% if state == 'all' %} active{% endif %}"
-                   href="{% url 'exp:study-list' %}?{% query_transform request page='1' %}">All</a>
-            </li>
+            {% nav_link request 'exp:study-list-mystudies' 'My Studies' %}
+            {% nav_link request 'exp:study-list' 'All' %}
         </ul>
     </div>
     <div class="row mx-1 pb-3 border-bottom">

@@ -87,7 +87,7 @@ def google_tag_manager() -> Text:
 
 
 @register.simple_tag
-def nav_link(request, url_name, text, html_classes=None):
+def nav_link(request, url_name, text, html_classes=None, queryString=None):
     """General navigation bar item
 
     Args:
@@ -111,6 +111,8 @@ def nav_link(request, url_name, text, html_classes=None):
     if active_nav(request, url):
         html_classes.extend(["active", "btn-secondary"])
         aria_current = ' aria-current="page"'
+    if queryString:
+        url = url + queryString
 
     return mark_safe(
         f'<a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a>'
@@ -205,7 +207,7 @@ def study_info_table_content_classes():
 
 @register.simple_tag
 def button_primary_classes(extra_classes=None):
-    classes = ["btn", "btn-primary", "my-3"]
+    classes = ["btn", "btn-primary"]
     if extra_classes:
         classes.extend([extra_classes])
 
@@ -214,7 +216,7 @@ def button_primary_classes(extra_classes=None):
 
 @register.simple_tag
 def button_secondary_classes(extra_classes=None):
-    classes = ["btn", "btn-light", "link-secondary", "border-secondary", "my-3"]
+    classes = ["btn", "btn-light", "link-secondary", "border-secondary"]
     if extra_classes:
         classes.extend([extra_classes])
 

@@ -15,7 +15,6 @@
         window.commentsHelpData = JSON.parse('{{ comments_help | escapejs }}');
         window.declarations = JSON.parse('{{ declarations | escapejs }}');
     </script>
-    <script src="{% static 'js/study-detail.js' %}" defer></script>
 {% endblock head %}
 {% block breadcrumb %}
     {% breadcrumb %}
@@ -24,6 +23,12 @@
 {% endbreadcrumb %}
 {% endblock breadcrumb %}
 {% block content %}
+    {% button_primary_classes "btn-sm editable-submit" as btn_primary_classes %}
+    {% button_secondary_classes "btn-sm editable-cancel" as btn_secondary_classes %}
+    <script src="{% static 'js/study-detail.js' %}"
+            defer
+            data-btn-primary-classes="{{ btn_primary_classes }}"
+            data-btn-secondary-classes="{{ btn_secondary_classes }}"></script>
     <h1>{{ study.name }}</h1>
     <div class="row">
         <div class="col-2">

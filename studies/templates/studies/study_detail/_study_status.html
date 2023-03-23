@@ -1,4 +1,5 @@
 {% load bootstrap_icons %}
+{% load web_extras %}
 <div class="card mb-3">
     <div class="card-header">Study Status</div>
     <div class="card-body list-group-item-{{ state_ui_tag }}">
@@ -12,7 +13,7 @@
             <div class="col-3">
                 {% if can_change_status %}
                     <div class="dropdown small">
-                        <button class="btn btn-primary btn-sm dropdown-toggle"
+                        <button class="{% button_secondary_classes %} btn-sm dropdown-toggle"
                                 type="button"
                                 id="changeStudyState"
                                 data-bs-toggle="dropdown"
@@ -62,7 +63,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="return" value="exp:study-detail"/>
                         <button type="submit"
-                                class="btn btn-primary btn-sm"
+                                class="{% button_secondary_classes %} btn-sm"
                                 {% if study.built or study.is_building %}disabled{% endif %}>
                             {% bs_icon "wrench" %} Build experiment runner
                         </button>
