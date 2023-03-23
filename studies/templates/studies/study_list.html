@@ -33,8 +33,8 @@
     </div>
     <div class="row text-center mb-5 mt-2">
         <ul class="nav nav-pills justify-content-center">
-            {% nav_link request 'exp:study-list-active' 'Active' queryString=url_query_string %}
-            {% nav_link request 'exp:study-list-paused' 'Paused' queryString=url_query_string %}
+            {% nav_link request 'exp:study-list-active' 'Active' %}
+            {% nav_link request 'exp:study-list-paused' 'Paused' %}
             <li class="p-2">|</li>
             {% nav_link request 'exp:study-list-created' 'Created' %}
             {% nav_link request 'exp:study-list-submitted' 'Submitted' %}
