@@ -238,18 +238,22 @@ class BreadcrumbNode(template.Node):
         return zip(a, a)
 
     def render(self, context):
+        if not self.nodelist:
+            return ""
+
         # remove empty nodes
         for node in self.nodelist:
             if not node.render(context).strip():
                 self.nodelist.remove(node)
 
-        # check for odd length list
+        # get last node from list
         last_node = self.nodelist.pop()
 
         result = [
             '<nav aria-label="breadcrumb" class="my-2">',
             '<ol class="breadcrumb">',
         ]
+
         for a, b in self.pairwise(self.nodelist):
             result.append('<li class="breadcrumb-item">')
             result.append(f'<a href="{a.render(context)}">{b.render(context)}</a>')
