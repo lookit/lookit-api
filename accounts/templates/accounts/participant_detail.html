@@ -1,19 +1,18 @@
 {% extends "exp/base.html" %}
 {% load bootstrap_icons %}
 {% load exp_extras %}
+{% load web_extras %}
 {% load i18n %}
 {% block title %}
     {{ user.nickname |default:"Participant Detail" }}
 {% endblock title %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:participant-list' %} {% trans "All Participants" %}
+    {{ user.nickname |default:"Participant Detail" }}
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
 {% block content %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-light p-2">
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:participant-list' %}">{% trans "All Participants" %}</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">{{ user.nickname |default:"Participant Detail" }}</li>
-        </ol>
-    </nav>
     <h1>
         {{ user.identicon_html }}
         {% if user.nickname %}
@@ -78,9 +77,7 @@
                     <td>{{ demographics.number_of_children|default:"No Response" }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">
-                        {% trans "Children current ages" %}:
-                    </th>
+                    <th scope="row">{% trans "Children current ages" %}:</th>
                     <td>
                         {% for birthday in user.latest_demographics.child_birthdays %}
                             {{ birthday | timesince|default:"N/A" }}
@@ -90,9 +87,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">
-                        {% trans "Number of Guardians" %}:
-                    </th>
+                    <th scope="row">{% trans "Number of Guardians" %}:</th>
                     <td>
                         {{ demographics.number_of_guardians|default:"No Response" }}
                     </td>

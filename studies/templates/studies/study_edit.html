@@ -3,6 +3,7 @@
 {% load bootstrap_icons %}
 {% load guardian_tags %}
 {% load exp_extras %}
+{% load web_extras %}
 {% load bootstrap_icons %}
 {% load static %}
 {% block head %}
@@ -13,24 +14,18 @@
 {% block title %}
     Edit | {{ study.name }}
 {% endblock title %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:study-list' %} Manage Studies
+    {% url 'exp:study-detail' pk=study.id %} {{ study.name }}
+    Edit
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
 {% block content %}
     {% bs_icon "play-circle" as bs_icon_play_circle %}
     {% url 'exp:preview-detail' uuid=study.uuid as url_preview_detail %}
     {% url 'exp:study-edit' pk=study.id as url_cancel %}
     <div class="container">
-        <div class="row">
-            <div class="col-xs-12">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="{% url 'exp:study-list' %}">Manage Studies</a>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <a href="{% url 'exp:study-detail' pk=study.id %}">{{ study.name }}</a>
-                    </li>
-                    <li class="breadcrumb-item active">Edit</li>
-                </ol>
-            </div>
-        </div>
         <div class="row">
             <div class="col-lg-10 offset-lg-1">
                 <div class="card bg-light my-4">

@@ -1,6 +1,7 @@
 {% extends "exp/base.html" %}
 {% load django_bootstrap5 %}
 {% load exp_extras %}
+{% load web_extras %}
 {% load static %}
 {% load bootstrap_icons %}
 {% block title %}
@@ -12,6 +13,13 @@
             src="{% static 'js/all-json-and-csv-data.js' %}"
             defer></script>
 {% endblock head %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:study-list' %} Manage Studies
+    {% url 'exp:study-detail' pk=study.id %} {{ study.name }}
+    {{ active_tab }}
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
 {% block content %}
     {% bs_icon "download" as bs_icon_download %}
     {% url 'exp:study-responses-download-json' pk=study.id as url_download_all_json %}
@@ -26,17 +34,6 @@
     {% url 'exp:study-demographics-download-json' pk=study.id as url_demographics_download_json %}
     {% url 'exp:study-demographics-download-csv' pk=study.id as url_demographics_download_csv %}
     {% url 'exp:study-demographics-download-dict-csv' pk=study.id as url_demographics_download_dict %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-light p-2">
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:study-list' %}">Manage Studies</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:study-detail' pk=study.id %}">{{ study.name }}</a>
-            </li>
-            <li class="breadcrumb-item active">{{ active_tab }}</li>
-        </ol>
-    </nav>
     <h1>All Responses</h1>
     <div class="row">
         <div class="col">{% include "studies/_response_nav_tabs.html" with active=active %}</div>
