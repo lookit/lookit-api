@@ -1,4 +1,5 @@
 {% extends "web/studies-list.html" %}
+{% load web_extras %}
 {% block content %}
     {% if lab.banner %}
         <image class="img-fluid" src="{{ lab.banner.url }}"/>
@@ -12,7 +13,7 @@
             </div>
         </div>
     {% else %}
-        <h1>{{ lab.name }}</h1>
+        {% page_title lab.name %}
     {% endif %}
     {{ lab.description|linebreaks }}
     {{ block.super }}
