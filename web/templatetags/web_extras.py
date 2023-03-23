@@ -229,11 +229,11 @@ def subheading_classes():
 
 
 @register.simple_tag
-def page_title(title, btn=None):
-    if btn:
+def page_title(title, right_side_elements=None):
+    if right_side_elements:
         html = f"""<div class="d-flex flex-row bd-highlight mb-4 align-items-center">
         <h1 class="me-auto">{title}</h1>
-        <div>{btn}</div>
+        <div>{right_side_elements}</div>
         </div>"""
     else:
         html = f'<h1 class="mt-4 mb-4 text-center">{title}</h1>'

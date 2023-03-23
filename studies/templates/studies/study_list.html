@@ -12,7 +12,7 @@
     {% button_primary_classes as btn_primary_classes %}
     {% bootstrap_button bs_icon_plus|add:"Create Study" href=url_study_create button_class=btn_primary_classes as btn_create_study %}
     {% if can_create_study %}
-        {% page_title "Manage Studies" btn=btn_create_study %}
+        {% page_title "Manage Studies" right_side_elements=btn_create_study %}
     {% else %}
         {% page_title "Manage Studies" %}
     {% endif %}

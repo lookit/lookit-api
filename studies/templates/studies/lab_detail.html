@@ -21,7 +21,7 @@
         {% set_variable "<div>You have requested to join this lab.</div>" as lab_join_message %}
     {% endif %}
     {% set_variable link_edit_lab|add:link_lab_members|add:lab_join_message as page_title_right_content %}
-    {% page_title lab.name btn=page_title_right_content %}
+    {% page_title lab.name right_side_elements=page_title_right_content %}
     <div class="row">
         <div class="col-12">
             <strong>Institution</strong>
