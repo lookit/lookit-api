@@ -2,16 +2,15 @@
 {% load django_bootstrap5 %}
 {% load bootstrap_icons %}
 {% load exp_extras %}
+{% load web_extras %}
 {% block title %}
     Labs
 {% endblock title %}
 {% block content %}
-    <div class="d-flex justify-content-between align-items-center">
-        <h1>View Labs</h1>
-        <div>
-            <a class="btn btn-success" href="{% url 'exp:lab-create' %}">{% bs_icon "plus" %} Create Lab</a>
-        </div>
-    </div>
+    {% url 'exp:lab-create' as url_exp_lab_create %}
+    {% bs_icon "plus" as bs_icon_plus %}
+    {% bootstrap_button bs_icon_plus|add:"Create Lab" href=url_exp_lab_create as btn_create_lab %}
+    {% page_title "View Labs" btn=btn_create_lab %}
     <div class="my-4">
         <form method="get">
             <input id="search-labs"

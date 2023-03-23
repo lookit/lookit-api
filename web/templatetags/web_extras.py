@@ -222,15 +222,17 @@ def button_secondary_classes(extra_classes=None):
 
 
 @register.simple_tag
-def main_content_container_classes():
-    return "container my-4"
-
-
-@register.simple_tag
-def main_heading_classes():
-    return "mt-5 mb-2 text-center"
-
-
-@register.simple_tag
 def subheading_classes():
     return "border-bottom pb-2 pt-4 mb-4 mx-4"
+
+
+@register.simple_tag
+def page_title(title, btn=None):
+    if btn:
+        html = f"""<div class="d-flex flex-row bd-highlight mb-4 align-items-center">
+        <h1 class="me-auto">{title}</h1>
+        <div>{btn}</div>
+        </div>"""
+    else:
+        html = f'<h1 class="mt-5 mb-2 text-center">{title}</h1>'
+    return mark_safe(html)

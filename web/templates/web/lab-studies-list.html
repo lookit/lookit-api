@@ -1,21 +1,19 @@
 {% extends "web/studies-list.html" %}
 {% block content %}
-    <div class="panel-default">
-        {% if lab.banner %}
-            <image class="img-responsive" src="{{ lab.banner.url }}"/>
-        {% elif lab.badge %}
-            <div class="row">
-                <div class="col-md-3">
-                    <image class="img-responsive" src="{{ lab.badge.url }}"/>
-                </div>
-                <div class="col-md-9">
-                    <h1>{{ lab.name }}</h1>
-                </div>
+    {% if lab.banner %}
+        <image class="img-fluid" src="{{ lab.banner.url }}"/>
+    {% elif lab.badge %}
+        <div class="row">
+            <div class="col-3">
+                <image class="img-fluid" src="{{ lab.badge.url }}"/>
             </div>
-        {% else %}
-            <h1>{{ lab.name }}</h1>
-        {% endif %}
-        {{ lab.description|linebreaks }}
-    </div>
+            <div class="col-9">
+                <h1>{{ lab.name }}</h1>
+            </div>
+        </div>
+    {% else %}
+        <h1>{{ lab.name }}</h1>
+    {% endif %}
+    {{ lab.description|linebreaks }}
     {{ block.super }}
 {% endblock content %}

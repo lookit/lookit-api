@@ -7,19 +7,18 @@
     Scientists
 {% endblock title %}
 {% block content %}
-    <div class="{% main_content_container_classes %}">
-        <h1 class="{% main_heading_classes %}">{% trans "Meet the Lookit team" %}</h1>
-        <h2 class="{% subheading_classes %}">Core Lookit Team</h2>
-        {% include "web/scientists/core-team.html" %}
-        <h2 class="{% subheading_classes %}">Parent Researcher Collaborative</h2>
-        {% include "web/scientists/parent-researcher-collaborative.html" %}
-        <h2 class="{% subheading_classes %}">Affiliated Universities and Researchers</h2>
-        {% include "web/scientists/affiliated-universities-and-researchers.html" %}
-        <h2 class="{% subheading_classes %}">Working Groups</h2>
-        {% include "web/scientists/working-groups.html" %}
-        <h2 class="{% subheading_classes %}">Staff alumni</h2>
-        {% include "web/scientists/staff-alumni.html" %}
-        <h2 class="{% subheading_classes %}">Undergraduate student alumni</h2>
-        {% include "web/scientists/undergrade-student-alumni.html" %}
-    </div>
+    {% trans "Meet the Lookit team" as trans_meet_scientists %}
+    {% page_title trans_meet_scientists %}
+    <h2 class="{% subheading_classes %}">Core Lookit Team</h2>
+    {% include "web/scientists/core-team.html" %}
+    <h2 class="{% subheading_classes %}">Parent Researcher Collaborative</h2>
+    {% include "web/scientists/parent-researcher-collaborative.html" %}
+    <h2 class="{% subheading_classes %}">Affiliated Universities and Researchers</h2>
+    {% include "web/scientists/affiliated-universities-and-researchers.html" %}
+    <h2 class="{% subheading_classes %}">Working Groups</h2>
+    {% include "web/scientists/working-groups.html" %}
+    <h2 class="{% subheading_classes %}">Staff alumni</h2>
+    {% include "web/scientists/staff-alumni.html" %}
+    <h2 class="{% subheading_classes %}">Undergraduate student alumni</h2>
+    {% include "web/scientists/undergrade-student-alumni.html" %}
 {% endblock content %}
