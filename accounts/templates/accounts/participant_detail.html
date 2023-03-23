@@ -13,14 +13,14 @@
 {% endbreadcrumb %}
 {% endblock breadcrumb %}
 {% block content %}
-    <h1>
-        {{ user.identicon_html }}
-        {% if user.nickname %}
-            {{ user.nickname }}
-        {% else %}
-            {% trans "Participant ID" %} {{ user.id }}
-        {% endif %}
-    </h1>
+    {% if user.nickname %}
+        {% set_variable user.identicon_html|add:" "|add:user.nickname as title_text %}
+    {% else %}
+        {% trans "Participant ID" as trans_ppt_id %}
+        {% set_variable user.id|stringformat:"d" as user_id_str %}
+        {% set_variable user.identicon_html|add:" "|add:trans_ppt_id|add:" "|add:user_id_str as title_text %}
+    {% endif %}
+    {% page_title title_text %}
     <div>Last Active: {{ user.last_login|date:"n/d/Y"|default:"N/A" }}</div>
     <div>Participant global ID: {{ user.uuid }}</div>
     <div class="row mb-3 mt-4">
