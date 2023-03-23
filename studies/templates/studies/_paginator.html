@@ -1,17 +1,19 @@
 {% load exp_extras %}
 {% load bootstrap_icons %}
-{% if page.has_previous %}
-    <a class="text-decoration-none"
-       aria-label="Go to previous page"
-       href="?{% query_transform request page=page.previous_page_number %}{% if anchor %}#{{ anchor }}{% endif %}">
-        {% bs_icon "chevron-left" %}
-    </a>
-{% endif %}
-Page {{ page.number }} of {{ page.paginator.num_pages }}
-{% if page.has_next %}
-    <a class="text-decoration-none"
-       aria-label="Go to next page"
-       href="?{% query_transform request page=page.next_page_number %}{% if anchor %}#{{ anchor }}{% endif %}">
-        {% bs_icon "chevron-right" %}
-    </a>
-{% endif %}
+<div class="text-end px-5">
+    {% if page.has_previous %}
+        <a class="text-decoration-none"
+           aria-label="Go to previous page"
+           href="?{% query_transform request page=page.previous_page_number %}{% if anchor %}#{{ anchor }}{% endif %}">
+            {% bs_icon "chevron-left" %}
+        </a>
+    {% endif %}
+    Page {{ page.number }} of {{ page.paginator.num_pages }}
+    {% if page.has_next %}
+        <a class="text-decoration-none"
+           aria-label="Go to next page"
+           href="?{% query_transform request page=page.next_page_number %}{% if anchor %}#{{ anchor }}{% endif %}">
+            {% bs_icon "chevron-right" %}
+        </a>
+    {% endif %}
+</div>

@@ -87,7 +87,7 @@ def google_tag_manager() -> Text:
 
 
 @register.simple_tag
-def nav_link(request, url_name, text, html_classes=None):
+def nav_link(request, url_name, text, html_classes=None, queryString=None):
     """General navigation bar item
 
     Args:
@@ -111,6 +111,8 @@ def nav_link(request, url_name, text, html_classes=None):
     if active_nav(request, url):
         html_classes.extend(["active", "btn-secondary"])
         aria_current = ' aria-current="page"'
+    if queryString:
+        url = url + queryString
 
     return mark_safe(
         f'<a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a>'
@@ -205,7 +207,7 @@ def study_info_table_content_classes():
 
 @register.simple_tag
 def button_primary_classes(extra_classes=None):
-    classes = ["btn", "btn-primary", "my-3"]
+    classes = ["btn", "btn-primary"]
     if extra_classes:
         classes.extend([extra_classes])
 
@@ -214,7 +216,7 @@ def button_primary_classes(extra_classes=None):
 
 @register.simple_tag
 def button_secondary_classes(extra_classes=None):
-    classes = ["btn", "btn-light", "link-secondary", "border-secondary", "my-3"]
+    classes = ["btn", "btn-light", "link-secondary", "border-secondary"]
     if extra_classes:
         classes.extend([extra_classes])
 
@@ -236,3 +238,48 @@ def page_title(title, btn=None):
     else:
         html = f'<h1 class="mt-5 mb-2 text-center">{title}</h1>'
     return mark_safe(html)
+
+
+@register.tag(name="breadcrumb")
+def breadcrumb(parser, token):
+    nodelist = parser.parse(("endbreadcrumb",))
+    parser.delete_first_token()
+    return BreadcrumbNode(nodelist)
+
+
+class BreadcrumbNode(template.Node):
+    def __init__(self, nodelist):
+        self.nodelist = nodelist
+
+    def pairwise(self, iterable):
+        "s -> (s0, s1), (s2, s3), (s4, s5), ..."
+        a = iter(iterable)
+        return zip(a, a)
+
+    def render(self, context):
+        if not self.nodelist:
+            return ""
+
+        # remove empty nodes
+        for node in self.nodelist:
+            if not node.render(context).strip():
+                self.nodelist.remove(node)
+
+        # get last node from list
+        last_node = self.nodelist.pop()
+
+        result = [
+            '<nav aria-label="breadcrumb" class="my-2">',
+            '<ol class="breadcrumb">',
+        ]
+
+        for a, b in self.pairwise(self.nodelist):
+            result.append('<li class="breadcrumb-item">')
+            result.append(f'<a href="{a.render(context)}">{b.render(context)}</a>')
+            result.append("</li>")
+
+        result.append(
+            f'<li class="breadcrumb-item active" aria-current="page">{last_node.render(context)}</li>'
+        )
+        result.append("</ol></nav>")
+        return "".join(result)

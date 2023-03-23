@@ -1,4 +1,8 @@
 {% load django_bootstrap5 %}
+{% load exp_extras %}
+{% load web_extras %}
+{% button_secondary_classes as btn_secondary_classes %}
+{% button_primary_classes as btn_primary_classes %}
 <div class="modal fade m-5"
      id="studyStateModal"
      tabindex="-1"
@@ -31,8 +35,8 @@
                 </div>
                 <div class="modal-footer">
                     {% url 'exp:study-detail' pk=study.id as url_study_detail %}
-                    {% bootstrap_button "Close" href=url_study_detail button_class="btn-secondary" %}
-                    {% bootstrap_button "Save" value="submit" %}
+                    {% bootstrap_button "Close" href=url_study_detail button_class=btn_secondary_classes %}
+                    {% bootstrap_button "Save" value="submit" button_class=btn_primary_classes %}
                 </div>
             </form>
         </div>

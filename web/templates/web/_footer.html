@@ -1,15 +1,15 @@
 {% load i18n %}
 {% load bootstrap_icons %}
 {% load static %}
-<footer class="row small p-5">
+<footer class="row small py-5 px-3">
     <div class="col-2 align-self-center">
         <img alt="NSF" src="{% static 'images/nsf.gif' %}"/>
     </div>
-    <div class="col-8">
+    <div class="col-8 small">
         {% trans "This material is based upon work supported by the National Science Foundation (NSF) under Grants 1429216, 1823919, and 2209756; the Center for Brains, Minds and Machines (CBMM), funded by NSF STC award CCF-1231216, and by an NSF Graduate Research Fellowship under Grant No. 1122374. Any opinion, findings, and conclusions or recommendations expressed in this material are those of the authors(s) and do not necessarily reflect the views of the National Science Foundation." %}
     </div>
-    <div class="col-2 align-self-center">
-        <ul>
+    <div class="col-2 align-self-center text-end">
+        <ul class="list-unstyled">
             <li>
                 <a href="{% url 'web:privacy' %}">{% trans "Privacy" %}</a>
             </li>

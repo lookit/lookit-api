@@ -20,7 +20,7 @@
         <div class="col-auto">{% bootstrap_field form.search show_label=False %}</div>
         <div class="col-auto">
             {% trans "Clear" as clear_button_text %}
-            {% bootstrap_button clear_button_text button_type="reset" %}
+            {% bootstrap_button clear_button_text button_class="btn btn-light link-secondary border-secondary" button_type="reset" %}
         </div>
     </form>
     <ul class="nav nav-tabs">
@@ -55,15 +55,13 @@
             </p>
         {% endfor %}
     </div>
-    <div class="row">
+    <div class="row px-2">
         <p>
-            {% trans "Looking for more ways to contribute to research from home? Check out" %}
-            <a href="https://childrenhelpingscience.com/"
+            {% trans "Want to learn more about research with babies & children? Check out the " %}
+            <a href="https://lookit.mit.edu/resources"
                target="_blank"
-               rel="noreferrer noopener">
-                {% trans "Children Helping Science" %}
-            </a>
-            {% trans "for even more studies!" %}
+               rel="noreferrer noopener">{% trans "Resources" %}</a>
+            {% trans "page for activities to try at home and developmental labs near you!" %}
         </p>
     </div>
 {% endblock content %}

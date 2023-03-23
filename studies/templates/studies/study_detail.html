@@ -4,6 +4,7 @@
 {% load guardian_tags %}
 {% load static %}
 {% load exp_extras %}
+{% load web_extras %}
 {% block title %}
     {{ study.name }}
 {% endblock title %}
@@ -14,17 +15,20 @@
         window.commentsHelpData = JSON.parse('{{ comments_help | escapejs }}');
         window.declarations = JSON.parse('{{ declarations | escapejs }}');
     </script>
-    <script src="{% static 'js/study-detail.js' %}" defer></script>
 {% endblock head %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:study-list' %} Manage Studies
+    {{ study.name }}
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
 {% block content %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-light p-2">
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:study-list' %}">Manage Studies</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">{{ study.name }}</li>
-        </ol>
-    </nav>
+    {% button_primary_classes "btn-sm editable-submit" as btn_primary_classes %}
+    {% button_secondary_classes "btn-sm editable-cancel" as btn_secondary_classes %}
+    <script src="{% static 'js/study-detail.js' %}"
+            defer
+            data-btn-primary-classes="{{ btn_primary_classes }}"
+            data-btn-secondary-classes="{{ btn_secondary_classes }}"></script>
     <h1>{{ study.name }}</h1>
     <div class="row">
         <div class="col-2">

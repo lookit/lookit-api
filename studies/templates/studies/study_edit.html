@@ -3,6 +3,7 @@
 {% load bootstrap_icons %}
 {% load guardian_tags %}
 {% load exp_extras %}
+{% load web_extras %}
 {% load bootstrap_icons %}
 {% load static %}
 {% block head %}
@@ -13,24 +14,19 @@
 {% block title %}
     Edit | {{ study.name }}
 {% endblock title %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:study-list' %} Manage Studies
+    {% url 'exp:study-detail' pk=study.id %} {{ study.name }}
+    Edit
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
 {% block content %}
     {% bs_icon "play-circle" as bs_icon_play_circle %}
     {% url 'exp:preview-detail' uuid=study.uuid as url_preview_detail %}
     {% url 'exp:study-edit' pk=study.id as url_cancel %}
+    {% button_secondary_classes as btn_secondary_classes %}
     <div class="container">
-        <div class="row">
-            <div class="col-xs-12">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="{% url 'exp:study-list' %}">Manage Studies</a>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <a href="{% url 'exp:study-detail' pk=study.id %}">{{ study.name }}</a>
-                    </li>
-                    <li class="breadcrumb-item active">Edit</li>
-                </ol>
-            </div>
-        </div>
         <div class="row">
             <div class="col-lg-10 offset-lg-1">
                 <div class="card bg-light my-4">
@@ -38,7 +34,7 @@
                         <h3 class="card-subtitle my-1">
                             Study Editor
                             <div class="float-end me-4">
-                                {% bootstrap_button bs_icon_play_circle|add:"Preview Study" href=url_preview_detail button_class="btn btn-light link-secondary border-secondary" %}
+                                {% bootstrap_button bs_icon_play_circle|add:"Preview Study" href=url_preview_detail button_class=btn_secondary_classes %}
                             </div>
                         </h3>
                     </div>
@@ -48,9 +44,9 @@
                             {% include "studies/_study_fields.html" with form=form study=study %}
                             {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}
                             <div class="me-4 float-end">
-                                {% bootstrap_button "Cancel" button_class="btn btn-light link-secondary border-secondary" href=url_cancel %}
+                                {% bootstrap_button "Cancel" button_class=btn_secondary_classes href=url_cancel %}
                                 <button type="button"
-                                        class="btn btn-success"
+                                        class="{% button_primary_classes %}"
                                         data-bs-target="#save-study-confirmation"
                                         id="save-button"
                                         data-bs-toggle="modal">
@@ -106,7 +102,7 @@
                                             </div>
                                         {% endif %}
                                         <div class="modal-footer">
-                                            {% bootstrap_button "Discard Changes" button_class="btn btn-light link-secondary border-secondary" href=url_cancel %}
+                                            {% bootstrap_button "Discard Changes" button_class=btn_secondary_classes href=url_cancel %}
                                             {% bootstrap_button "Save" button_class="btn btn-danger" id="save_study_details_confirm" type="submit" %}
                                         </div>
                                     </div>

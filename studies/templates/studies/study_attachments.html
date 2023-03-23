@@ -1,12 +1,20 @@
 {% extends "exp/base.html" %}
 {% load django_bootstrap5 %}
 {% load exp_extras %}
+{% load web_extras %}
 {% load tz %}
 {% load static %}
 {% load bootstrap_icons %}
 {% block title %}
     Videos | {{ study.name }}
 {% endblock title %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:study-list' %} Manage Studies
+    {% url 'exp:study-detail' pk=study.id %} {{ study.name }}
+    Videos
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
 {% block content %}
     {% bs_icon "chevron-up" as bs_icon_up %}
     {% bs_icon "chevron-down" as bs_icon_down %}
@@ -15,17 +23,7 @@
     {% query_transform request sort='-full_name' as sort_name_down %}
     {% query_transform request sort='created_at' as sort_date_up %}
     {% query_transform request sort='-created_at' as sort_date_down %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-light p-2">
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:study-list' %}">Manage Studies</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:study-detail' pk=study.id %}">{{ study.name }}</a>
-            </li>
-            <li class="breadcrumb-item active">Videos</li>
-        </ol>
-    </nav>
+    {% button_primary_classes "mt-3" as btn_primary_classes %}
     <h1>Videos</h1>
     <div class="row">
         <div class="col">{% include "studies/_response_nav_tabs.html" with active="attachments" %}</div>
@@ -36,8 +34,8 @@
                 <span class="text-end">
                     <form method="post">
                         {% csrf_token %}
-                        {% bootstrap_button "Download all videos" button_class="btn btn-primary mt-3" button_type="submit" name="all-attachments" value="all" %}
-                        {% bootstrap_button "Download all consent videos" button_class="btn btn-primary mt-3" button_type="submit" name="all-consent-videos" value="all" %}
+                        {% bootstrap_button "Download all videos" button_class=btn_primary_classes button_type="submit" name="all-attachments" value="all" %}
+                        {% bootstrap_button "Download all consent videos" button_class=btn_primary_classes button_type="submit" name="all-consent-videos" value="all" %}
                     </form>
                 </span>
             </div>
@@ -93,7 +91,7 @@
                                     <td>{{ video.created_at|date:"n/j/Y g:i A"|default:"N/A" }}</td>
                                     <td>
                                         <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
-                                           class="btn btn-primary btn-sm"> Download </a>
+                                           class="{% button_primary_classes %} btn-sm"> Download </a>
                                     </td>
                                 </tr>
                             {% empty %}

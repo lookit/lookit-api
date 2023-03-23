@@ -2,6 +2,7 @@
 {% load django_bootstrap5 %}
 {% load bootstrap_icons %}
 {% load static %}
+{% load web_extras %}
 {% block head %}
     {{ block.super }}
     <script src="{% static 'js/study-create.js' %}"></script>
@@ -10,20 +11,18 @@
 {% block title %}
     Create Study
 {% endblock title %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:study-list' %} {{ "Manage Studies" }}
+    Create Study
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
 {% block content %}
     {% bs_icon "plus" as bs_icon_plus %}
     {% url 'exp:study-list' as url_cancel %}
+    {% button_primary_classes as btn_primary_classes %}
+    {% button_secondary_classes as btn_secondary_classes %}
     <div class="container">
-        <div class="row">
-            <div class="col-xs-12">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="{% url 'exp:study-list' %}">Manage Studies</a>
-                    </li>
-                    <li class="breadcrumb-item active">Create Study</li>
-                </ol>
-            </div>
-        </div>
         <div class="row">
             <div class="col-lg-10 offset-lg-1">
                 <div class="card bg-light my-4">
@@ -36,8 +35,8 @@
                             {% include "studies/_study_fields.html" with form=form %}
                             {% include "studies/_study_type.html" with types=types create=1 %}
                             <div class="me-4 float-end">
-                                {% bootstrap_button "Cancel" button_class="btn btn-light link-secondary border-secondary" href=url_cancel %}
-                                {% bootstrap_button bs_icon_plus|add:"Create Study" button_class="btn btn-success" button_type="submit" id="create-study-button" %}
+                                {% bootstrap_button "Cancel" button_class=btn_secondary_classes href=url_cancel %}
+                                {% bootstrap_button bs_icon_plus|add:"Create Study" button_class=btn_primary_classes button_type="submit" id="create-study-button" %}
                             </div>
                         </form>
                     </div>
