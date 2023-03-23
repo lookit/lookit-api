@@ -11,7 +11,6 @@
         <div class="card-body">
             <form action="" method="post" autocomplete="off">
                 {% csrf_token %}
-                {% bootstrap_form_errors form %}
                 {% bootstrap_form form %}
                 {% bootstrap_button button_type="submit" content=login %}
                 <input type="hidden" name="next" value="{{ next }}" />
