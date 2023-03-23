@@ -236,7 +236,7 @@ def page_title(title, btn=None):
         <div>{btn}</div>
         </div>"""
     else:
-        html = f'<h1 class="mt-5 mb-2 text-center">{title}</h1>'
+        html = f'<h1 class="mt-4 mb-4 text-center">{title}</h1>'
     return mark_safe(html)
 
 
