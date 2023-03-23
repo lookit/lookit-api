@@ -1,26 +1,27 @@
 {% extends "web/base.html" %}
 {% load django_bootstrap5 %}
 {% load i18n %}
+{% load web_extras %}
 {% block title %}
     Contact Us
 {% endblock title %}
 {% block content %}
-    <div class="container m-4">
-        <h2 class="mx-4 my-5">Contact</h2>
-        <h3 class="m-4">{% trans "Technical difficulties" %}</h3>
+    <div class="{% main_content_container_classes %}">
+        <h1 class="{% main_heading_classes %}">Contact</h1>
+        <h3 class="{% subheading_classes %}">{% trans "Technical difficulties" %}</h3>
         <div class="m-4">
             <p>
                 {% trans "To report any technical difficulties during participation, please contact our team by email at " %}
                 <a href='mailto:lookit-tech@mit.edu'>lookit-tech@mit.edu</a>{% trans "." %}
             </p>
         </div>
-        <h3 class="m-4">{% trans "Questions about the studies" %}</h3>
+        <h3 class="{% subheading_classes %}">{% trans "Questions about the studies" %}</h3>
         <div class="m-4">
             <p>
                 {% trans "If you have any questions or concerns about the studies, please first check our FAQ. With any additional questions, please contact us at " %}<a href='mailto:lookit@mit.edu'>lookit@mit.edu</a>{% trans "." %}
             </p>
         </div>
-        <h3 class="m-4">{% trans "For researchers" %}</h3>
+        <h3 class="{% subheading_classes %}">{% trans "For researchers" %}</h3>
         <div class="m-4">
             <p>
                 {% trans "Lookit is available to all developmental researchers, and the code is entirely open- To learn more about running your own studies or contributing, please check out the " %}

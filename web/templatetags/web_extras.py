@@ -219,3 +219,18 @@ def button_secondary_classes(extra_classes=None):
         classes.extend([extra_classes])
 
     return " ".join(classes)
+
+
+@register.simple_tag
+def main_content_container_classes():
+    return "container my-4"
+
+
+@register.simple_tag
+def main_heading_classes():
+    return "mt-5 mb-2 text-center"
+
+
+@register.simple_tag
+def subheading_classes():
+    return "border-bottom pb-2 pt-4 mb-4 mx-4"

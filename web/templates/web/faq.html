@@ -2,13 +2,14 @@
 {% load static %}
 {% load django_bootstrap5 %}
 {% load i18n %}
+{% load web_extras %}
 {% block title %}
     FAQ
 {% endblock title %}
 {% block content %}
-    <div class="container m-4">
-        <h2 class="mx-4 my-5">{% trans "Frequently Asked Questions" %}</h2>
-        <h3 class="m-4">{% trans "Participation" %}</h3>
+    <div class="{% main_content_container_classes %}">
+        <h1 class="{% main_heading_classes %}">{% trans "Frequently Asked Questions" %}</h1>
+        <h3 class="{% subheading_classes %}">{% trans "Participation" %}</h3>
         <div class="accordion m-4" id="faq-accordion-participation">
             <div class="accordion-item">
                 <h2 class="accordion-header" id="heading-1">
@@ -634,7 +635,7 @@
                 </div>
             </div>
         </div>
-        <h3 class="m-4">
+        <h3 class="{% subheading_classes %}">
             {% trans "Technical" %}
         </h3>
         <div class="accordion m-4" id="faq-accordion-technical">
@@ -729,7 +730,7 @@
                 </div>
             </div>
         </div>
-        <h3 class="m-4">
+        <h3 class="{% subheading_classes %}">
             {% trans "For Researchers" %}
         </h3>
         <div class="accordion m-4" id="faq-accordion-for-researchers">
