@@ -24,7 +24,7 @@
     {% query_transform request sort='created_at' as sort_date_up %}
     {% query_transform request sort='-created_at' as sort_date_down %}
     {% button_primary_classes "mt-3" as btn_primary_classes %}
-    <h1>Videos</h1>
+    {% page_title "Videos" %}
     <div class="row">
         <div class="col">{% include "studies/_response_nav_tabs.html" with active="attachments" %}</div>
     </div>

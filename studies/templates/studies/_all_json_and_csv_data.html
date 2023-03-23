@@ -4,7 +4,6 @@
 {% load web_extras %}
 {% load static %}
 {% load bootstrap_icons %}
-{% load web_extras %}
 {% block title %}
     All Responses | {{ study.name }}
 {% endblock title %}
@@ -36,7 +35,11 @@
     {% url 'exp:study-demographics-download-csv' pk=study.id as url_demographics_download_csv %}
     {% url 'exp:study-demographics-download-dict-csv' pk=study.id as url_demographics_download_dict %}
     {% button_primary_classes as btn_primary_classes %}
-    <h1>All Responses</h1>
+    {% if active == 'demographics' %}
+        {% page_title "Demographic Snapshots" %}
+    {% else %}
+        {% page_title "All Responses" %}
+    {% endif %}
     <div class="row">
         <div class="col">{% include "studies/_response_nav_tabs.html" with active=active %}</div>
     </div>

@@ -9,7 +9,7 @@
 {% block content %}
     {% url 'exp:lab-create' as url_exp_lab_create %}
     {% bs_icon "plus" as bs_icon_plus %}
-    {% button_primary_classes "btn-sm" as btn_primary_classes %}
+    {% button_primary_classes as btn_primary_classes %}
     {% bootstrap_button bs_icon_plus|add:"Create Lab" href=url_exp_lab_create button_class=btn_primary_classes as btn_create_lab %}
     {% page_title "View Labs" btn=btn_create_lab %}
     <div class="my-4">

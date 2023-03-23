@@ -11,7 +11,7 @@
 {% endbreadcrumb %}
 {% endblock breadcrumb %}
 {% block content %}
-    <h1>Create Lab</h1>
+    {% page_title "Create Lab" %}
     <form action="" enctype="multipart/form-data" method="post">
         {% csrf_token %}
         {% bootstrap_form_errors form %}

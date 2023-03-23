@@ -30,7 +30,7 @@
     {% query_transform request sort='-date_created' as sort_date_down %}
     {% button_primary_classes as btn_primary_classes %}
     {% button_primary_classes "float-end my-3" as btn_primary_classes_create %}
-    <h1>Individual Responses</h1>
+    {% page_title "Individual Responses" %}
     <div class="row">
         <div class="col">{% include "studies/_response_nav_tabs.html" with active="individual" %}</div>
     </div>
@@ -208,9 +208,7 @@
                                 <input type="hidden" name="response_id"/>
                                 <h5 class="card-title">Download response</h5>
                                 <p class="card-text">Include with response download:</p>
-                                <div class="two-column-list mb-3">
-                                    {% include "studies/_data_options.html" with data_options=data_options %}
-                                </div>
+                                <div class="two-column-list mb-3">{% include "studies/_data_options.html" with data_options=data_options %}</div>
                                 <p class="card-text">
                                     <label for="data-type-selector">
                                         Data Type
