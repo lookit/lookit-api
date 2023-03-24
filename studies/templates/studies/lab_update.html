@@ -18,7 +18,6 @@
     <h1>Update Lab</h1>
     <form action="" enctype="multipart/form-data" method="post">
         {% csrf_token %}
-        {% bootstrap_form_errors form %}
         {% bootstrap_form form %}
         {% bootstrap_button "Discard Changes" href=url_lab_edit button_class=btn_secondary_classes %}
         {% bootstrap_button "Save" type="submit" button_class=btn_primary_classes %}
