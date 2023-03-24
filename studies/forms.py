@@ -311,7 +311,7 @@ class StudyForm(ModelForm):
             "compensation_description": Textarea(attrs={"rows": 2}),
             "exit_url": Textarea(attrs={"rows": 1}),
             "criteria": Textarea(
-                attrs={"rows": 1, "placeholder": "For 4-year-olds who love dinosaurs"}
+                attrs={"rows": 1, "placeholder": "For 4- to 6-year-olds"}
             ),
             "duration": Textarea(attrs={"rows": 1, "placeholder": "15 minutes"}),
             "contact_info": Textarea(
@@ -415,9 +415,20 @@ class StudyCreateForm(StudyForm):
 
     def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_EDIT
         # Limit initial lab options to labs this user is a member of & can create studies in
         self.fields["lab"].queryset = Lab.objects.filter(
             id__in=get_objects_for_user(
                 user, LabPermission.CREATE_LAB_ASSOCIATED_STUDY.prefixed_codename
             ).only("id")
         )
+
+
+class EmailRecipientSelectMultiple(forms.SelectMultiple):
+    option_template_name = "studies/options/recipients.html"
+
+
+class EmailParticipantsForm(forms.Form):
+    recipients = forms.ChoiceField(widget=EmailRecipientSelectMultiple())
+    subject = forms.CharField()
+    body = forms.CharField(widget=forms.Textarea())

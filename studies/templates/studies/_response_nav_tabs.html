@@ -1,23 +1,27 @@
 {% load exp_extras %}
-<ul class="nav nav-tabs">
-    <li {% if active == 'individual' %} class="active"{% endif %}>
-        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_created' %}">
-            Individual <span class="hidden-xs">Responses</span>
+<ul class="nav nav-tabs mt-2">
+    <li class="nav-item">
+        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_created' %}"
+           {% if active == 'individual' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>
+            Individual <span class="d-none d-md-inline">Responses</span>
         </a>
     </li>
-    <li {% if active == 'all' %} class="active"{% endif %}>
-        <a href="{% url 'exp:study-responses-all' study.id %}">
-            All <span class="hidden-xs">Responses</span>
+    <li class="nav-item">
+        <a href="{% url 'exp:study-responses-all' study.id %}"
+           {% if active == 'all' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>
+            All <span class="d-none d-md-inline">Responses</span>
         </a>
     </li>
-    <li {% if active == 'demographics' %} class="active"{% endif %}>
-        <a href="{% url 'exp:study-demographics' study.id %}">
-            Demographic <span class="hidden-xs">Snapshots</span>
+    <li class="nav-item">
+        <a href="{% url 'exp:study-demographics' study.id %}"
+           {% if active == 'demographics' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>
+            Demographic <span class="d-none d-md-inline">Snapshots</span>
         </a>
     </li>
     {% if study.show_videos %}
-        <li {% if active == 'attachments' %} class="active"{% endif %}>
-            <a href="{% url 'exp:study-attachments' study.id %}">Videos</a>
+        <li class="nav-item">
+            <a href="{% url 'exp:study-attachments' study.id %}"
+               {% if active == 'attachments' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>Videos</a>
         </li>
     {% endif %}
 </ul>

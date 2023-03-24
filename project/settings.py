@@ -62,7 +62,8 @@ INSTALLED_APPS = [
     "guardian",
     "localflavor",
     "rest_framework",
-    "bootstrap3",
+    "django_bootstrap5",
+    "django_bootstrap_icons",
     "ace_overlay",
     "corsheaders",
     "rest_framework.authtoken",
@@ -301,7 +302,6 @@ else:
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "_static"),)
 
 EMAIL_FROM_ADDRESS = os.environ.get("EMAIL_FROM_ADDRESS", "lookit.robot@some.domain")
 DEFAULT_FROM_EMAIL = EMAIL_FROM_ADDRESS  # for Django-generated password reset emails
@@ -358,3 +358,5 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 LOCALE_PATHS = (os.path.join(BASE_DIR, "../locale"),)
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+BOOTSTRAP5 = {"css_url": ("/static/custom_bootstrap5.css")}

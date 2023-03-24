@@ -1,28 +1,26 @@
 {% extends "web/base.html" %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
+{% load bootstrap_icons %}
 {% block title %}
     Researcher Registration
 {% endblock title %}
 {% block content %}
-    <div class="container pt-md">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h1 class="panel-title">Create Researcher Account</h1>
-            </div>
-            <div class="panel-body">
-                <form method="post" action="">
-                    {% csrf_token %}
-                    {% bootstrap_form form %}
-                    {% buttons %}
-                    <p>
-                    By clicking 'Create Account', you agree that you have read and accepted the <a href="{% url 'web:termsofuse' %}" target="_blank" rel="noopener">Terms of Use</a> and <a href="{% url 'web:privacy' %}" target="_blank" rel="noopener">Privacy Statement</a>.
+    {% bs_icon "plus" as bs_icon_plus %}
+    <div class="card">
+        <div class="card-header">Create Researcher Account</div>
+        <div class="card-body">
+            <form method="post" action="">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <p>
+                    By clicking 'Create Account', you agree that you have read and accepted the
+                    <a href="{% url 'web:termsofuse' %}" target="_blank" rel="noopener">Terms of Use</a>
+                    and
+                    <a href="{% url 'web:privacy' %}" target="_blank" rel="noopener">Privacy Statement</a>
+                    .
                 </p>
-                <div class="pull-right">
-                    <button type="submit" class="btn btn-success">{% bootstrap_icon "plus" %} Create Account</button>
-                </div>
-            {% endbuttons %}
-        </form>
+                {% bootstrap_button bs_icon_plus|add:"Create Account" %}
+            </form>
+        </div>
     </div>
-</div>
-</div>
 {% endblock content %}

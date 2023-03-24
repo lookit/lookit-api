@@ -20,7 +20,7 @@ def format(text: Text) -> Text:
         return ""
 
 
-def active_nav(request, url) -> Text:
+def active_nav(request, url) -> bool:
     """Determine is this button is the active button in the navigation bar.
 
     Args:
@@ -28,12 +28,9 @@ def active_nav(request, url) -> Text:
         url (Text): String url for the current view
 
     Returns:
-        Text: "active" if this is the active view, else empty string.
+        boolean: returns true if this path is active
     """
-    if request.path == url:
-        return "active"
-    else:
-        return ""
+    return request.path == url
 
 
 def nav_next(request, url, text, button):
@@ -51,11 +48,11 @@ def nav_next(request, url, text, button):
     active = active_nav(request, url)
 
     if button:
-        css_class = "btn btn-lg btn-default"
+        css_class = "btn btn-light link-secondary border-secondary text-center"
     elif active:
-        css_class = f"{active} btn-link"
+        css_class = "btn active btn-light link-secondary text-center"
     else:
-        css_class = "btn-link"
+        css_class = "nav-link navbar-link link-secondary border-0 text-center"
 
     form = f"""<form action="{url}" method="get">
     <button class="{css_class}" type="submit" value="login">{_(text)}</button>
@@ -63,7 +60,7 @@ def nav_next(request, url, text, button):
     </form>"""
 
     if not button:
-        form = f"<li>{form}</li>"
+        form = f"""<li>{form}</li>"""
 
     return mark_safe(form)
 
@@ -90,7 +87,7 @@ def google_tag_manager() -> Text:
 
 
 @register.simple_tag
-def nav_item(request, url_name, text):
+def nav_link(request, url_name, text, html_classes=None, queryString=None):
     """General navigation bar item
 
     Args:
@@ -101,11 +98,30 @@ def nav_item(request, url_name, text):
     Returns:
         SafeText: HTML of navigation item
     """
-    li_class = ""
+    if html_classes is None:
+        html_classes = [
+            "nav-link",
+            "navbar-link",
+            "link-secondary",
+            "text-center",
+            "px-3",
+        ]
     url = reverse(url_name)
-    li_class = active_nav(request, url)
+    aria_current = ""
+    if active_nav(request, url):
+        html_classes.extend(["active", "btn-secondary"])
+        aria_current = ' aria-current="page"'
+    if queryString:
+        url = url + queryString
 
-    return mark_safe(f'<li class="{li_class}"><a href="{url}">{_(text)}</a></li>')
+    return mark_safe(
+        f'<a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a>'
+    )
+
+
+@register.simple_tag
+def dropdown_item(request, url_name, text):
+    return nav_link(request, url_name, text, ["dropdown-item"])
 
 
 @register.simple_tag
@@ -157,3 +173,113 @@ def studies_tab_text(tabs):
                 return _(
                     'You and your child can participate in these studies by scheduling a time to meet with a researcher (usually over video conferencing). Choose a study and then click "Participate" to sign up for a study session in the future.'
                 )
+
+
+@register.filter(name="studies_tab_selected")
+def studies_tab_selected(value):
+    for tab in value:
+        if tab.data["selected"]:
+            return tab.data["value"]
+
+
+@register.simple_tag
+def set_variable(val=None):
+    """Tag for defining a string variable.
+
+    Args:
+        val (str): string value that needs to be assigned to a variable.
+
+    Returns:
+        String to be held in a variable.
+    """
+    return val
+
+
+@register.simple_tag
+def study_info_table_heading_classes():
+    return "col-sm-12 col-md-4 py-2 align-top"
+
+
+@register.simple_tag
+def study_info_table_content_classes():
+    return "col-sm-12 col-md-8 py-2 ps-2 align-top"
+
+
+@register.simple_tag
+def button_primary_classes(extra_classes=None):
+    classes = ["btn", "btn-primary"]
+    if extra_classes:
+        classes.extend([extra_classes])
+
+    return " ".join(classes)
+
+
+@register.simple_tag
+def button_secondary_classes(extra_classes=None):
+    classes = ["btn", "btn-light", "link-secondary", "border-secondary"]
+    if extra_classes:
+        classes.extend([extra_classes])
+
+    return " ".join(classes)
+
+
+@register.simple_tag
+def subheading_classes():
+    return "border-bottom pb-2 pt-4 mb-4 mx-4"
+
+
+@register.simple_tag
+def page_title(title, right_side_elements=None):
+    if right_side_elements:
+        html = f"""<div class="d-flex flex-row bd-highlight mb-4 align-items-center">
+        <h1 class="me-auto">{title}</h1>
+        <div>{right_side_elements}</div>
+        </div>"""
+    else:
+        html = f'<h1 class="mt-4 mb-4 text-center">{title}</h1>'
+    return mark_safe(html)
+
+
+@register.tag(name="breadcrumb")
+def breadcrumb(parser, token):
+    nodelist = parser.parse(("endbreadcrumb",))
+    parser.delete_first_token()
+    return BreadcrumbNode(nodelist)
+
+
+class BreadcrumbNode(template.Node):
+    def __init__(self, nodelist):
+        self.nodelist = nodelist
+
+    def pairwise(self, iterable):
+        "s -> (s0, s1), (s2, s3), (s4, s5), ..."
+        a = iter(iterable)
+        return zip(a, a)
+
+    def render(self, context):
+        if not self.nodelist:
+            return ""
+
+        # remove empty nodes
+        for node in self.nodelist:
+            if not node.render(context).strip():
+                self.nodelist.remove(node)
+
+        # get last node from list
+        last_node = self.nodelist.pop()
+
+        result = [
+            '<nav aria-label="breadcrumb" class="my-2">',
+            '<ol class="breadcrumb">',
+        ]
+
+        for a, b in self.pairwise(self.nodelist):
+            result.append('<li class="breadcrumb-item">')
+            result.append(f'<a href="{a.render(context)}">{b.render(context)}</a>')
+            result.append("</li>")
+
+        result.append(
+            f'<li class="breadcrumb-item active" aria-current="page">{last_node.render(context)}</li>'
+        )
+        result.append("</ol></nav>")
+        return "".join(result)
