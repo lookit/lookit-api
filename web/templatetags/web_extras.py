@@ -223,6 +223,23 @@ def button_secondary_classes(extra_classes=None):
     return " ".join(classes)
 
 
+@register.simple_tag
+def subheading_classes():
+    return "border-bottom pb-2 pt-4 mb-4 mx-4"
+
+
+@register.simple_tag
+def page_title(title, right_side_elements=None):
+    if right_side_elements:
+        html = f"""<div class="d-flex flex-row bd-highlight mb-4 align-items-center">
+        <h1 class="me-auto">{title}</h1>
+        <div>{right_side_elements}</div>
+        </div>"""
+    else:
+        html = f'<h1 class="mt-4 mb-4 text-center">{title}</h1>'
+    return mark_safe(html)
+
+
 @register.tag(name="breadcrumb")
 def breadcrumb(parser, token):
     nodelist = parser.parse(("endbreadcrumb",))

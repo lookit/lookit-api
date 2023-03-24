@@ -7,14 +7,11 @@
     Labs
 {% endblock title %}
 {% block content %}
-    {% button_primary_classes "btn-sm" as btn_primary_classes %}
-    <div class="d-flex justify-content-between align-items-center">
-        <h1>View Labs</h1>
-        <div>
-            <a class="{% button_primary_classes %}"
-               href="{% url 'exp:lab-create' %}">{% bs_icon "plus" %} Create Lab</a>
-        </div>
-    </div>
+    {% url 'exp:lab-create' as url_exp_lab_create %}
+    {% bs_icon "plus" as bs_icon_plus %}
+    {% button_primary_classes as btn_primary_classes %}
+    {% bootstrap_button bs_icon_plus|add:"Create Lab" href=url_exp_lab_create button_class=btn_primary_classes as btn_create_lab %}
+    {% page_title "View Labs" right_side_elements=btn_create_lab %}
     <div class="my-4">
         <form method="get">
             <input id="search-labs"

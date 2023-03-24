@@ -15,7 +15,7 @@
     {% url 'exp:lab-edit' pk=lab.id as url_lab_edit %}
     {% button_primary_classes as btn_primary_classes %}
     {% button_secondary_classes as btn_secondary_classes %}
-    <h1>Update Lab</h1>
+    {% page_title "Update Lab" %}
     <form action="" enctype="multipart/form-data" method="post">
         {% csrf_token %}
         {% bootstrap_form form %}

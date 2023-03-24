@@ -9,14 +9,13 @@
 {% block content %}
     {% bs_icon "plus" as bs_icon_plus %}
     {% url 'exp:study-create' as url_study_create %}
-    {% query_transform request page='1' as qstring %}
-    {% set_variable "?"|add:qstring as url_query_string %}
-    <div class="d-flex flex-row bd-highlight mb-4 align-items-center">
-        <h1 class="me-auto">Manage Studies</h1>
-        {% if can_create_study %}
-            <div>{% bootstrap_button bs_icon_plus|add:"Create Study" href=url_study_create %}</div>
-        {% endif %}
-    </div>
+    {% button_primary_classes as btn_primary_classes %}
+    {% bootstrap_button bs_icon_plus|add:"Create Study" href=url_study_create button_class=btn_primary_classes as btn_create_study %}
+    {% if can_create_study %}
+        {% page_title "Manage Studies" right_side_elements=btn_create_study %}
+    {% else %}
+        {% page_title "Manage Studies" %}
+    {% endif %}
     <div class="row mx-5">
         <form method="get">
             <input id="search-studies"

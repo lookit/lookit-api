@@ -29,7 +29,7 @@
             defer
             data-btn-primary-classes="{{ btn_primary_classes }}"
             data-btn-secondary-classes="{{ btn_secondary_classes }}"></script>
-    <h1>{{ study.name }}</h1>
+    {% page_title study.name %}
     <div class="row">
         <div class="col-2">
             {% include "studies/_image_display.html" with object=study large=1 %}

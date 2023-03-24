@@ -112,11 +112,13 @@
             {% block nav %}
                 {% include "web/_navigation.html" %}
             {% endblock nav %}
-            {% block breadcrumb %}
-            {% endblock breadcrumb %}
-            {% bootstrap_messages %}
-            {% block content %}
-            {% endblock content %}
+            <div class="container my-4">
+                {% block breadcrumb %}
+                {% endblock breadcrumb %}
+                {% bootstrap_messages %}
+                {% block content %}
+                {% endblock content %}
+            </div>
             {% block footer %}
                 {% include "web/_footer.html" %}
             {% endblock footer %}
