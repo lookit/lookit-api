@@ -10,6 +10,9 @@ $('input[name="daterange"]').daterangepicker({
         'Last Year': [moment().subtract(1, 'year')]
     },
     timePicker: true,
+    locale: {
+        format: 'M/DD/YY hh:mm:ss A'
+    },
     startDate: moment().subtract(3, 'years'),
     endDate: moment(),
 })
