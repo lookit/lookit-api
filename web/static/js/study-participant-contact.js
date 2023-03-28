@@ -28,6 +28,7 @@ $.fn.dataTable.ext.search.push(
 
 // Datatable init/config
 const table = $("#previousMessagesTable").DataTable({
+    order: [[3, 'desc']], // Sort on "Date sent" column
     columnDefs: [
         { visible: false, targets: 4 }, // Hide body column
         { className: "column-text-search", targets: [0, 1, 2] }, // add class to text search columns
