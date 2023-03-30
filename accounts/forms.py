@@ -159,6 +159,12 @@ class ResearcherRegistrationForm(LowercaseUsernameUserCreationForm):
         # Don't autofill passwords, in the interest of security.
         self.fields["password1"].widget.attrs["autocomplete"] = "new-password"
         self.fields["password2"].widget.attrs["autocomplete"] = "new-password"
+
+        # Auto generated password help text does reflect the below password2 validator.
+        self.fields["password1"].help_text = self.fields["password1"].help_text.replace(
+            "10", "16"
+        )
+
         self.fields["given_name"].required = True
         self.fields["family_name"].required = True
 
@@ -170,6 +176,21 @@ class ResearcherRegistrationForm(LowercaseUsernameUserCreationForm):
         if commit:
             user.save()
         return user
+
+    def clean_password2(self):
+        """Add a 16 character password requirement to researcher signups.  This is over the existing 10 character password validator.
+
+        Raises:
+            ValidationError: Form error
+
+        Returns:
+            _type_: password2
+        """
+        password = self.cleaned_data.get("password2")
+        print(password)
+        if len(password) < 16:
+            raise ValidationError("Password must be at least 16 characters.")
+        return super().clean_password2()
 
     class Meta(LowercaseUsernameUserCreationForm.Meta):
         model = User
