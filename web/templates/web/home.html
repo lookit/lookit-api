@@ -13,9 +13,9 @@
              alt="CHS home page collage"
              src="{% static 'images/chs_collage.png' %}"/>
         <div class="d-flex flex-column align-items-center position-absolute bottom-0">
-            <h3 class="m-xl-4 m-md-1">{% trans "Powered by Lookit" %}</h3>
-            <h5>{% trans "Fun for Families, Serious for Science" %}</h5>
-            <a class="{% button_primary_classes %} btn-lg m-xl-5 m-md-1"
+            <h3 class="d-none d-md-block m-xl-4 m-md-1">{% trans "Powered by Lookit" %}</h3>
+            <h5 class="d-none d-md-block">{% trans "Fun for Families, Serious for Science" %}</h5>
+            <a class="{% button_primary_classes %} btn-lg btn-md-sm m-xl-5 m-md-1"
                href="{% url 'web:studies-list' %}">{% trans "Participate in a Study" %}</a>
         </div>
     </div>
