@@ -187,7 +187,6 @@ class ResearcherRegistrationForm(LowercaseUsernameUserCreationForm):
             _type_: password2
         """
         password = self.cleaned_data.get("password2")
-        print(password)
         if len(password) < 16:
             raise ValidationError("Password must be at least 16 characters.")
         return super().clean_password2()
@@ -257,9 +256,7 @@ class PasswordChangeForm(DjangoPasswordChangeForm):
         Returns:
             _type_: password2
         """
-        print("asdf")
         password = self.cleaned_data.get("new_password2")
-        print(password)
         if len(password) < 16:
             raise ValidationError("Password must be at least 16 characters.")
         return super().clean_new_password2()
