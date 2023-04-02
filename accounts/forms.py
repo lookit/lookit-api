@@ -243,6 +243,27 @@ class PasswordChangeForm(DjangoPasswordChangeForm):
         self.fields["new_password1"].widget.attrs["autocomplete"] = "new-password"
         self.fields["new_password2"].widget.attrs["autocomplete"] = "new-password"
 
+        # Auto generated password help text does reflect the below password2 validator.
+        self.fields["new_password1"].help_text = self.fields[
+            "new_password1"
+        ].help_text.replace("10", "16")
+
+    def clean_new_password2(self):
+        """Add a 16 character password requirement to researcher signups.  This is over the existing 10 character password validator.
+
+        Raises:
+            ValidationError: Form error
+
+        Returns:
+            _type_: password2
+        """
+        print("asdf")
+        password = self.cleaned_data.get("new_password2")
+        print(password)
+        if len(password) < 16:
+            raise ValidationError("Password must be at least 16 characters.")
+        return super().clean_new_password2()
+
     class Meta:
         model = User
 
