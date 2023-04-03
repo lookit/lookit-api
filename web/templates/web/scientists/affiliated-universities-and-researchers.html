@@ -1,98 +1,26 @@
+{% load i18n %}
 <p>
-    As of March 2021, there are over 450 researchers in our community, and around 50 universities across seven countries affiliated with Lookit, including:
+    {% trans "As of March 2023, there are over 950 researchers in our community, and over 90 universities affiliated with Lookit, including:" %}
 </p>
+<p>United States:</p>
 <ul style="columns:3">
-    <li>American University</li>
-    <li>Boston College</li>
-    <li>Boğaziçi University</li>
-    <li>University of British Columbia</li>
-    <li>Brown University</li>
-    <li>University at Buffalo</li>
-    <li>University of California, Davis</li>
-    <li>University of California, Los Angeles (UCLA)</li>
-    <li>University of California, San Diego (UCSD)</li>
-    <li>University of Chicago</li>
-    <li>Centre National de la Recherche Scientifique (CNRS)</li>
-    <li>Duke University</li>
-    <li>University of Essex</li>
-    <li>East Tennessee State University</li>
-    <li>George Mason University</li>
-    <li>Goldsmiths, University of London</li>
-    <li>Harvard University</li>
-    <li>Haskins Laboratories</li>
-    <li>University of Illinois</li>
-    <li>University of Kansas</li>
-    <li>Leiden University</li>
-    <li>University College London</li>
-    <li>Loyola University Chicago</li>
-    <li>University of Maryland (UMD)</li>
-    <li>Massachusetts Institute of Technology (MIT)</li>
-    <li>
-        McMaster University
-    </li>
-    <li>
-        University of Pennsylvania
-    </li>
-    <li>
-        University of Nottingham
-    </li>
-    <li>
-        New York University (NYU)
-    </li>
-    <li>
-        University of Oregon
-    </li>
-    <li>
-        Rutgers University
-    </li>
-    <li>
-        Sacred Heart University
-    </li>
-    <li>
-        Skidmore College
-    </li>
-    <li>
-        Smith College
-    </li>
-    <li>
-        University of Southern California (USC)
-    </li>
-    <li>
-        Stanford University
-    </li>
-    <li>
-        University of Texas at Austin
-    </li>
-    <li>
-        University of Texas at Dallas
-    </li>
-    <li>
-        University of Tokyo
-    </li>
-    <li>
-        University of Toronto
-    </li>
-    <li>
-        University of Virginia
-    </li>
-    <li>
-        University of Washington
-    </li>
-    <li>
-        University of Waterloo
-    </li>
-    <li>
-        Western Sydney University
-    </li>
-    <li>
-        University of Wisconsin - Madison
-    </li>
-    <li>
-        Yale University
-    </li>
-    <li>
-        Yeshiva University
-    </li>
+    {% for institution in institutions.us %}<li>{{ institution }}</li>{% endfor %}
+</ul>
+<p>Canada:</p>
+<ul style="columns:3">
+    {% for institution in institutions.ca %}<li>{{ institution }}</li>{% endfor %}
+</ul>
+<p>United Kingdom:</p>
+<ul style="columns:3">
+    {% for institution in institutions.uk %}<li>{{ institution }}</li>{% endfor %}
+</ul>
+<p>Worldwide:</p>
+<ul style="columns:3">
+    {% for institution in institutions.worldwide %}<li>{{ institution }}</li>{% endfor %}
+</ul>
+<p>Coming soon (Agreements in process):</p>
+<ul style="columns:3">
+    {% for institution in institutions.coming_soon %}<li>{{ institution }}</li>{% endfor %}
 </ul>
 <p>
     To learn about joining us, visit the
