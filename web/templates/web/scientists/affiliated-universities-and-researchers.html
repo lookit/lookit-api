@@ -2,26 +2,12 @@
 <p>
     {% trans "As of March 2023, there are over 950 researchers in our community, and over 90 universities affiliated with Lookit, including:" %}
 </p>
-<p>United States:</p>
-<ul style="columns:3">
-    {% for institution in institutions.us %}<li>{{ institution }}</li>{% endfor %}
-</ul>
-<p>Canada:</p>
-<ul style="columns:3">
-    {% for institution in institutions.ca %}<li>{{ institution }}</li>{% endfor %}
-</ul>
-<p>United Kingdom:</p>
-<ul style="columns:3">
-    {% for institution in institutions.uk %}<li>{{ institution }}</li>{% endfor %}
-</ul>
-<p>Worldwide:</p>
-<ul style="columns:3">
-    {% for institution in institutions.worldwide %}<li>{{ institution }}</li>{% endfor %}
-</ul>
-<p>Coming soon (Agreements in process):</p>
-<ul style="columns:3">
-    {% for institution in institutions.coming_soon %}<li>{{ institution }}</li>{% endfor %}
-</ul>
+{% for section, institutions in institution_sections %}
+    <p>{{ section.name }}:</p>
+    <ul style="columns:3">
+        {% for institution in institutions %}<li>{{ institution.name }}</li>{% endfor %}
+    </ul>
+{% endfor %}
 <p>
     To learn about joining us, visit the
     <a href="https://lookit.readthedocs.io/en/develop/researchers-start-here.html"
