@@ -303,6 +303,4 @@ class FormButtonsNode(template.Node):
 
 @register.simple_tag
 def empty_text(text):
-    return mark_safe(
-        f'<div class="d-flex justify-content-center fst-italic"><p>{text}</p></div>'
-    )
+    return mark_safe(f'<div class="my-4 mx-auto text-center fst-italic">{text}</div>')

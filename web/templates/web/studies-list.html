@@ -50,9 +50,8 @@
                 <p>Learn More →</p>
             </a>
         {% empty %}
-            <p class="mx-auto d-block">
-                <em>{% trans "No studies found." %}</em>
-            </p>
+            {% trans "No studies found." as trans_no_studies_found %}
+        {% empty_text trans_no_studies_found %}
         {% endfor %}
     </div>
     <div class="row px-2">
