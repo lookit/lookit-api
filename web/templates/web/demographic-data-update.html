@@ -1,6 +1,7 @@
 {% extends "web/base.html" %}
 {% load i18n %}
 {% load django_bootstrap5 %}
+{% load web_extras %}
 {% load static %}
 {% block title %}
     {% trans "Update demographics" %}
@@ -49,7 +50,9 @@
                     <form method="post" action="">
                         {% csrf_token %}
                         {% bootstrap_form form %}
-                        {% bootstrap_button trans_save %}
+                        {% form_buttons %}
+                            {% bootstrap_button trans_save %}
+                        {% endform_buttons %}
                     </form>
                 </div>
             </div>

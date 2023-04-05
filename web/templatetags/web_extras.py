@@ -297,6 +297,5 @@ class FormButtonsNode(template.Node):
         self.nodelist = nodelist
 
     def render(self, context):
-
         rendered_buttons = (n.render(context) for n in self.nodelist)
-        return f'<div class="d-flex flex-row-reverse gap-1">{"".join(rendered_buttons)}</div>'
+        return f'<div class="d-flex justify-content-end gap-1">{"".join(rendered_buttons)}</div>'
