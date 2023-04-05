@@ -50,7 +50,7 @@ urlpatterns = [
     ),
     path(
         "scientists/",
-        TemplateView.as_view(template_name="web/scientists.html"),
+        views.ScientistsView.as_view(),
         name="scientists",
     ),
     path(
