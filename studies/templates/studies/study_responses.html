@@ -187,7 +187,6 @@
                                             </div>
                                         </div>
                                     {% empty %}
-                                    {% empty_text %}
                                         <p class="card-text">
                                             <em class="my-2">Expect a delay of a few minutes for videos to be available for download.</em>
                                         </p>
@@ -273,8 +272,6 @@
             </div>
         </div>
     {% else %}
-        <div class="row">
-            <em class="my-3 text-center">No responses with confirmed consent.</em>
-        </div>
+    {% empty_text "No responses with confirmed consent." %}
     {% endif %}
 {% endblock content %}
