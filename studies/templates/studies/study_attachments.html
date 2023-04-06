@@ -95,9 +95,7 @@
                             </tr>
                         {% empty %}
                             <tr>
-                                <td colspan="3">
-                                    <em>No videos available for download.</em>
-                                </td>
+                                <td colspan="3">{% empty_text "No videos available for download." %}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
