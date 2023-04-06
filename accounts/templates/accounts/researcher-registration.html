@@ -1,6 +1,7 @@
 {% extends "web/base.html" %}
 {% load django_bootstrap5 %}
 {% load bootstrap_icons %}
+{% load web_extras %}
 {% block title %}
     Researcher Registration
 {% endblock title %}
@@ -19,7 +20,9 @@
                     <a href="{% url 'web:privacy' %}" target="_blank" rel="noopener">Privacy Statement</a>
                     .
                 </p>
-                {% bootstrap_button bs_icon_plus|add:"Create Account" %}
+                {% form_buttons %}
+                    {% bootstrap_button bs_icon_plus|add:"Create Account" %}
+                {% endform_buttons %}
             </form>
         </div>
     </div>

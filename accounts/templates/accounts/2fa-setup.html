@@ -29,7 +29,9 @@
                                 <form method="post">
                                     {% csrf_token %}
                                     {% bootstrap_form form %}
-                                    {% bootstrap_button "Test Code" button_type="submit" button_class=btn_primary_classes %}
+                                    {% form_buttons %}
+                                        {% bootstrap_button "Test Code" button_type="submit" button_class=btn_primary_classes %}
+                                    {% endform_buttons %}
                                 </form>
                             </li>
                         </ol>
