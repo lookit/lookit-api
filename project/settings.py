@@ -81,8 +81,6 @@ INSTALLED_APPS = [
     "django.forms",
     # "django.contrib.admin",
     "project.apps.TwoFactorAuthProtectedAdminConfig",
-    # "allauth.socialaccount",
-    # "allauth.account",
 ]
 
 MIDDLEWARE = [
@@ -119,7 +117,6 @@ AUTHENTICATION_BACKENDS = (
     "accounts.backends.TwoFactorAuthenticationBackend",
     "django.contrib.auth.backends.ModelBackend",  # this is default
     "guardian.backends.ObjectPermissionBackend",
-    # "allauth.account.auth_backends.AuthenticationBackend",
 )
 
 ROOT_URLCONF = "project.urls"
