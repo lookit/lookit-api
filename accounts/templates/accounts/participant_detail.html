@@ -84,8 +84,7 @@
                             {{ birthday | timesince|default:"N/A" }}
                             {% if not forloop.last %};{% endif %}
                         {% empty %}
-                            {% trans "No Response" as trans_no_response %}
-                        {% empty_text trans_no_response %}
+                            {% trans "No Response" %}
                         {% endfor %}
                     </td>
                 </tr>
