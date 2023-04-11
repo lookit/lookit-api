@@ -87,7 +87,7 @@
             </div>
         </div>
     {% empty %}
-        <div class="text-center fst-italic">No researchers found!</div>
+    {% empty_text "No researchers found!" %}
     {% endfor %}
     {% include "studies/_paginator.html" with page=lab_members_qs %}
 {% endblock content %}
