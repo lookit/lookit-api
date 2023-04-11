@@ -159,7 +159,7 @@
                                             </footer>
                                         {% endif %}
                                     {% empty %}
-                                        <em class="my-2">No feedback</em>
+                                    {% empty_text "No feedback" %}
                                     {% endfor %}
                                 </div>
                             {% endfor %}
@@ -209,9 +209,7 @@
                             <p class="card-text">Include with response download:</p>
                             <div class="two-column-list mb-3">{% include "studies/_data_options.html" with data_options=data_options %}</div>
                             <p class="card-text">
-                                <label for="data-type-selector">
-                                    Data Type
-                                </label>
+                                <label for="data-type-selector">Data Type</label>
                             </p>
                             <div class="input-group">
                                 <select class="form-select"
@@ -274,8 +272,6 @@
             </div>
         </div>
     {% else %}
-        <div class="row">
-            <em class="my-3 text-center">No responses with confirmed consent.</em>
-        </div>
+    {% empty_text "No responses with confirmed consent." %}
     {% endif %}
 {% endblock content %}

@@ -283,3 +283,24 @@ class BreadcrumbNode(template.Node):
         )
         result.append("</ol></nav>")
         return "".join(result)
+
+
+@register.tag(name="form_buttons")
+def form_buttons(parser, token):
+    nodelist = parser.parse(("endform_buttons",))
+    parser.delete_first_token()
+    return FormButtonsNode(nodelist)
+
+
+class FormButtonsNode(template.Node):
+    def __init__(self, nodelist):
+        self.nodelist = nodelist
+
+    def render(self, context):
+        rendered_buttons = (n.render(context) for n in self.nodelist)
+        return f'<div class="d-flex justify-content-end gap-1">{"".join(rendered_buttons)}</div>'
+
+
+@register.simple_tag
+def empty_text(text):
+    return mark_safe(f'<div class="my-4 mx-auto text-center fst-italic">{text}</div>')

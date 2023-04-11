@@ -36,6 +36,7 @@ from accounts.utils import hash_id
 from project import settings
 from studies.models import Lab, Response, Study, StudyType, Video
 from web.mixins import AuthenticatedRedirectMixin
+from web.models import Institution, InstitutionSection
 
 
 @receiver(signals.user_logged_out)
@@ -686,3 +687,17 @@ class ExperimentProxyView(
 
         path = f"{study_uuid}/index.html"
         return super().dispatch(request, path)
+
+
+class ScientistsView(generic.TemplateView):
+    template_name = "web/scientists.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["institution_sections"] = [
+            (s, Institution.objects.filter(section=s))
+            for s in InstitutionSection.objects.order_by("order")
+        ]
+
+        return context

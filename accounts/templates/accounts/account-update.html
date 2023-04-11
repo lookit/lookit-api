@@ -1,5 +1,6 @@
 {% extends "web/base.html" %}
 {% load django_bootstrap5 %}
+{% load web_extras %}
 {% load i18n %}
 {% block title %}
     {% trans "Update account information" %}
@@ -15,7 +16,9 @@
                     <form method="post">
                         {% csrf_token %}
                         {% bootstrap_form update_account_form %}
-                        {% bootstrap_button "Save" name="form-handle" value="update-account" %}
+                        {% form_buttons %}
+                            {% bootstrap_button "Save" name="form-handle" value="update-account" %}
+                        {% endform_buttons %}
                     </form>
                 </div>
             </div>
@@ -26,7 +29,9 @@
                     <form method="post">
                         {% csrf_token %}
                         {% bootstrap_form change_password_form %}
-                        {% bootstrap_button "Save" name="form-handle" value="change-password" %}
+                        {% form_buttons %}
+                            {% bootstrap_button "Save" name="form-handle" value="change-password" %}
+                        {% endform_buttons %}
                     </form>
                 </div>
             </div>
@@ -51,11 +56,13 @@
                                 {% endif %}
                                 {% csrf_token %}
                                 {% bootstrap_form otp_check_form %}
-                                {% if otp.activated %}
-                                    {% bootstrap_button "Submit" name="form-handle" value="deactivate-otp" %}
-                                {% else %}
-                                    {% bootstrap_button "Submit" name="form-handle" value="activate-otp" %}
-                                {% endif %}
+                                {% form_buttons %}
+                                    {% if otp.activated %}
+                                        {% bootstrap_button "Submit" name="form-handle" value="deactivate-otp" %}
+                                    {% else %}
+                                        {% bootstrap_button "Submit" name="form-handle" value="activate-otp" %}
+                                    {% endif %}
+                                {% endform_buttons %}
                             </form>
                         {% else %}
                             {# if we don't have OTP, link to 2FA setup directly. #}

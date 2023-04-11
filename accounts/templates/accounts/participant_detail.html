@@ -50,7 +50,8 @@
                     </div>
                 </div>
             {% empty %}
-                <p class="fst-italic">{% trans "No children profiles registered!" %}</p>
+                {% trans "No children profiles registered!" as trans_no_children %}
+            {% empty_text trans_no_children %}
             {% endfor %}
         </div>
         <div class="col-6">
@@ -82,15 +83,14 @@
                         {% for birthday in user.latest_demographics.child_birthdays %}
                             {{ birthday | timesince|default:"N/A" }}
                             {% if not forloop.last %};{% endif %}
-                        {% empty %}{% trans "No Response" %}
+                        {% empty %}
+                            {% trans "No Response" %}
                         {% endfor %}
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">{% trans "Number of Guardians" %}:</th>
-                    <td>
-                        {{ demographics.number_of_guardians|default:"No Response" }}
-                    </td>
+                    <td>{{ demographics.number_of_guardians|default:"No Response" }}</td>
                 </tr>
                 <tr>
                     <th scope="row">

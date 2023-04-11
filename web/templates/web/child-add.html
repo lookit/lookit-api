@@ -27,8 +27,10 @@
                     <form method="post" action="">
                         {% csrf_token %}
                         {% bootstrap_form form %}
-                        {% bootstrap_button trans_cancel href=url_children_list button_class=btn_secondary_classes %}
-                        {% bootstrap_button bs_icon_plus|add:trans_add_child button_class=btn_primary_classes %}
+                        {% form_buttons %}
+                            {% bootstrap_button trans_cancel href=url_children_list button_class=btn_secondary_classes %}
+                            {% bootstrap_button bs_icon_plus|add:trans_add_child button_class=btn_primary_classes %}
+                        {% endform_buttons %}
                     </form>
                 </div>
             </div>

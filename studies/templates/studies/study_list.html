@@ -168,9 +168,7 @@
             </div>
         </div>
     {% empty %}
-        <div class="row">
-            <em class="my-5 text-center">No studies found!</em>
-        </div>
+    {% empty_text "No studies found" %}
     {% endfor %}
     {% if object_list %}
         {% include "studies/_paginator.html" with page=page_obj %}

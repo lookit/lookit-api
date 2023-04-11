@@ -26,6 +26,7 @@
     {% url 'exp:preview-detail' uuid=study.uuid as url_preview_detail %}
     {% url 'exp:study-edit' pk=study.id as url_cancel %}
     {% button_secondary_classes as btn_secondary_classes %}
+    {% button_primary_classes as btn_primary_classes %}
     <div class="row">
         <div class="col-lg-10 offset-lg-1">
             <div class="card bg-light my-4">
@@ -42,7 +43,7 @@
                         {% csrf_token %}
                         {% include "studies/_study_fields.html" with form=form study=study %}
                         {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}
-                        <div class="me-4 float-end">
+                        {% form_buttons %}
                             {% bootstrap_button "Cancel" button_class=btn_secondary_classes href=url_cancel %}
                             <button type="button"
                                     class="{% button_primary_classes %}"
@@ -51,7 +52,7 @@
                                     data-bs-toggle="modal">
                                 Save Changes
                             </button>
-                        </div>
+                        {% endform_buttons %}
                         <div class="modal fade"
                              id="save-study-confirmation"
                              tabindex="-1"

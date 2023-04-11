@@ -81,13 +81,7 @@
             </div>
         </div>
     {% empty %}
-        <div class="row">
-            <div class="col-xs-10 col-xs-offset-1 col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
-                <p class="my-3">
-                    <em>No labs found!</em>
-                </p>
-            </div>
-        </div>
+    {% empty_text "No labs found!" %}
     {% endfor %}
     {% if object_list %}
         <div class="row pb-5">{% include "studies/_paginator.html" with page=page_obj %}</div>
