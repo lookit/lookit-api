@@ -27,7 +27,7 @@ class ParticipantAccountViewsTestCase(TestCase):
         self.participant_email = "participant@mit.edu"
 
         self.valid_password = "testpassword20chars"
-        self.too_short_password = "testpassword15c"
+        self.too_short_password = "testpas9c"  # NOSONAR
 
         # Participant Setup
         self.participant = G(

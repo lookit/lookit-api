@@ -159,6 +159,12 @@ class ResearcherRegistrationForm(LowercaseUsernameUserCreationForm):
         # Don't autofill passwords, in the interest of security.
         self.fields["password1"].widget.attrs["autocomplete"] = "new-password"
         self.fields["password2"].widget.attrs["autocomplete"] = "new-password"
+
+        # Auto generated password help text does reflect the below password2 validator.
+        self.fields["password1"].help_text = self.fields["password1"].help_text.replace(
+            "10", "16"
+        )
+
         self.fields["given_name"].required = True
         self.fields["family_name"].required = True
 
@@ -170,6 +176,20 @@ class ResearcherRegistrationForm(LowercaseUsernameUserCreationForm):
         if commit:
             user.save()
         return user
+
+    def clean_password2(self):
+        """Add a 16 character password requirement to researcher signups.  This is over the existing 10 character password validator.
+
+        Raises:
+            ValidationError: Form error
+
+        Returns:
+            _type_: password2
+        """
+        password = self.cleaned_data.get("password2")
+        if len(password) < 16:
+            raise ValidationError("Password must be at least 16 characters.")
+        return super().clean_password2()
 
     class Meta(LowercaseUsernameUserCreationForm.Meta):
         model = User
@@ -216,11 +236,34 @@ class AccountUpdateForm(forms.ModelForm):
 
 
 class PasswordChangeForm(DjangoPasswordChangeForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(user, *args, **kwargs)
+
+        self.is_researcher = user.is_researcher
         self.fields["old_password"].widget.attrs.pop("autofocus", None)
         self.fields["new_password1"].widget.attrs["autocomplete"] = "new-password"
         self.fields["new_password2"].widget.attrs["autocomplete"] = "new-password"
+
+        # Auto generated password help text does reflect the below password2 validator.
+        if self.is_researcher:
+            self.fields["new_password1"].help_text = self.fields[
+                "new_password1"
+            ].help_text.replace("10", "16")
+
+    def clean_new_password2(self):
+        """Add a 16 character password requirement to researcher signups.  This is over the existing 10 character password validator.
+
+        Raises:
+            ValidationError: Form error
+
+        Returns:
+            _type_: password2
+        """
+        if self.is_researcher:
+            password = self.cleaned_data.get("new_password2")
+            if len(password) < 16:
+                raise ValidationError("Password must be at least 16 characters.")
+        return super().clean_new_password2()
 
     class Meta:
         model = User
