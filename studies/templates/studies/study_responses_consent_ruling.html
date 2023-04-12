@@ -111,11 +111,9 @@
                         </li>
                     {% endfor %}
                 </ul>
-                <form id="consent-ruling-form"
-                      class="panel-footer clearfix m-2"
-                      method="post">
+                <form id="consent-ruling-form" class="m-3" method="post">
                     {% csrf_token %}
-                    <div class="d-grid gap-2 col-11 mx-auto">
+                    <div class="d-grid gap-3">
                         <ul class="list-group text-center small">
                             <li class="list-group-item list-group-item-warning d-flex justify-content-between align-items-center">
                                 <div>Revert to Pending</div>
@@ -145,7 +143,7 @@
             <div class="card">
                 <div class="card-body">
                     {# Basic video information/warnings go in below div #}
-                    <div id="current-video-information" class="panel-body"></div>
+                    <div id="current-video-information"></div>
                 </div>
             </div>
             <video controls id="video-under-consideration" height="270" width="360">
