@@ -18,3 +18,7 @@
 .empty-text {
     @extend .my-4, .mx-auto, .text-center, .fst-italic
 }
+
+.search-bar {
+    @extend .mx-5, .row
+}
