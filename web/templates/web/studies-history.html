@@ -130,11 +130,12 @@
             </div>
         </div>
     {% empty %}
-        {% if form.past_studies_tabs|studies_tab_selected == "0" %}
-            {% trans "You have not yet participated in any Lookit studies." as trans_empty_text %}
-        {% elif form.past_studies_tabs|studies_tab_selected == "1" %}
-            {% trans "You have not yet participated in any external studies." as trans_empty_text %}
-        {% endif %}
-    {% empty_text trans_empty_text %}
+        <div class="empty-text">
+            {% if form.past_studies_tabs|studies_tab_selected == "0" %}
+                {% trans "You have not yet participated in any Lookit studies." %}
+            {% elif form.past_studies_tabs|studies_tab_selected == "1" %}
+                {% trans "You have not yet participated in any external studies." %}
+            {% endif %}
+        </div>
     {% endfor %}
 {% endblock content %}
