@@ -1,22 +1,22 @@
 {% extends "exp/base.html" %}
 {% load django_bootstrap5 %}
+{% load web_extras %}
 {% block title %}
     Create lab
 {% endblock title %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:lab-list' %} {{ "Labs" }}
+    Create Lab
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
 {% block content %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:lab-list' %}">Labs</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">Create Lab</li>
-        </ol>
-    </nav>
-    <h1>Create Lab</h1>
+    {% page_title "Create Lab" %}
     <form action="" enctype="multipart/form-data" method="post">
         {% csrf_token %}
-        {% bootstrap_form_errors form %}
         {% bootstrap_form form %}
-        {% bootstrap_button "Submit" %}
+        {% form_buttons %}
+            {% bootstrap_button "Submit" %}
+        {% endform_buttons %}
     </form>
 {% endblock content %}

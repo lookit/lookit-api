@@ -3,6 +3,7 @@
 {% load bootstrap_icons %}
 {% load guardian_tags %}
 {% load exp_extras %}
+{% load web_extras %}
 {% load static %}
 {% load tz %}
 {% block head %}
@@ -12,18 +13,14 @@
 {% block title %}
     Contact Participants
 {% endblock title %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:study-list' %} Manage Studies
+    {% url 'exp:study-detail' pk=study.id %} {{ study.name }}
+    Contact Participants
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
 {% block content %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:study-list' %}">Manage Studies</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:study-detail' pk=study.id %}">{{ study.name }}</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">Contact Participants</li>
-        </ol>
-    </nav>
     <div class="row">
         <div class="col-8">
             <div class="card">
@@ -142,9 +139,10 @@
             </div>
             <form method="post">
                 {% csrf_token %}
-                {% bootstrap_form_errors form %}
                 {% bootstrap_form form %}
-                {% bootstrap_button "Submit" %}
+                {% form_buttons %}
+                    {% bootstrap_button "Submit" %}
+                {% endform_buttons %}
             </form>
         </div>
     </div>

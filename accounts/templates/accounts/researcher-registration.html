@@ -1,6 +1,7 @@
 {% extends "web/base.html" %}
 {% load django_bootstrap5 %}
 {% load bootstrap_icons %}
+{% load web_extras %}
 {% block title %}
     Researcher Registration
 {% endblock title %}
@@ -11,7 +12,6 @@
         <div class="card-body">
             <form method="post" action="">
                 {% csrf_token %}
-                {% bootstrap_form_errors form %}
                 {% bootstrap_form form %}
                 <p>
                     By clicking 'Create Account', you agree that you have read and accepted the
@@ -20,7 +20,9 @@
                     <a href="{% url 'web:privacy' %}" target="_blank" rel="noopener">Privacy Statement</a>
                     .
                 </p>
-                {% bootstrap_button bs_icon_plus|add:"Create Account" %}
+                {% form_buttons %}
+                    {% bootstrap_button bs_icon_plus|add:"Create Account" %}
+                {% endform_buttons %}
             </form>
         </div>
     </div>

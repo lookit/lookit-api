@@ -1,6 +1,7 @@
 {% extends "exp/base.html" %}
 {% load django_bootstrap5 %}
 {% load exp_extras %}
+{% load web_extras %}
 {% load static %}
 {% load bootstrap_icons %}
 {% block title %}
@@ -11,8 +12,14 @@
     <script src="{% static 'js/study-responses.js' %}"
             type="application/javascript"
             defer></script>
-    <link rel="stylesheet" href="{% static 'css/study-responses.css' %}"/>
 {% endblock head %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:study-list' %} Manage Studies
+    {% url 'exp:study-detail' pk=study.id %} {{ study.name }}
+    Individual Responses
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
 {% block content %}
     {% bs_icon "chevron-up" as bs_icon_up %}
     {% bs_icon "chevron-down" as bs_icon_down %}
@@ -21,271 +28,250 @@
     {% query_transform request sort='-status' as sort_status_down %}
     {% query_transform request sort='date_created' as sort_date_up %}
     {% query_transform request sort='-date_created' as sort_date_down %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-light p-2">
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:study-list' %}">Manage Studies</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:study-detail' pk=study.id %}">{{ study.name }}</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">Individual Responses</li>
-        </ol>
-    </nav>
-    <h1>Individual Responses</h1>
+    {% button_primary_classes as btn_primary_classes %}
+    {% button_primary_classes "float-end my-3" as btn_primary_classes_create %}
+    {% page_title "Individual Responses" %}
     <div class="row">
         <div class="col">{% include "studies/_response_nav_tabs.html" with active="individual" %}</div>
     </div>
-    <div class="container px-4">
-        {% if response_data %}
-            <div class="row my-4">
-                <div class="col">
-                    <div class="table-responsive my-4">
-                        <table class="table table-striped table-hover caption-top study-responses">
-                            <caption class="visually-hidden">Study Responses</caption>
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Child ID</th>
-                                    <th>Response UUID</th>
-                                    <th>
-                                        Status
-                                        {% with url_responses_list|add:"?"|add:sort_status_up as url_sort_status_up %}
-                                            {% bootstrap_button bs_icon_up button_class="btn btn-link ps-1 pe-0" button_type="link" href=url_sort_status_up %}
-                                        {% endwith %}
-                                        {% with url_responses_list|add:"?"|add:sort_status_down as url_sort_status_down %}
-                                            {% bootstrap_button bs_icon_down button_class="btn btn-link px-0" button_type="link" href=url_sort_status_down %}
-                                        {% endwith %}
-                                    </th>
-                                    <th>
-                                        Date
-                                        {% with url_responses_list|add:"?"|add:sort_date_up as url_sort_date_up %}
-                                            {% bootstrap_button bs_icon_up button_class="btn btn-link ps-1 pe-0" button_type="link" href=url_sort_date_up %}
-                                        {% endwith %}
-                                        {% with url_responses_list|add:"?"|add:sort_date_down as url_sort_date_down %}
-                                            {% bootstrap_button bs_icon_down button_class="btn btn-link px-0" button_type="link" href=url_sort_date_down %}
-                                        {% endwith %}
-                                    </th>
+    {% if response_data %}
+        <div class="row my-4">
+            <div class="col">
+                <div class="table-responsive my-4">
+                    <table class="table table-striped table-hover caption-top study-responses">
+                        <caption class="visually-hidden">Study Responses</caption>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Child ID</th>
+                                <th>Response UUID</th>
+                                <th>
+                                    Status
+                                    {% with url_responses_list|add:"?"|add:sort_status_up as url_sort_status_up %}
+                                        {% bootstrap_button bs_icon_up button_class="btn btn-link ps-1 pe-0" button_type="link" href=url_sort_status_up %}
+                                    {% endwith %}
+                                    {% with url_responses_list|add:"?"|add:sort_status_down as url_sort_status_down %}
+                                        {% bootstrap_button bs_icon_down button_class="btn btn-link px-0" button_type="link" href=url_sort_status_down %}
+                                    {% endwith %}
+                                </th>
+                                <th>
+                                    Date
+                                    {% with url_responses_list|add:"?"|add:sort_date_up as url_sort_date_up %}
+                                        {% bootstrap_button bs_icon_up button_class="btn btn-link ps-1 pe-0" button_type="link" href=url_sort_date_up %}
+                                    {% endwith %}
+                                    {% with url_responses_list|add:"?"|add:sort_date_down as url_sort_date_down %}
+                                        {% bootstrap_button bs_icon_down button_class="btn btn-link px-0" button_type="link" href=url_sort_date_down %}
+                                    {% endwith %}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for response in response_data %}
+                                <tr class="selectable-participant {% if response.response__is_preview %} preview-row{% endif %}"
+                                    id="response-participant-{{ forloop.counter }}"
+                                    data-response-id="{{ response.response__id }}"
+                                    data-response-uuid="{{ response.response__uuid }}">
+                                    <td>
+                                        {% if response.response__is_preview %}P{% endif %}
+                                    </td>
+                                    <td>{{ response.child__hashed_id }}</td>
+                                    <td>{{ response.response__uuid|truncatechars:9 }}</td>
+                                    <td>
+                                        {% if response.response__completed %}
+                                            Complete
+                                        {% else %}
+                                            Incomplete
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {% for response in response_data %}
-                                    <tr class="selectable-participant {% if response.response__is_preview %} preview-row{% endif %}"
-                                        id="response-participant-{{ forloop.counter }}"
-                                        data-response-id="{{ response.response__id }}"
-                                        data-response-uuid="{{ response.response__uuid }}">
-                                        <td>
-                                            {% if response.response__is_preview %}P{% endif %}
-                                        </td>
-                                        <td>{{ response.child__hashed_id }}</td>
-                                        <td>{{ response.response__uuid|truncatechars:9 }}</td>
-                                        <td>
-                                            {% if response.response__completed %}
-                                                Complete
-                                            {% else %}
-                                                Incomplete
-                                            {% endif %}
-                                        </td>
-                                        <td>{{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        {% if can_view_regular_responses and not can_view_preview_responses %}
-                            <p class="text-center">
-                                <em>Based on your permissions, no preview responses are shown.</em>
-                            </p>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if can_view_regular_responses and not can_view_preview_responses %}
+                        <p class="text-center">
+                            <em>Based on your permissions, no preview responses are shown.</em>
+                        </p>
+                    {% endif %}
+                    {% if not can_view_regular_responses and can_view_preview_responses %}
+                        <p class="text-center">
+                            <em>Based on your permissions, only preview responses are shown.</em>
+                        </p>
+                    {% endif %}
+                    {% if not can_view_regular_responses and not can_view_preview_responses %}
+                        <p class="text-center">
+                            <em>You do not have permission to view responses.</em>
+                        </p>
+                    {% endif %}
+                    <div class="text-end">{% include "studies/_paginator.html" with page=page_obj %}</div>
+                </div>
+                <div class="card bg-light my-4">
+                    <div class="card-body">
+                        {% if can_edit_feedback %}
+                            <form class="feedback"
+                                  method="post"
+                                  action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">
+                                {% csrf_token %}
+                                <h5 class="card-title">New Feedback</h5>
+                                <section class="form-group">
+                                    <label class="visually-hidden" for="response-feedback">Response feedback</label>
+                                    <textarea id="response-feedback"
+                                              class="form-control"
+                                              name="comment"
+                                              rows="4"
+                                              cols="50"></textarea>
+                                    <input type="hidden" name="response_id"/>
+                                    {% bootstrap_button "Create" button_type="submit" button_class=btn_primary_classes_create %}
+                                    <br />
+                                </section>
+                            </form>
                         {% endif %}
-                        {% if not can_view_regular_responses and can_view_preview_responses %}
-                            <p class="text-center">
-                                <em>Based on your permissions, only preview responses are shown.</em>
-                            </p>
-                        {% endif %}
-                        {% if not can_view_regular_responses and not can_view_preview_responses %}
-                            <p class="text-center">
-                                <em>You do not have permission to view responses.</em>
-                            </p>
-                        {% endif %}
-                        <div class="text-end">{% include "studies/_paginator.html" with page=page_obj %}</div>
+                        <section class="my-3">
+                            <h5 class="card-title">Existing Feedback:</h5>
+                            {% for response in response_list %}
+                                <div id="feedback-list-for-{{ response.id }}" class="feedback-list">
+                                    {% for feedback in response.feedback.all %}
+                                        {% if can_edit_feedback %}
+                                            <form method="post"
+                                                  class="small"
+                                                  action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label class="visually-hidden" for="feedback-edit-{{ feedback.id }}">
+                                                        <strong>Edit Feedback</strong>
+                                                    </label>
+                                                    <textarea id="feedback-edit-{{ feedback.id }}"
+                                                              class="form-control"
+                                                              name="comment"
+                                                              rows="2"
+                                                              cols="50">{{ feedback.comment }}</textarea>
+                                                    <input type="hidden" name="feedback_id" value="{{ feedback.id }}" />
+                                                    {% bootstrap_button "Update" button_type="submit" button_class="btn btn-warning float-end mt-3" %}
+                                                    <footer class="py-2">
+                                                        Added by: {{ feedback.researcher.get_full_name }}
+                                                    </footer>
+                                                </div>
+                                            </form>
+                                        {% else %}
+                                            <p class="card-text">{{ feedback.comment }}</p>
+                                            <footer class="py-2">
+                                                {{ feedback.researcher.get_full_name }}
+                                            </footer>
+                                        {% endif %}
+                                    {% empty %}
+                                    {% empty_text "No feedback" %}
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </section>
                     </div>
+                </div>
+                {% if study.show_videos %}
                     <div class="card bg-light my-4">
                         <div class="card-body">
-                            {% if can_edit_feedback %}
-                                <form class="feedback"
-                                      method="post"
-                                      action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">
-                                    {% csrf_token %}
-                                    <h5 class="card-title">New Feedback</h5>
-                                    <section class="form-group">
-                                        <label class="visually-hidden" for="response-feedback">Response feedback</label>
-                                        <textarea id="response-feedback"
-                                                  class="form-control"
-                                                  name="comment"
-                                                  rows="4"
-                                                  cols="50"></textarea>
-                                        <input type="hidden" name="response_id"/>
-                                        {% bootstrap_button "Create" button_type="submit" button_class="btn btn-primary float-end my-3" %}
-                                        <br />
-                                    </section>
-                                </form>
-                            {% endif %}
-                            <section class="my-3">
-                                <h5 class="card-title">Existing Feedback:</h5>
-                                {% for response in response_list %}
-                                    <div id="feedback-list-for-{{ response.id }}" class="feedback-list">
-                                        {% for feedback in response.feedback.all %}
-                                            {% if can_edit_feedback %}
-                                                <form method="post"
-                                                      class="small"
-                                                      action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">
-                                                    {% csrf_token %}
-                                                    <div class="form-group">
-                                                        <label class="visually-hidden" for="feedback-edit-{{ feedback.id }}">
-                                                            <strong>Edit Feedback</strong>
-                                                        </label>
-                                                        <textarea id="feedback-edit-{{ feedback.id }}"
-                                                                  class="form-control"
-                                                                  name="comment"
-                                                                  rows="2"
-                                                                  cols="50">{{ feedback.comment }}</textarea>
-                                                        <input type="hidden" name="feedback_id" value="{{ feedback.id }}" />
-                                                        {% bootstrap_button "Update" button_type="submit" button_class="btn btn-warning float-end mt-3" %}
-                                                        <footer class="py-2">
-                                                            Added by: {{ feedback.researcher.get_full_name }}
-                                                        </footer>
-                                                    </div>
-                                                </form>
-                                            {% else %}
-                                                <p class="card-text">{{ feedback.comment }}</p>
-                                                <footer class="py-2">
-                                                    {{ feedback.researcher.get_full_name }}
-                                                </footer>
-                                            {% endif %}
-                                        {% empty %}
-                                            <em class="my-2">No feedback</em>
-                                        {% endfor %}
-                                    </div>
-                                {% endfor %}
-                            </section>
+                            <h5 class="card-title">Videos</h5>
+                            {% for response in response_data %}
+                                <div class="response-attachments"
+                                     id="resp-attachment-{{ forloop.counter }}"
+                                     style="display:none">
+                                    {% for video in response.videos %}
+                                        <div class="row pt-1">
+                                            <div class="col-12 col-md-8">{{ video.display_name|wordwrap:45 }}</div>
+                                            <div class="col-12 col-md-4">
+                                                <a target="_blank"
+                                                   rel="noreferrer noopener"
+                                                   href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=view"
+                                                   class="{% button_primary_classes %} btn-sm"> View </a>
+                                                <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
+                                                   class="{% button_primary_classes %} btn-sm"> Download </a>
+                                            </div>
+                                        </div>
+                                    {% empty %}
+                                        <p class="card-text">
+                                            <em class="my-2">Expect a delay of a few minutes for videos to be available for download.</em>
+                                        </p>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
                         </div>
                     </div>
-                    {% if study.show_videos %}
-                        <div class="card bg-light my-4">
-                            <div class="card-body">
-                                <h5 class="card-title">Videos</h5>
-                                {% for response in response_data %}
-                                    <div class="response-attachments"
-                                         id="resp-attachment-{{ forloop.counter }}"
-                                         style="display:none">
-                                        {% for video in response.videos %}
-                                            <div class="row pt-1">
-                                                <div class="col-12 col-md-8">{{ video.display_name|wordwrap:45 }}</div>
-                                                <div class="col-12 col-md-4">
-                                                    <a target="_blank"
-                                                       rel="noreferrer noopener"
-                                                       href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=view"
-                                                       class="btn btn-primary btn-sm"> View </a>
-                                                    <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
-                                                       class="btn btn-primary btn-sm"> Download </a>
-                                                </div>
-                                            </div>
-                                        {% empty %}
-                                            <p class="card-text">
-                                                <em class="my-2">Expect a delay of a few minutes for videos to be available for download.</em>
-                                            </p>
-                                        {% endfor %}
-                                    </div>
-                                {% endfor %}
+                {% endif %}
+            </div>
+            <div class="col">
+                <form class="download"
+                      method="get"
+                      action="{% url "exp:study-responses-single-download" pk=study.pk %}">
+                    {% csrf_token %}
+                    <div class="card bg-light my-4">
+                        <div class="card-body">
+                            <input type="hidden" name="response_id"/>
+                            <h5 class="card-title">Download response</h5>
+                            <p class="card-text">Include with response download:</p>
+                            <div class="two-column-list mb-3">{% include "studies/_data_options.html" with data_options=data_options %}</div>
+                            <p class="card-text">
+                                <label for="data-type-selector">Data Type</label>
+                            </p>
+                            <div class="input-group">
+                                <select class="form-select"
+                                        id="data-type-selector"
+                                        name="data-type-selector"
+                                        aria-label="Select data type">
+                                    <option value="json">
+                                        JSON
+                                    </option>
+                                    <option value="csv">
+                                        CSV summary
+                                    </option>
+                                    <option value="framedata">
+                                        CSV frame data
+                                    </option>
+                                </select>
+                                <span class="input-group-btn">
+                                    {% bootstrap_button "Download response" button_type="submit" button_class=btn_primary_classes name="download-individual-data" %}
+                                </span>
                             </div>
                         </div>
-                    {% endif %}
-                </div>
-                <div class="col">
-                    <form class="download"
-                          method="get"
-                          action="{% url "exp:study-responses-single-download" pk=study.pk %}">
-                        {% csrf_token %}
-                        <div class="card bg-light my-4">
-                            <div class="card-body">
-                                <input type="hidden" name="response_id"/>
-                                <h5 class="card-title">
-                                    Download response
-                                </h5>
-                                <p class="card-text">
-                                    Include with response download:
-                                </p>
-                                <div class="two-column-list mb-3">
-                                    {% include "studies/_data_options.html" with data_options=data_options %}
-                                </div>
-                                <p class="card-text">
-                                    <label for="data-type-selector">
-                                        Data Type
-                                    </label>
-                                </p>
-                                <div class="input-group">
-                                    <select class="form-select"
-                                            id="data-type-selector"
-                                            name="data-type-selector"
-                                            aria-label="Select data type">
-                                        <option value="json">
-                                            JSON
-                                        </option>
-                                        <option value="csv">
-                                            CSV summary
-                                        </option>
-                                        <option value="framedata">
-                                            CSV frame data
-                                        </option>
-                                    </select>
-                                    <span class="input-group-btn">
-                                        {% bootstrap_button "Download response" button_type="submit" button_class="btn btn-primary" name="download-individual-data" %}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    {% for response in response_data %}
-                        <div class="card bg-light my-4 response-summary"
-                             id="response-summary-{{ forloop.counter }}"
-                             style="display:none">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    Response details
-                                </h5>
-                                <table class="table table-sm table-hover response-details">
-                                    <caption class="visually-hidden">Response Details</caption>
-                                    <thead>
-                                        <tr>
-                                            <th>
-                                                Name
-                                            </th>
-                                            <th>
-                                                Value
-                                            </th>
+                    </div>
+                </form>
+                {% for response in response_data %}
+                    <div class="card bg-light my-4 response-summary"
+                         id="response-summary-{{ forloop.counter }}"
+                         style="display:none">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                Response details
+                            </h5>
+                            <table class="table table-sm table-hover response-details">
+                                <caption class="visually-hidden">Response Details</caption>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Name
+                                        </th>
+                                        <th>
+                                            Value
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for pair in response.summary %}
+                                        <tr class="{% if pair.name == 'Video privacy level' %} {% if pair.value == 'public' %} list-group-item-success {% elif pair.value == 'scientific' %} list-group-item-warning {% else %} list-group-item-danger {% endif %} {% endif %}">
+                                            <td tabindex="0" title="{{ pair.description }}">
+                                                {{ pair.name }}
+                                            </td>
+                                            <td>
+                                                {{ pair.value }}
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for pair in response.summary %}
-                                            <tr class="{% if pair.name == 'Video privacy level' %} {% if pair.value == 'public' %} list-group-item-success {% elif pair.value == 'scientific' %} list-group-item-warning {% else %} list-group-item-danger {% endif %} {% endif %}">
-                                                <td tabindex="0" title="{{ pair.description }}">
-                                                    {{ pair.name }}
-                                                </td>
-                                                <td>
-                                                    {{ pair.value }}
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
-                    {% endfor %}
-                </div>
+                    </div>
+                {% endfor %}
             </div>
-        {% else %}
-            <div class="row">
-                <em class="my-3 text-center">No responses with confirmed consent.</em>
-            </div>
-        {% endif %}
-    </div>
+        </div>
+    {% else %}
+    {% empty_text "No responses with confirmed consent." %}
+    {% endif %}
 {% endblock content %}

@@ -1,0 +1,7 @@
+// Add custom color name
+$custom-colors: (
+    "red": $red
+);
+
+// Merge the maps
+$theme-colors: map-merge($theme-colors, $custom-colors);

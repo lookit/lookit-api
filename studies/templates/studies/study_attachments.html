@@ -1,12 +1,20 @@
 {% extends "exp/base.html" %}
 {% load django_bootstrap5 %}
 {% load exp_extras %}
+{% load web_extras %}
 {% load tz %}
 {% load static %}
 {% load bootstrap_icons %}
 {% block title %}
     Videos | {{ study.name }}
 {% endblock title %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:study-list' %} Manage Studies
+    {% url 'exp:study-detail' pk=study.id %} {{ study.name }}
+    Videos
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
 {% block content %}
     {% bs_icon "chevron-up" as bs_icon_up %}
     {% bs_icon "chevron-down" as bs_icon_down %}
@@ -15,98 +23,84 @@
     {% query_transform request sort='-full_name' as sort_name_down %}
     {% query_transform request sort='created_at' as sort_date_up %}
     {% query_transform request sort='-created_at' as sort_date_down %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-light p-2">
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:study-list' %}">Manage Studies</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:study-detail' pk=study.id %}">{{ study.name }}</a>
-            </li>
-            <li class="breadcrumb-item active">Videos</li>
-        </ol>
-    </nav>
-    <h1>Videos</h1>
+    {% button_primary_classes "mt-3" as btn_primary_classes %}
+    {% page_title "Videos" %}
     <div class="row">
         <div class="col">{% include "studies/_response_nav_tabs.html" with active="attachments" %}</div>
     </div>
-    <div class="container px-4">
-        <div class="row">
-            <div class="col-12">
-                <span class="text-end">
-                    <form method="post">
-                        {% csrf_token %}
-                        {% bootstrap_button "Download all videos" button_class="btn btn-primary mt-3" button_type="submit" name="all-attachments" value="all" %}
-                        {% bootstrap_button "Download all consent videos" button_class="btn btn-primary mt-3" button_type="submit" name="all-consent-videos" value="all" %}
-                    </form>
-                </span>
-            </div>
-        </div>
-        <div class="row text-center justify-content-center mt-3">
-            <div class="col-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
-                <form method="get">
-                    <input id="search-attachments"
-                           class="form-control form-control-sm"
-                           name="match"
-                           placeholder="Filter video name"
-                           size="50"
-                           type="text"
-                           value="{{ match }}"/>
-                    <input type="hidden" name="sort" value="{{ sort }}"/>
+    <div class="row">
+        <div class="col-12">
+            <span class="text-end">
+                <form method="post">
+                    {% csrf_token %}
+                    {% bootstrap_button "Download all videos" button_class=btn_primary_classes button_type="submit" name="all-attachments" value="all" %}
+                    {% bootstrap_button "Download all consent videos" button_class=btn_primary_classes button_type="submit" name="all-consent-videos" value="all" %}
                 </form>
-            </div>
+            </span>
         </div>
-        <div class="row mt-3">
-            <div class="col-12">
-                <div class="table-responsive">
-                    <table class="study-attachments table table-striped">
-                        <caption class="visually-hidden">Study Attachments</caption>
-                        <thead>
+    </div>
+    <div class="row text-center justify-content-center mt-3">
+        <div class="col-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
+            <form method="get">
+                <input id="search-attachments"
+                       class="form-control form-control-sm"
+                       name="match"
+                       placeholder="Filter video name"
+                       size="50"
+                       type="text"
+                       value="{{ match }}"/>
+                <input type="hidden" name="sort" value="{{ sort }}"/>
+            </form>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="study-attachments table table-striped">
+                    <caption class="visually-hidden">Study Attachments</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">
+                                Name
+                                {% with url_attachments|add:"?"|add:sort_name_up as url_sort_name_up %}
+                                    {% bootstrap_button bs_icon_up button_class="btn btn-link ps-1 pe-0" button_type="link" href=url_sort_name_up %}
+                                {% endwith %}
+                                {% with url_attachments|add:"?"|add:sort_name_down as url_sort_name_down %}
+                                    {% bootstrap_button bs_icon_down button_class="btn btn-link px-0" button_type="link" href=url_sort_name_down %}
+                                {% endwith %}
+                            </th>
+                            <th scope="col">
+                                Date
+                                {% with url_attachments|add:"?"|add:sort_date_up as url_sort_date_up %}
+                                    {% bootstrap_button bs_icon_up button_class="btn btn-link ps-1 pe-0" button_type="link" href=url_sort_date_up %}
+                                {% endwith %}
+                                {% with url_attachments|add:"?"|add:sort_date_down as url_sort_date_down %}
+                                    {% bootstrap_button bs_icon_down button_class="btn btn-link px-0" button_type="link" href=url_sort_date_down %}
+                                {% endwith %}
+                            </th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for video in video_list %}
                             <tr>
-                                <th scope="col">
-                                    Name
-                                    {% with url_attachments|add:"?"|add:sort_name_up as url_sort_name_up %}
-                                        {% bootstrap_button bs_icon_up button_class="btn btn-link ps-1 pe-0" button_type="link" href=url_sort_name_up %}
-                                    {% endwith %}
-                                    {% with url_attachments|add:"?"|add:sort_name_down as url_sort_name_down %}
-                                        {% bootstrap_button bs_icon_down button_class="btn btn-link px-0" button_type="link" href=url_sort_name_down %}
-                                    {% endwith %}
-                                </th>
-                                <th scope="col">
-                                    Date
-                                    {% with url_attachments|add:"?"|add:sort_date_up as url_sort_date_up %}
-                                        {% bootstrap_button bs_icon_up button_class="btn btn-link ps-1 pe-0" button_type="link" href=url_sort_date_up %}
-                                    {% endwith %}
-                                    {% with url_attachments|add:"?"|add:sort_date_down as url_sort_date_down %}
-                                        {% bootstrap_button bs_icon_down button_class="btn btn-link px-0" button_type="link" href=url_sort_date_down %}
-                                    {% endwith %}
-                                </th>
-                                <th scope="col"></th>
+                                <td>
+                                    <span class="small">{{ video.full_name }}</span>
+                                </td>
+                                <td>{{ video.created_at|date:"n/j/Y g:i A"|default:"N/A" }}</td>
+                                <td>
+                                    <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
+                                       class="{% button_primary_classes %} btn-sm"> Download </a>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {% for video in video_list %}
-                                <tr>
-                                    <td>
-                                        <span class="small">{{ video.full_name }}</span>
-                                    </td>
-                                    <td>{{ video.created_at|date:"n/j/Y g:i A"|default:"N/A" }}</td>
-                                    <td>
-                                        <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
-                                           class="btn btn-primary btn-sm"> Download </a>
-                                    </td>
-                                </tr>
-                            {% empty %}
-                                <tr>
-                                    <td colspan="3">
-                                        <em>No videos available for download.</em>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <div class="text-end">{% include "studies/_paginator.html" with page=page_obj %}</div>
-                </div>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3">{% empty_text "No videos available for download." %}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="text-end">{% include "studies/_paginator.html" with page=page_obj %}</div>
             </div>
         </div>
     </div>

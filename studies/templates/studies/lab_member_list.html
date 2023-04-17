@@ -1,21 +1,18 @@
 {% extends "exp/base.html" %}
 {% load django_bootstrap5 %}
 {% load exp_extras %}
+{% load web_extras %}
 {% block title %}
     Lab members
 {% endblock title %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:lab-list' %} Labs
+    {% url 'exp:lab-detail' pk=lab.id %} {{ lab.name }}
+    Lab members
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
 {% block content %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:lab-list' %}">Labs</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:lab-detail' pk=lab.id %}">{{ lab.name }}</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">Lab members</li>
-        </ol>
-    </nav>
     <form method="get">
         <input id="search-researchers"
                class="form-control"
@@ -80,7 +77,9 @@
                                         Send password reset email
                                     </option>
                                 </select>
-                                {% bootstrap_button "Submit" %}
+                                {% form_buttons %}
+                                    {% bootstrap_button "Submit" %}
+                                {% endform_buttons %}
                             </form>
                         </div>
                     {% endif %}
@@ -88,7 +87,7 @@
             </div>
         </div>
     {% empty %}
-        <div class="text-center fst-italic">No researchers found!</div>
+    {% empty_text "No researchers found!" %}
     {% endfor %}
     {% include "studies/_paginator.html" with page=lab_members_qs %}
 {% endblock content %}

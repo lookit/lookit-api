@@ -2,11 +2,13 @@
 {% load django_bootstrap5 %}
 {% load bootstrap_icons %}
 {% load exp_extras %}
+{% load web_extras %}
 {% block title %}
     Participants
 {% endblock title %}
 {% block content %}
-    <h1>Participants</h1>
+    {% button_primary_classes "btn-sm" as btn_primary_classes %}
+    {% page_title "Participants" %}
     <form method="get">
         <input id="search-participants"
                class="form-control"
@@ -58,7 +60,7 @@
                     </td>
                     <td>{{ user.uuid }}</td>
                     <td>{{ user.last_login|date:"n/d/Y"|default:"N/A" }}</td>
-                    <td>{% bootstrap_button "View Profile" href=url_participant_detail button_class="btn-primary btn-sm" %}</td>
+                    <td>{% bootstrap_button "View Profile" href=url_participant_detail button_class=btn_primary_classes %}</td>
                 </tr>
             {% endfor %}
         </tbody>

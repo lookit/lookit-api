@@ -55,5 +55,11 @@ test:
 collectstatic: 
 	docker compose run --rm web poetry run ./manage.py collectstatic --clear --noinput
 
-lint: 
-	poetry install --sync && poetry run pre-commit run --all-files
+poetry:
+	poetry check && poetry install --sync
+
+lint: poetry 
+	poetry run pre-commit run --all-files
+
+css: poetry 
+	poetry run ./manage.py custom_bootstrap5

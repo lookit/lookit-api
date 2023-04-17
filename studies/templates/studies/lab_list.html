@@ -2,16 +2,16 @@
 {% load django_bootstrap5 %}
 {% load bootstrap_icons %}
 {% load exp_extras %}
+{% load web_extras %}
 {% block title %}
     Labs
 {% endblock title %}
 {% block content %}
-    <div class="d-flex justify-content-between align-items-center">
-        <h1>View Labs</h1>
-        <div>
-            <a class="btn btn-success" href="{% url 'exp:lab-create' %}">{% bs_icon "plus" %} Create Lab</a>
-        </div>
-    </div>
+    {% url 'exp:lab-create' as url_exp_lab_create %}
+    {% bs_icon "plus" as bs_icon_plus %}
+    {% button_primary_classes as btn_primary_classes %}
+    {% bootstrap_button bs_icon_plus|add:"Create Lab" href=url_exp_lab_create button_class=btn_primary_classes as btn_create_lab %}
+    {% page_title "View Labs" right_side_elements=btn_create_lab %}
     <div class="my-4">
         <form method="get">
             <input id="search-labs"
@@ -72,7 +72,7 @@
                             {% else %}
                                 <form action="{% url 'exp:lab-request' pk=lab.id %}" method="post">
                                     {% csrf_token %}
-                                    {% bootstrap_button "Request to join" button_class="btn-sm btn-primary" %}
+                                    {% bootstrap_button "Request to join" button_class=btn_primary_classes %}
                                 </form>
                             {% endif %}
                         </div>
@@ -81,19 +81,9 @@
             </div>
         </div>
     {% empty %}
-        <div class="row">
-            <div class="col-xs-10 col-xs-offset-1 col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
-                <p class="my-3">
-                    <em>No labs found!</em>
-                </p>
-            </div>
-        </div>
+    {% empty_text "No labs found!" %}
     {% endfor %}
     {% if object_list %}
-        <div class="row pb-lg">
-            <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
-                {% include "studies/_paginator.html" with page=page_obj %}
-            </div>
-        </div>
+        <div class="row pb-5">{% include "studies/_paginator.html" with page=page_obj %}</div>
     {% endif %}
 {% endblock content %}

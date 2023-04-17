@@ -3,6 +3,7 @@
 {% load bootstrap_icons %}
 {% load static %}
 {% load i18n %}
+{% load web_extras %}
 {% block title %}
     {% trans "Children" %}
 {% endblock title %}
@@ -15,6 +16,8 @@
     {% trans "Add Child" as trans_add_child %}
     {% url 'web:children-list' as url_children_list %}
     {% bs_icon "plus" as bs_icon_plus %}
+    {% button_primary_classes as btn_primary_classes %}
+    {% button_secondary_classes as btn_secondary_classes %}
     <div class="row">
         <div class="col-4">{% include "accounts/_account-navigation.html" with current_page="children-list" %}</div>
         <div class="col-8">
@@ -23,10 +26,11 @@
                     <h1 class="card-title">{% trans "Add Child" %}</h1>
                     <form method="post" action="">
                         {% csrf_token %}
-                        {% bootstrap_form_errors form %}
                         {% bootstrap_form form %}
-                        {% bootstrap_button trans_cancel href=url_children_list button_class="btn-secondary" %}
-                        {% bootstrap_button bs_icon_plus|add:trans_add_child button_class="btn-success" %}
+                        {% form_buttons %}
+                            {% bootstrap_button trans_cancel href=url_children_list button_class=btn_secondary_classes %}
+                            {% bootstrap_button bs_icon_plus|add:trans_add_child button_class=btn_primary_classes %}
+                        {% endform_buttons %}
                     </form>
                 </div>
             </div>

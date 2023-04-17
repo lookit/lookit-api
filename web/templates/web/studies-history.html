@@ -77,7 +77,7 @@
                                                 data-index="{{ forloop.counter }}"/>
                                     {% endfor %}
                                 </video>
-                                <button class="btn btn-primary btn-sm next-video d-flex justify-content-center align-items-center"
+                                <button class="{% button_primary_classes %} btn-sm next-video d-flex justify-content-center align-items-center"
                                         type="button">
                                     {{ bs_icon_arrow_right }}
                                     &nbsp;
@@ -130,12 +130,11 @@
             </div>
         </div>
     {% empty %}
-        <div class="m-3">
-            {% if form.past_studies_tabs|studies_tab_selected == "0" %}
-                <em>{% trans "You have not yet participated in any Lookit studies." %}</em>
-            {% elif form.past_studies_tabs|studies_tab_selected == "1" %}
-                <em>{% trans "You have not yet participated in any external studies." %}</em>
-            {% endif %}
-        </div>
+        {% if form.past_studies_tabs|studies_tab_selected == "0" %}
+            {% trans "You have not yet participated in any Lookit studies." as trans_empty_text %}
+        {% elif form.past_studies_tabs|studies_tab_selected == "1" %}
+            {% trans "You have not yet participated in any external studies." as trans_empty_text %}
+        {% endif %}
+    {% empty_text trans_empty_text %}
     {% endfor %}
 {% endblock content %}

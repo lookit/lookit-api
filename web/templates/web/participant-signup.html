@@ -1,6 +1,7 @@
 {% extends "web/base.html" %}
 {% load django_bootstrap5 %}
 {% load bootstrap_icons %}
+{% load web_extras %}
 {% load i18n %}
 {% block title %}
     {% trans "Sign up to participate" %}
@@ -22,12 +23,13 @@
             </div>
             <form method="post" action="">
                 {% csrf_token %}
-                {% bootstrap_form_errors form %}
                 {% bootstrap_form form %}
                 <p>
                     {% trans "By clicking 'Create Account', I agree that I have read and accepted the " %} <a href="{% url 'web:privacy' %}" target="_blank" rel="noopener">{% trans "Privacy Statement" %}.</a>
                 </p>
-                {% bootstrap_button bs_icon_plus|add:trans_create_account %}
+                {% form_buttons %}
+                    {% bootstrap_button bs_icon_plus|add:trans_create_account %}
+                {% endform_buttons %}
             </form>
         </div>
     </div>

@@ -1,6 +1,7 @@
 {% extends "exp/base.html" %}
 {% load django_bootstrap5 %}
 {% load exp_extras %}
+{% load web_extras %}
 {% load static %}
 {% load bootstrap_icons %}
 {% block title %}
@@ -11,8 +12,14 @@
     <script type="application/javascript"
             src="{% static 'js/all-json-and-csv-data.js' %}"
             defer></script>
-    <link rel="stylesheet" href="{% static 'css/all-json-and-csv-data.css' %}"/>
 {% endblock head %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:study-list' %} Manage Studies
+    {% url 'exp:study-detail' pk=study.id %} {{ study.name }}
+    {{ active_tab }}
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
 {% block content %}
     {% bs_icon "download" as bs_icon_download %}
     {% url 'exp:study-responses-download-json' pk=study.id as url_download_all_json %}
@@ -27,260 +34,252 @@
     {% url 'exp:study-demographics-download-json' pk=study.id as url_demographics_download_json %}
     {% url 'exp:study-demographics-download-csv' pk=study.id as url_demographics_download_csv %}
     {% url 'exp:study-demographics-download-dict-csv' pk=study.id as url_demographics_download_dict %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-light p-2">
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:study-list' %}">Manage Studies</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:study-detail' pk=study.id %}">{{ study.name }}</a>
-            </li>
-            <li class="breadcrumb-item active">{{ active_tab }}</li>
-        </ol>
-    </nav>
-    <h1>All Responses</h1>
+    {% button_primary_classes as btn_primary_classes %}
+    {% if active == 'demographics' %}
+        {% page_title "Demographic Snapshots" %}
+    {% else %}
+        {% page_title "All Responses" %}
+    {% endif %}
     <div class="row">
         <div class="col">{% include "studies/_response_nav_tabs.html" with active=active %}</div>
     </div>
-    <div class="container px-4">
-        <div class="row my-4 all-responses">
-            <div class="col">
-                {% if active == 'all' %}
-                    <form id="data-options" method="get">
-                        {% if n_responses %}
-                            <p>
-                                Data about {{ n_responses }} response{{ n_responses|pluralize }} are available.
-                                {% if can_view_regular_responses and not can_view_preview_responses %}
-                                    <span><em>(Based on your permissions, no preview responses are included.)</em></span>
-                                {% endif %}
-                                {% if not can_view_regular_responses and can_view_preview_responses %}
-                                    <span><em>(Based on your permissions, only preview responses are included.)</em></span>
-                                {% endif %}
-                            </p>
-                        {% else %}
-                            <p>
-                                There are no responses with confirmed consent yet. Once there are responses with confirmed consent, data will be available for download. Data dictionaries for the overview and child data files are available for planning analyses.
-                            </p>
-                        {% endif %}
+    <div class="row my-4 all-responses">
+        <div class="col">
+            {% if active == 'all' %}
+                <form id="data-options" method="get">
+                    {% if n_responses %}
                         <p>
-                            The following options allow you to download files with the minimal identifying information needed for your analysis. Names and birthdates are available for download as needed, but must be redacted prior to publication. Files with names, global IDs, birthdates, exact ages at participation, or "additional info" fields are marked as identifiable in the filename.
+                            Data about {{ n_responses }} response{{ n_responses|pluralize }} are available.
+                            {% if can_view_regular_responses and not can_view_preview_responses %}
+                                <span><em>(Based on your permissions, no preview responses are included.)</em></span>
+                            {% endif %}
+                            {% if not can_view_regular_responses and can_view_preview_responses %}
+                                <span><em>(Based on your permissions, only preview responses are included.)</em></span>
+                            {% endif %}
                         </p>
-                        <div class="row">
-                            <div class="col">
-                                <p>Participant data to include with responses:</p>
-                                <div class="three-column-list">{% include "studies/_data_options.html" with data_options=data_options %}</div>
+                    {% else %}
+                        <p>
+                            There are no responses with confirmed consent yet. Once there are responses with confirmed consent, data will be available for download. Data dictionaries for the overview and child data files are available for planning analyses.
+                        </p>
+                    {% endif %}
+                    <p>
+                        The following options allow you to download files with the minimal identifying information needed for your analysis. Names and birthdates are available for download as needed, but must be redacted prior to publication. Files with names, global IDs, birthdates, exact ages at participation, or "additional info" fields are marked as identifiable in the filename.
+                    </p>
+                    <div class="row">
+                        <div class="col">
+                            <p>Participant data to include with responses:</p>
+                            <div class="three-column-list">{% include "studies/_data_options.html" with data_options=data_options %}</div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            All response data
+                            <p class="fst-italic text-muted mt-2">
+                                The true "raw" data is most naturally represented in JSON format, a
+                                structured format that allows nesting (for instance, you might see a question1 field
+                                inside formData inside parent-survey). This file contains a list of all responses to
+                                your study; each response has basic information about the participant, account, and
+                                consent coding as well as what happened during the study. Fields you uncheck above will
+                                not be included in the summary information; however, the "expData" field may still include
+                                the child's birthdate as confirmed in the exit survey.
+                            </p>
+                        </div>
+                        <div class="col">
+                            <div class="text-end my-3 download-button">
+                                Data
+                                {% if n_responses %}
+                                    {% bootstrap_button bs_icon_download|add:" JSON" button_type="submit" button_class=btn_primary_classes id="download-all-data-json" formaction=url_download_all_json %}
+                                {% else %}
+                                    {% bootstrap_button bs_icon_download|add:" JSON" button_type="submit" button_class=btn_primary_classes id="download-all-data-json" formaction=url_download_all_json disabled="disabled" %}
+                                {% endif %}
                             </div>
                         </div>
-                        <hr />
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            Response overview
+                            <p class="fst-italic text-muted mt-2">
+                                The response overview file gives high-level information about each response - the account and child IDs, consent approval information, condition assignment, and information about the child such as gender and languages spoken. There is one row per response. This can be used in conjunction with frame data (below) to avoid having to parse JSON in your analysis.
+                            </p>
+                        </div>
+                        <div class="col">
+                            <div class="text-end my-3 download-button">
+                                Data
+                                {% if n_responses %}
+                                    {% bootstrap_button bs_icon_download|add:" CSV" button_type="submit" button_class=btn_primary_classes id="download-all-data-csv" formaction=url_download_all_csv %}
+                                {% else %}
+                                    {% bootstrap_button bs_icon_download|add:" CSV" button_type="submit" button_class=btn_primary_classes id="download-all-data-csv" formaction=url_download_all_csv disabled="disabled" %}
+                                {% endif %}
+                            </div>
+                            <div class="text-end my-3 download-button">
+                                Data dictionary
+                                {% bootstrap_button bs_icon_download|add:" CSV" button_type="submit" button_class=btn_primary_classes id="download-data-dict-csv" formaction=url_download_summary_dict %}
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    {% if study.show_frame_data %}
                         <div class="row">
                             <div class="col">
-                                All response data
+                                Frame data
                                 <p class="fst-italic text-muted mt-2">
-                                    The true "raw" data is most naturally represented in JSON format, a
-                                    structured format that allows nesting (for instance, you might see a question1 field
-                                    inside formData inside parent-survey). This file contains a list of all responses to
-                                    your study; each response has basic information about the participant, account, and
-                                    consent coding as well as what happened during the study. Fields you uncheck above will
-                                    not be included in the summary information; however, the "expData" field may still include
-                                    the child's birthdate as confirmed in the exit survey.
+                                    The frame data files include all of the information captured by the
+                                    individual frames of your experiment: for instance, text and selections on forms,
+                                    which option a participant clicked during a forced-choice trial, and events such as
+                                    entering or leaving fullscreen, pausing the study, or pressing buttons. These data
+                                    are shown in a "long" format, with one row per datum and columns for the key and value.
+                                    Birthdates entered in the exit survey are omitted.
                                 </p>
                             </div>
                             <div class="col">
                                 <div class="text-end my-3 download-button">
-                                    Data
+                                    Data (one file per response)
                                     {% if n_responses %}
-                                        {% bootstrap_button bs_icon_download|add:" JSON" button_type="submit" button_class="btn btn-primary" id="download-all-data-json" formaction=url_download_all_json %}
+                                        {% bootstrap_button bs_icon_download|add:" ZIP, CSVs" button_class=btn_primary_classes id="download-frame-data-csv" formaction=url_download_frame_data %}
                                     {% else %}
-                                        {% bootstrap_button bs_icon_download|add:" JSON" button_type="submit" button_class="btn btn-primary" id="download-all-data-json" formaction=url_download_all_json disabled="disabled" %}
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                        <hr />
-                        <div class="row">
-                            <div class="col">
-                                Response overview
-                                <p class="fst-italic text-muted mt-2">
-                                    The response overview file gives high-level information about each response - the account and child IDs, consent approval information, condition assignment, and information about the child such as gender and languages spoken. There is one row per response. This can be used in conjunction with frame data (below) to avoid having to parse JSON in your analysis.
-                                </p>
-                            </div>
-                            <div class="col">
-                                <div class="text-end my-3 download-button">
-                                    Data
-                                    {% if n_responses %}
-                                        {% bootstrap_button bs_icon_download|add:" CSV" button_type="submit" button_class="btn btn-primary" id="download-all-data-csv" formaction=url_download_all_csv %}
-                                    {% else %}
-                                        {% bootstrap_button bs_icon_download|add:" CSV" button_type="submit" button_class="btn btn-primary" id="download-all-data-csv" formaction=url_download_all_csv disabled="disabled" %}
-                                    {% endif %}
-                                </div>
-                                <div class="text-end my-3 download-button">
-                                    Data dictionary
-                                    {% bootstrap_button bs_icon_download|add:" CSV" button_type="submit" button_class="btn btn-primary" id="download-data-dict-csv" formaction=url_download_summary_dict %}
-                                </div>
-                            </div>
-                        </div>
-                        <hr />
-                        {% if study.show_frame_data %}
-                            <div class="row">
-                                <div class="col">
-                                    Frame data
-                                    <p class="fst-italic text-muted mt-2">
-                                        The frame data files include all of the information captured by the
-                                        individual frames of your experiment: for instance, text and selections on forms,
-                                        which option a participant clicked during a forced-choice trial, and events such as
-                                        entering or leaving fullscreen, pausing the study, or pressing buttons. These data
-                                        are shown in a "long" format, with one row per datum and columns for the key and value.
-                                        Birthdates entered in the exit survey are omitted.
-                                    </p>
-                                </div>
-                                <div class="col">
-                                    <div class="text-end my-3 download-button">
-                                        Data (one file per response)
-                                        {% if n_responses %}
-                                            {% bootstrap_button bs_icon_download|add:" ZIP, CSVs" button_class="btn btn-primary" id="download-frame-data-csv" formaction=url_download_frame_data %}
-                                        {% else %}
-                                            {% bootstrap_button bs_icon_download|add:" ZIP, CSVs" button_class="btn btn-primary" id="download-frame-data-csv" formaction=url_download_frame_data disabled="disabled" %}
-                                        {% endif %}
-                                    </div>
-                                    <div class="text-end my-3 download-button">
-                                        Data dictionary
-                                        {% if n_responses %}
-                                            {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" id="download-frame-dict-csv" formaction=url_download_frame_data_dict %}
-                                        {% else %}
-                                            {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" id="download-frame-dict-csv" formaction=url_download_frame_data_dict disabled="disabled" %}
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                            <hr />
-                        {% endif %}
-                        <div class="row">
-                            <div class="col">
-                                Child data
-                                <p class="fst-italic text-muted mt-2">
-                                    The child data files contain one row per unique child. The data available about each child is the same as is available in the response summary CSV (with the exception of age at time of participation, which depends on the response time). All child data will be included in this file, regardless of selections above; you can use it to store this identifiable data separately from the response data.
-                                </p>
-                            </div>
-                            <div class="col">
-                                <div class="text-end my-3 download-button">
-                                    Data
-                                    {% if n_responses %}
-                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" id="download-child-data-csv" formaction=url_download_children_summary_data %}
-                                    {% else %}
-                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" id="download-child-data-csv" formaction=url_download_children_summary_data disabled="disabled" %}
+                                        {% bootstrap_button bs_icon_download|add:" ZIP, CSVs" button_class=btn_primary_classes id="download-frame-data-csv" formaction=url_download_frame_data disabled="disabled" %}
                                     {% endif %}
                                 </div>
                                 <div class="text-end my-3 download-button">
                                     Data dictionary
                                     {% if n_responses %}
-                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" id="download-child-data-dict-csv" formaction=url_download_children_summary_data_dict %}
+                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes id="download-frame-dict-csv" formaction=url_download_frame_data_dict %}
                                     {% else %}
-                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" id="download-child-data-dict-csv" formaction=url_download_children_summary_data_dict disabled="disabled" %}
+                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes id="download-frame-dict-csv" formaction=url_download_frame_data_dict disabled="disabled" %}
                                     {% endif %}
                                 </div>
                             </div>
                         </div>
                         <hr />
+                    {% endif %}
+                    <div class="row">
+                        <div class="col">
+                            Child data
+                            <p class="fst-italic text-muted mt-2">
+                                The child data files contain one row per unique child. The data available about each child is the same as is available in the response summary CSV (with the exception of age at time of participation, which depends on the response time). All child data will be included in this file, regardless of selections above; you can use it to store this identifiable data separately from the response data.
+                            </p>
+                        </div>
+                        <div class="col">
+                            <div class="text-end my-3 download-button">
+                                Data
+                                {% if n_responses %}
+                                    {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes id="download-child-data-csv" formaction=url_download_children_summary_data %}
+                                {% else %}
+                                    {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes id="download-child-data-csv" formaction=url_download_children_summary_data disabled="disabled" %}
+                                {% endif %}
+                            </div>
+                            <div class="text-end my-3 download-button">
+                                Data dictionary
+                                {% if n_responses %}
+                                    {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes id="download-child-data-dict-csv" formaction=url_download_children_summary_data_dict %}
+                                {% else %}
+                                    {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes id="download-child-data-dict-csv" formaction=url_download_children_summary_data_dict disabled="disabled" %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            Tool: Check for collisions
+                            <p class="fst-italic text-muted mt-2">
+                                The hashed child and account IDs are extremely likely to be unique, but not guaranteed (about a 0.1% chance of a collision after 1500 participants). Use this tool to check whether there are any duplicate hashed IDs being used. (If so, let us know - we can fix that!)
+                            </p>
+                        </div>
+                        <div class="col">
+                            <div class="text-end my-3 download-button">
+                                {% bootstrap_button "Check now" button_class=btn_primary_classes id="check-for-collisions" url=url_hashed_id_collision_check %}
+                            </div>
+                            <div class="text-end my-3" style="clear:both;">
+                                <p id="collision-indicator"></p>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <hr />
+                {% if can_delete_preview_data %}
+                    <form method="post"
+                          action="{% url 'exp:study-delete-preview-responses' pk=study.id %}">
+                        {% csrf_token %}
                         <div class="row">
                             <div class="col">
-                                Tool: Check for collisions
+                                Tool: Delete preview data
                                 <p class="fst-italic text-muted mt-2">
-                                    The hashed child and account IDs are extremely likely to be unique, but not guaranteed (about a 0.1% chance of a collision after 1500 participants). Use this tool to check whether there are any duplicate hashed IDs being used. (If so, let us know - we can fix that!)
+                                    This utility will delete all preview data, including video, that you have collected for this study. You may find it helpful to clear out preview data to simplify analysis.
                                 </p>
                             </div>
                             <div class="col">
                                 <div class="text-end my-3 download-button">
-                                    {% bootstrap_button "Check now" button_class="btn btn-primary" id="check-for-collisions" url=url_hashed_id_collision_check %}
+                                    {% bootstrap_button "Delete all preview data" button_type="submit" button_class=btn_primary_classes id="delete-preview-data" %}
                                 </div>
                                 <div class="text-end my-3" style="clear:both;">
-                                    <p id="collision-indicator"></p>
+                                    <p id="delete-preview-indicator"></p>
                                 </div>
                             </div>
                         </div>
                     </form>
+                {% endif %}
+            {% endif %}
+            {% if active == 'demographics' %}
+                <form id="data-options-demo" method="get">
+                    <p>Data download options:</p>
+                    <div>
+                        <input id="include-participant-global"
+                               name="demo_options"
+                               type="checkbox"
+                               value="participant__global_id"/>
+                        <label for="include-participant-global">Include participant global IDs</label>
+                    </div>
                     <hr />
-                    {% if can_delete_preview_data %}
-                        <form method="post"
-                              action="{% url 'exp:study-delete-preview-responses' pk=study.id %}">
-                            {% csrf_token %}
-                            <div class="row">
-                                <div class="col">
-                                    Tool: Delete preview data
-                                    <p class="fst-italic text-muted mt-2">
-                                        This utility will delete all preview data, including video, that you have collected for this study. You may find it helpful to clear out preview data to simplify analysis.
-                                    </p>
-                                </div>
-                                <div class="col">
-                                    <div class="text-end my-3 download-button">
-                                        {% bootstrap_button "Delete all preview data" button_type="submit" button_class="btn btn-primary" id="delete-preview-data" %}
-                                    </div>
-                                    <div class="text-end my-3" style="clear:both;">
-                                        <p id="delete-preview-indicator"></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    {% endif %}
-                {% endif %}
-                {% if active == 'demographics' %}
-                    <form id="data-options-demo" method="get">
-                        <p>Data download options:</p>
-                        <div>
-                            <input id="include-participant-global"
-                                   name="demo_options"
-                                   type="checkbox"
-                                   value="participant__global_id"/>
-                            <label for="include-participant-global">Include participant global IDs</label>
+                    <div class="row">
+                        <div class="col">
+                            <p>
+                                {% if n_responses %}
+                                    Demographic data ({{ n_responses }} snapshot{{ n_responses|pluralize }})
+                                {% else %}
+                                    There are no responses with confirmed consent yet. Once there are responses with confirmed consent, associated demographic data will be available for download. A data dictionary is available for planning analyses.
+                                {% endif %}
+                                {% if can_view_regular_responses and not can_view_preview_responses %}
+                                    <span><em>(Based on your permissions, no snapshots from preview responses are included.)</em></span>
+                                {% endif %}
+                                {% if not can_view_regular_responses and can_view_preview_responses %}
+                                    <span><em>(Based on your permissions, only snapshots from preview responses are included.)</em></span>
+                                {% endif %}
+                            </p>
+                            <p class="fst-italic text-muted mt-2">
+                                Each response is associated with a demographic data snapshot that captures the state of the participant's demographic survey at the time of the response. You may use this data to check on demographics of your study population, for instance to check how representative your sample is with respect to parental education, and may report your findings in aggregate.
+                            </p>
+                            <p class="fst-italic text-muted mt-2">
+                                Important: this data must never be published in conjunction with study video such that it would be possible to link the two - e.g., to determine that the person pictured has an approximate family income of $50K or lives in Iowa. At minimum, this likely means redacting all response and participant identifiers from the downloaded demographic file if publishing raw data.
+                            </p>
                         </div>
-                        <hr />
-                        <div class="row">
-                            <div class="col">
-                                <p>
-                                    {% if n_responses %}
-                                        Demographic data ({{ n_responses }} snapshot{{ n_responses|pluralize }})
-                                    {% else %}
-                                        There are no responses with confirmed consent yet. Once there are responses with confirmed consent, associated demographic data will be available for download. A data dictionary is available for planning analyses.
-                                    {% endif %}
-                                    {% if can_view_regular_responses and not can_view_preview_responses %}
-                                        <span><em>(Based on your permissions, no snapshots from preview responses are included.)</em></span>
-                                    {% endif %}
-                                    {% if not can_view_regular_responses and can_view_preview_responses %}
-                                        <span><em>(Based on your permissions, only snapshots from preview responses are included.)</em></span>
-                                    {% endif %}
-                                </p>
-                                <p class="fst-italic text-muted mt-2">
-                                    Each response is associated with a demographic data snapshot that captures the state of the participant's demographic survey at the time of the response. You may use this data to check on demographics of your study population, for instance to check how representative your sample is with respect to parental education, and may report your findings in aggregate.
-                                </p>
-                                <p class="fst-italic text-muted mt-2">
-                                    Important: this data must never be published in conjunction with study video such that it would be possible to link the two - e.g., to determine that the person pictured has an approximate family income of $50K or lives in Iowa. At minimum, this likely means redacting all response and participant identifiers from the downloaded demographic file if publishing raw data.
-                                </p>
+                        <div class="col">
+                            <div class="text-end my-3 download-button">
+                                Data
+                                {% if n_responses %}
+                                    {% bootstrap_button bs_icon_download|add:" JSON" button_class=btn_primary_classes button_type="submit" id="download-all-demo-json" formaction=url_demographics_download_json %}
+                                {% else %}
+                                    {% bootstrap_button bs_icon_download|add:" JSON" button_class=btn_primary_classes button_type="submit" id="download-all-demo-json" formaction=url_demographics_download_json disabled="disabled" %}
+                                {% endif %}
                             </div>
-                            <div class="col">
-                                <div class="text-end my-3 download-button">
-                                    Data
-                                    {% if n_responses %}
-                                        {% bootstrap_button bs_icon_download|add:" JSON" button_class="btn btn-primary" button_type="submit" id="download-all-demo-json" formaction=url_demographics_download_json %}
-                                    {% else %}
-                                        {% bootstrap_button bs_icon_download|add:" JSON" button_class="btn btn-primary" button_type="submit" id="download-all-demo-json" formaction=url_demographics_download_json disabled="disabled" %}
-                                    {% endif %}
-                                </div>
-                                <div class="text-end my-3 download-button">
-                                    Data
-                                    {% if n_responses %}
-                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" button_type="submit" id="download-all-demo-csv" formaction=url_demographics_download_csv %}
-                                    {% else %}
-                                        {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" button_type="submit" id="download-all-demo-csv" formaction=url_demographics_download_csv disabled="disabled" %}
-                                    {% endif %}
-                                </div>
-                                <div class="text-end my-3 download-button">
-                                    Data dictionary
-                                    {% bootstrap_button bs_icon_download|add:" CSV" button_class="btn btn-primary" button_type="submit" id="download-all-demo-dict-csv" formaction=url_demographics_download_dict %}
-                                </div>
+                            <div class="text-end my-3 download-button">
+                                Data
+                                {% if n_responses %}
+                                    {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes button_type="submit" id="download-all-demo-csv" formaction=url_demographics_download_csv %}
+                                {% else %}
+                                    {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes button_type="submit" id="download-all-demo-csv" formaction=url_demographics_download_csv disabled="disabled" %}
+                                {% endif %}
+                            </div>
+                            <div class="text-end my-3 download-button">
+                                Data dictionary
+                                {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes button_type="submit" id="download-all-demo-dict-csv" formaction=url_demographics_download_dict %}
                             </div>
                         </div>
-                    </form>
-                {% endif %}
-            </div>
+                    </div>
+                </form>
+            {% endif %}
         </div>
     </div>
 {% endblock content %}

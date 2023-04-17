@@ -1,5 +1,6 @@
 {% extends "web/base.html" %}
 {% load django_bootstrap5 %}
+{% load web_extras %}
 {% load i18n %}
 {% block title %}
     {% trans "Login" %}
@@ -11,9 +12,10 @@
         <div class="card-body">
             <form action="" method="post" autocomplete="off">
                 {% csrf_token %}
-                {% bootstrap_form_errors form %}
                 {% bootstrap_form form %}
-                {% bootstrap_button button_type="submit" content=login %}
+                {% form_buttons %}
+                    {% bootstrap_button button_type="submit" content=login %}
+                {% endform_buttons %}
                 <input type="hidden" name="next" value="{{ next }}" />
             </form>
             {# Assumes you setup the password_reset view in your URLconf #}

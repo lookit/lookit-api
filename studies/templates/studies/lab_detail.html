@@ -1,34 +1,29 @@
 {% extends "exp/base.html" %}
 {% load django_bootstrap5 %}
+{% load web_extras %}
 {% block title %}
     {{ lab.name }}
 {% endblock title %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:lab-list' %}Labs
+    {{ lab.name }}
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
 {% block content %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{% url 'exp:lab-list' %}">Labs</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">{{ lab.name }}</li>
-        </ol>
-    </nav>
-    <div class="d-flex justify-content-between">
-        <h1>{{ lab.name }}</h1>
-        <div class="d-flex flex-column justify-content-end">
-            <a href="{% url 'exp:lab-edit' pk=lab.id %}">Edit lab</a>
-            <a href="{% url 'exp:lab-members' pk=lab.id %}">View/Manage lab members</a>
-            {% if in_this_lab %}
-                You have joined this lab.
-            {% elif requested_this_lab %}
-                You have requested to join this lab.
-            {% else %}
-                <form action="{% url 'exp:lab-request' pk=lab.id %}" method="post">
-                    {% csrf_token %}
-                    {% bootstrap_button "Request to join" %}
-                </form>
-            {% endif %}
-        </div>
-    </div>
+    {% url 'exp:lab-edit' pk=lab.id as url_lab_edit %}
+    {% url 'exp:lab-members' pk=lab.id as url_lab_members %}
+    {% set_variable '<div><a href="'|add:url_lab_edit|add:'">Edit lab</a></div>' as link_edit_lab %}
+    {% set_variable '<div><a href="'|add:url_lab_members|add:'">View/manage lab members</a></div>' as link_lab_members %}
+    {% if in_this_lab %}
+        {% set_variable "<div>You have joined this lab.</div>" as lab_join_message %}
+    {% elif requested_this_lab %}
+        {% set_variable "<div>You have requested to join this lab.</div>" as lab_join_message %}
+    {% else %}
+        {% set_variable "" as lab_join_message %}
+    {% endif %}
+    {% set_variable link_edit_lab|add:link_lab_members|add:lab_join_message as page_title_right_content %}
+    {% page_title lab.name right_side_elements=page_title_right_content %}
     <div class="row">
         <div class="col-12">
             <strong>Institution</strong>
