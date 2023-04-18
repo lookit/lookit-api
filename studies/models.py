@@ -296,7 +296,7 @@ class Study(models.Model):
     priority = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(99)], default=99
     )
-    preview_summary = models.CharField(max_length=300, default="")
+    preview_summary = models.CharField(max_length=500, default="")
     short_description = models.TextField()
     purpose = models.TextField()
     criteria = models.TextField()
