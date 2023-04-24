@@ -55,7 +55,6 @@ django-bootstrap-icons = "0.8.2"
 [tool.poetry.group.dev.dependencies]
 coverage = "^7.2"
 django-sslserver = "0.22"
-invoke = "^1.6.0"
 parameterized = "^0.8.1"
 pyinstrument = "3.1.3"
 python_dotenv = "0.18.0"
