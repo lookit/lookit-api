@@ -3,20 +3,6 @@
 We'd love for you to contribute to our source code and make Lookit even better than it is today!
 Here are some guidelines we'd like you to follow:
 
-* [Code of Conduct](#code-of-conduct)
-* [Requests](#requests)
-* [Developer Guidelines](#developer-guidelines)
-    * [Local Development](#local-development)
-    * [Outside Contributor Guidelines](#outside-contributors)
-        * [Forking](#forking)
-        * [Localization](#localization)
-    * [Core Contributor Guidelines](#core-contributors)
-        * [Git Flow](#git-flow)
-            * [Stay on the CLI](#cli-workflow)
-        * [Releases](#releases)
-            * [How to Release](#how-to-release)
-* [Contact Us](#contact)
-
 ## Code of Conduct
 
 As contributors and maintainers of the Lookit project, we pledge to respect everyone who contributes by posting 
@@ -73,8 +59,7 @@ If you have a new idea or want to request an improvement to the current process,
 
 ### Local Development
 
-#### Setup
-Follow the instructions laid out [here][lookit-setup-instructions].
+Follow the instructions in our [documentation][lookit-setup-instructions].
 
 #### <a name="organization"></a> What's the high-level overview?
 Conceptually speaking, "Lookit-API" is a misnomer. Lookit is *not actually one service*, it is three (3) processes that
@@ -101,48 +86,10 @@ a new webhook target][pipe-add-webhook] in the Pipe web UI with the freshly gene
 won't need to do this that often. Still - depending on how much you want to set up and debug locally, you could 
 potentially be running anywhere from 2-7 processes at once to support Lookit development.
 
-##### <a name="debugging"></a> OK this all sounds great - where do I point my debugger?
-
-If you want to debug one of the processes, you can always use PDB or the new `breakpoint` builtin. Alternatively, if
-you're using an IDE like PyCharm, you can set up handy debug profiles with neat conveniences like isolated environment
-variables and push-button functionality.
-
-If you just want to hack on the API or UIs, you only need to boot up Postgres and the web server (process #1):
-```bash
-invoke postgresql
-./manage.py runserver           # Alternatively, `python manage.py runserver`
-```
-Note that this bare-minimum setup __won't__ allow you to kick off any offline tasks (i.e., sending emails and building
-studies) from the UI. If you want to test offline jobs, you'll need to boot up RabbitMQ (needed for all offline tasks) 
-and Docker (needed for experiment builds only); finally starting the celery worker itself to consume messages from the
-message queue:
-```bash
-invoke docker
-rabbitmq-server                                                      # You may need `sudo` for this
-celery worker --app=project --loglevel=INFO -Q builds,email,cleanup
-```
-
-Serving with HTTPS will allow you to do two additional things:
-1. Process videos with the Pipe webhook
-2. Communicate with your locally served instance of ember-lookit-frameplayer (if you have configured it to serve in 
-HTTPS - not default, but recommended).
-
-To serve with HTTPS, you'll need `runserver_plus` installed (should be in your virtual environment already if you ran 
-`pipenv install --dev`) and a directory with cert files:
-```bash
-./manage.py runserver_plus --nopin --cert-file ${PATH_TO_YOUR_CERTFILE}
-```
 
 ### Outside Contributors
 If you are _not_ on the Lookit core team, this section is for you!
 
-#### Forking
-While core contributors will work directly on the original repo, outside contributors will need to maintain their own 
-fork of Lookit while working on new features for (or fixing bugs for) the platform. We recommend reading this handy
-[guide on forking][forking-workflow-walkthrough] if you are not familiar with this workflow. GitHub's own [`hub` 
-utility][hub-oss-contrib] will make your life a lot easier in this regard by abstracting over some of the steps; you 
-can find the installation instructions [here][hub-install] (or, if you like to live on the cutting-edge, try out 
-GitHub's [shiny new CLI][github-cli]).
 
 One additional note: when you submit a PR, you'll want to target the `develop` branch (if you forget, no biggie - we 
 can change that on the PR for you prior to merging any of your work).
@@ -165,121 +112,6 @@ Django apps deliver translated strings. In summary:
 
 As it's a system based on trust, translators will be notified ahead of time when the core team is about to cut a new
 release. This way, they can get in any last-minute translations.
-
-### Core Contributors
-***If you are part of Lookit's core development team,*** you should adhere to the processes laid out here.
-
-If you're not on the core team, you may still want to adopt some of the practices laid out here - read on if you're
-curious!
-
-#### Git Flow
-We use a slightly modified [Git Flow][git-flow] process; as such, we highly recommend that core contributors read this 
-[Git Flow cheatsheet][git-flow-cheatsheet] to understand what each branch type is used for and how the workflow manages
-multiple changes and releases in progress at once. In short: 
-
-- There's a `master` branch and a `develop` branch; `master` reflects production code while `develop` is the staging
-  area for new features and bugfixes
-- Consequently, `feature` and `bugfix` branches derive from and merge back into `develop`
--  `release` branches are cut from `develop` to bundle features and bugfixes and package them into a release prior to 
-   merging back into both `master` and `develop`. 
-
-Taken together as a whole, this process enables development to continue apace in a CI/CD-enabled environment: releases
-themselves do not "stop the world" in terms of integrating changes in the development process.
-
-Once you've got the concepts down, it's recommended to either install [gitflow-avh][git-flow-avh] for conveniently 
-automated branch management, or use [this cheat sheet][git-flow-vanilla-equivalent] as a reference for equivalent 
-vanilla git commands.
-
-There are a few additional practices we adhere to when contributing to Lookit:
-1. **Rebase locally before publishing a feature or bugfix branch.** `git rebase -i develop` is your friend. A clean
-   local commit history means that we can get away with *never* squashing on remote branches; thus preserving optimal
-   behavior for commands like `git rerere` and `git blame`. In fact, commands like `git flow $MYFEATURE pull` already 
-   execute `git pull --rebase` under the hood. Please do your part to keep our commit history clean and meaningful!
-2. The flip side of #1: **do not *ever* try to rebase or amend commits that are already on a remote branch**. No force
-   pushing, _ever_, unless you know _exactly_ what you are doing (if you know what you're doing, you probably don't need
-   to force push!).
-3. **Prepend Feature and Bugfix branches with the relevant issue ID**. For example, `feature/600-new-cool-thing` or 
-   `bugfix/601-horrible-terrible-bug`. It's a small thing, but it helps us better understand what you're working on.
-4. **Use Pull Requests after publishing feature/bugfix branches.** We use PRs for code review. Since our `origin` uses
-   the default strategy of `--no-ff` merges ([configured][merge-methods-github] in GitHub), you can press the merge
-   button or issue a local `git flow ... finish` without *ever* having to force push. 
-
-##### <a name="cli-workflow"></a> Staying on the Command Line
-If you have `hub` and `gitflow-avh` installed, you should be able to work entirely from the command line - even when
-working with a PR of a published feature/bugfix branch.
-
-You'll need to change a bit of `gitflow-avh`'s default `finish` behavior to push to remote branches:
-```bash
-git config --local gitflow.bugfix.finish.push yes
-git config --local gitflow.feature.finish.push yes
-git config --local gitflow.release.finish.push yes
-```
-This will enact proper Git Flow "finalizer" processes on remote branches (e.g. merging `release` branches back to 
-`develop` and `master`, deleting old `feature` and `bugfix` branches). This way, you won't have to do manual (remote) 
-branch cleanup with vanilla git commands, or have to remember to push tags.
-
-Once that's done, you'll just do normal Git Flow process with one exception: after running a `git flow ... publish` 
-command, you'll run `hub pull-request` and fill out a proper PR with your command line editor of choice.
-
-Since GitHub considers a PR "Merged" as soon as the commits in the PR branch are also found in the target branch (so
-long as the commits are not modified in any way - not a problem if you never rebase or amend remote commits!), you can 
-just issue a `git flow ... finish` command to do the necessary merges, tag pushes, and branch cleanup.
-
-#### Releases
-We deploy Lookit services on Google Kubernetes Engine; the CI/CD pipeline is defined over in the [Lookit Orchestrator 
-repo][lookit-orchestrator]. A GitHub integration with GCP allows us to trigger builds upon commit to either the `master`
-or `develop` branch; deploying to staging and production (respectively).
-
-As described above in the [source control section](#workflow), we use Git Flow methodology, and as such we leverage the
-concept of `release` branches. These branches are based off of `develop` and meant to be a "cutoff point" for
-new features and bugfixes. They are tightly controlled by the build master ([Rico Rodriguez](mailto:rrodrigu@mit.edu)), 
-and should only ever add the following changes:
-
-- Version Bumps (major and minor only)
-- Changelog updates (manually authored)
-- The occasional cherry-picked commit from a Localization branch.
-
-##### How to Release
-
-**If you want to do releases, it's critical that you carefully read the section below**.
-The tooling we have put together enforces a strict adherence to Semantic Versioning. If you understand how Semantic
-Versioning works, then the behavior of the tools will not confuse you. If you have trouble answering the question
-"what is build metadata?", or articulating what constitutes a prerelease, then you will probably be baffled by the
-restrictions on the workflow.
-
-1. `git flow release start $(invoke new-version --kind "major")`
-    - `invoke new-release` updates the VERSION file and echoes back the new version. There are three mutually exclusive
-      options for `invoke new-version`, each appropriate for a different situation during the release cycle.
-        * `--kind`: `major`, `minor`, or `patch`. When creating a release branch, you'll be using this most often.
-        * `--pre`: Rarely, after starting a release branch, you want to deploy it to the staging environment for QA.
-          in this situation, you should **absolutely not call it in the context of the `git flow` tools**, since they
-          automate a workflow of merging _all_ release branches back into master and develop at the same time. I cannot
-          emphasize this enough - ***Do NOT, ever, under any circumstance, merge a prerelease branch into master!***
-          Instead, do the remote merge with develop manually:
-            - `invoke new-version --pre alpha`: Pre-releases proceed from *alpha*, to *beta*, to *rc* ("Release
-            Candidate"). You can iterate on a prerelease by just calling the command again; it'll go from something like
-            `1.2.1-beta.1` to `1.2.1-beta.2`. You can't go backwards - if you try to create a new alpha release after a
-            beta, the tool will quit and print an error message.
-            - `NEXT_LOOKIT_VERSION=$(<VERSION)`
-            - `git checkout develop`
-            - `git merge --no-ff release/$NEXT_LOOKIT_VERSION`
-            - `git tag -a $(cat VERSION) && git push origin --tags`: Tag the commit as a prerelease.
-            - `git push origin develop`: Push to remote and trigger the build.
-        * `--build`: Sometimes, we'll need to fix or change something with the [CI/CD pipeline][lookit-orchestrator], in
-          which case the likelihood is that you'll need to redeploy Lookit to re-initialize any environment variables
-          passed in from configs and secrets. While it's true that you could run `kubectl rollout restart
-          ${SOME_DEPLOYMENT}` to accomplish this, it's preferable here to annotate the commit history with valuable
-          information about the evolution of the product. Ideally, you'll be able to enter the commit SHA for the
-          updated version of [Lookit Orchestrator][lookit-orchestrator] that will be controlling your re-deployment.
-2. Now you're in a new release branch with the changed `VERSION` file in your git staging area (uncommitted). You should
-   make any changes you need to. Ideally, this is only additions to `CHANGELOG.md`.
-3. `git flow release finish $(cat VERSION)` - this will execute a `--no-ff` merge on both develop and master branches,
-   along with creating the appropriate tags both locally and remotely.
-
-## Contact
-Rico Rodriguez, Lead Software Engineer ([rrodrigu@mit.edu](mailto:rrodrigu@mit.edu))
-
-Kim Scott, Lookit Project Head ([kimscott@mit.edu](mailto:kimscott@mit.edu))
 
 
 [lookit-orchestrator]: https://github.com/lookit/lookit-orchestrator
