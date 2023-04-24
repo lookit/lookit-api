@@ -2465,14 +2465,14 @@ telegram = ["requests"]
 
 [[package]]
 name = "transitions"
-version = "0.8.1"
+version = "0.9.0"
 description = "A lightweight, object-oriented Python state machine implementation with many extensions."
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "transitions-0.8.1-py2.py3-none-any.whl", hash = "sha256:bd8021f0a04e4d91189d90b88d5e9f0a0f5de0c6e5baad224959dbe4c46c3d91"},
-    {file = "transitions-0.8.1.tar.gz", hash = "sha256:2b8cf2078ed189ffbb0f29421798d7a63ff0d7823682a0d69c01bd8240363cac"},
+    {file = "transitions-0.9.0-py2.py3-none-any.whl", hash = "sha256:5687ee8c6a3200830e44f988d16b0045f53293f7a873002d7bff70852331a078"},
+    {file = "transitions-0.9.0.tar.gz", hash = "sha256:2f54d11bdb225779d7e729011e93a9fb717668ce3dc65f8d4f5a5d7ba2f48e10"},
 ]
 
 [package.dependencies]
@@ -2664,4 +2664,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9 <3.10"
-content-hash = "a8a87615b1e9cb05171b27d31906bc01864a018cbf58942862b744546f151592"
+content-hash = "ec3aa9f62f5d4fc855ea5bead7153e3e95f02cdf2e2719ad2b7b851528d80861"
