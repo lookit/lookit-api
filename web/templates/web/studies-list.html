@@ -10,17 +10,21 @@
     <script src="{% static 'js/studies-list.js' %}" defer></script>
 {% endblock head %}
 {% block content %}
-    <form action method="post" class="study-list row g-2">
+    <form action method="post">
         {% csrf_token %}
         {{ form.study_list_tabs }}
-        <div class="col-auto">{% bootstrap_field form.child show_label=False %}</div>
-        <div class="col-auto">{% bootstrap_field form.study_location show_label=False %}</div>
-        <div class="col-auto p-2">{% bootstrap_field form.hide_studies_we_have_done %}</div>
-        {% if user.is_anonymous %}<div class="col-auto pt-2">Log in to find studies just right for your child!</div>{% endif %}
-        <div class="col-auto">{% bootstrap_field form.search show_label=False %}</div>
-        <div class="col-auto">
-            {% trans "Clear" as clear_button_text %}
-            {% bootstrap_button clear_button_text button_class="btn btn-light link-secondary border-secondary" button_type="reset" %}
+        <div class="d-flex align-content-center justify-content-evenly">
+            <div class="pe-2">{% bootstrap_field form.child show_label=False %}</div>
+            <div>{% bootstrap_field form.study_location show_label=False %}</div>
+            <div class="p-2 flex-grow-1">{% bootstrap_field form.hide_studies_we_have_done %}</div>
+            {% if user.is_anonymous %}
+                <div class="p-2 flex-grow-1">Log in to find studies just right for your child!</div>
+            {% endif %}
+            <div class="pe-2">{% bootstrap_field form.search show_label=False %}</div>
+            <div>
+                {% trans "Clear" as clear_button_text %}
+                {% bootstrap_button clear_button_text button_class="btn btn-light link-secondary border-secondary" button_type="reset" %}
+            </div>
         </div>
     </form>
     <ul class="nav nav-tabs">
