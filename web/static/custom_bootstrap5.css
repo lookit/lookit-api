@@ -6137,7 +6137,7 @@ textarea.form-control-lg {
   margin-right: 3rem !important;
   margin-left: 3rem !important; }
 
-.mx-auto {
+.mx-auto, .empty-text {
   margin-right: auto !important;
   margin-left: auto !important; }
 
@@ -6157,7 +6157,7 @@ textarea.form-control-lg {
   margin-top: 1rem !important;
   margin-bottom: 1rem !important; }
 
-.my-4 {
+.my-4, .empty-text {
   margin-top: 1.5rem !important;
   margin-bottom: 1.5rem !important; }
 
@@ -6430,7 +6430,7 @@ textarea.form-control-lg {
 .fs-6 {
   font-size: 1rem !important; }
 
-.fst-italic {
+.fst-italic, .empty-text {
   font-style: italic !important; }
 
 .fst-normal {
@@ -6472,7 +6472,7 @@ textarea.form-control-lg {
 .text-end {
   text-align: right !important; }
 
-.text-center {
+.text-center, .empty-text {
   text-align: center !important; }
 
 .text-decoration-none {

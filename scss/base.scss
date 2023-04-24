@@ -13,3 +13,8 @@
 
 // Add all bootstrap features
 @import "bootstrap-5.2.0/scss/bootstrap";
+
+
+.empty-text {
+    @extend .my-4, .mx-auto, .text-center, .fst-italic
+}

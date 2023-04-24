@@ -81,7 +81,7 @@
             </div>
         </div>
     {% empty %}
-    {% empty_text "No labs found!" %}
+        <div class="empty-text">No labs found!</div>
     {% endfor %}
     {% if object_list %}
         <div class="row pb-5">{% include "studies/_paginator.html" with page=page_obj %}</div>
