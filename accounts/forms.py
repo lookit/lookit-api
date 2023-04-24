@@ -365,6 +365,9 @@ class DemographicDataForm(forms.ModelForm):
             "us_race_ethnicity_identification_describe": forms.Textarea(
                 attrs={"rows": 2}
             ),
+            "us_race_ethnicity_identification": BitFieldCheckboxSelectMultiple(
+                attrs={"class": "column-checkbox"}
+            ),
         }
 
 

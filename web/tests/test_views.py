@@ -228,10 +228,15 @@ class ParticipantAccountViewsTestCase(TestCase):
 
         # Update data and save
         data["country"] = "BR"
+
+        # Setting ethnicity to None fixes issue with submitting data.
+        data["us_race_ethnicity_identification"] = None
+
         cleaned_data = {key: val for (key, val) in data.items() if val is not None}
         response = self.client.post(
             reverse("web:demographic-data-update"), cleaned_data, follow=True
         )
+        self.assertEqual(response.context["form"].errors, {})
         self.assertEqual(
             response.redirect_chain, [(reverse("web:demographic-data-update"), 302)]
         )

@@ -25,7 +25,6 @@ from guardian.shortcuts import get_perms
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
-from multiselectfield import MultiSelectField
 from qrcode import make as make_qrcode
 from qrcode.image.svg import SvgPathImage
 
@@ -395,7 +394,7 @@ class Child(models.Model):
 
 
 class DemographicData(models.Model):
-    RACE_CHOICES = Choices(
+    RACE_CHOICES = (
         ("white", _("White")),
         ("hisp", _("Hispanic, Latino, or Spanish origin")),
         ("black", _("Black or African American")),
@@ -519,9 +518,7 @@ class DemographicData(models.Model):
         choices=GUARDIAN_CHOICES, max_length=6, blank=True
     )
     guardians_explanation = models.TextField(blank=True)
-    us_race_ethnicity_identification = MultiSelectField(
-        choices=RACE_CHOICES, blank=True
-    )
+    us_race_ethnicity_identification = BitField(flags=RACE_CHOICES, default=0)
     us_race_ethnicity_identification_describe = models.TextField(blank=True)
     age = models.CharField(max_length=5, choices=AGE_CHOICES, blank=True)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES, blank=True)
