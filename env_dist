@@ -1,5 +1,5 @@
 # NOTE: env-dist is a sample .env file distributed with lookit-api for local development. To USE these settings, copy
-# them to a file named .env and make any changes needed. This is done for you during the `invoke setup` task.
+# them to a file named .env and make any changes needed.
 
 # Run in DEBUG mode locally. This gives access to the Django debug toolbar among other things. (Note that if DEBUG is
 # false, some different choices are made in settings.py; you may want to review those and ensure you have the relevant
@@ -45,8 +45,7 @@ PIPE_WEBHOOK_KEY=
 EMBER_EXP_PLAYER_BRANCH=master
 EMBER_EXP_PLAYER_REPO=https://github.com/lookit/ember-lookit-frameplayer
 
-# RabbitMQ settings. These are set up during the invoke task rabbitmq; only change if you have configured rabbitmq
-# differently yourself.
+# RabbitMQ settings. Only change if you have configured rabbitmq differently yourself.
 RABBITMQ_HOST=localhost
 RABBITMQ_PASSWORD=admin
 RABBITMQ_PORT=5672
