@@ -53,7 +53,7 @@ pillow = "9.4.0"
 django-bootstrap-icons = "0.8.2"
 
 [tool.poetry.group.dev.dependencies]
-coverage = "^5.5"
+coverage = "^7.2"
 django-sslserver = "0.22"
 invoke = "^1.6.0"
 parameterized = "^0.8.1"
