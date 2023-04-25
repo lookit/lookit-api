@@ -232,14 +232,6 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
                 "SENTRY_DSN": os.environ.get("SENTRY_DSN_JS", None),
                 "PIPE_ACCOUNT_HASH": os.environ.get("PIPE_ACCOUNT_HASH"),
                 "PIPE_ENVIRONMENT": os.environ.get("PIPE_ENVIRONMENT"),
-                "AWS_RECORDING_REGION": os.environ.get("AWS_RECORDING_REGION"),
-                "AWS_RECORDING_ACCESS_KEY_ID": os.environ.get(
-                    "AWS_RECORDING_ACCESS_KEY_ID"
-                ),
-                "AWS_RECORDING_SECRET_ACCESS_KEY": os.environ.get(
-                    "AWS_RECORDING_SECRET_ACCESS_KEY"
-                ),
-                "AWS_RECORDING_BUCKET": os.environ.get("AWS_RECORDING_BUCKET"),
             },
             volumes={
                 local_paths.checkouts: {"bind": "/checkouts", "mode": "ro"},
