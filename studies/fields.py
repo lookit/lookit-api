@@ -85,7 +85,7 @@ LANGUAGES = (
     ("mai", _("Maithili")),
     ("ms", _("Malay")),
     ("ml", _("Malayalam")),
-    ("cmn", _("Mandarin")),
+    ("cmn", _("Chinese (Mandarin)")),
     ("mr", _("Marathi")),
     ("nan", _("Min Nan")),
     ("mor", _("Moroccan Spoken Arabic")),
@@ -113,7 +113,7 @@ LANGUAGES = (
     ("wuu", _("Wu")),
     ("hsn", _("Xiang Chinese")),
     ("yo", _("Yoruba")),
-    ("yue", _("Yue")),
+    ("yue", _("Chinese (Cantonese)")),
 )
 
 # XXX: These are only *mostly* copied and pasted the corresponding choices in the Child model - do not try to
