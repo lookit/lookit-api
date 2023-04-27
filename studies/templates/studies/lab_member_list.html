@@ -13,7 +13,7 @@
 {% endbreadcrumb %}
 {% endblock breadcrumb %}
 {% block content %}
-    <form method="get">
+    <form method="get" class="search-bar my-5">
         <input id="search-researchers"
                class="form-control"
                name="match"
@@ -87,7 +87,7 @@
             </div>
         </div>
     {% empty %}
-    {% empty_text "No researchers found!" %}
+        <div class="empty-text">No researchers found!</div>
     {% endfor %}
     {% include "studies/_paginator.html" with page=lab_members_qs %}
 {% endblock content %}

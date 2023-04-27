@@ -50,8 +50,7 @@
                     </div>
                 </div>
             {% empty %}
-                {% trans "No children profiles registered!" as trans_no_children %}
-            {% empty_text trans_no_children %}
+                <div class="empty-text">{% trans "No children profiles registered!" %}</div>
             {% endfor %}
         </div>
         <div class="col-6">
@@ -90,7 +89,9 @@
                 </tr>
                 <tr>
                     <th scope="row">{% trans "Number of Guardians" %}:</th>
-                    <td>{{ demographics.number_of_guardians|default:"No Response" }}</td>
+                    <td>
+                        {{ demographics.number_of_guardians|default:"No Response" }}
+                    </td>
                 </tr>
                 <tr>
                     <th scope="row">

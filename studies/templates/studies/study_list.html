@@ -16,20 +16,18 @@
     {% else %}
         {% page_title "Manage Studies" %}
     {% endif %}
-    <div class="row mx-5">
-        <form method="get">
-            <input id="search-studies"
-                   class="form-control"
-                   name="match"
-                   placeholder="Filter name or description"
-                   size="50"
-                   type="text"
-                   value="{{ match }}"/>
-            <input type="hidden" name="sort" value="{{ sort }}"/>
-            <input type="hidden" name="state" value="{{ state }}"/>
-            <input type="hidden" name="page" value="1"/>
-        </form>
-    </div>
+    <form method="get" class="search-bar">
+        <input id="search-studies"
+               class="form-control"
+               name="match"
+               placeholder="Filter name or description"
+               size="50"
+               type="text"
+               value="{{ match }}"/>
+        <input type="hidden" name="sort" value="{{ sort }}"/>
+        <input type="hidden" name="state" value="{{ state }}"/>
+        <input type="hidden" name="page" value="1"/>
+    </form>
     <div class="row text-center mb-5 mt-2">
         <ul class="nav nav-pills justify-content-center">
             {% nav_link request 'exp:study-list-active' 'Active' %}
@@ -168,7 +166,7 @@
             </div>
         </div>
     {% empty %}
-    {% empty_text "No studies found" %}
+        <div class="empty-text">No studies found</div>
     {% endfor %}
     {% if object_list %}
         {% include "studies/_paginator.html" with page=page_obj %}
