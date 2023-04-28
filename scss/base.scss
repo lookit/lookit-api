@@ -16,9 +16,34 @@
 
 
 .empty-text {
-    @extend .my-4, .mx-auto, .text-center, .fst-italic
+    @extend .my-4, .mx-auto, .text-center, .fst-italic;
 }
 
 .search-bar {
-    @extend .mx-5, .row
+    @extend .mx-5, .row;
+}
+
+// Change title/subtitle font sizes across breakpoints on the home page.
+// Font size classes do not support the breakpoint infixes (fs-sm-1, etc.).
+// Ideally these would @extend existing font size (fs-*) classes, but it's not
+// possible to use extend in media queries.
+
+// Screen widths xs to lg
+.home-title-text {
+    font-size: calc(1.325rem + 0.9vw) !important;  // fs-2
+}
+
+.home-subtitle-text {
+    font-size: calc(1.275rem + 0.3vw) !important; // fs-4
+}
+
+// Screen widths xl and xxl
+@include media-breakpoint-up(xl) {
+    .home-title-text {
+        font-size: calc(1.375rem + 1.5vw) !important;  // fs-1
+    }
+
+    .home-subtitle-text {
+        font-size: calc(1.3rem + 0.6vw) !important; // fs-3
+    }
 }

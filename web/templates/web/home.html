@@ -8,36 +8,51 @@
     Home
 {% endblock title %}
 {% block content %}
-    <div class="row align-items-center position-relative">
-        <img class="img-fluid"
-             alt="CHS home page collage"
-             src="{% static 'images/chs_collage.png' %}"/>
-        <div class="d-flex flex-column align-items-center position-absolute bottom-0">
-            <h3 class="d-none d-md-block m-xl-4 m-md-1">{% trans "Powered by Lookit" %}</h3>
-            <h5 class="d-none d-md-block">{% trans "Fun for Families, Serious for Science" %}</h5>
-            <a class="{% button_primary_classes %} btn-lg btn-md-sm m-xl-5 m-md-1"
-               href="{% url 'web:studies-list' %}">{% trans "Participate in a Study" %}</a>
+    <div class="container text-center">
+        <div class="row justify-content-evenly">
+            <div class="col d-none d-lg-block">
+                <img class="img-fluid"
+                     alt="CHS family collage 1"
+                     src="{% static 'images/families_left.png' %}"/>
+            </div>
+            <div class="col-12 col-lg-6">
+                <img class="img-fluid"
+                     alt="CHS home page logo"
+                     src="{% static 'images/chs_logo.png' %}"/>
+                <p class="home-title-text fw-bold mb-0">{% trans "Children Helping Science" %}</p>
+                <p class="home-subtitle-text d-none d-lg-block my-0">{% trans "Powered by Lookit" %}</p>
+                <p class="home-subtitle-text d-none d-lg-block my-2 my-lg-3 my-xl-4 my-xxl-5">
+                    {% trans "Fun for Families, Serious for Science" %}
+                </p>
+                <a class="{% button_primary_classes %} fs-3 btn-lg btn-md-sm my-3 my-md-2 mb-lg-0"
+                   href="{% url 'web:studies-list' %}">{% trans "Participate in a Study" %}</a>
+            </div>
+            <div class="col d-none d-lg-block">
+                <img class="img-fluid"
+                     alt="CHS family collage 2"
+                     src="{% static 'images/families_right.png' %}"/>
+            </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-4">
-            <div class="text-center m-5 text-red">{% bs_icon "clipboard-data-fill" size='3.5em' %}</div>
-            <h3 class="text-center">{% trans "Help Science" %}</h3>
-            <p class="m-4">
+        <div class="col-12 col-lg-4">
+            <div class="text-center mt-3 mt-lg-5 mb-3 text-red">{% bs_icon "clipboard-data-fill" size='3.5em' %}</div>
+            <p class="home-subtitle-text fw-bold text-center">{% trans "Help Science" %}</p>
+            <p class="m-3 m-lg-4">
                 {% trans "This website has studies you and your child can participate in from your home, brought to you by researchers from universities around the world!" %}
             </p>
         </div>
-        <div class="col-4">
-            <div class="text-center m-5 text-red">{% bs_icon "cup-hot-fill" size='3.5em' %}</div>
-            <h3 class="text-center">{% trans "From Home" %}</h3>
-            <p class="m-4">
+        <div class="col-12 col-lg-4">
+            <div class="text-center mt-3 mt-lg-5 mb-3 text-red">{% bs_icon "cup-hot-fill" size='3.5em' %}</div>
+            <p class="home-subtitle-text fw-bold text-center">{% trans "From Home" %}</p>
+            <p class="m-3 m-lg-4">
                 {% trans "You and your child use your computer to participate. Some studies can also be done on a tablet or phone." %}
             </p>
         </div>
-        <div class="col-4">
-            <div class="text-center m-5 text-red">{% bs_icon "balloon-heart-fill" size='3.5em' %}</div>
-            <h3 class="text-center">{% trans "With Fun Activities" %}</h3>
-            <p class="m-4">
+        <div class="col-12 col-lg-4">
+            <div class="text-center mt-3 mt-lg-5 mb-3 text-red">{% bs_icon "balloon-heart-fill" size='3.5em' %}</div>
+            <p class="home-subtitle-text fw-bold text-center">{% trans "With Fun Activities" %}</p>
+            <p class="m-3 m-lg-4">
                 {% trans "Many studies are either short games, or listening to a story and answering questions about it. Some are available at any time, and others are a scheduled video chat with a researcher." %}
             </p>
         </div>
