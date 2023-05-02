@@ -73,4 +73,9 @@ urlpatterns = [
         views.LabStudiesListView.as_view(),
         name="lab-studies-list",
     ),
+    path(
+        "publications/",
+        TemplateView.as_view(template_name="web/publications.html"),
+        name="publications",
+    ),
 ]
