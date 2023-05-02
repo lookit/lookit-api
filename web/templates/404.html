@@ -1,11 +1,15 @@
 {% extends "web/base.html" %}
 {% load web_extras %}
+{% load static %}
 {% load i18n %}
 {% block title %}
     404
 {% endblock title %}
 {% block content %}
     {% page_title 'Oops - We couldn’t find that page!' %}
+    <div class="p-5">
+        <img height=200 src="{% static "images/chs_c.png" %}" alt="CHS C"/>
+    </div>
     <p>Welcome to Children Helping Science!</p>
     <p>
         We recently relaunched our website, which means that some links may no longer be working. To find studies you can participate in from home, please click on one of the options below:
