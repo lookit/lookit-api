@@ -1,0 +1,31 @@
+{% extends "web/base.html" %}
+{% load web_extras %}
+{% load i18n %}
+{% block title %}
+    404
+{% endblock title %}
+{% block content %}
+    {% page_title 'Oops - We couldn’t find that page!' %}
+    <p>Welcome to Children Helping Science!</p>
+    <p>
+        We recently relaunched our website, which means that some links may no longer be working. To find studies you can participate in from home, please click on one of the options below:
+    </p>
+    <div class="text-center">
+        <div class="row">
+            <div class="col">
+                <a href="{% url "web:babies" %}">{% trans "Studies for babies (under 1)" %}</a>
+            </div>
+            <div class="col">
+                <a href="{% url "web:toddlers" %}">{% trans "Studies for toddlers (1-2)" %}</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <a href="{% url "web:preschoolers" %}">{% trans "Studies for preschoolers (3-4)" %}</a>
+            </div>
+            <div class="col">
+                <a href="{% url "web:school-age-kids" %}">{% trans "Studies for school-aged kids & teens (5-17)" %}</a>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
