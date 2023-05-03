@@ -97,13 +97,13 @@
         </div>
         <div class="row text-center justify-content-evenly align-items-center mt-3 mt-lg-5">
             <div class="col-12 col-lg-6">
-                <a href="{% url 'web:studies-list' %}">
+                <a href="{% url 'web:studies-list-babies' %}">
                     <img class="img-fluid"
                          alt="Babies playing"
                          src="{% static 'images/babies.jpg' %}"/>
                     <p class="mb-4 mt-2">{% trans "studies for babies (under 1)" %}</p>
                 </a>
-                <a href="{% url 'web:studies-list' %}">
+                <a href="{% url 'web:studies-list-preschoolers' %}">
                     <img class="img-fluid"
                          alt="Preschoolers playing"
                          src="{% static 'images/preschoolers.jpg' %}"/>
@@ -111,13 +111,13 @@
                 </a>
             </div>
             <div class="col-12 col-lg-6">
-                <a href="{% url 'web:studies-list' %}">
+                <a href="{% url 'web:studies-list-toddlers' %}">
                     <img class="img-fluid"
                          alt="Toddlers playing"
                          src="{% static 'images/toddlers.jpg' %}"/>
                     <p class="mb-4 mt-2">{% trans "studies for toddlers (1-2)" %}</p>
                 </a>
-                <a href="{% url 'web:studies-list' %}">
+                <a href="{% url 'web:studies-list-school-age' %}">
                     <img class="img-fluid"
                          alt="Teens"
                          src="{% static 'images/schoolage.jpg' %}"/>
