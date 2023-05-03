@@ -47,17 +47,3 @@
         font-size: calc(1.3rem + 0.6vw) !important; // fs-3
     }
 }
-
-// Create new rules for alert-warning class using the custom color shift variables,
-// and add this at the end to overwrite the earlier class with default colors
-@each $state, $value in $theme-colors {
-    
-    @if ($state == 'warning') {
-        $alert-background: shift-color($value, $alert-bg-scale-warning);
-        $alert-border: shift-color($value, $alert-border-scale-warning);
-        $alert-color: shift-color($value, $alert-color-scale-warning);
-        .alert-#{$state} {
-            @include alert-variant($alert-background, $alert-border, $alert-color);
-        }
-    }
-}
