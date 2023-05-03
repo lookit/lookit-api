@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load static %}
-<div class="row text-center justify-content-evenly align-items-center mt-3 mt-lg-5 fs-3">
+<div class="row text-center justify-content-evenly align-items-center">
+    <p class="mt-5 mb-3 mb-lg-5">{% trans "See our current studies for different age groups:" %}</p>
     <div class="col-12 col-lg-6">
         <a href="{% url 'web:studies-list-babies' %}">
             <img class="img-fluid p-4"
