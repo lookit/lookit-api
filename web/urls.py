@@ -6,6 +6,11 @@ from web import views
 app_name = "web"
 
 urlpatterns = [
+    path("studies/babies/", views.StudiesListViewBabies.as_view()),
+    path("studies/toddlers/", views.StudiesListViewToddlers.as_view()),
+    path("studies/preschoolers/", views.StudiesListViewPreschoolers.as_view()),
+    path("studies/school-age-kids/", views.StudiesListViewSchoolAgeKids.as_view()),
+    path("studies/adults/", views.StudiesListViewAdults.as_view()),
     path("signup/", views.ParticipantSignupView.as_view(), name="participant-signup"),
     path(
         "account/demographics/",
@@ -72,5 +77,10 @@ urlpatterns = [
         r"studies/<slug:lab_slug>/",
         views.LabStudiesListView.as_view(),
         name="lab-studies-list",
+    ),
+    path(
+        "publications/",
+        TemplateView.as_view(template_name="web/publications.html"),
+        name="publications",
     ),
 ]
