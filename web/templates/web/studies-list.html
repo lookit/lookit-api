@@ -10,21 +10,22 @@
     <script src="{% static 'js/studies-list.js' %}" defer></script>
 {% endblock head %}
 {% block content %}
-    <form action method="post">
+    <form action
+          method="post"
+          class="row justify-content-center align-items-center g-lg-3">
         {% csrf_token %}
         {{ form.study_list_tabs }}
-        <div class="d-flex align-content-center justify-content-evenly">
-            <div class="pe-2">{% bootstrap_field form.child show_label=False %}</div>
-            <div>{% bootstrap_field form.study_location show_label=False %}</div>
-            <div class="p-2 flex-grow-1">{% bootstrap_field form.hide_studies_we_have_done %}</div>
-            {% if user.is_anonymous %}
-                <div class="p-2 flex-grow-1">Log in to find studies just right for your child!</div>
-            {% endif %}
-            <div class="pe-2">{% bootstrap_field form.search show_label=False %}</div>
-            <div>
-                {% trans "Clear" as clear_button_text %}
-                {% bootstrap_button clear_button_text button_class="btn btn-light link-secondary border-secondary" button_type="reset" %}
-            </div>
+        <div class="col-12 col-md-6 col-lg">{% bootstrap_field form.child show_label=False %}</div>
+        <div class="col-12 col-md-6 col-lg">{% bootstrap_field form.study_location show_label=False %}</div>
+        {% if user.is_anonymous %}
+            <div class="col-12 col-md-6 col-lg-auto text-center mb-3">Log in to find studies just right for your child!</div>
+        {% else %}
+            <div class="col-12 col-md-6 col-lg-auto">{% bootstrap_field form.hide_studies_we_have_done %}</div>
+        {% endif %}
+        <div class="col-12 col-md-6 col-lg d-flex justify-content-center">
+            {% bootstrap_field form.search show_label=False wrapper_class="pe-2 mb-3" %}
+            {% trans "Clear" as clear_button_text %}
+            {% bootstrap_button clear_button_text button_class="btn btn-light link-secondary border-secondary mb-3" button_type="reset" %}
         </div>
     </form>
     <ul class="nav nav-tabs">
