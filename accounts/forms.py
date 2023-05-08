@@ -509,7 +509,7 @@ class StudyListSearchForm(forms.Form):
         adults = ("18,999", _("adults (18+)"))
 
     class StudyLocation(FormChoiceEnum):
-        empty = ("0", _("Show studies that are happening..."))
+        empty = ("0", _("Show studies happening..."))
         lookit = ("1", _("here on the Lookit platform"))
         external = ("2", _("on other websites"))
 

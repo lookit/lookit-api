@@ -22,7 +22,7 @@
         {% else %}
             <div class="col-12 col-md-6 col-lg text-wrap text-center mb-3">Log in to find studies just right for your child!</div>
         {% endif %}
-        <div class="col-12 col-md-6 col-lg d-flex justify-content-center">
+        <div class="col-12 col-md-6 col-lg-auto d-flex justify-content-center">
             {% bootstrap_field form.search show_label=False wrapper_class="pe-2 mb-3" %}
             {% trans "Clear" as clear_button_text %}
             {% bootstrap_button clear_button_text button_class="btn btn-light link-secondary border-secondary mb-3" button_type="reset" %}
