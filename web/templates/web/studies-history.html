@@ -27,7 +27,13 @@
         {% endfor %}
     </ul>
     {% if object_list %}
-        <div class="m-3">{% trans "Here you can view your studies and see comments left by researchers:" %}</div>
+        <div class="m-3">
+            {% if form.past_studies_tabs|studies_tab_selected == "0" %}
+                {% trans "Lookit studies run here on our platform, and usually include a video of your session! You can find information about your previous study sessions, watch these videos, and see comments left by researchers below." %}
+            {% elif form.past_studies_tabs|studies_tab_selected == "1" %}
+                {% trans "External studies happen at other websites, and are listed below after you click the &quot;Participate Now&quot; button to follow a link. You can find information on the studies you have accessed and contact information for the researchers on a specific study below." %}
+            {% endif %}
+        </div>
     {% endif %}
     {% for study in object_list %}
         <div class="card mb-5">
