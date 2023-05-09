@@ -151,6 +151,11 @@
                                 <p>
                                     {% trans "It will also make it possible for the researchers of this study to contact you, and will share your child's profile information with the researchers." %}
                                 </p>
+                            {% else %}
+                                <p>{% trans "This study runs here on the Lookit platform." %}</p>
+                                <p>
+                                    {% trans "Clicking to participate will make it possible for the researchers of this study to contact you, and will share your child's profile information with the researchers." %}
+                                </p>
                             {% endif %}
                         {% endif %}
                     </form>
