@@ -82,8 +82,9 @@
                  aria-labelledby="heading-3"
                  data-bs-parent="#faq-accordion-participation">
                 <div class="accordion-body">
+                    {% url "web:participant-signup" as url_signup %}
                     {% blocktranslate%}
-                            <p>If you have a child and would like to participate, create an account [LINK] and take a look at what we have available for your child's age range.  Some studies can be done at any time, and some involve a scheduled video chat with a university-based researcher. Most studies require a laptop/desktop with a webcam. The study description will tell you if you need any other supplies (such as a marker and paper, or a high chair for your baby to sit in.)</p>
+                            <p>If you have a child and would like to participate, <a href="{{url_signup}}">create an account</a>  and take a look at what we have available for your child's age range.  Some studies can be done at any time, and some involve a scheduled video chat with a university-based researcher. Most studies require a laptop/desktop with a webcam. The study description will tell you if you need any other supplies (such as a marker and paper, or a high chair for your baby to sit in.)</p>
                             <p>Each study will begin in the same way: you and your child will learn what the research is about, and you can then decide whether or not you want to do it. In most cases you'll be asked to read a consent form and record yourself stating that you and your child agree to participate. In other cases, you may electronically sign a form. In addition to permission from their parent or guardian, older children will also be asked directly if they want to participate.</p>
                             <p>Individual studies vary widely- we encourage you to try lots of different ones! Depending on your child's age, your child may answer questions directly or we may be looking for indirect signs of what she thinks is going on--like how long she looks at a surprising outcome. Some things that may happen in studies include:</p>
                             <ul>
@@ -92,7 +93,7 @@
                                 <li>Listening to a story and then answering questions by speaking or pointing at the screen</li>
                                 <li>Answering short interview or survey questions</li>
                             </ul>
-                            <p>Some portions of the study will be automatically recorded using your webcam and sent securely to the Lookit platform. Trained researchers will watch the video and record your child's responses--for instance, which way he pointed, or how long she looked at each image. We'll put these together with responses from lots of other children to learn more about how kids think!</p>
+                            <p>Some portions of the study will be automatically recorded using your webcam and sent securely to Children Helping Science. Trained researchers will watch the video and record your child's responses--for instance, which way he pointed, or how long she looked at each image. We'll put these together with responses from lots of other children to learn more about how kids think!</p>
 {% endblocktranslate %}
                 </div>
             </div>
@@ -116,7 +117,7 @@
                     {% url "web:termsofuse" as termsofuse %}
                     {% blocktranslate %}
                 <p>All of the research conducted on the website is created by scientists to learn about child development, leading to articles in scientific journals. These publications can help inform other scientists, parents, educators, and policy-makers. Usually, these scientists work at colleges, universities, or hospitals. Rarely, a scientist who works at a nonprofit or a company might also do a study that fits this goal. If a study is meant to publish results in scientific journals for everyone to see (instead of just for one nonprofit or company), then it is possible it would appear on this website.</p>
-                <p>If a scientist wants to use this platform, their institution has to sign a contract with MIT where they agree to the <a href="{{ termsofuse }}">Terms of Use</a> and certify that their studies will be reviewed and approved by an institutional review board. Studies are also subject to review and approval by Lookit/Children Helping Science. As of January 2022, we have agreements with over 50 universities, including institutions in the United States, Canada, the United Kingdom, and European Union.</p>
+                <p>If a scientist wants to use this platform, their institution has to sign a contract with MIT where they agree to the <a href="{{ termsofuse }}">Terms of Use</a> and certify that their studies will be reviewed and approved by an institutional review board. Studies are also subject to review and approval by Children Helping Science. As of April 2023, we have agreements with over 90 universities,  including institutions in the United States, Canada, the United Kingdom, and European Union.</p>
 {% endblocktranslate %}
                 </div>
             </div>
@@ -194,7 +195,7 @@
                  data-bs-parent="#faq-accordion-participation">
                 <div class="accordion-body">
                     {% blocktranslate %}
-                <p>Rather than having the parent or legal guardian sign a form, we ask that you read aloud (or sign in ASL) a statement of consent which is recorded using your webcam. This statement holds the same weight as a signed form, but should be less hassle for you. It also lets us verify that you understand written English and that you understand you're being videotaped.</p>
+                <p>Some studies ask you (the parent or guardian) to sign an online form after either reading about what the study involves or talking with a researcher. Other studies, especially ones that happen on our own Children Helping Science platform, ask that your read aloud (or sign in ASL) a statement of consent which is recorded using your webcam. This statement holds the same weight as a signed form, but should be less hassle for you. It also lets us verify that you understand written English and that you understand you're being videotaped.</p>
                 <p>Researchers watch these consent videos on a special page of the researcher interface, and record for each one whether the video shows informed consent. They cannot view other video or download data from a session unless they have confirmed that you consented to participate! If they see a consent video that does NOT clearly demonstrate informed consent--for instance, there was a technical problem and there's no audio--they may contact you to check, depending on your email settings.</p>
                 {% endblocktranslate %}
                     <div class="d-flex justify-content-center">
@@ -226,9 +227,9 @@
                  data-bs-parent="#faq-accordion-participation">
                 <div class="accordion-body">
                     {% blocktranslate %}
-                <p>Researchers using Lookit agree to uphold a common set of standards about how data is protected and shared. For instance, they never publish children's names or birthdates, or information that could be used to calculate a birthdate.</p>
-                <p>The Lookit researcher interface is designed with participant data protection as the top priority. For instance, a special interface lets researchers confirm consent videos before they are able to download any other data from your session. Research groups can control who has access to what data in a very fine-grained way, for instance allowing an assistant to confirm consent and send gift cards, but not download study data.</p>
-                <p>All of your data, including video, is transmitted over a secure HTTPS connection to Lookit storage, and is encrypted at rest. We take security very seriously; in addition to making sure any software we use is up-to-date, cloud servers are configured securely, and unit tests cover checking that accessing data requires correct permissions, we conducted a risk assessment and detailed manual penetration testing with a security contractor prior to our 2020 launch.</p>
+                <p>Researchers using Children Helping Science agree to uphold a common set of standards about how data is protected and shared. For instance, they never publish children's names or birthdates, or information that could be used to calculate a birthdate.</p>
+                <p>Our researcher interface is designed with participant data protection as the top priority. For instance, a special page lets researchers confirm consent videos before they are able to download any other data from your session. Research groups can control who has access to what data in a very fine-grained way, for instance allowing an assistant to confirm consent and send gift cards, but not download study data.</p>
+                <p>All of your data, including video, is transmitted over a secure HTTPS connection to Children Helping Science storage, and is encrypted at rest. We take security very seriously; in addition to making sure any software we use is up-to-date, cloud servers are configured securely, and unit tests cover checking that accessing data requires correct permissions, we conduct a risk assessment and detailed manual penetration testing with a security contractor every two years. Our last security assessment was conducted in December 2022.</p>
                 <p>See also 'Who will see our video?'</p>
                 {% endblocktranslate %}
                 </div>
@@ -251,14 +252,14 @@
                  data-bs-parent="#faq-accordion-participation">
                 <div class="accordion-body">
                     {% blocktranslate %}
-                <p>Lookit staff at MIT will have access to your video and other data in order to improve and promote the platform and help with troubleshooting. The researchers running the study you participated in will also have access to your video and other data (like responses to questions during the study, and information you fill out when registering a child) for research purposes. They will watch the video segments you send to mark down information specific to the study--for instance, what your child said, or how long he/she looked to the left versus the right of the screen. This research group may be at MIT or at another institution. All studies run on Lookit must be approved by an Institutional Review Board (IRB) that ensures participants' rights and welfare are protected. All researchers using Lookit also agree to Terms of Use that govern what data they can share and what sorts of studies are okay to run on Lookit; these rules are sometimes stricter than their own institution might be.  </p>
+                <p>When you participate in a video recorded study on our platform, Children Helping Science staff at MIT will have access to your video and other data in order to improve and promote the platform and help with troubleshooting. The researchers running the study you participated in will also have access to your video and other data (like responses to questions during the study, and information you fill out when registering a child) for research purposes. They will watch the video segments you send to mark down information specific to the study--for instance, what your child said, or how long he/she looked to the left versus the right of the screen. This research group may be at MIT or at another institution. All studies run on Children Helping Science must be approved by an Institutional Review Board (IRB) that ensures participants' rights and welfare are protected. All researchers using Children Helping Science also agree to Terms of Use that govern what data they can share and what sorts of studies are okay to run on Children Helping Science; these rules are sometimes stricter than their own institution might be.  </p>
                 <p>Whether anyone else may view the video depends on the privacy settings you select at the end of the study. There are two decisions to make: whether to share your data with Databrary, and how to allow your video clips to be used by the researchers you have selected.</p>
                 <p>First, we ask if you would like to share your data (including video) with authorized users fo the secure data library Databrary. Data sharing will lead to faster progress in research on human development and behavior. Researchers who are granted access to the Databrary library must agree to treat the data with the same high standard of care they would use in their own laboratories. Learn more about Databrary's <a href="https://databrary.org/about.html">mission</a> or the <a href="https://databrary.org/about/agreement.html">requirements for authorized users</a>.</p>
                 <p>Next, we ask what types of uses of your video are okay with you.</p>
                 <ul>
-                    <li><strong>Private</strong> This privacy level ensures that your video clips will be viewed only by authorized scientists (Lookit staff, the research group running the study and, if you have opted to share your data with Databrary, authorized Databrary users.) They will view the videos to record information about what your child did during the study--for instance, looking for 9 seconds at one image and 7 seconds at another image.</li>
+                    <li><strong>Private</strong> This privacy level ensures that your video clips will be viewed only by authorized scientists (Children Helping Science staff, the research group running the study and, if you have opted to share your data with Databrary, authorized Databrary users.) They will view the videos to record information about what your child did during the study--for instance, looking for 9 seconds at one image and 7 seconds at another image.</li>
                     <li><strong>Scientific and educational</strong> This privacy level gives permission to share your video clips with other researchers or students for scientific or educational purposes. For example, researchers might show a video clip in a talk at a scientific conference or an undergraduate class about cognitive development, or include an image or video in a scientific paper. In some circumstances, video or images may be available online, for instance as supplemental material in a scientific paper. Sharing videos with other researchers helps other groups trust and build on our work.</li>
-                    <li><strong>Publicity</strong> This privacy level is for families who would be excited to see their child featured on the Lookit website or in the news! Selecting this privacy level gives permission to use your video clips to communicate about developmental studies and the Lookit platform with the public. For instance, we might post a short video clip on the Lookit website, on our Facebook page, or in a press release. Your video will never be used for commercial purposes.</li>
+                    <li><strong>Publicity</strong> This privacy level is for families who would be excited to see their child featured on the Children Helping Science website or in the news! Selecting this privacy level gives permission to use your video clips to communicate about developmental studies and the Children Helping Science platform with the public. For instance, we might post a short video clip on the Children Helping Science website, on our Facebook page, or in a press release. Your video will never be used for commercial purposes.</li>
                 </ul>
                 <p>If for some reason you do not select a privacy level, we treat the data as 'Private' and do not share with Databrary. Participants also have the option to withdraw all video besides consent at the end of the study if necessary (for instance, because someone was discussing state secrets in the background), and in this case it is automatically deleted. Privacy settings for completed sessions cannot automatically be changed retroactively. If you have any questions or concerns about privacy, please contact our team at <a href="mailto:lookit@mit.edu">lookit@mit.edu</a>.</p>
                 {% endblocktranslate %}
@@ -538,6 +539,34 @@
             </div>
         </div>
         <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-20-1">
+                <button class="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapse-20-1"
+                        aria-expanded="false"
+                        aria-controls="collapse-20-1">
+                    {% trans "I want to review the studies I have participated in, or I have a concern and want to contact the researchers." %}
+                </button>
+            </h2>
+            <div id="collapse-20-1"
+                 class="accordion-collapse collapse"
+                 aria-labelledby="heading-20-1"
+                 data-bs-parent="#faq-accordion-participation">
+                <div class="accordion-body">
+                    <p>
+                        {% trans "Each study on Children Helping Science is run by a separate team of researchers. To find contact information for a specific study, visit your" %}
+                        <a href="{% url "web:studies-history" %}">Study History</a>
+                        {% trans "page. On this page you can also see information about when you participated in a study, and for studies that run here on our platform, watch your child's video from the session!" %}
+                    </p>
+                    <p>
+                        {% trans "If you have a more general question, want to report something to the Children Helping Science team, or need help reaching the researcher team, please contact us at" %}
+                        <a href="mailto:lookit-tech@mit.edu">lookit@mit.edu</a>!
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
             <h2 class="accordion-header" id="heading-21">
                 <button class="accordion-button collapsed"
                         type="button"
@@ -553,12 +582,10 @@
                  aria-labelledby="heading-21"
                  data-bs-parent="#faq-accordion-participation">
                 <div class="accordion-body">
-                    {% blocktranslate %}
-                <p>You should expect to get an explanation about the purpose of every study you participate in when you consent to the study. At the end of the study, especially when it is a video chat, you should have a chance to ask any questions you like.</p>
-                <p>In general though, the goal of research studies is to learn about children in general, not any particular child. Thus, the information we get is usually not appropriate for making diagnoses or assessing the performance of individuals. For instance, while it might be interesting to learn that your child looked 70% of the time at videos where things fell up versus falling down today, we won't be able to tell you whether this means your child is going to be especially good at physics.</p>
+                    {% blocktranslate %} <p>You should expect to get an explanation about the purpose of every study you participate in when you consent to the study. At the end of the study, especially when it is a video chat, you should have a chance to ask any questions you like.</p> <p>In general though, the goal of research studies is to learn about children in general, not any particular child. Thus, the information we get is usually not appropriate for making diagnoses or assessing the performance of individuals. For instance, while it might be interesting to learn that your child looked 70% of the time at videos where things fell up versus falling down today, we won't be able to tell you whether this means your child is going to be especially good at physics.</p>
                 <p>If you're interested in getting individual results right away, please see our <a href='resources'>Resources</a> section for fun at-home activities you can try with your child.</p>
                 <p>Researchers usually aim to share the general results of studies in scientific journals (e.g., “The majority of three-year-olds chose option A; the majority of five-year-olds chose option B."). You can click <a href = "https://childrenhelpingscience.com/publications">here</a> to see some examples of scientific research published with data collected online with children.</p>
-                <p>There can be a long lag between conducting a study and publication -- your five-year-olds might be eight-year-olds before the results are in press! So in addition to scientific publications, many of the labs that post studies on this website have ways for parents to sign up to receive updates. You can also set your communication preferences to be notified by Lookit when we have results from studies you participated in.</p>
+                <p>There can be a long lag between conducting a study and publication -- your five-year-olds might be eight-year-olds before the results are in press! So in addition to scientific publications, many of the labs that post studies on this website have ways for parents to sign up to receive updates. You can also set your communication preferences to be notified by Children Helping Science when we have results from studies you participated in.</p>
                 {% endblocktranslate %}
                 </div>
             </div>
@@ -579,9 +606,10 @@
                  aria-labelledby="heading-22"
                  data-bs-parent="#faq-accordion-participation">
                 <div class="accordion-body">
+                    {% url "web:home" as url_home %}
                     {% blocktranslate %}
                 <p>Become a parent ambassador! One of the biggest challenges in developmental research is reaching families like you. With more children, we can also answer more sophisticated questions -- including questions about individual differences, the ways many different factors can interact to affect outcomes. Families like yours can help us make our science more representative and more reliable. </p>
-                <p>If you like what you are doing, please share this website (<a href = "https://lookit.mit.edu">https://lookit.mit.edu</a>), with our sincere thanks. Research on child development would be impossible without the support of parents like you.</p>
+                <p>If you like what you are doing, please share this website (<a href="{{url_home}}">https://www.childrenhelpingscience.com</a>), with our sincere thanks. Research on child development would be impossible without the support of parents like you.</p>
                 {% endblocktranslate %}
                 </div>
             </div>
@@ -603,9 +631,8 @@
                  data-bs-parent="#faq-accordion-participation">
                 <div class="accordion-body">
                     {% blocktranslate %}
-                <p>If you are a parent who has participated with your child in a study on this website, or a university-based researcher who has posted a study on this website, then we consider you a member of the Parent Researcher Collaborative!</p>
-                <p>If you are asking who runs this website, the answer is that we are a collaboration between two projects for online studies with children, Lookit and Children Helping Science. Lookit was founded by <a href = "https://kimberscott.github.io/">Kim Scott</a> and <a href = "http://eccl.mit.edu/">Laura Schulz</a> at MIT, and is now lead by Executive Director <a href = "http://www.melissaklinestruhl.com/">Melissa Kline Struhl</a>.  The original Children Helping Science website was created by <a href = "https://projects.iq.harvard.edu/ccdlab">Elizabeth Bonawitz</a> at Harvard, <a href = "http://sll.stanford.edu/">Hyowon Gweon</a> at Stanford, <a href = "https://compdevlab.yale.edu/">Julian Jara-Ettinger</a> at Yale, <a href = "https://www.utdallas.edu/thinklab/">Candice Mills</a> at UT Dallas, <a href = "http://eccl.mit.edu/">Laura Schulz</a> at MIT, and <a href = "https://www.minerva.kgi.edu/people/mark-sheskin-phd/">Mark Sheskin</a> at Minerva University. Mark did the web development (based on an initial design by Junyi Chu, a student in Laura's lab) and the logo was designed by Natalia Vélez, a student in Hyowon's lab. </p>
-                <p>We decided it would be nice for there to be one place online where parents and researchers could go to connect with each other to support research into child development!</p>
+                <p>If you are a parent or guardian who has participated with your child in a study on this website, or a university-based researcher who has posted a study on this website, then we consider you a member of the Parent Researcher Collaborative!</p>
+                <p>If you are asking who runs this website, the answer is that we are a group of scientists who decided it would be nice for there to be one place online where families and researchers could go to connect with each other to support research into child development! The new Children Helping Science website is a collaboration between two previous platforms, Lookit and (an earlier version of) Children Helping Science. Lookit was founded by <a href = "https://kimberscott.github.io/">Kim Scott</a> and <a href = "http://eccl.mit.edu/">Laura Schulz</a> at MIT, and is now lead by Executive Director <a href = "http://www.melissaklinestruhl.com/">Melissa Kline Struhl</a>.  The original Children Helping Science website was created by <a href = "https://projects.iq.harvard.edu/ccdlab">Elizabeth Bonawitz</a> at Harvard, <a href = "http://sll.stanford.edu/">Hyowon Gweon</a> at Stanford, <a href = "https://compdevlab.yale.edu/">Julian Jara-Ettinger</a> at Yale, <a href = "https://www.utdallas.edu/thinklab/">Candice Mills</a> at UT Dallas, <a href = "http://eccl.mit.edu/">Laura Schulz</a> at MIT, and <a href = "https://www.minerva.kgi.edu/people/mark-sheskin-phd/">Mark Sheskin</a> at Minerva University. Mark did the web development (based on an initial design by Junyi Chu, a student in Laura's lab) and the logo was designed by Natalia Vélez, a student in Hyowon's lab. </p>
                 {% endblocktranslate %}
                 </div>
             </div>
@@ -656,7 +683,7 @@
                  data-bs-parent="#faq-accordion-technical">
                 <div class="accordion-body">
                     <p>
-                        {% trans "Lookit supports recent versions of Chrome and Firefox. We are not currently able to support Internet Explorer or Safari." %}
+                        {% trans "Children Helping Science officially supports recent versions of Chrome and Firefox. In particular, the Lookit engine is not currently able to support Internet Explorer or Safari." %}
                     </p>
                 </div>
             </div>
@@ -701,7 +728,7 @@
                  data-bs-parent="#faq-accordion-technical">
                 <div class="accordion-body">
                     {% blocktranslate %}
-                <p>If you are trying to participate in a study and having difficulties, please start by contacting the researchers who made that specific study.  If you still need help, you can also reach the Lookit team for help at <a href="mailto:lookit-tech@mit.edu">lookit-tech@mit.edu</a>.</p>
+                <p>If you are trying to participate in a study and having difficulties, please start by contacting the researchers who made that specific study.  If you still need help, you can also reach the Children Helping Science team for help at <a href="mailto:lookit-tech@mit.edu">lookit-tech@mit.edu</a>.</p>
                 <p>If you are a researcher working on creating a study, you can find help in our <a href="https://lookit.readthedocs.io/en/develop/index.html">documentation</a>, and in our <a href = "https://docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform">Slack community</a>.</p>
                 {% endblocktranslate %}
                 </div>
@@ -724,7 +751,7 @@
                  data-bs-parent="#faq-accordion-technical">
                 <div class="accordion-body">
                     {% blocktranslate %}
-                <p>Here at Lookit we are very concerned about protecting your and your children's data, and our software is designed to take advantage of up-to-date security measures. You can read a bit about how we do this in our <a href = "https://lookit.readthedocs.io/en/develop/community-irb-and-legal-information.html#sub-processors-and-information-about-gdpr-compliance-dpas">documentation</a>, and an updated HECVAT is available by emailing <a href="mailto:lookit@mit.edu">lookit@mit.edu</a>.</p>
+                <p>Here at Children Helping Science we are very concerned about protecting your and your children's data, and our software is designed to take advantage of up-to-date security measures. You can read a bit about how we do this in our <a href = "https://lookit.readthedocs.io/en/develop/community-irb-and-legal-information.html#sub-processors-and-information-about-gdpr-compliance-dpas">documentation</a>, and an updated HECVAT is available by emailing <a href="mailto:lookit@mit.edu">lookit@mit.edu</a>.</p>
                 {% endblocktranslate %}
                 </div>
             </div>
@@ -750,10 +777,15 @@
                  aria-labelledby="heading-29"
                  data-bs-parent="#faq-accordion-for-researchers">
                 <div class="accordion-body">
+                    <p>
+                        {% trans "Visit our" %}
+                        <a href="https://lookit.readthedocs.io/en/develop/researchers-start-here.html">{% trans "documentation" %}</a>
+                        {% trans "for a complete guide to posting your studies on Children Helping Science!" %}
+                    </p>
                     {% blocktranslate %}
                 <p>In order to list your study on this website, you first will need to have your institution sign a contract with MIT where they agree to the <a href="https://lookit.mit.edu/termsofuse">Terms of Use</a> and certify that their studies will be reviewed and approved by an institutional review board. You will also need to edit your IRB protocol to include online testing, or submit a new protocol for your proposed online study.</p>
-                <p>As of January 2022, we have agreements with over 50 universities, including institutions in the United States, Canada, the United Kingdom, and European Union. Please email <a href="mailto:lookit-tech@mit.edu">lookit@mit.edu</a> if you are not sure whether your institution already has an agreement, or if you need any help at all getting your paperwork in order.</p>
-                <p>While you are completing these steps, you can get started on Lookit by creating a lab account, creating your first study, and getting it peer reviewed by our researcher community. A step-by-step guide to getting started is available <a href="https://lookit.readthedocs.io/en/develop/researchers-start-here.html">here</a>.</p>
+                <p>As of April 2023, we have agreements with over 90 universities, including institutions in the United States, Canada, the United Kingdom, and European Union. Please email <a href="mailto:lookit-tech@mit.edu">lookit@mit.edu</a> if you are not sure whether your institution already has an agreement, or if you need any help at all getting your paperwork in order.</p>
+                <p>While you are completing these steps, you can get started on Children Helping Science by creating a lab account, creating your first study, and getting it peer reviewed by our researcher community. A step-by-step guide to getting started is available <a href="https://lookit.readthedocs.io/en/develop/researchers-start-here.html">here</a>.</p>
                 {% endblocktranslate %}
                 </div>
             </div>
@@ -775,7 +807,7 @@
                  data-bs-parent="#faq-accordion-for-researchers">
                 <div class="accordion-body">
                     {% blocktranslate %}
-                <p>Lookit has a <a href = "https://docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform">Slack community</a> for researchers to ask for help, conduct peer review, and discuss online research methods.</p>
+                <p>Children Helping Science has a <a href = "https://docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform">Slack community</a> for researchers to ask for help, conduct peer review, and discuss online research methods.</p>
                 <p>The Society for Research in Child Development also has a <a href = "https://commons.srcd.org/communities/community-home/digestviewer/viewthread?CommunityKey=bd3d326e-b7db-49bf-abbb-73642ac0576c&GroupId=109&MessageKey=0871d623-bd97-48c5-b8e4-54ecda9de9d8&ReturnUrl=%2Fcommunities%2Fcommunity-home%2Fdigestviewer%3Fcommunitykey%3Dbd3d326e-b7db-49bf-abbb-73642ac0576c%26tab%3Ddigestviewer&tab=digestviewer">discussion forum</a> you might check out!</p>
                 {% endblocktranslate %}
                 </div>
