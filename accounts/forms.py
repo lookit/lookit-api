@@ -74,7 +74,9 @@ class TOTPCheckForm(forms.Form):
     is set in view kwargs.
     """
 
-    otp_code = TOTPField(label="Enter your one-time password (OTP code).")
+    otp_code = TOTPField(
+        label="Enter your one-time password (OTP code) via the Google Authenticator app on your mobile device."
+    )
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop("request")
