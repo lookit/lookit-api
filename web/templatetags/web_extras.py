@@ -87,13 +87,16 @@ def google_tag_manager() -> Text:
 
 
 @register.simple_tag
-def nav_link(request, url_name, text, html_classes=None, queryString=None):
+def nav_link(request, url_name, text, html_classes=None, queryString=None, list=False):
     """General navigation bar item
 
     Args:
         request (Request): Reqeust submitted from template
         url_name (Text): Name of url to be looked up by reverse
         text (Text): Text to be displayed in item
+        html_classes (Array): optional list of one or more classes for the <a> element
+        queryString (Text): optional query string to be appended to the end of URL
+        list (Boolean): should the nav links be inside <li> elements? (default is False)
 
     Returns:
         SafeText: HTML of navigation item
@@ -114,9 +117,14 @@ def nav_link(request, url_name, text, html_classes=None, queryString=None):
     if queryString:
         url = url + queryString
 
-    return mark_safe(
-        f'<a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a>'
-    )
+    if list:
+        return mark_safe(
+            f'<li class="nav-item"><a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a></li>'
+        )
+    else:
+        return mark_safe(
+            f'<a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a>'
+        )
 
 
 @register.simple_tag
