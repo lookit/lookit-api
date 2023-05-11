@@ -1,6 +1,8 @@
 const data = document.currentScript.dataset;
 const btnPrimaryClasses = data.btnPrimaryClasses;
 const btnSecondaryClasses = data.btnSecondaryClasses;
+const externalStudy = data.externalStudy === 'True'
+
 
 $.fn.editable.defaults.mode = 'inline';
 
@@ -8,6 +10,17 @@ $.fn.editableform.buttons = `
 <button type="submit" class="${btnPrimaryClasses}">&#x2713;</button>
 <button type="button" class="${btnSecondaryClasses}">&#x2715;</button>
 `
+
+function formCheckbox(label, name) {
+    return `
+    <div class="checkbox" >
+        <label>
+            <input type="checkbox" value="" name="${name}" />
+            ${label}
+        </label>
+    </div >
+    `
+}
 
 function removeTooltip() {
     $('[data-toggle="tooltip"]').tooltip('hide');
@@ -18,15 +31,11 @@ function cloneStudy() {
 }
 
 function onStateSelect(stateListItem) {
-    console.log("clocked");
     const trigger = $(stateListItem).data()['trigger'];
     const stateChangeForm = $('#studyStateModalForm');
     const stateChangeCommentsInput = stateChangeForm.find('textarea[name=comments-text]');
     const infoText = transitionHelpData[trigger];
     const commentsHelpText = commentsHelpData[trigger];
-
-
-    console.log(trigger);
 
     stateChangeCommentsInput.show();
 
@@ -51,7 +60,7 @@ function onStateSelect(stateListItem) {
     $additionalInfoSpan.text(infoText);
 
     const $commentsHelpText = stateChangeForm.find('#study-comments-help-text');
-    $commentsHelpText.text(commentsHelpText);
+    $commentsHelpText.append(commentsHelpText.split('\n').map(v => `<p>${v}</p>`).join(''));
 
     stateChangeForm.find('input[name=trigger]').val(trigger);
 
@@ -60,24 +69,32 @@ function onStateSelect(stateListItem) {
     $declarationsForm.empty();
 
     if (trigger in declarations) {
-        $declarationsForm.append(`
-            <p>Please note here any elements of your study that require additional review(see Terms of Use):</p>
-            `);
-        for (let key in declarations[trigger]) {
-            $declarationsForm.append(`
-                <div class="checkbox" >
-                    <label>
-                        <input type="checkbox" value="" name="${key}" />
-                        ${declarations[trigger][key]}
-                    </label>
-                </div >
-                `)
+        $declarationsForm.append('<p>Please note here any elements of your study that require additional review (see Terms of Use):</p>');
+
+        /**
+         * For this section of the form, we need two fields to be conditional 'collecting_data' 
+         * and 'issue_consent'. 
+         */
+        const filteredDelarations = Object.keys(declarations[trigger])
+            .filter((key) => key !== 'collecting_data')
+            .filter((key) => !externalStudy || key !== 'issue_consent')
+            .reduce((cur, key) => { return Object.assign(cur, { [key]: declarations[trigger][key] }) }, {});
+
+        for (let key in filteredDelarations) {
+            $declarationsForm.append(formCheckbox(declarations[trigger][key], key))
         }
         $declarationsForm.append(`
-            <p>If you checked any of the boxes above, please describe below:</p>
+            <p class="pt-2">If you checked any of the boxes above, please describe below:</p>
             <textarea class="form-control" rows="5" name="issues_description" placeholder="Describe declarations here"></textarea>
             `);
     }
+
+    if (externalStudy) {
+        const $collectingData = stateChangeForm.find('.collecting-data');
+        $collectingData.append('<hr/><p>If you are submitting a study that is already actively collecting data from participants, check the box below:</p>');
+        $collectingData.append(formCheckbox(declarations[trigger]['collecting_data'], 'collecting_data'));
+    }
+
 }
 
 const origin = window.location.origin;

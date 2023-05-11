@@ -3,7 +3,7 @@
 {% load web_extras %}
 {% button_secondary_classes as btn_secondary_classes %}
 {% button_primary_classes as btn_primary_classes %}
-<div class="modal fade m-5"
+<div class="modal modal-lg fade m-5"
      id="studyStateModal"
      tabindex="-1"
      aria-labelledby="studyStateModalLabel"
@@ -13,7 +13,14 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="studyStateModalLabel">Are you sure you want to change the status of {{ study.name }}?</h5>
+                <h5 class="modal-title" id="studyStateModalLabel">
+                    {% if state == "created" %}
+                        This will notify Children Helping Science admins that your study is ready
+                        for review. If you make additional changes, you will need to resubmit.
+                    {% else %}
+                        Are you sure you want to change the status of {{ study.name }}?
+                    {% endif %}
+                </h5>
             </div>
             <form id="studyStateModalForm"
                   action="{% url 'exp:change-study-status' study.id %}"
@@ -21,9 +28,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="trigger"/>
                 <div class="modal-body">
-                    <p class="help-text">
-                        <span id="study-comments-help-text"></span>
-                    </p>
+                    <div id="study-comments-help-text" class="help-text"></div>
                     <textarea class="form-control"
                               rows="5"
                               name="comments-text"
@@ -32,6 +37,7 @@
                         <span id="study-status-additional-information"></span>
                     </p>
                     <div class="declarations"></div>
+                    {% if study.study_type.is_external %}<div class="collecting-data"></div>{% endif %}
                 </div>
                 <div class="modal-footer">
                     {% url 'exp:study-detail' pk=study.id as url_study_detail %}
