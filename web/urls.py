@@ -83,4 +83,9 @@ urlpatterns = [
         TemplateView.as_view(template_name="web/publications.html"),
         name="publications",
     ),
+    path(
+        "garden/",
+        TemplateView.as_view(template_name="web/garden/home.html"),
+        name="garden-home",
+    ),
 ]
