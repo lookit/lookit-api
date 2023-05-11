@@ -1,0 +1,13 @@
+{% extends "web/base.html" %}
+{% load django_bootstrap5 %}
+{% load i18n %}
+{% load static %}
+{% load bootstrap_icons %}
+{% load web_extras %}
+{% block title %}
+    GARDEN About
+{% endblock title %}
+{% block content %}
+    {% url "web:lab-studies-list" lab_slug="garden" as garden_url %}
+    {% include "web/garden/_navigation.html" %}
+{% endblock content %}

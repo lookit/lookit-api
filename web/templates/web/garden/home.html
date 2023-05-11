@@ -8,6 +8,7 @@
     GARDEN Home
 {% endblock title %}
 {% block content %}
+    {% url "web:lab-studies-list" lab_slug="garden" as garden_url %}
     {% include "web/garden/_navigation.html" %}
     <div class="row m-5 text-center justify-content-evenly align-items-center">
         <div class="col-12 col-lg-10 col-xl-8">
@@ -46,16 +47,16 @@
         <div class="col-12 col-lg-10"></div>
         <h3 class="{% subheading_classes %}">Click the links below to learn more about Project GARDEN!</h3>
         <p>
-            <a href="#">What is Project GARDEN?</a>
+            <a href="{% url 'web:garden-about' %}">What is Project GARDEN?</a>
         </p>
         <p>
-            <a href="#">New to Project GARDEN? Visit our How to Participate page!</a>
+            <a href="{% url 'web:garden-participate' %}">New to Project GARDEN? Visit our How to Participate page!</a>
         </p>
         <p>
-            <a href="#">Project GARDEN Studies</a>
+            <a href="{{ base_url }}{{ garden_url }}">Project GARDEN Studies</a>
         </p>
         <p>
-            <a href="#">Meet the scientists!</a>
+            <a href="{% url 'web:garden-scientists' %}">Meet the scientists!</a>
         </p>
     </div>
 {% endblock content %}
