@@ -10,4 +10,82 @@
 {% block content %}
     {% url "web:lab-studies-list" lab_slug="garden" as garden_url %}
     {% include "web/garden/_navigation.html" %}
+    {% trans "How to Participate" as trans_participate_title %}
+    {% page_title trans_participate_title %}
+    <div class="row m-lg-4 justify-content-evenly align-items-center">
+        <div class="col-12 col-lg-10">
+            <h3 class="{% subheading_classes %}">Is Project GARDEN for me?</h3>
+            <p class="mx-lg-4">Project GARDEN is for all families with 3- to 6-year-old children who:</p>
+            <ul class="mx-lg-4 lh-lg">
+                <li>Can be supervised by a legal caregiver (parent or other legal guardian) as they participate in each study</li>
+                <li>Can use and understand English</li>
+                <li>
+                    Have access to a computer or laptop that has:
+                    <ul>
+                        <li>A webcam and a microphone</li>
+                        <li>Internet access</li>
+                    </ul>
+                </li>
+                <li>
+                    Would like to receive a $5 Amazon.com (U.S.-based) gift card each time they participate in one of our 8 studies.
+                </li>
+            </ul>
+            <h3 class="{% subheading_classes %}">Getting started in Project GARDEN</h3>
+            <p class="mx-lg-4">To start participating in Project GARDEN, you will follow an easy three-step process:</p>
+            <h4 class="pb-2 pt-4 mb-lg-4 mx-lg-4">
+                <ol start="1">
+                    <li>Create an account on Children Helping Science</li>
+                </ol>
+            </h4>
+            <ul class="mx-lg-4 lh-lg">
+                <li>
+                    Click on the “Sign-up” button <a href="{% url 'web:participant-signup' %}">here</a>, or at the top right of this website
+                </li>
+                <li>
+                    Follow the instructions to sign up for an account, including reading and agreeing to the Children Helping Science Privacy Statement
+                </li>
+                <li>
+                    Note: You will log in to your Children Helping Science account each time you and your child participate in a Project GARDEN study.
+                </li>
+            </ul class="mx-lg-4">
+            <h4 class="pb-2 pt-4 mb-lg-4 mx-lg-4">
+                <ol start="2">
+                    <li>
+                        Visit the Project GARDEN <a href="{{ base_url }}{{ garden_url }}">Studies Page</a>
+                    </li>
+                </ol>
+            </h4>
+            <ul class="mx-lg-4 lh-lg">
+                <li>Click on the first study to get started!</li>
+                <li>
+                    You can return to this page at any time to participate in more studies, or, after you've completed enough studies, re-watch some Storybook videos with Fen, our friendly fennec fox!
+                </li>
+                <li>
+                    At the start, only three studies will be available, but more studies will become available each month. For the first part of Project GARDEN, there will be 7 studies for your child and 1 study for you, for a total of 8 studies. More studies will be released over time!
+                </li>
+            </ul>
+            <h4 class="pb-2 pt-4 mb-lg-4 mx-lg-4">
+                <ol start="3">
+                    <li>Click on the first Project GARDEN study to start participating!</li>
+                </ol>
+            </h4>
+            <ul class="mx-lg-4 lh-lg">
+                <li>At the start of each study, we will provide a consent form that will tell you all about the study.</li>
+                <li>
+                    After you read the consent form, you will record a short consent video with you and your child where you say you agree to participate in the study.
+                </li>
+                <li>Then, you will start the study - each study will tell you exactly what to do to participate!</li>
+                <li>
+                    Once you finish, we will check your consent video to make sure you and your child are both present and eligible for the study. All eligible families will receive a $5 Amazon.com gift card (U.S.-only) within 7 business days after participating in each study.
+                </li>
+                <li>
+                    Families who complete all 8 studies will receive an extra $10 Amazon.com gift card! In total, families who complete all 8 studies will receive $50 in Amazon.com gift cards (eight $5 gift cards and one extra $10 gift card).
+                </li>
+                <li>More studies will be available over time, with more adventures with Fen!</li>
+            </ul>
+            <p class="mx-lg-4">
+                Click <a href="{% url 'web:garden-about' %}">here</a> to learn more about Project GARDEN and see our FAQ.
+            </p>
+        </div>
+    </div>
 {% endblock content %}
