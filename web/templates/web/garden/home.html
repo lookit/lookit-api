@@ -44,19 +44,20 @@
         </div>
     </div>
     <div class="row m-4 text-center justify-content-evenly align-items-center">
-        <div class="col-12 col-lg-10"></div>
-        <h3 class="{% subheading_classes %}">Click the links below to learn more about Project GARDEN!</h3>
-        <p>
-            <a href="{% url 'web:garden-about' %}">What is Project GARDEN?</a>
-        </p>
-        <p>
-            <a href="{% url 'web:garden-participate' %}">New to Project GARDEN? Visit our How to Participate page!</a>
-        </p>
-        <p>
-            <a href="{{ base_url }}{{ garden_url }}">Project GARDEN Studies</a>
-        </p>
-        <p>
-            <a href="{% url 'web:garden-scientists' %}">Meet the scientists!</a>
-        </p>
+        <div class="col-12 col-lg-10">
+            <h3 class="{% subheading_classes %}">Click the links below to learn more about Project GARDEN!</h3>
+            <p>
+                <a href="{% url 'web:garden-about' %}">What is Project GARDEN?</a>
+            </p>
+            <p>
+                <a href="{% url 'web:garden-participate' %}">New to Project GARDEN? Visit our How to Participate page!</a>
+            </p>
+            <p>
+                <a href="{{ base_url }}{{ garden_url }}">Project GARDEN Studies</a>
+            </p>
+            <p>
+                <a href="{% url 'web:garden-scientists' %}">Meet the scientists!</a>
+            </p>
+        </div>
     </div>
 {% endblock content %}
