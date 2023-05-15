@@ -1,48 +1,14 @@
 {% load static %}
+{% load web_extras %}
+{% static 'images/becky.jpg' as becky_img %}
+{% static 'images/cj-green.jpeg' as cj_img %}
+{% static 'images/melissa-kline-struhl.png' as melissa_img %}
+{% static 'images/laura-schulz.jpeg' as laura_img %}
+{% static 'images/mark-sheskin.jpg' as mark_img %}
 <div class="row">
-    <div class="col-3">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Becky Gilbert"
-             src="{% static 'images/becky.jpg' %}"/>
-        <h3 class="text-center">Becky Gilbert</h3>
-        <p>
-            Becky is a software engineer for Lookit. She loves helping researchers build experiments, and working on state-of-the-art methods for online data collection.
-        </p>
-    </div>
-    <div class="col-3">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="CJ Green"
-             src="{% static 'images/cj-green.jpeg' %}"/>
-        <h3 class="text-center">CJ Green</h3>
-        <p>
-            CJ is Lookit's lead software infrastructure engineer, working on planning and adding features for both participants and researchers.
-        </p>
-    </div>
-    <div class="col-3">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Melissa Kline Struhl"
-             src="{% static 'images/melissa-kline-struhl.png' %}"/>
-        <h3 class="text-center">Melissa Kline Struhl</h3>
-        <p>
-            Melissa is the director of Lookit and a research scientist in the MIT Early Childhood Cognition Lab. She loves it when the data surprises her, and loves talking to researchers and families about how to make Lookit better.
-        </p>
-    </div>
-    <div class="col-3">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Laura Schulz"
-             src="https://lookitcontents.s3.amazonaws.com/website/laura.jpg"/>
-        <h3 class="text-center">Laura Schulz</h3>
-        <p>
-            Laura is the PI of the Early Childhood Cognition Lab. She conducts research about how children arrive at a common-sense understanding of the physical and social world through exploration and instruction.
-        </p>
-    </div>
-    <div class="col-3">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Mark Sheskin"
-             src="https://lookitcontents.s3.amazonaws.com/website/mark.jpg"/>
-        <h3 class="text-center">Mark Sheskin</h3>
-        <p>
-            Mark organizes the Lookit Working Groups, which are groups of researchers working to improve Lookit in a variety of ways.
-        </p>
-    </div>
+    {% staff_profile "Becky Gilbert" becky_img "Becky is a software engineer for Lookit. She loves helping researchers build experiments, and working on state-of-the-art methods for online data collection." %}
+    {% staff_profile "CJ Green" cj_img "CJ is Lookit's lead software infrastructure engineer, working on planning and adding features for both participants and researchers." %}
+    {% staff_profile "Melissa Kline Struhl" melissa_img "Melissa is the director of Lookit and a research scientist in the MIT Early Childhood Cognition Lab. She loves it when the data surprises her, and loves talking to researchers and families about how to make Lookit better." %}
+    {% staff_profile "Laura Schulz" laura_img "Laura is the PI of the Early Childhood Cognition Lab. She conducts research about how children arrive at a common-sense understanding of the physical and social world through exploration and instruction." %}
+    {% staff_profile "Mark Sheskin" mark_img "Mark organizes the Lookit Working Groups, which are groups of researchers working to improve Lookit in a variety of ways." %}
 </div>
