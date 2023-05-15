@@ -311,7 +311,7 @@ class FormButtonsNode(template.Node):
 
 @register.simple_tag
 def staff_profile(name, img, blurb):
-    html = f"""<div class="col-3">
+    html = f"""<div class="col-12 col-md-6 col-lg-3">
     <img class="img-fluid w-100 mx-auto d-block rounded-circle shadow mb-3" 
     alt="{name}" 
     src="{img}"/> 
