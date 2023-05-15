@@ -307,3 +307,15 @@ class FormButtonsNode(template.Node):
     def render(self, context):
         rendered_buttons = (n.render(context) for n in self.nodelist)
         return f'<div class="d-flex justify-content-end gap-1">{"".join(rendered_buttons)}</div>'
+
+
+@register.simple_tag
+def staff_profile(name, img, blurb):
+    html = f"""<div class="col-3">
+    <img class="img-fluid w-100 mx-auto d-block rounded-circle shadow mb-3" 
+    alt="{name}" 
+    src="{img}"/> 
+    <h3 class="text-center">{name}</h3> 
+    <p>{blurb}</p>
+    </div>"""
+    return mark_safe(html)

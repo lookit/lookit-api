@@ -1,39 +1,12 @@
 {% load static %}
+{% load web_extras %}
+{% static 'images/candice-mills-2.jpg' as candice_img %}
+{% static 'images/mark-sheskin.jpg' as mark_img %}
+{% static 'images/melissa-kline-struhl.png' as melissa_img %}
+{% static 'images/ian-chandler-campbell.jpg' as ian_img %}
 <div class="row">
-    <div class="col-3">
-        <img class="img-fluid w-100 mx-auto d-block rounded-circle shadow mb-3"
-             alt="Candice Mills"
-             src="{% static 'images/candice-mills-2.jpg' %}"/>
-        <h3 class="text-center">Candice Mills</h3>
-        <p>
-            Candice Mills is the co-director of the Project GARDEN team. Dr. Mills is a full professor of psychology and the director of the Think Lab at the University of Texas at Dallas.
-        </p>
-    </div>
-    <div class="col-3">
-        <img class="img-fluid w-100 mx-auto d-block rounded-circle shadow mb-3"
-             alt="Mark Sheskin"
-             src="{% static 'images/mark-sheskin.jpg' %}"/>
-        <h3 class="text-center">Mark Sheskin</h3>
-        <p>
-            Mark Sheskin is the co-director of the Project GARDEN Team. Dr. Sheskin is an associate professor of psychology at Minerva University.
-        </p>
-    </div>
-    <div class="col-3">
-        <img class="img-fluid w-100 mx-auto d-block rounded-circle shadow mb-3"
-             alt="Melissa Kline Struhl"
-             src="{% static 'images/melissa-kline-struhl.png' %}"/>
-        <h3 class="text-center">Melissa Kline Struhl</h3>
-        <p>
-            Melissa Kline Struhl is on the Project GARDEN leadership team bringing her expertise using and maintaining Children Helping Science's technical engine called “Lookit” (the code that enables the studies to work!). Dr. Kline Struhl is the Executive Director of Lookit at the Massachusetts Institute of Technology (MIT).
-        </p>
-    </div>
-    <div class="col-3">
-        <img class="img-fluid w-100 mx-auto d-block rounded-circle shadow mb-3"
-             alt="Ian Chandler-Campbell"
-             src="{% static 'images/ian-chandler-campbell.jpg' %}"/>
-        <h3 class="text-center">Ian Chandler-Campbell</h3>
-        <p>
-            Ian Chandler-Campbell is a postdoctoral researcher on the Project GARDEN team working at UT Dallas. Dr. Chandler-Campbell is in charge of developing and supporting the family experience and research infrastructure for Project GARDEN.
-        </p>
-    </div>
+    {% staff_profile "Candice Mills" candice_img "Candice Mills is the co-director of the Project GARDEN team. Dr. Mills is a full professor of psychology and the director of the Think Lab at the University of Texas at Dallas." %}
+    {% staff_profile "Mark Sheskin" mark_img "Mark Sheskin is the co-director of the Project GARDEN Team. Dr. Sheskin is an associate professor of psychology at Minerva University." %}
+    {% staff_profile "Melissa Kline Struhl" melissa_img "Melissa Kline Struhl is on the Project GARDEN leadership team bringing her expertise using and maintaining Children Helping Science's technical engine called “Lookit” (the code that enables the studies to work!). Dr. Kline Struhl is the Executive Director of Lookit at the Massachusetts Institute of Technology (MIT)." %}
+    {% staff_profile "Ian Chandler-Campbell" ian_img "Ian Chandler-Campbell is a postdoctoral researcher on the Project GARDEN team working at UT Dallas. Dr. Chandler-Campbell is in charge of developing and supporting the family experience and research infrastructure for Project GARDEN." %}
 </div>

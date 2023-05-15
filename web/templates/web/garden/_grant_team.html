@@ -1,42 +1,14 @@
 {% load static %}
+{% load web_extras %}
+{% static 'images/elizabeth-bonawitz.jpg' as elizabeth_img %}
+{% static 'images/hyowon-gweon.png' as hyowon_img %}
+{% static 'images/julian-jara-ettinger.png' as julian_img %}
+{% static 'images/marjorie-rhodes.jpg' as marjorie_img %}
+{% static 'images/laura-schulz.jpeg' as laura_img %}
 <div class="row">
-    <div class="col-3">
-        <img class="img-fluid w-100 mx-auto d-block rounded-circle shadow mb-3"
-             alt="Elizabeth Bonawitz"
-             src="{% static 'images/elizabeth-bonawitz.jpg' %}"/>
-        <h3 class="text-center">Elizabeth Bonawitz</h3>
-        <p>
-            Elizabeth Bonawitz is the David Vitale Associate Professor in Learning Sciences and PI of the Computational Cognitive Development Lab at Harvard University, Graduate School of Education.
-        </p>
-    </div>
-    <div class="col-3">
-        <img class="img-fluid w-100 mx-auto d-block rounded-circle shadow mb-3"
-             alt="Hyowon Gweon"
-             src="{% static 'images/hyowon-gweon.png' %}"/>
-        <h3 class="text-center">Hyowon Gweon</h3>
-        <p>Hyowon Gweon is an associate professor at Stanford University in the Department of Psychology.</p>
-    </div>
-    <div class="col-3">
-        <img class="img-fluid w-100 mx-auto d-block rounded-circle shadow mb-3"
-             alt="Julian Jara-Ettinger"
-             src="{% static 'images/julian-jara-ettinger.png' %}"/>
-        <h3 class="text-center">Julian Jara-Ettinger</h3>
-        <p>Julian Jara-Ettinger is an assistant professor at Yale University in the Department of Psychology.</p>
-    </div>
-    <div class="col-3">
-        <img class="img-fluid w-100 mx-auto d-block rounded-circle shadow mb-3"
-             alt="Marjorie Rhodes"
-             src="{% static 'images/marjorie-rhodes.jpg' %}"/>
-        <h3 class="text-center">Marjorie Rhodes</h3>
-        <p>
-            Marjorie Rhodes is a full professor at New York University and the Director of the Conceptual Development and Social Cognition Lab.
-        </p>
-    </div>
-    <div class="col-3">
-        <img class="img-fluid w-100 mx-auto d-block rounded-circle shadow mb-3"
-             alt="Laura Schulz"
-             src="{% static 'images/laura-schulz.jpeg' %}"/>
-        <h3 class="text-center">Laura Schulz</h3>
-        <p>Laura Schulz is a full professor at MIT and the PI of the Early Childhood Cognition Lab.</p>
-    </div>
+    {% staff_profile "Elizabeth Bonawitz" elizabeth_img "Elizabeth Bonawitz is the David Vitale Associate Professor in Learning Sciences and PI of the Computational Cognitive Development Lab at Harvard University, Graduate School of Education." %}
+    {% staff_profile "Hyowon Gweon" hyowon_img "Hyowon Gweon is an associate professor at Stanford University in the Department of Psychology." %}
+    {% staff_profile "Julian Jara-Ettinger" julian_img "Julian Jara-Ettinger is an assistant professor at Yale University in the Department of Psychology." %}
+    {% staff_profile "Marjorie Rhodes" marjorie_img "Marjorie Rhodes is a full professor at New York University and the Director of the Conceptual Development and Social Cognition Lab." %}
+    {% staff_profile "Laura Schulz" laura_img "Laura Schulz is a full professor at MIT and the PI of the Early Childhood Cognition Lab." %}
 </div>

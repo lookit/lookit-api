@@ -1,12 +1,6 @@
 {% load static %}
+{% load web_extras %}
+{% static 'images/elham-doust.jpeg' as elham_img %}
 <div class="row">
-    <div class="col-3">
-        <img class="img-fluid w-100 mx-auto d-block rounded-circle shadow mb-3"
-             alt="Elham Doust"
-             src="{% static 'images/elham-doust.jpeg' %}"/>
-        <h3 class="text-center">Elham Doust</h3>
-        <p>
-            Elham Doust is the animator and lead artist for the GARDEN Storybook featuring Fen the friendly fox! She is a lecturer at UT Dallas in the School of Arts, Humanities, and Technology
-        </p>
-    </div>
+    {% staff_profile "Elham Doust" elham_img "Elham Doust is the animator and lead artist for the GARDEN Storybook featuring Fen the friendly fox! She is a lecturer at UT Dallas in the School of Arts, Humanities, and Technology." %}
 </div>
