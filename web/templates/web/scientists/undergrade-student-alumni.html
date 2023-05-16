@@ -1,146 +1,26 @@
+{% load static %}
+{% load web_extras %}
+{% static 'images/joseph-alvarez.jpg' as joseph_img %}
+{% static 'images/daniela-carrasco.jpg' as daniela_img %}
+{% static 'images/jean-chow.jpg' as jean_chow_img %}
+{% static 'images/junyi-chu.jpg' as junyi_img %}
+{% static 'images/annie-dai.jpg' as annie_img %}
+{% static 'images/hope-fuller-becker.jpg' as hope_img %}
+{% static 'images/audrey-ricks.jpg' as audrey_img %}
+{% static 'images/rianna-shah.jpg' as rianna_img %}
+{% static 'images/jean-yu.jpg' as jean_yu_img %}
+{% static 'images/jessica-zhu.jpg' as jessica_img %}
 <div class="row">
-    <div class="col-2 text-center">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Joseph Alvarez"
-             src="https://storage.googleapis.com/lookit-staging/static/images/joseph.jpg"/>
-        <h3 >
-            Joseph
-            <br />
-            Alvarez
-        </h3>
-        <p >Summer 2015</p>
-        <p >Skidmore College</p>
-    </div>
-    <div class="col-2 text-center">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Daniela Carrasco"
-             src="https://storage.googleapis.com/lookit-staging/static/images/daniela.jpg"/>
-        <h3 >
-            Daniela
-            <br />
-            Carrasco
-        </h3>
-        <p >Spring 2015</p>
-        <p >MIT</p>
-    </div>
-    <div class="col-2 text-center">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Jean Chow"
-             src="https://storage.googleapis.com/lookit-staging/static/images/jean.jpg"/>
-        <h3 >
-            Jean
-            <br />
-            Chow
-        </h3>
-        <p >Fall 2014</p>
-        <p >MIT</p>
-    </div>
-    <div class="col-2 text-center">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Junyi Chu"
-             src="https://storage.googleapis.com/lookit-staging/static/images/junyi.jpg"/>
-        <h3 >
-            Junyi
-            <br />
-            Chu
-        </h3>
-        <p >Summer 2015</p>
-        <p >Vanderbilt</p>
-    </div>
-    <div class="col-2 text-center">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Annie Dai"
-             src="https://storage.googleapis.com/lookit-staging/static/images/annie.jpg"/>
-        <h3 >
-            Annie
-            <br />
-            Dai
-        </h3>
-        <p >IAP, Spring 2015</p>
-        <p >MIT</p>
-    </div>
-    <div class="col-2 text-center">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Hope Fuller-Becker"
-             src="https://storage.googleapis.com/lookit-staging/static/images/hope.jpg"/>
-        <h3 >
-            Hope
-            <br />
-            Fuller-Becker
-        </h3>
-        <p >Spring 2015, 2016</p>
-        <p >Wellesley College</p>
-    </div>
-    <div class="col-2 text-center">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Kamaria Kaalund"
-             src="https://s3.amazonaws.com/lookitcontents/website/kamaria.jpg"/>
-        <h3 >
-            Kamaria
-            <br />
-            Kaalund
-        </h3>
-        <p >Fall 2019</p>
-        <p >Wellesley College</p>
-    </div>
-    <div class="col-2 text-center">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Audrey Ricks"
-             src="https://storage.googleapis.com/lookit-staging/static/images/audrey.jpg"/>
-        <h3 >
-            Audrey
-            <br />
-            Ricks
-        </h3>
-        <p >Summer 2016</p>
-        <p >MIT</p>
-    </div>
-    <div class="col-2 text-center">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Rianna Shah"
-             src="https://storage.googleapis.com/lookit-staging/static/images/rianna.jpg"/>
-        <h3 >
-            Rianna
-            <br />
-            Shah
-        </h3>
-        <p >IAP, Sp, Fall 2015; IAP, Sp 2016; Sp 2018</p>
-        <p >MIT</p>
-    </div>
-    <div class="col-2 text-center">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Alice Wang"
-             src="https://s3.amazonaws.com/lookitcontents/website/alice.jpg"/>
-        <h3 >
-            Alice
-            <br />
-            Wang
-        </h3>
-        <p >Summer 2017</p>
-        <p >Wellesley</p>
-    </div>
-    <div class="col-2 text-center">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Jean Yu"
-             src="https://storage.googleapis.com/lookit-staging/static/images/jeanyu.jpg"/>
-        <h3 >
-            Jean
-            <br />
-            Yu
-        </h3>
-        <p >IAP, Spring 2015</p>
-        <p >Wellesley College</p>
-    </div>
-    <div class="col-2 text-center">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Jessica Zhu"
-             src="https://storage.googleapis.com/lookit-staging/static/images/jessica.jpg"/>
-        <h3 >
-            Jessica
-            <br />
-            Zhu
-        </h3>
-        <p >Fall 2016</p>
-        <p >MIT</p>
-    </div>
+    {% staff_profile "Joseph<br/>Alvarez" joseph_img "Summer 2015<br/>Skidmore College" col_sm=6 col_md=4 col_lg=2 blurb_classes="text-center" %}
+    {% staff_profile "Daniela<br/>Carrasco" daniela_img "Spring 2015<br/>MIT" col_sm=6 col_md=4 col_lg=2 blurb_classes="text-center" %}
+    {% staff_profile "Jean<br/>Chow" jean_chow_img "Fall 2014<br/>MIT" col_sm=6 col_md=4 col_lg=2 blurb_classes="text-center" %}
+    {% staff_profile "Junyi<br/>Chu" junyi_img "Summer 2015<br/>Vanderbilt" col_sm=6 col_md=4 col_lg=2 blurb_classes="text-center" %}
+    {% staff_profile "Annie<br/>Dai" annie_img "IAP, Spring 2015<br/>MIT" col_sm=6 col_md=4 col_lg=2 blurb_classes="text-center" %}
+    {% staff_profile "Hope<br/>Fuller-Becker" hope_img "Spring 2015, 2016<br/>Wellesley College" col_sm=6 col_md=4 col_lg=2 blurb_classes="text-center" %}
+    {% staff_profile "Kamaria<br/>Kaalund" "https://s3.amazonaws.com/lookitcontents/website/kamaria.jpg" "Fall 2019<br/>Wellesley College" col_sm=6 col_md=4 col_lg=2 blurb_classes="text-center" %}
+    {% staff_profile "Audrey<br/>Ricks" audrey_img "Summer 2016<br/>MIT" col_sm=6 col_md=4 col_lg=2 blurb_classes="text-center" %}
+    {% staff_profile "Rianna<br/>Shah" rianna_img "IAP, Sp, Fall 2015; IAP, Sp 2016; Sp 2018<br/>MIT" col_sm=6 col_md=4 col_lg=2 blurb_classes="text-center" %}
+    {% staff_profile "Alice<br/>Wang" "https://s3.amazonaws.com/lookitcontents/website/alice.jpg" "Summer 2017<br/>Wellesley" col_sm=6 col_md=4 col_lg=2 blurb_classes="text-center" %}
+    {% staff_profile "Jean<br/>Yu" jean_yu_img "IAP, Spring 2015<br/>Wellesley Colleger" col_sm=6 col_md=4 col_lg=2 blurb_classes="text-center" %}
+    {% staff_profile "Jessica<br/>Zhu" jessica_img "Fall 2016<br/>MIT" col_sm=6 col_md=4 col_lg=2 blurb_classes="text-center" %}
 </div>
