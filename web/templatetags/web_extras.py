@@ -310,8 +310,24 @@ class FormButtonsNode(template.Node):
 
 
 @register.simple_tag
-def staff_profile(name, img, blurb):
-    html = f"""<div class="col-12 col-md-6 col-lg-3">
+def staff_profile(name, img, blurb, col_sm=12, col_md=6, col_lg=3):
+    """Tag for defining a staff image, name and bio/blurb.
+
+    Args:
+        name (str): name to appear under the photo
+        img (str): full path to the image (to be used as the img src)
+        blurb (str): bio/blurb to appear under the name
+        col_* (int): optional integers to set the div width (in bootstrap 5 cols) on small, medium, and large screens.
+                     min=1 (1/12 of width), max=12 (full width)
+
+    Returns:
+        HTML string for the staff profile div
+    """
+    col_class_prefix = "col-"
+    col_class_sm = f"{col_class_prefix}{col_sm}"
+    col_class_md = f"{col_class_prefix}md-{col_md}"
+    col_class_lg = f"{col_class_prefix}lg-{col_lg}"
+    html = f"""<div class="{col_class_sm} {col_class_md} {col_class_lg}">
     <img class="img-fluid w-100 mx-auto d-block rounded-circle shadow mb-3" 
     alt="{name}" 
     src="{img}"/> 
