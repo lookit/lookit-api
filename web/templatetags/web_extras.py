@@ -310,7 +310,7 @@ class FormButtonsNode(template.Node):
 
 
 @register.simple_tag
-def staff_profile(name, img, blurb, col_sm=12, col_md=6, col_lg=3):
+def staff_profile(name, img, blurb, col_sm=12, col_md=6, col_lg=3, blurb_classes=""):
     """Tag for defining a staff image, name and bio/blurb.
 
     Args:
@@ -319,6 +319,7 @@ def staff_profile(name, img, blurb, col_sm=12, col_md=6, col_lg=3):
         blurb (str): bio/blurb to appear under the name
         col_* (int): optional integers to set the div width (in bootstrap 5 cols) on small, medium, and large screens.
                      min=1 (1/12 of width), max=12 (full width)
+        blurb_classes (str): optional string with one or classes (separated by spaces) for the blurb <p> element
 
     Returns:
         HTML string for the staff profile div
@@ -327,11 +328,12 @@ def staff_profile(name, img, blurb, col_sm=12, col_md=6, col_lg=3):
     col_class_sm = f"{col_class_prefix}{col_sm}"
     col_class_md = f"{col_class_prefix}md-{col_md}"
     col_class_lg = f"{col_class_prefix}lg-{col_lg}"
+
     html = f"""<div class="{col_class_sm} {col_class_md} {col_class_lg}">
     <img class="img-fluid w-100 mx-auto d-block rounded-circle shadow mb-3" 
     alt="{name}" 
     src="{img}"/> 
     <h3 class="text-center">{name}</h3> 
-    <p>{blurb}</p>
+    <p class="{blurb_classes}">{blurb}</p>
     </div>"""
     return mark_safe(html)
