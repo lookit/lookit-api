@@ -695,8 +695,12 @@ def create_string_listing_children(children):
 
 
 def create_subject_for_study_notification(study, children):
-    latter_half = f' invited to take part in "{study.name}" on Lookit!'
-    latter_half_short = f" invited to take part in a new study on Lookit!"
+    latter_half = (
+        f' invited to take part in "{study.name}" on Lookit (Children Helping Science)!'
+    )
+    latter_half_short = (
+        " invited to take part in a new study on Lookit (Children Helping Science)!"
+    )
     num_children = len(children)
     children_string = create_string_listing_children(children)
 
