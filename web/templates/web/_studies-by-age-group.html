@@ -10,21 +10,21 @@
                  src="{% static 'images/babies.jpg' %}"/>
             <p class="mb-4 mt-2">{% trans "studies for babies (under 1)" %}</p>
         </a>
-        <a href="{% url 'web:studies-list-preschoolers' %}"
-           class="list-group-item list-group-item-action list-group-item-light border-0">
-            <img class="img-fluid p-1 p-lg-4"
-                 alt="Preschoolers playing"
-                 src="{% static 'images/preschoolers.jpg' %}"/>
-            <p class="mb-4 mt-2">{% trans "studies for preschoolers (3-4)" %}</p>
-        </a>
-    </div>
-    <div class="list-group list-group-horizontal-lg">
         <a href="{% url 'web:studies-list-toddlers' %}"
            class="list-group-item list-group-item-action list-group-item-light border-0">
             <img class="img-fluid p-1 p-lg-4"
                  alt="Toddlers playing"
                  src="{% static 'images/toddlers.jpg' %}"/>
             <p class="mb-4 mt-2">{% trans "studies for toddlers (1-2)" %}</p>
+        </a>
+    </div>
+    <div class="list-group list-group-horizontal-lg">
+        <a href="{% url 'web:studies-list-preschoolers' %}"
+           class="list-group-item list-group-item-action list-group-item-light border-0">
+            <img class="img-fluid p-1 p-lg-4"
+                 alt="Preschoolers playing"
+                 src="{% static 'images/preschoolers.jpg' %}"/>
+            <p class="mb-4 mt-2">{% trans "studies for preschoolers (3-4)" %}</p>
         </a>
         <a href="{% url 'web:studies-list-school-age' %}"
            class="list-group-item list-group-item-action list-group-item-light border-0">
