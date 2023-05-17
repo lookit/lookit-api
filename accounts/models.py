@@ -183,6 +183,13 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return self._identicon
 
     @property
+    def display_name(self):
+        if self.nickname:
+            return self.nickname
+        else:
+            return f"{ self.given_name } { self.family_name }"
+
+    @property
     def latest_demographics(self):
         return self.demographics.first()
 
