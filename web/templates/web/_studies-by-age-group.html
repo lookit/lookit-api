@@ -1,0 +1,37 @@
+{% load i18n %}
+{% load static %}
+<div class="row text-center justify-content-evenly align-items-center">
+    <p class="mt-5 mb-1 mb-lg-3">{% trans "See our current studies for different age groups:" %}</p>
+    <div class="list-group list-group-horizontal-lg">
+        <a href="{% url 'web:studies-list-babies' %}"
+           class="list-group-item list-group-item-action list-group-item-light border-0">
+            <img class="img-fluid p-1 p-lg-4"
+                 alt="Babies playing"
+                 src="{% static 'images/babies.jpg' %}"/>
+            <p class="mb-4 mt-2">{% trans "studies for babies (under 1)" %}</p>
+        </a>
+        <a href="{% url 'web:studies-list-toddlers' %}"
+           class="list-group-item list-group-item-action list-group-item-light border-0">
+            <img class="img-fluid p-1 p-lg-4"
+                 alt="Toddlers playing"
+                 src="{% static 'images/toddlers.jpg' %}"/>
+            <p class="mb-4 mt-2">{% trans "studies for toddlers (1-2)" %}</p>
+        </a>
+    </div>
+    <div class="list-group list-group-horizontal-lg">
+        <a href="{% url 'web:studies-list-preschoolers' %}"
+           class="list-group-item list-group-item-action list-group-item-light border-0">
+            <img class="img-fluid p-1 p-lg-4"
+                 alt="Preschoolers playing"
+                 src="{% static 'images/preschoolers.jpg' %}"/>
+            <p class="mb-4 mt-2">{% trans "studies for preschoolers (3-4)" %}</p>
+        </a>
+        <a href="{% url 'web:studies-list-school-age' %}"
+           class="list-group-item list-group-item-action list-group-item-light border-0">
+            <img class="img-fluid p-1 p-lg-4"
+                 alt="Teens"
+                 src="{% static 'images/schoolage.jpg' %}"/>
+            <p class="mb-4 mt-2">{% trans "studies for school-aged kids & teens (5-17)" %}</p>
+        </a>
+    </div>
+</div>
