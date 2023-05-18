@@ -231,11 +231,6 @@ def button_secondary_classes(extra_classes=None):
 
 
 @register.simple_tag
-def subheading_classes():
-    return "border-bottom pb-2 pt-4 mb-4 mx-4"
-
-
-@register.simple_tag
 def page_title(title, right_side_elements=None):
     if right_side_elements:
         html = f"""<div class="d-flex flex-row bd-highlight mb-4 align-items-center">
