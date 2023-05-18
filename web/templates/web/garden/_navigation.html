@@ -1,14 +1,12 @@
 {% load web_extras %}
+{% url "web:lab-studies-list" lab_slug="garden" as garden_url %}
 <div class="row py-lg-3 justify-content-evenly align-items-center">
     <div class="col-12 col-lg-10">
         <ul class="nav nav-tabs justify-content-center">
             {% nav_link request 'web:garden-home' 'Project GARDEN' list=True %}
             {% nav_link request 'web:garden-about' 'About' list=True %}
             {% nav_link request 'web:garden-participate' 'How to Join' list=True %}
-            <li class="nav-item">
-                <a class="nav-link navbar-link link-secondary text-center px-3"
-                   href="{{ base_url }}{{ garden_url }}">Start Now</a>
-            </li>
+            {% nav_link request garden_url 'Start Now' list=True reverse_url=False %}
             {% nav_link request 'web:garden-scientists' 'The Scientists' list=True %}
         </ul>
     </div>
