@@ -21,7 +21,7 @@ from studies.tasks import (
 
 TARGET_EMAIL_TEMPLATE = """Dear Charlie,
 
-We're writing to invite you and your children Moe and Curly to participate in the study "The Most Fake Study Ever" on Lookit! This study is run by the ECCL at MIT.
+We're writing to invite you and your children Moe and Curly to participate in the study "The Most Fake Study Ever"! This study is run by the ECCL at MIT.
 
 More details about the study...
 
@@ -33,7 +33,7 @@ Why: We are interested in seeing how fast your child can hand-compute integrals.
 
 Compensation: You child will receive exactly $1 for each integral computed.
 
-You and your child can participate any time you want by going to "The Most Fake Study Ever" on Lookit ({base_url}/studies/{study_uuid}/). If you have any questions, please reply to this email to reach the ECCL at faker@fakelab.com.
+You and your child can participate any time you want by going to "The Most Fake Study Ever" ({base_url}/studies/{study_uuid}/). If you have any questions, please reply to this email to reach the ECCL at faker@fakelab.com.
 
 Note: If you have taken part in Lookit studies before, you might notice that the page looks a little different than before. Our web address is changing from lookit.mit.edu to childrenhelpingscience.com as we merge together two programs for online studies that our team runs. There have been no changes to who runs the platform or who can see your child's data. Thanks for contributing to the science of how kids learn - we hope to see you soon!
 
