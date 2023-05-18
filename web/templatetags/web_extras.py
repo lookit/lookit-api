@@ -116,15 +116,14 @@ def nav_link(request, url_name, text, html_classes=None, queryString=None, list=
         aria_current = ' aria-current="page"'
     if queryString:
         url = url + queryString
+    nav_a_tag = (
+        f'<a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a>'
+    )
 
     if list:
-        return mark_safe(
-            f'<li class="nav-item"><a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a></li>'
-        )
+        return mark_safe(f'<li class="nav-item">{nav_a_tag}</li>')
     else:
-        return mark_safe(
-            f'<a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a>'
-        )
+        return mark_safe(nav_a_tag)
 
 
 @register.simple_tag
