@@ -6,11 +6,29 @@ from web import views
 app_name = "web"
 
 urlpatterns = [
-    path("studies/babies/", views.StudiesListViewBabies.as_view()),
-    path("studies/toddlers/", views.StudiesListViewToddlers.as_view()),
-    path("studies/preschoolers/", views.StudiesListViewPreschoolers.as_view()),
-    path("studies/school-age-kids/", views.StudiesListViewSchoolAgeKids.as_view()),
-    path("studies/adults/", views.StudiesListViewAdults.as_view()),
+    path(
+        "studies/babies/",
+        views.StudiesListViewBabies.as_view(),
+        name="studies-list-babies",
+    ),
+    path(
+        "studies/toddlers/",
+        views.StudiesListViewToddlers.as_view(),
+        name="studies-list-toddlers",
+    ),
+    path(
+        "studies/preschoolers/",
+        views.StudiesListViewPreschoolers.as_view(),
+        name="studies-list-preschoolers",
+    ),
+    path(
+        "studies/school-age-kids/",
+        views.StudiesListViewSchoolAgeKids.as_view(),
+        name="studies-list-school-age",
+    ),
+    path(
+        "studies/adults/", views.StudiesListViewAdults.as_view(), name="studies-adults"
+    ),
     path("signup/", views.ParticipantSignupView.as_view(), name="participant-signup"),
     path(
         "account/demographics/",

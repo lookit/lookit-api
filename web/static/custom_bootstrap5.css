@@ -8446,3 +8446,15 @@ textarea.form-control-lg {
     display: inline-flex !important; }
   .d-print-none {
     display: none !important; } }
+
+.home-title-text {
+  font-size: calc(1.325rem + 0.9vw) !important; }
+
+.home-subtitle-text {
+  font-size: calc(1.275rem + 0.3vw) !important; }
+
+@media (min-width: 1200px) {
+  .home-title-text {
+    font-size: calc(1.375rem + 1.5vw) !important; }
+  .home-subtitle-text {
+    font-size: calc(1.3rem + 0.6vw) !important; } }
