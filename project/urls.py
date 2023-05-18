@@ -18,6 +18,7 @@ from django.conf.urls import include
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.contrib.auth.urls import urlpatterns as auth_urls
 from django.urls import path
 from django.views.generic.base import RedirectView
@@ -37,6 +38,18 @@ favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
 login_path_index = next(locate(auth_urls, lambda patt: patt.name == "login"))
 auth_urls[login_path_index] = path(
     "login/", LoginWithRedirectToTwoFactorAuthView.as_view(), name="login"
+)
+# This fixes what seems to be an issue with with Django's Password reset view.
+# Once Django's version has been updated from 3.2. This should be revisited.
+pass_reset_path_index = next(
+    locate(auth_urls, lambda patt: patt.name == "password_reset")
+)
+auth_urls[pass_reset_path_index] = path(
+    "password_reset/",
+    auth_views.PasswordResetView.as_view(
+        subject_template_name="registration/password_reset_subject_1.txt"
+    ),
+    name="password_reset",
 )
 
 
