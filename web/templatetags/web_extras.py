@@ -340,6 +340,6 @@ def staff_profile(name, img, blurb, col_sm=12, col_md=6, col_lg=3, blurb_classes
     alt="{name}" 
     src="{img}"/> 
     <h3 class="text-center">{name}</h3> 
-    <p class="{blurb_classes}">{blurb}</p>
+    <p class="pb-4 {blurb_classes}">{blurb}</p>
     </div>"""
     return mark_safe(html)
