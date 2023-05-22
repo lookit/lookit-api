@@ -25,7 +25,7 @@ django-multiselectfield = "0.1.12"
 django-pandas = "0.6.2"
 django-prettyjson = "0.4.1"
 django-revproxy = { git = "https://github.com/Innovativity/django-revproxy.git", branch = "b9fa8375d03fd68747dcb7273a97c19d788aa51b" }
-django-storages = "1.11.1"
+django-storages = "1.13.2"
 djangorestframework = "3.12.4"
 djangorestframework-jsonapi = "3.1.0"
 docker = "4.2.1"
