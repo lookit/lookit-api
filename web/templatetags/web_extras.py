@@ -316,29 +316,36 @@ class FormButtonsNode(template.Node):
 
 
 @register.simple_tag
-def staff_profile(name, img, blurb, col_sm=12, col_md=6, col_lg=3, blurb_classes=""):
+def staff_profile(name, img, blurb, type="large"):
     """Tag for defining a staff image, name and bio/blurb.
 
     Args:
-        name (str): name to appear under the photo
-        img (str): full path to the image (to be used as the img src)
-        blurb (str): bio/blurb to appear under the name
-        col_* (int): optional integers to set the div width (in bootstrap 5 cols) on small, medium, and large screens.
-                     min=1 (1/12 of width), max=12 (full width)
-        blurb_classes (str): optional string with one or classes (separated by spaces) for the blurb <p> element
+        name (str): Name to appear under the photo
+        img (str): Full path to the image (to be used as the img src)
+        blurb (str): Bio/blurb to appear under the name
+        type (str): Sets the profile type as "large" (default) or "small". If large, profiles appear in rows of 4 on large screens and rows of 1 on mobile (with reduced image size). If small, the profiles appear in rows of 6 on large screens and rows of 2 on mobile.
 
     Returns:
         HTML string for the staff profile div
     """
-    col_class_prefix = "col-"
-    col_class_sm = f"{col_class_prefix}{col_sm}"
-    col_class_md = f"{col_class_prefix}md-{col_md}"
-    col_class_lg = f"{col_class_prefix}lg-{col_lg}"
 
-    html = f"""<div class="{col_class_sm} {col_class_md} {col_class_lg}">
+    if type == "large":
+        profile_div_classes = "col-12 col-md-6 col-lg-3"
+        img_div_classes = "col-8 col-lg-12"
+        blurb_classes = ""
+    else:
+        profile_div_classes = "col-6 col-md-4 col-lg-2"
+        img_div_classes = "col-12"
+        blurb_classes = "text-center"
+
+    html = f"""<div class="{profile_div_classes}">
+    <div class="row justify-content-center">
+    <div class="{img_div_classes}">
     <img class="img-fluid w-100 mx-auto d-block rounded-circle shadow mb-3" 
     alt="{name}" 
     src="{img}"/> 
+    </div>
+    </div>
     <h3 class="text-center">{name}</h3> 
     <p class="pb-4 {blurb_classes}">{blurb}</p>
     </div>"""
