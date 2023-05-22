@@ -28,7 +28,9 @@ urlpatterns = [
         name="studies-list-school-age",
     ),
     path(
-        "studies/adults/", views.StudiesListViewAdults.as_view(), name="studies-adults"
+        "studies/adults/",
+        views.StudiesListViewAdults.as_view(),
+        name="studies-list-adults",
     ),
     path("signup/", views.ParticipantSignupView.as_view(), name="participant-signup"),
     path(
