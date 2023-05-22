@@ -6,13 +6,14 @@
     404
 {% endblock title %}
 {% block content %}
-    {% page_title 'Oops - We couldn’t find that page!' %}
-    <div class="p-5">
-        <img height=200 src="{% static "images/chs_c.png" %}" alt="CHS C"/>
+    {% static "images/chs_c.png" as chs_logo %}
+    {% set_variable '<div class="pb-3"><img height=200 src="'|add:chs_logo|add:'"alt="CHS C"/></div>Oops - We couldn\'t find that page!' as chs_logo_html %}
+    {% page_title chs_logo_html %}
+    <div class="pt-3 px-2 px-lg-4">
+        <p>Welcome to Children Helping Science!</p>
+        <p>
+            We recently relaunched our website, which means that some links may no longer be working. To find studies you can participate in from home, please click on one of the options below:
+        </p>
     </div>
-    <p>Welcome to Children Helping Science!</p>
-    <p>
-        We recently relaunched our website, which means that some links may no longer be working. To find studies you can participate in from home, please click on one of the options below:
-    </p>
     {% include "web/_studies-by-age-group.html" %}
 {% endblock content %}
