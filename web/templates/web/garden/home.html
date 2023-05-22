@@ -9,41 +9,42 @@
 {% endblock title %}
 {% block content %}
     {% include "web/garden/_navigation.html" %}
-    <div class="row m-5 text-center justify-content-evenly align-items-center">
-        <div class="col-12 col-lg-10 col-xl-8">
-            <img class="img-fluid mb-0"
+    <div class="row my-4 text-center justify-content-evenly align-items-center">
+        <div class="col-12 col-xl-auto ms-auto">
+            {% trans "Welcome to" as trans_garden_title %}
+            {% page_title trans_garden_title %}
+        </div>
+        <div class="col-8 col-md-6 col-xl-3 me-xl-auto">
+            <img class="w-100"
                  alt="Garden project logo"
                  src="{% static 'images/GARDEN_logo_handprint_rightside_crop.jpg' %}"/>
         </div>
     </div>
-    {% trans "Welcome to Project GARDEN!" as trans_garden_title %}
-    {% page_title trans_garden_title %}
-    <div class="row m-4 justify-content-evenly align-items-center">
-        <div class="col-12 col-lg-10">
+    <div class="row mb-0 my-2 justify-content-evenly align-items-center">
+        <div class="col-12 col-xl-6">
             <p>
                 We are looking for families with children who are 3-, 4-, 5-, or 6 years-old to help us in Growing and Advancing Research in Development and EducatioN (GARDEN). We have lots of studies that are designed to be engaging and often fun research games for children that are all about learning how children grow and develop in lots of different ways. Project GARDEN works by families participating in many short studies that, combined together, help us understand children's development from many different angles.
             </p>
+            <div class="d-block d-xl-none pb-3 text-center">
+                <img class="w-75"
+                     alt="Garden project storybook scene"
+                     src="{% static 'images/Homepage_StorybookScene_crop.jpg' %}"/>
+            </div>
             <p>
                 Over the next 4 months, we will have at least 8 studies (10-15 minutes each) available in Project GARDEN, and families that do all 8 of our first studies will receive a $10 bonus. There will be additional study opportunities in the future! You can choose whether to participate in each study, but the more studies that families complete, the better we can understand how children develop!
             </p>
-        </div>
-    </div>
-    <div class="row m-4 text-center justify-content-evenly align-items-center">
-        <div class="col-12 col-lg-10">
-            <img class="img-fluid mb-3"
-                 alt="Garden project storybook scene"
-                 src="{% static 'images/Homepage_StorybookScene_crop.jpg' %}"/>
-        </div>
-    </div>
-    <div class="row m-4 justify-content-evenly align-items-center">
-        <div class="col-12 col-lg-10">
             <p>
                 Children who participate will experience a fun storybook where they will meet Fen, a fennec fox who is the new librarian for a magical GARDEN library. But Fen needs help finding it! As children finish research games, they will help Fen fill out a map and travel through many interesting locations on their way to the GARDEN library.
             </p>
         </div>
+        <div class="d-none d-xl-block col-xl-6">
+            <img class="ms-3 w-100"
+                 alt="Garden project storybook scene"
+                 src="{% static 'images/Homepage_StorybookScene_crop.jpg' %}"/>
+        </div>
     </div>
-    <div class="row m-4 text-center justify-content-evenly align-items-center">
-        <div class="col-12 col-lg-10">
+    <div class="row my-2 text-center justify-content-evenly align-items-center">
+        <div class="col-12">
             <h3 class="subheading">Click the links below to learn more about Project GARDEN!</h3>
             <p>
                 <a href="{% url 'web:garden-about' %}">What is Project GARDEN?</a>
