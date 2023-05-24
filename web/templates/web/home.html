@@ -77,7 +77,9 @@
         <img class="img-fluid mb-3 col-md-5 float-md-start me-md-3"
              alt="Garden project logo"
              src="{% static 'images/GARDEN_logo_handprint_rightside_crop.jpg' %}"/>
-        <p>{% trans "Interested in participating in a project with many studies? Learn more about Project GARDEN." %}</p>
+        <p>
+            {% trans "Interested in participating in a project with many studies? Learn more about " %}<a href="{% url 'web:garden-home' %}">{% trans "Project GARDEN" %}</a>.
+        </p>
         <p>
             {% trans "In this series of studies, your child will help an animated fox named Fen find the “GARDEN Library” while playing games to help Children Helping Science understand children's development from many different angles!" %}
         </p>
