@@ -29,41 +29,187 @@
     {% page_title trans_faq %}
     <div class="row m-lg-4 justify-content-evenly align-items-center">
         <div class="col-12 col-lg-10">
-            <h3 class="subheading">What is Project GARDEN?</h3>
-            <p class="mx-lg-4">
-                Project GARDEN is a research project by Children Helping Science and funded by the National Science Foundation. We have two goals: (1) to make it easier for families to participate in research and (2) to better understand how children develop over time in lots of different ways!
-            </p>
-            <h3 class="subheading">Why is Project GARDEN important?</h3>
-            <p class="mx-lg-4">
-                Project GARDEN is a project aimed at understanding child development from many different angles! Usually, a research project will only look at one or two specific areas of development, like specific math skills or specific vocabulary skills. In Project GARDEN, we look at how children grow in many different ways at once - learning how to relate to their family and peers, how to problem solve, how to speak their family's languages, and much more!
-            </p>
-            <p class="mx-lg-4">
-                Every time you complete a Project GARDEN study, you will be helping science get a more complete picture of how children grow and develop!
-            </p>
-            <h3 class="subheading">Is Project GARDEN for me?</h3>
-            <p class="mx-lg-4">
-                Project GARDEN is for all families with 3- to 6-year-old children who are interested in development and education research and would like to help science by participating in lots of small studies! Our goal is for this experience to be engaging and fun for children and interesting and rewarding for caregivers. If you are interested in seeing how your child plays the research games or understanding more about how children learn and develop, you might find Project GARDEN a great experience for you and your family!
-            </p>
-            <h3 class="subheading">How is Project GARDEN different from other studies on Children Helping Science's website?</h3>
-            <p class="mx-lg-4">
-                There are many exciting studies on Children Helping Science from around the world, and you can always participate in any studies that interest your family. Project GARDEN is a more specific set of studies on Children Helping Science. Keep reading to find out more!
-            </p>
-            <h3 class="subheading">How does participating in Project GARDEN work?</h3>
-            <p class="mx-lg-4">
-                Project GARDEN works by families participating in many short studies that, combined together, help us understand children's development from many different angles. Each time you participate, your child will have the opportunity to follow a fun story involving a magical library and a friendly animated fox, play research games designed to be fun for children, and receive a gift card. There will be at least 8 studies posted in the upcoming year, and most studies will take 10- 15 minutes to complete. You can choose whether to participate in each study, but the more studies that families complete, the better we can understand how children develop! If you complete all of the first set of 8 studies, you will receive an extra gift card as a thank you. You will then also have the opportunity to participate in more studies in the future!
-            </p>
-            <h3 class="subheading">Why is it important to complete all of the studies?</h3>
-            <p class="mx-lg-4">
-                The goal of Project GARDEN is to better understand the many different ways children develop using many quick, small studies instead of asking children to sit down for one really long study. Because of this, it's very important to us for families to try to complete each of the first eight studies so we can look at these studies together! For example, you might do one study on how children think about different people's perspectives and then another study on what kinds of words they know. Using both studies, we can see how what words they know might relate to how they think about different people's perspectives. In another example, children might also complete the same study twice - once when they're young and once when they're a bit older - to see what changed over time!
-            </p>
-            <h3 class="subheading">Are you curious about participating but want to talk to a researcher first?</h3>
-            <p class="mx-lg-4">
-                Email us at project.garden.study@gmail.com or sign up for a brief <a href="https://calendly.com/utdthinklab/project-garden-question-session">video call</a> with one of our Project GARDEN researchers and we'll be happy to answer any questions! Sign-up slots are limited, but we will always respond to your emails within 7 business days.
-            </p>
-            <h3 class="subheading">Want to see what studies are like before you sign up?</h3>
-            <p class="mx-lg-4">
-                There are other studies posted on Children Helping Science that are not part of Project GARDEN. You can visit the Children Helping Science <a href="{% url 'web:studies-list' %}">Studies Page</a> to check out other studies to preview or try out another study before you decide if you'd like to participate in Project GARDEN!
-            </p>
+            <div class="accordion m-0 m-lg-4" id="garden-about-accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header" id="heading-1">
+                        <button class="accordion-button collapsed px-0 px-lg-2"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapse-1"
+                                aria-expanded="false"
+                                aria-controls="collapse-1">
+                            <h4 class="my-0 my-lg-2">What is Project GARDEN?</h4>
+                        </button>
+                    </div>
+                    <div id="collapse-1"
+                         class="accordion-collapse collapse"
+                         aria-labelledby="heading-1"
+                         data-bs-parent="#garden-about-accordion">
+                        <div class="accordion-body px-0 pb-2 p-lg-2">
+                            <p class="lh-lg my-0 my-lg-2 mx-lg-4">
+                                Project GARDEN is a research project by Children Helping Science and funded by the National Science Foundation. We have two goals: (1) to make it easier for families to participate in research and (2) to better understand how children develop over time in lots of different ways!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" id="heading-2">
+                        <button class="accordion-button collapsed px-0 px-lg-2"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapse-2"
+                                aria-expanded="false"
+                                aria-controls="collapse-2">
+                            <h4 class="my-0 my-lg-2">Why is Project GARDEN important?</h4>
+                        </button>
+                    </div>
+                    <div id="collapse-2"
+                         class="accordion-collapse collapse"
+                         aria-labelledby="heading-2"
+                         data-bs-parent="#garden-about-accordion">
+                        <div class="accordion-body px-0 pb-2 p-lg-2">
+                            <p class="lh-lg my-0 my-lg-2 mx-lg-4">
+                                Project GARDEN is a project aimed at understanding child development from many different angles! Usually, a research project will only look at one or two specific areas of development, like specific math skills or specific vocabulary skills. In Project GARDEN, we look at how children grow in many different ways at once - learning how to relate to their family and peers, how to problem solve, how to speak their family's languages, and much more!
+                            </p>
+                            <p class="lh-lg my-0 my-lg-2 mx-lg-4">
+                                Every time you complete a Project GARDEN study, you will be helping science get a more complete picture of how children grow and develop!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" id="heading-3">
+                        <button class="accordion-button collapsed px-0 px-lg-2"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapse-3"
+                                aria-expanded="false"
+                                aria-controls="collapse-3">
+                            <h4 class="my-0 my-lg-2">Is Project GARDEN for me?</h4>
+                        </button>
+                    </div>
+                    <div id="collapse-3"
+                         class="accordion-collapse collapse"
+                         aria-labelledby="heading-3"
+                         data-bs-parent="#garden-about-accordion">
+                        <div class="accordion-body px-0 pb-2 p-lg-2">
+                            <p class="lh-lg my-0 my-lg-2 mx-lg-4">
+                                Project GARDEN is for all families with 3- to 6-year-old children who are interested in development and education research and would like to help science by participating in lots of small studies! Our goal is for this experience to be engaging and fun for children and interesting and rewarding for caregivers. If you are interested in seeing how your child plays the research games or understanding more about how children learn and develop, you might find Project GARDEN a great experience for you and your family!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" id="heading-4">
+                        <button class="accordion-button collapsed px-0 px-lg-2"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapse-4"
+                                aria-expanded="false"
+                                aria-controls="collapse-4">
+                            <h4 class="my-0 my-lg-2">How is Project GARDEN different from other studies on Children Helping Science's website?</h4>
+                        </button>
+                    </div>
+                    <div id="collapse-4"
+                         class="accordion-collapse collapse"
+                         aria-labelledby="heading-4"
+                         data-bs-parent="#garden-about-accordion">
+                        <div class="accordion-body px-0 pb-2 p-lg-2">
+                            <p class="lh-lg my-0 my-lg-2 mx-lg-4">
+                                There are many exciting studies on Children Helping Science from around the world, and you can always participate in any studies that interest your family. Project GARDEN is a more specific set of studies on Children Helping Science. Keep reading to find out more!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" id="heading-5">
+                        <button class="accordion-button collapsed px-0 px-lg-2"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapse-5"
+                                aria-expanded="false"
+                                aria-controls="collapse-5">
+                            <h4 class="my-0 my-lg-2">How does participating in Project GARDEN work?</h4>
+                        </button>
+                    </div>
+                    <div id="collapse-5"
+                         class="accordion-collapse collapse"
+                         aria-labelledby="heading-5"
+                         data-bs-parent="#garden-about-accordion">
+                        <div class="accordion-body px-0 pb-2 p-lg-2">
+                            <p class="lh-lg my-0 my-lg-2 mx-lg-4">
+                                Project GARDEN works by families participating in many short studies that, combined together, help us understand children's development from many different angles. Each time you participate, your child will have the opportunity to follow a fun story involving a magical library and a friendly animated fox, play research games designed to be fun for children, and receive a gift card. There will be at least 8 studies posted in the upcoming year, and most studies will take 10- 15 minutes to complete. You can choose whether to participate in each study, but the more studies that families complete, the better we can understand how children develop! If you complete all of the first set of 8 studies, you will receive an extra gift card as a thank you. You will then also have the opportunity to participate in more studies in the future!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" id="heading-6">
+                        <button class="accordion-button collapsed px-0 px-lg-2"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapse-6"
+                                aria-expanded="false"
+                                aria-controls="collapse-6">
+                            <h4 class="my-0 my-lg-2">Why is it important to complete all of the studies?</h4>
+                        </button>
+                    </div>
+                    <div id="collapse-6"
+                         class="accordion-collapse collapse"
+                         aria-labelledby="heading-6"
+                         data-bs-parent="#garden-about-accordion">
+                        <div class="accordion-body px-0 pb-2 p-lg-2">
+                            <p class="lh-lg my-0 my-lg-2 mx-lg-4">
+                                The goal of Project GARDEN is to better understand the many different ways children develop using many quick, small studies instead of asking children to sit down for one really long study. Because of this, it's very important to us for families to try to complete each of the first eight studies so we can look at these studies together! For example, you might do one study on how children think about different people's perspectives and then another study on what kinds of words they know. Using both studies, we can see how what words they know might relate to how they think about different people's perspectives. In another example, children might also complete the same study twice - once when they're young and once when they're a bit older - to see what changed over time!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" id="heading-7">
+                        <button class="accordion-button collapsed px-0 px-lg-2"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapse-7"
+                                aria-expanded="false"
+                                aria-controls="collapse-7">
+                            <h4 class="my-0 my-lg-2">Are you curious about participating but want to talk to a researcher first?</h4>
+                        </button>
+                    </div>
+                    <div id="collapse-7"
+                         class="accordion-collapse collapse"
+                         aria-labelledby="heading-7"
+                         data-bs-parent="#garden-about-accordion">
+                        <div class="accordion-body px-0 pb-2 p-lg-2">
+                            <p class="lh-lg my-0 my-lg-2 mx-lg-4">
+                                Email us at project.garden.study@gmail.com or sign up for a brief <a href="https://calendly.com/utdthinklab/project-garden-question-session">video call</a> with one of our Project GARDEN researchers and we'll be happy to answer any questions! Sign-up slots are limited, but we will always respond to your emails within 7 business days.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" id="heading-8">
+                        <button class="accordion-button collapsed px-0 px-lg-2"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapse-8"
+                                aria-expanded="false"
+                                aria-controls="collapse-8">
+                            <h4 class="my-0 my-lg-2">Want to see what studies are like before you sign up?</h4>
+                        </button>
+                    </div>
+                    <div id="collapse-8"
+                         class="accordion-collapse collapse"
+                         aria-labelledby="heading-8"
+                         data-bs-parent="#garden-about-accordion">
+                        <div class="accordion-body px-0 pb-2 p-lg-2">
+                            <p class="lh-lg my-0 my-lg-2 mx-lg-4">
+                                There are other studies posted on Children Helping Science that are not part of Project GARDEN. You can visit the Children Helping Science <a href="{% url 'web:studies-list' %}">Studies Page</a> to check out other studies to preview or try out another study before you decide if you'd like to participate in Project GARDEN!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock content %}
