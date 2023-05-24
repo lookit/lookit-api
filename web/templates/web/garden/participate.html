@@ -7,6 +7,9 @@
 {% block title %}
     GARDEN Participate
 {% endblock title %}
+{% block head %}
+    <script src="{% static 'js/garden-participate.js' %}" defer></script>
+{% endblock head %}
 {% block content %}
     {% url "web:lab-studies-list" lab_slug="garden" as garden_url %}
     {% include "web/garden/_navigation.html" %}
@@ -143,7 +146,7 @@
                             <h4>
                                 <ol start="4" class="my-0 my-lg-2">
                                     <li>
-                                        Visit the Project GARDEN <a href="{{ base_url }}{{ garden_url }}">Studies Page</a>
+                                        Visit the Project GARDEN <a id="garden-studies-link" href="{{ base_url }}{{ garden_url }}">Studies Page</a>
                                     </li>
                                 </ol>
                             </h4>
@@ -187,7 +190,9 @@
                          data-bs-parent="#garden-participate-accordion">
                         <div class="accordion-body px-0 pb-2 p-lg-2">
                             <ul class="lh-lg my-0 my-lg-2">
-                                <li>At the start of each study, we will provide a consent form that will tell you all about the study.</li>
+                                <li>
+                                    At the start of each study, we will provide a consent form that will tell you all about the study.
+                                </li>
                                 <li>
                                     After you read the consent form, you will record a short consent video with you and your child where you say you agree to participate in the study.
                                 </li>
