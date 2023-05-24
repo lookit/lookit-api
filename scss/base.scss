@@ -23,6 +23,10 @@
     @extend .mx-5, .row;
 }
 
+.subheading {
+    @extend .border-bottom, .pb-2, .pt-4, .mb-4, .mx-4;
+}
+
 // Change title/subtitle font sizes across breakpoints on the home page.
 // Font size classes do not support the breakpoint infixes (fs-sm-1, etc.).
 // Ideally these would @extend existing font size (fs-*) classes, but it's not

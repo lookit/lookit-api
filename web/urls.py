@@ -104,4 +104,24 @@ urlpatterns = [
         TemplateView.as_view(template_name="web/publications.html"),
         name="publications",
     ),
+    path(
+        "garden/",
+        TemplateView.as_view(template_name="web/garden/home.html"),
+        name="garden-home",
+    ),
+    path(
+        "garden/about",
+        TemplateView.as_view(template_name="web/garden/about.html"),
+        name="garden-about",
+    ),
+    path(
+        "garden/participate",
+        TemplateView.as_view(template_name="web/garden/participate.html"),
+        name="garden-participate",
+    ),
+    path(
+        "garden/scientists",
+        TemplateView.as_view(template_name="web/garden/scientists.html"),
+        name="garden-scientists",
+    ),
 ]

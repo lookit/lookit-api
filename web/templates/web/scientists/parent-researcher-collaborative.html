@@ -1,4 +1,9 @@
 {% load static %}
+{% load web_extras %}
+{% static 'images/elizabeth-bonawitz.jpg' as elizabeth_img %}
+{% static 'images/hyowon-gweon.png' as hyowon_img %}
+{% static 'images/julian-jara-ettinger.png' as julian_img %}
+{% static 'images/candice-mills.jpg' as candice_img %}
 <p>
     If you are a parent who has participated with your child in a study on this
     website, or a university-based researcher who has posted a study on Children Helping Science (or its previous incarnation as Lookit),
@@ -7,61 +12,8 @@
     Laura Schulz, Mark Sheskin, as well as:
 </p>
 <div class="row">
-    <div class="col-3">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Elizabeth Bonawitz"
-             src="{% static 'images/elizabeth-bonawitz.jpg' %}"/>
-        <h3 class="text-center">
-            Elizabeth
-            <br />
-            Bonawitz
-        </h3>
-        <p>
-            Elizabeth is the David Vitale Associate Professor in Learning Sciences and
-            PI of the Computational Cognitive Development Lab at Harvard University,
-            Graduate School of Education. Her work focuses on the basic science
-            theories of learning with the broader goal of informing educational
-            practice, and her research bridges two research traditions: cognitive
-            development and computational modeling.
-        </p>
-    </div>
-    <div class="col-3">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Hyowon Gweon"
-             src="{% static 'images/hyowon-gweon.png' %}"/>
-        <h3 class="text-center">
-            Hyowon
-            <br />
-            Gweon
-        </h3>
-        <p>
-            Hyo is an associate professor at Stanford University in the Department of
-            Psychology.
-        </p>
-    </div>
-    <div class="col-3">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Julian Jara-Ettinger"
-             src="{% static 'images/julian-jara-ettinger.png' %}"/>
-        <h3 class="text-center">
-            Julian
-            <br />
-            Jara-Ettinger
-        </h3>
-        <p>Julian is an assistant professor of psychology at Yale.</p>
-    </div>
-    <div class="col-3">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Candice Mills"
-             src="{% static 'images/candice-mills.jpg' %}"/>
-        <h3 class="text-center">
-            Candice
-            <br />
-            Mills
-        </h3>
-        <p>
-            Candice is an associate professor at the University of Texas at Dallas, in
-            the School of Behavioral and Brain Sciences.
-        </p>
-    </div>
+    {% staff_profile "Elizabeth Bonawitz" elizabeth_img "Elizabeth is the David Vitale Associate Professor in Learning Sciences and PI of the Computational Cognitive Development Lab at Harvard University, Graduate School of Education. Her work focuses on the basic science theories of learning with the broader goal of informing educational practice, and her research bridges two research traditions: cognitive development and computational modeling." %}
+    {% staff_profile "Hyowon Gweon" hyowon_img "Hyowon Gweon is an associate professor at Stanford University in the Department of Psychology." %}
+    {% staff_profile "Julian Jara-Ettinger" julian_img "Julian Jara-Ettinger is an associate professor on term at Yale University in the Department of Psychology." %}
+    {% staff_profile "Candice Mills" candice_img "Candice is an associate professor at the University of Texas at Dallas, in the School of Behavioral and Brain Sciences." %}
 </div>

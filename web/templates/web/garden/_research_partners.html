@@ -1,0 +1,14 @@
+{% load static %}
+{% load web_extras %}
+{% static 'images/nadia-chernyak.png' as nadia_img %}
+{% static 'images/jenny-wang.png' as jenny_img %}
+{% static 'images/moira-dillon.jpg' as moira_img %}
+{% static 'images/sabine-doebel.jpeg' as sabine_img %}
+{% static 'images/michael-c-frank.jpeg' as michael_img %}
+<div class="row">
+    {% staff_profile "Nadia Chernyak" nadia_img "Nadia Chernyak is an assistant professor in the Department of Cognitive Sciences at the University of California, Irvine and directs the Development of Social Cognition Lab." %}
+    {% staff_profile "Jenny Wang" jenny_img "Jenny Wang is an assistant professor in the Department of Psychology at Rutgers University and directs the Cognition and Learning Center." %}
+    {% staff_profile "Moira Dillon" moira_img "Moira Dillon is an assistant professor at New York University and director of the Lab for the Developing Mind." %}
+    {% staff_profile "Sabine Doebel" sabine_img "Sabine Doebel is an assistant professor at George Mason University and director of the Developing Minds Lab." %}
+    {% staff_profile "Michael Frank" michael_img "Michael Frank is the David and Lucile Packard Professor of Human Biology at Stanford University and director of the Language and Cognition Lab." %}
+</div>

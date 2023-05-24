@@ -1,0 +1,12 @@
+{% load static %}
+{% load web_extras %}
+{% static 'images/candice-mills.jpg' as candice_img %}
+{% static 'images/mark-sheskin.jpg' as mark_img %}
+{% static 'images/melissa-kline-struhl.png' as melissa_img %}
+{% static 'images/ian-chandler-campbell.jpg' as ian_img %}
+<div class="row">
+    {% staff_profile "Candice Mills" candice_img "Candice Mills is the co-director of the Project GARDEN team. Dr. Mills is a full professor of psychology and the director of the Think Lab at the University of Texas at Dallas." %}
+    {% staff_profile "Mark Sheskin" mark_img "Mark Sheskin is the co-director of the Project GARDEN Team. Dr. Sheskin is an associate professor of psychology at Minerva University." %}
+    {% staff_profile "Melissa Kline Struhl" melissa_img "Melissa Kline Struhl is on the Project GARDEN leadership team bringing her expertise using and maintaining Children Helping Science's technical engine called “Lookit” (the code that enables the studies to work!). Dr. Kline Struhl is the Executive Director of Lookit at the Massachusetts Institute of Technology (MIT)." %}
+    {% staff_profile "Ian Chandler-Campbell" ian_img "Ian Chandler-Campbell is a postdoctoral researcher on the Project GARDEN team working at UT Dallas. Dr. Chandler-Campbell is in charge of developing and supporting the family experience and research infrastructure for Project GARDEN." %}
+</div>
