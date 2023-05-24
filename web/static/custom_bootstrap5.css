@@ -8458,3 +8458,12 @@ textarea.form-control-lg {
     font-size: calc(1.375rem + 1.5vw) !important; }
   .home-subtitle-text {
     font-size: calc(1.3rem + 0.6vw) !important; } }
+
+.img-hover:hover, .img-hover:focus {
+  color: #636464;
+  background-color: #e5e5e5; }
+
+.img-hover:active {
+  color: #fff;
+  background-color: #636464;
+  border-color: #636464; }
