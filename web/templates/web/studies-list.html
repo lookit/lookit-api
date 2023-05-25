@@ -10,21 +10,22 @@
     <script src="{% static 'js/studies-list.js' %}" defer></script>
 {% endblock head %}
 {% block content %}
-    <form action method="post">
+    <form action
+          method="post"
+          class="row justify-content-center align-items-center g-lg-3">
         {% csrf_token %}
         {{ form.study_list_tabs }}
-        <div class="d-flex align-content-center justify-content-evenly">
-            <div class="pe-2">{% bootstrap_field form.child show_label=False %}</div>
-            <div>{% bootstrap_field form.study_location show_label=False %}</div>
-            <div class="p-2 flex-grow-1">{% bootstrap_field form.hide_studies_we_have_done %}</div>
-            {% if user.is_anonymous %}
-                <div class="p-2 flex-grow-1">Log in to find studies just right for your child!</div>
-            {% endif %}
-            <div class="pe-2">{% bootstrap_field form.search show_label=False %}</div>
-            <div>
-                {% trans "Clear" as clear_button_text %}
-                {% bootstrap_button clear_button_text button_class="btn btn-light link-secondary border-secondary" button_type="reset" %}
-            </div>
+        <div class="col-12 col-md-6 col-lg-auto">{% bootstrap_field form.child show_label=False %}</div>
+        <div class="col-12 col-md-6 col-lg-auto">{% bootstrap_field form.study_location show_label=False %}</div>
+        {% if user.is_authenticated %}
+            <div class="col-12 col-md-6 col-lg text-wrap">{% bootstrap_field form.hide_studies_we_have_done %}</div>
+        {% else %}
+            <div class="col-12 col-md-6 col-lg text-wrap text-center mb-3">Log in to find studies just right for your child!</div>
+        {% endif %}
+        <div class="col-12 col-md-6 col-lg-auto d-flex justify-content-center">
+            {% bootstrap_field form.search show_label=False wrapper_class="pe-2 mb-3" %}
+            {% trans "Clear" as clear_button_text %}
+            {% bootstrap_button clear_button_text button_class="btn btn-light link-secondary border-secondary mb-3" button_type="reset" %}
         </div>
     </form>
     <ul class="nav nav-tabs">
@@ -42,17 +43,19 @@
             {{ tab_text|linebreaks }}
         </p>
     </div>
-    <div class="d-flex flex-wrap">
+    <div class="row align-content-start">
         {% for study in object_list %}
-            <a class="text-decoration-none link-dark w-25 p-2"
-               href="{% url 'web:study-detail' uuid=study.uuid %}">
-                <img src="{{ study.image.url }}"
-                     class="img-fluid mx-auto d-block"
-                     alt="{{ study.name }}"/>
-                <p>{{ study.name }}</p>
-                <p>{{ study.preview_summary }}</p>
-                <p>Learn More →</p>
-            </a>
+            <div class="col-12 px-5 col-lg-3 px-lg-2">
+                <a class="text-decoration-none link-dark p-3"
+                   href="{% url 'web:study-detail' uuid=study.uuid %}">
+                    <img src="{{ study.image.url }}"
+                         class="w-100 h-auto mx-auto d-block"
+                         alt="{{ study.name }}"/>
+                    <p>{{ study.name }}</p>
+                    <p>{{ study.preview_summary }}</p>
+                    <p>Learn More →</p>
+                </a>
+            </div>
         {% empty %}
             <div class="empty-text">{% trans "No studies found." %}</div>
         {% endfor %}

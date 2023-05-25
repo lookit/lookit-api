@@ -8,38 +8,84 @@
     Home
 {% endblock title %}
 {% block content %}
-    <div class="row align-items-center position-relative">
-        <img class="img-fluid"
-             alt="CHS home page collage"
-             src="{% static 'images/chs_collage.png' %}"/>
-        <div class="d-flex flex-column align-items-center position-absolute bottom-0">
-            <h3 class="d-none d-md-block m-xl-4 m-md-1">{% trans "Powered by Lookit" %}</h3>
-            <h5 class="d-none d-md-block">{% trans "Fun for Families, Serious for Science" %}</h5>
-            <a class="{% button_primary_classes %} btn-lg btn-md-sm m-xl-5 m-md-1"
+    <div class="alert alert-warning alert-dismissible fade show text-center"
+         role="alert">
+        {% if not request.user.is_authenticated %}
+            ChildrenHelpingScience and Lookit have merged - click <a href="{% url 'web:participant-signup' %}" class="alert-link">here</a> to make an account or explore studies below!
+        {% else %}
+            ChildrenHelpingScience and Lookit have merged!
+        {% endif %}
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"></button>
+    </div>
+    <div class="row justify-content-evenly text-center">
+        <div class="col d-none d-lg-block">
+            <img class="img-fluid"
+                 alt="CHS family collage 1"
+                 src="{% static 'images/families-left.png' %}"/>
+        </div>
+        <div class="col-12 col-lg-6">
+            <img class="img-fluid"
+                 alt="CHS home page logo"
+                 src="{% static 'images/chs-logo.png' %}"/>
+            <p class="home-title-text fw-bold mb-0">{% trans "Children Helping Science" %}</p>
+            <p class="home-subtitle-text d-none d-lg-block my-0">{% trans "Powered by Lookit" %}</p>
+            <p class="home-subtitle-text d-none d-lg-block my-2 my-lg-3 my-xl-4 my-xxl-5">
+                {% trans "Fun for Families, Serious for Science" %}
+            </p>
+            <a class="{% button_primary_classes %} fs-3 btn-lg btn-md-sm my-3 my-md-2 mb-lg-0"
                href="{% url 'web:studies-list' %}">{% trans "Participate in a Study" %}</a>
+        </div>
+        <div class="col d-none d-lg-block">
+            <img class="img-fluid"
+                 alt="CHS family collage 2"
+                 src="{% static 'images/families-right.png' %}"/>
         </div>
     </div>
     <div class="row">
-        <div class="col-4">
-            <div class="text-center m-5 text-red">{% bs_icon "clipboard-data-fill" size='3.5em' %}</div>
-            <h3 class="text-center">{% trans "Help Science" %}</h3>
-            <p class="m-4">
+        <div class="col-12 col-lg-4">
+            <div class="text-center mt-3 mt-lg-5 mb-3 text-red">{% bs_icon "clipboard-data-fill" size='3.5em' %}</div>
+            <p class="home-subtitle-text fw-bold text-center">{% trans "Help Science" %}</p>
+            <p class="m-3 m-lg-4">
                 {% trans "This website has studies you and your child can participate in from your home, brought to you by researchers from universities around the world!" %}
             </p>
         </div>
-        <div class="col-4">
-            <div class="text-center m-5 text-red">{% bs_icon "cup-hot-fill" size='3.5em' %}</div>
-            <h3 class="text-center">{% trans "From Home" %}</h3>
-            <p class="m-4">
+        <div class="col-12 col-lg-4">
+            <div class="text-center mt-3 mt-lg-5 mb-3 text-red">{% bs_icon "cup-hot-fill" size='3.5em' %}</div>
+            <p class="home-subtitle-text fw-bold text-center">{% trans "From Home" %}</p>
+            <p class="m-3 m-lg-4">
                 {% trans "You and your child use your computer to participate. Some studies can also be done on a tablet or phone." %}
             </p>
         </div>
-        <div class="col-4">
-            <div class="text-center m-5 text-red">{% bs_icon "balloon-heart-fill" size='3.5em' %}</div>
-            <h3 class="text-center">{% trans "With Fun Activities" %}</h3>
-            <p class="m-4">
+        <div class="col-12 col-lg-4">
+            <div class="text-center mt-3 mt-lg-5 mb-3 text-red">{% bs_icon "balloon-heart-fill" size='3.5em' %}</div>
+            <p class="home-subtitle-text fw-bold text-center">{% trans "With Fun Activities" %}</p>
+            <p class="m-3 m-lg-4">
                 {% trans "Many studies are either short games, or listening to a story and answering questions about it. Some are available at any time, and others are a scheduled video chat with a researcher." %}
             </p>
         </div>
     </div>
+    <div class="text-center">
+        <p class="mt-5 mb-3 mb-lg-5">{% trans "Join researchers from these schools, and many more!" %}</p>
+        <img class="img-fluid pb-5"
+             alt="University logos"
+             src="{% static 'images/university_logo_grid.png' %}"/>
+    </div>
+    <div class="clearfix px-md-5 pt-5 mb-5">
+        <a href="{% url 'web:garden-home' %}">
+            <img class="img-fluid mb-3 col-md-5 float-md-start me-md-3 img-hover p-2"
+                 alt="Garden project logo"
+                 src="{% static 'images/garden-logo-transparent.png' %}"/>
+        </a>
+        <p>
+            {% trans "Interested in participating in a project with many studies? Learn more about " %}<a href="{% url 'web:garden-home' %}">{% trans "Project GARDEN" %}</a>.
+        </p>
+        <p>
+            {% trans "In this series of studies, your child will help an animated fox named Fen find the “GARDEN Library” while playing games to help Children Helping Science understand children's development from many different angles!" %}
+        </p>
+    </div>
+    <p class="mt-5 mb-1 mb-lg-3 text-center">{% trans "See our current studies for different age groups:" %}</p>
+    {% include "web/_studies-by-age-group.html" %}
 {% endblock content %}

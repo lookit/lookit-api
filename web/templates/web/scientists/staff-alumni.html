@@ -1,24 +1,8 @@
+{% load static %}
+{% load web_extras %}
+{% static 'images/kimandremy.png' as kim_img %}
+{% static 'images/rico-rodriguez.jpg' as rico_img %}
 <div class="row">
-    <div class="col-2 text-center">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Kim Scott"
-             src="https://storage.googleapis.com/lookit-staging/static/images/kimandremy.png"/>
-        <h3>
-            Kim
-            <br />
-            Scott
-        </h3>
-        <p>Founder and Director</p>
-    </div>
-    <div class="col-2 text-center">
-        <img class="img-fluid mx-auto d-block rounded-circle shadow mb-3"
-             alt="Rico Rodriquez"
-             src="https://s3.amazonaws.com/lookitcontents/website/Rico.jpg"/>
-        <h3>
-            Rico
-            <br />
-            Rodriguez
-        </h3>
-        <p>Software Engineer</p>
-    </div>
+    {% staff_profile "Kim<br/>Scott" kim_img "Founder and Director" type="small" %}
+    {% staff_profile "Rico<br/>Rodriquez" rico_img "Software Engineer" type="small" %}
 </div>

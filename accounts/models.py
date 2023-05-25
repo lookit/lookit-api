@@ -183,6 +183,13 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return self._identicon
 
     @property
+    def display_name(self):
+        if self.nickname:
+            return self.nickname
+        else:
+            return f"{ self.given_name } { self.family_name }"
+
+    @property
     def latest_demographics(self):
         return self.demographics.first()
 
@@ -688,8 +695,12 @@ def create_string_listing_children(children):
 
 
 def create_subject_for_study_notification(study, children):
-    latter_half = f' invited to take part in "{study.name}" on Lookit!'
-    latter_half_short = f" invited to take part in a new study on Lookit!"
+    latter_half = (
+        f' invited to take part in "{study.name}" on Lookit (Children Helping Science)!'
+    )
+    latter_half_short = (
+        " invited to take part in a new study on Lookit (Children Helping Science)!"
+    )
     num_children = len(children)
     children_string = create_string_listing_children(children)
 

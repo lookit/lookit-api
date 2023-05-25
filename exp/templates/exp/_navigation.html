@@ -35,7 +35,7 @@
                 {{ request.user.identicon_small_html }} {{ request.user.get_short_name }}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                {% dropdown_item request 'accounts:manage-account' 'Mangage Account' %}
+                {% dropdown_item request 'accounts:manage-account' 'Manage Account' %}
                 {% dropdown_item request 'exp:lab-list' 'Manage Labs' %}
                 {% dropdown_item request 'logout' 'Logout' %}
             </div>
