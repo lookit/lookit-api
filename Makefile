@@ -49,6 +49,9 @@ local-certs:
 media:
 	gsutil -m cp -r "gs://lookit-staging/media" ./project
 
+media-prod:
+	gsutil -m cp -r "gs://lookit-production/media" ./project
+
 test:
 	docker compose run --rm -e ENVIRONMENT= web poetry run ./manage.py test --failfast 
 

@@ -59,8 +59,10 @@ function onStateSelect(stateListItem) {
     const $additionalInfoSpan = stateChangeForm.find('#study-status-additional-information');
     $additionalInfoSpan.text(infoText);
 
-    const $commentsHelpText = stateChangeForm.find('#study-comments-help-text');
-    $commentsHelpText.append(commentsHelpText.split('\n').map(v => `<p>${v}</p>`).join(''));
+    if (commentsHelpText) {
+        const $commentsHelpTextElem = stateChangeForm.find('#study-comments-help-text');
+        $commentsHelpTextElem.append(commentsHelpText.split('\n').map(v => `<p>${v}</p>`).join(''));
+    }
 
     stateChangeForm.find('input[name=trigger]').val(trigger);
 
@@ -89,7 +91,10 @@ function onStateSelect(stateListItem) {
             `);
     }
 
-    if (externalStudy) {
+    /**
+     * Update submit form when the study is external and, for right now, the trigger is 'submit'. 
+     */
+    if (externalStudy && trigger === 'submit') {
         const $collectingData = stateChangeForm.find('.collecting-data');
         $collectingData.append('<hr/><p>If you are submitting a study that is already actively collecting data from participants, check the box below:</p>');
         $collectingData.append(formCheckbox(declarations[trigger]['collecting_data'], 'collecting_data'));
