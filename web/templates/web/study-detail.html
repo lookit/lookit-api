@@ -147,9 +147,14 @@
                                 </p>
                             {% endif %}
                             {% if object.study_type.is_external %}
-                                <p>{% trans "This study is being run outside of Lookit." %}</p>
+                                <p>{% trans "This study runs on another website, and clicking to participate will take you to that link." %}</p>
                                 <p>
-                                    {% trans "Clicking to participate via Lookit will make it possible for researchers to contact you & will share profile information with researchers." %}
+                                    {% trans "It will also make it possible for the researchers of this study to contact you, and will share your child's profile information with the researchers." %}
+                                </p>
+                            {% else %}
+                                <p>{% trans "This study runs here on the Lookit platform." %}</p>
+                                <p>
+                                    {% trans "Clicking to participate will make it possible for the researchers of this study to contact you, and will share your child's profile information with the researchers." %}
                                 </p>
                             {% endif %}
                         {% endif %}

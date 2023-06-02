@@ -74,7 +74,9 @@ class TOTPCheckForm(forms.Form):
     is set in view kwargs.
     """
 
-    otp_code = TOTPField(label="Enter your one-time password (OTP code).")
+    otp_code = TOTPField(
+        label="Enter your one-time password (OTP code) via the Google Authenticator app on your mobile device."
+    )
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop("request")
@@ -509,9 +511,9 @@ class StudyListSearchForm(forms.Form):
         adults = ("18,999", _("adults (18+)"))
 
     class StudyLocation(FormChoiceEnum):
-        empty = ("0", _("Show studies that are..."))
-        lookit = ("1", _("...happening on Lookit"))
-        external = ("2", _("...happening on other websites"))
+        empty = ("0", _("Show studies happening..."))
+        lookit = ("1", _("here on the Lookit platform"))
+        external = ("2", _("on other websites"))
 
     child = forms.ChoiceField(choices=Children.choices(), required=False)
     search = forms.CharField(required=False)

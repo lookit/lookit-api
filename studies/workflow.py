@@ -130,7 +130,7 @@ TRANSITION_HELP_TEXT = {
 }
 
 COMMENTS_HELP_TEXT = {
-    "submit": "Please list the researchers outside your group who have provided feedback on your study prior to submission, and the changes you made in response to peer feedback. (If this is a revision to an active study, list new changes made after approval)",
+    "submit": "Peer review is required for Internal studies (Lookit experiments) and strongly recommended for External studies.\nPlease list the researchers outside your group who have provided feedback on your study prior to submission, and the changes you made in response to peer feedback. (If this is a revision to an active study, list new changes made after approval).",
     "resubmit": "Please list all changes you have made since your study was last approved. This will speed up the review process.",
     "reject": "Please list any changes that need to be made before the study can be approved.",
     "approve": "Please feel free to leave any comments here.",
@@ -156,5 +156,6 @@ DECLARATIONS = {
         "issue_externaldata": "Incorporation of participant information from other sources (e.g. a school ID number)",
         "issue_personaldata": "Collection of personally identifying information such as email addresses or zip codes",
         "issue_sensitive": "Sensitive topics or questions (e.g. political subjects, race, bullying, mental health)",
+        "collecting_data": "Data collection for this study has already started",
     }
 }

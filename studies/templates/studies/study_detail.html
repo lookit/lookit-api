@@ -28,7 +28,8 @@
     <script src="{% static 'js/study-detail.js' %}"
             defer
             data-btn-primary-classes="{{ btn_primary_classes }}"
-            data-btn-secondary-classes="{{ btn_secondary_classes }}"></script>
+            data-btn-secondary-classes="{{ btn_secondary_classes }}"
+            data-external-study="{{ study.study_type.is_external}}"></script>
     {% page_title study.name %}
     <div class="row">
         <div class="col-2">

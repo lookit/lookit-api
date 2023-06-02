@@ -6,6 +6,32 @@ from web import views
 app_name = "web"
 
 urlpatterns = [
+    path("404", TemplateView.as_view(template_name="404.html")),
+    path(
+        "studies/babies/",
+        views.StudiesListViewBabies.as_view(),
+        name="studies-list-babies",
+    ),
+    path(
+        "studies/toddlers/",
+        views.StudiesListViewToddlers.as_view(),
+        name="studies-list-toddlers",
+    ),
+    path(
+        "studies/preschoolers/",
+        views.StudiesListViewPreschoolers.as_view(),
+        name="studies-list-preschoolers",
+    ),
+    path(
+        "studies/school-age-kids/",
+        views.StudiesListViewSchoolAgeKids.as_view(),
+        name="studies-list-school-age",
+    ),
+    path(
+        "studies/adults/",
+        views.StudiesListViewAdults.as_view(),
+        name="studies-list-adults",
+    ),
     path("signup/", views.ParticipantSignupView.as_view(), name="participant-signup"),
     path(
         "account/demographics/",
@@ -72,5 +98,30 @@ urlpatterns = [
         r"studies/<slug:lab_slug>/",
         views.LabStudiesListView.as_view(),
         name="lab-studies-list",
+    ),
+    path(
+        "publications/",
+        TemplateView.as_view(template_name="web/publications.html"),
+        name="publications",
+    ),
+    path(
+        "garden/",
+        TemplateView.as_view(template_name="web/garden/home.html"),
+        name="garden-home",
+    ),
+    path(
+        "garden/about",
+        TemplateView.as_view(template_name="web/garden/about.html"),
+        name="garden-about",
+    ),
+    path(
+        "garden/participate",
+        TemplateView.as_view(template_name="web/garden/participate.html"),
+        name="garden-participate",
+    ),
+    path(
+        "garden/scientists",
+        TemplateView.as_view(template_name="web/garden/scientists.html"),
+        name="garden-scientists",
     ),
 ]

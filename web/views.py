@@ -381,6 +381,13 @@ class StudiesListView(generic.ListView, FormView):
         if query:
             studies = studies.filter(query)
 
+        return self.filter_child_value(
+            studies, user, child_value, hide_studies_we_have_done_value
+        )
+
+    def filter_child_value(
+        self, studies, user, child_value, hide_studies_we_have_done_value
+    ):
         if child_value:
             # filter for authenticated users that has selected one of their children
             if child_value.isnumeric() and user.is_authenticated:
@@ -438,6 +445,53 @@ class StudiesListView(generic.ListView, FormView):
             return lambda s: s.uuid.bytes
         else:
             return lambda s: sha256(user.uuid.bytes + s.uuid.bytes).hexdigest()
+
+    def clear_form_and_session(self, form_kwargs):
+        session = self.request.session
+        for field in self.form_class().fields:
+            if field in session:
+                form_kwargs[field] = ""
+                session[field] = ""
+
+        form_kwargs["study_list_tabs"] = 0
+        session["study_list_tabs"] = 0
+
+        return form_kwargs
+
+
+class StudiesListViewFilter(StudiesListView):
+    child_value = ""
+
+    def get_initial(self):
+        kwargs = super().get_initial()
+        kwargs = self.clear_form_and_session(kwargs)
+        kwargs["child"] = self.child_value
+        self.request.session["child"] = self.child_value
+        return kwargs
+
+    def filter_studies(self, studies: QuerySet) -> QuerySet:
+        user = self.request.user
+        return self.filter_child_value(studies, user, self.child_value, False)
+
+
+class StudiesListViewBabies(StudiesListViewFilter):
+    child_value = "0,1"
+
+
+class StudiesListViewToddlers(StudiesListViewFilter):
+    child_value = "1,3"
+
+
+class StudiesListViewPreschoolers(StudiesListViewFilter):
+    child_value = "3,5"
+
+
+class StudiesListViewSchoolAgeKids(StudiesListViewFilter):
+    child_value = "5,18"
+
+
+class StudiesListViewAdults(StudiesListViewFilter):
+    child_value = "18,999"
 
 
 class LabStudiesListView(StudiesListView):

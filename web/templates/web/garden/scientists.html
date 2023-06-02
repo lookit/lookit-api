@@ -1,0 +1,26 @@
+{% extends "web/base.html" %}
+{% load django_bootstrap5 %}
+{% load i18n %}
+{% load static %}
+{% load bootstrap_icons %}
+{% load web_extras %}
+{% block title %}
+    GARDEN Scientists
+{% endblock title %}
+{% block content %}
+    {% url "web:lab-studies-list" lab_slug="garden" as garden_url %}
+    {% include "web/garden/_navigation.html" %}
+    {% trans "Meet the GARDEN Scientists" as trans_garden_scientists %}
+    {% page_title trans_garden_scientists %}
+    <p>
+        Project GARDEN would not be possible without the work of many scientists and collaborators! Meet the team working hard to help families contribute to developmental science.
+    </p>
+    <h2 class="subheading">Leadership Team</h2>
+    {% include "web/garden/_leadership_team.html" %}
+    <h2 class="subheading">Grant Team Members</h2>
+    {% include "web/garden/_grant_team.html" %}
+    <h2 class="subheading">Research Partners</h2>
+    {% include "web/garden/_research_partners.html" %}
+    <h2 class="subheading">Other team members</h2>
+    {% include "web/garden/_other_members.html" %}
+{% endblock content %}
