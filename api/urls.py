@@ -11,6 +11,7 @@ router.register(r"children", api_views.ChildViewSet)
 router.register(r"responses", api_views.ResponseViewSet)
 router.register(r"labs", api_views.LabViewSet)
 router.register(r"feedback", api_views.FeedbackViewSet)
+router.register(r"video", api_views.VideoViewSet)
 
 
 # Users can have demographics and children nested.

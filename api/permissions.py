@@ -1,7 +1,12 @@
+import hashlib
+import hmac
+import json
+
 from django.shortcuts import get_object_or_404
-from rest_framework import permissions
+from rest_framework import exceptions, permissions
 
 from accounts.models import Child
+from project.settings import AWS_LAMBDA_SECRET_ACCESS_KEY
 from studies.models import Response
 from studies.permissions import StudyPermission
 
@@ -37,3 +42,29 @@ class ResponsePermissions(permissions.BasePermission):
                 if child.user != request.user:
                     return False
         return True
+
+
+class VideoFromS3Permissions:
+    def has_permission(self, request, view):
+        """
+        Only allow the creation of a new video via the API if request is signed and signature is verified.
+        """
+        try:
+            signature_received = request.META["HTTP_X_AWS_LAMBDA_HMAC_SIG"]
+        except KeyError:
+            # results in 401 unauthorized response
+            raise exceptions.AuthenticationFailed(
+                "No HMAC signature found in request header."
+            )
+
+        # calculate signature to compare with the one sent
+        key = bytes(AWS_LAMBDA_SECRET_ACCESS_KEY, "UTF-8")
+        # remove study/response relationships from request data dict to match the content/format sent by client
+        request_data = request.data.copy()
+        request_data.pop("study")
+        request_data.pop("response")
+        message = bytes(json.dumps(request_data, separators=(",", ":")), "UTF-8")
+        signature_calculated = hmac.new(key, message, hashlib.sha256).hexdigest()
+
+        # false results in 401 unauthorized response
+        return signature_received == signature_calculated

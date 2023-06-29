@@ -13,8 +13,12 @@ from accounts.serializers import (
     FullUserSerializer,
     LabSerializer,
 )
-from api.permissions import FeedbackPermissions, ResponsePermissions
-from studies.models import Feedback, Lab, Response, Study
+from api.permissions import (
+    FeedbackPermissions,
+    ResponsePermissions,
+    VideoFromS3Permissions,
+)
+from studies.models import Feedback, Lab, Response, Study, Video
 from studies.permissions import StudyPermission
 from studies.queries import get_consented_responses_qs, studies_for_which_user_has_perm
 from studies.serializers import (
@@ -22,6 +26,7 @@ from studies.serializers import (
     ResponseSerializer,
     ResponseWriteableSerializer,
     StudySerializer,
+    VideoSerializer,
 )
 
 CONVERSION_TYPES = {
@@ -30,6 +35,7 @@ CONVERSION_TYPES = {
     "response": Response,
     "feedback": Feedback,
     "user": User,
+    "video": Video,
 }
 
 
@@ -440,3 +446,18 @@ class FeedbackViewSet(FilterByUrlKwargsMixin, ConvertUuidToIdMixin, views.ModelV
             Q(response__id__in=response_ids)
             | Q(response__child__user=self.request.user)
         ).distinct()
+
+
+class VideoViewSet(ConvertUuidToIdMixin, views.ModelViewSet):
+    """
+    Allows S3 (via Lambda) to create a new Video object by POSTing to '/api/v1/video/'.
+    No authentication class since the POST requests are from an anonymous user.
+    Instead, we use the custom permission class to determine that the request is from a legitimate source (HMAC signature matches).
+    """
+
+    resource_name = "videos"
+    queryset = Video.objects.all()
+    serializer_class = VideoSerializer
+    lookup_field = "uuid"
+    http_method_names = ["post"]
+    permission_classes = [VideoFromS3Permissions]

@@ -53,6 +53,9 @@ S3_ACCESS_KEY_ID = os.environ.get("S3_ACCESS_KEY_ID", "ABCDEFGHIJKLMNOPQRST")
 S3_SECRET_ACCESS_KEY = os.environ.get(
     "S3_SECRET_ACCESS_KEY", "abcdefghijklmnopqrstuvwxyz01234567891012"
 )
+AWS_LAMBDA_SECRET_ACCESS_KEY = os.environ.get(
+    "AWS_LAMBDA_SECRET_ACCESS_KEY", "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmn"
+)
 
 # Application definition
 
