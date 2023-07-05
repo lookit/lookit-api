@@ -52,10 +52,13 @@ class VideoFromS3Permissions:
         try:
             signature_received = request.META["HTTP_X_AWS_LAMBDA_HMAC_SIG"]
         except KeyError:
-            # results in 401 unauthorized response
-            raise exceptions.AuthenticationFailed(
-                "No HMAC signature found in request header."
-            )
+            try:
+                signature_received = request.META["headers"]["X_AWS_LAMBDA_HMAC_SIG"]
+            except KeyError:
+                # results in 401 unauthorized response
+                raise exceptions.AuthenticationFailed(
+                    f"No HMAC signature found in request header."
+                )
 
         # calculate signature to compare with the one sent
         key = bytes(AWS_LAMBDA_SECRET_ACCESS_KEY, "UTF-8")
