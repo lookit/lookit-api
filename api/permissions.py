@@ -78,4 +78,7 @@ class VideoFromS3Permissions:
         signature_calculated = hmac.new(key, message, hashlib.sha256).hexdigest()
 
         # false results in 401 unauthorized response
-        return signature_received == signature_calculated
+        if not signature_received == signature_calculated:
+            raise exceptions.AuthenticationFailed(f"HMAC signatures do not match.")
+        else:
+            return True
