@@ -61,8 +61,16 @@ class VideoFromS3Permissions:
         key = bytes(AWS_LAMBDA_SECRET_ACCESS_KEY, "UTF-8")
         # remove study/response relationships from request data dict to match the content/format sent by client
         request_data = request.data.copy()
-        request_data.pop("study")
-        request_data.pop("response")
+        try:
+            request_data.pop("study")
+        except KeyError:
+            raise exceptions.ParseError("Missing required relationship: study")
+
+        try:
+            request_data.pop("response")
+        except KeyError:
+            raise exceptions.ParseError("Missing required relationship: response")
+
         message = bytes(json.dumps(request_data, separators=(",", ":")), "UTF-8")
         signature_calculated = hmac.new(key, message, hashlib.sha256).hexdigest()
 
