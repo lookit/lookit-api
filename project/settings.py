@@ -291,8 +291,7 @@ else:
     STATICFILES_LOCATION = "/static"
 
     MEDIAFILES_LOCATION = "/media"
-
-    EXPERIMENT_LOCATION = "/experiments"
+    EXPERIMENT_LOCATION = "experiments"
 
     GS_BUCKET_NAME = None
     GS_PROJECT_ID = None
