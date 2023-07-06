@@ -10,7 +10,7 @@ cp /environment /checkout-dir/.env
 
 cd /checkout-dir
 # install requirements for ember-frame-player
-yarn --frozen-lockfile
+QT_QPA_PLATFORM=offscreen yarn --frozen-lockfile
 bower install --allow-root
 # build ember app
 ./node_modules/.bin/ember build --environment=production
