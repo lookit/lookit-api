@@ -36,8 +36,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    links:
-      - db
 
   broker:
     image: rabbitmq:3.8.16-management-alpine
@@ -57,10 +55,23 @@ services:
     command: poetry run celery worker --app=project --loglevel=INFO -Q builds,email,cleanup
     volumes:
       - .:/code
+      - ./certs/dind/client:/certs/client
     env_file:
       - .env
     environment:
+      - DB_HOST=db
       - RABBITMQ_HOST=broker
+      - DOCKER_HOST=tcp://docker:2376
+      - DOCKER_TLS_VERIFY="1"
+      - DOCKER_CERT_PATH=/certs/client
     depends_on:
       broker:
         condition: service_healthy
+
+  docker:
+    image: docker:dind
+    privileged: true
+    container_name: lookit-api-docker
+    volumes:
+      - ./certs/dind/client:/certs/client
+      - ./ember_build:/code/ember_build
