@@ -1406,6 +1406,10 @@ class Video(models.Model):
     def recording_method_is_pipe(self):
         return str.lower(self.response.recording_method) == "pipe"
 
+    @property
+    def recording_method_is_recordrtc(self):
+        return str.lower(self.response.recording_method) == "recordrtc"
+
 
 @receiver(pre_delete, sender=Video)
 def delete_video_on_s3(sender, instance, using, **kwargs):
