@@ -1403,8 +1403,8 @@ class Video(models.Model):
         return get_download_url(self.full_name)
 
     @property
-    def recording_method(self):
-        return self.response.recording_method
+    def recording_method_is_pipe(self):
+        return str.lower(self.response.recording_method) == "pipe"
 
 
 @receiver(pre_delete, sender=Video)
