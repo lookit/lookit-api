@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # copy git checkout into local env for faster development
 # could probably be removed in production
 cp -r $CHECKOUT_DIR /checkout-dir/
