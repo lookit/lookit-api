@@ -2,11 +2,11 @@ import hashlib
 import hmac
 import json
 
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 from rest_framework import exceptions, permissions
 
 from accounts.models import Child
-from project.settings import AWS_LAMBDA_SECRET_ACCESS_KEY
 from studies.models import Response
 from studies.permissions import StudyPermission
 
@@ -65,7 +65,7 @@ class VideoFromS3Permissions:
                     )
 
             # calculate signature to compare with the one sent
-            key = bytes(AWS_LAMBDA_SECRET_ACCESS_KEY, "UTF-8")
+            key = bytes(settings.AWS_LAMBDA_SECRET_ACCESS_KEY, "UTF-8")
             # remove study/response relationships from request data dict to match the content/format sent by client
             request_data = request.data.copy()
             try:

@@ -6,17 +6,20 @@ import string
 from datetime import datetime
 
 import pytz
+from django.conf import settings
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django_dynamic_fixture import G
 from rest_framework import status
-from rest_framework.test import APIClient, APITestCase
 
-from accounts.models import Child, DemographicData, User
-from project.settings import AWS_LAMBDA_SECRET_ACCESS_KEY
+from accounts.models import Child, User
 from studies.models import Lab, Response, Study, Video
 
 
-class VideoTestCase(APITestCase):
+@override_settings(
+    AWS_LAMBDA_SECRET_ACCESS_KEY="abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmn"
+)
+class VideoTestCase(TestCase):
     # helper functions
     def dict_to_json_bytes(self, dict_data):
         """Helper function to convert a Python dictionary to JSON bytes string."""
@@ -24,7 +27,7 @@ class VideoTestCase(APITestCase):
 
     def calculate_signature(self):
         """Calculate signature using current value of data_to_hash."""
-        key = bytes(AWS_LAMBDA_SECRET_ACCESS_KEY, "UTF-8")
+        key = bytes(settings.AWS_LAMBDA_SECRET_ACCESS_KEY, "UTF-8")
         self.signature = hmac.new(
             key, self.video_data_to_hash, hashlib.sha256
         ).hexdigest()
@@ -38,20 +41,28 @@ class VideoTestCase(APITestCase):
     def delete_video_by_name(self, name):
         Video.objects.get(full_name=name).delete()
 
-    def setUp(self):
-        # set up all info needed to make POST requests and create video objects
-        self.participant = G(User, is_active=True, given_name="Participant 1")
-        self.demographics = G(DemographicData, user=self.participant)
-        self.participant.save()
-        self.child = G(Child, user=self.participant, given_name="Sally")
-        self.lab = G(Lab, name="MIT")
-        self.researcher = G(
+    @classmethod
+    def setUpTestData(cls):
+        # set up non-modified objects for use by all tests
+        participant = G(User, is_active=True, given_name="Participant 1")
+        participant.save()
+        child = G(Child, user=participant, given_name="Sally")
+        child.save()
+        lab = Lab.objects.create(name="MIT")
+        lab.save()
+        researcher = G(
             User, is_active=True, is_researcher=True, given_name="Researcher 1"
         )
-        self.study = G(Study, creator=self.researcher, lab=self.lab)
-        self.response = G(Response, child=self.child, study=self.study, completed=False)
+        researcher.save()
+        study = G(Study, creator=researcher, lab=lab)
+        study.save()
+        response = G(Response, child=child, study=study, completed=False)
+        response.save()
 
+    def setUp(self):
         self.video_url = reverse("api:video-list", kwargs={"version": "v1"})
+        self.study = Study.objects.get(id=1)
+        self.response = Response.objects.get(id=1)
         study_str = str(self.study.uuid)
         resp_str = str(self.response.uuid)
         ts_str = "".join(random.choices(string.digits, k=13))
@@ -86,7 +97,6 @@ class VideoTestCase(APITestCase):
         self.create_data_to_hash()
         self.calculate_signature()
         self.headers = {"X_AWS_LAMBDA_HMAC_SIG": self.signature}
-        self.client = APIClient()
 
     # POST Responses tests
     def sendPostResponse(self):
