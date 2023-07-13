@@ -7,15 +7,16 @@ from datetime import datetime
 
 import pytz
 from django.urls import reverse
+from django_dynamic_fixture import G
 from rest_framework import status
+from rest_framework.test import APIClient, APITestCase
 
+from accounts.models import Child, DemographicData, User
 from project.settings import AWS_LAMBDA_SECRET_ACCESS_KEY
-from studies.models import Video
-
-from .test_responses import ResponseTestCase
+from studies.models import Lab, Response, Study, Video
 
 
-class VideoTestCase(ResponseTestCase):
+class VideoTestCase(APITestCase):
     # helper functions
     def dict_to_json_bytes(self, dict_data):
         """Helper function to convert a Python dictionary to JSON bytes string."""
@@ -38,9 +39,18 @@ class VideoTestCase(ResponseTestCase):
         Video.objects.get(full_name=name).delete()
 
     def setUp(self):
-        # set up the Response test case first so that we have some response/study/child data to work with
-        super().setUp()
-        # set up all info needed to make POST requests
+        # set up all info needed to make POST requests and create video objects
+        self.participant = G(User, is_active=True, given_name="Participant 1")
+        self.demographics = G(DemographicData, user=self.participant)
+        self.participant.save()
+        self.child = G(Child, user=self.participant, given_name="Sally")
+        self.lab = G(Lab, name="MIT")
+        self.researcher = G(
+            User, is_active=True, is_researcher=True, given_name="Researcher 1"
+        )
+        self.study = G(Study, creator=self.researcher, lab=self.lab)
+        self.response = G(Response, child=self.child, study=self.study, completed=False)
+
         self.video_url = reverse("api:video-list", kwargs={"version": "v1"})
         study_str = str(self.study.uuid)
         resp_str = str(self.response.uuid)
@@ -76,6 +86,7 @@ class VideoTestCase(ResponseTestCase):
         self.create_data_to_hash()
         self.calculate_signature()
         self.headers = {"X_AWS_LAMBDA_HMAC_SIG": self.signature}
+        self.client = APIClient()
 
     # POST Responses tests
     def sendPostResponse(self):
