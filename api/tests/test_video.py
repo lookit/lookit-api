@@ -43,26 +43,24 @@ class VideoTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        print("set up test data - should run first")
         # set up non-modified objects for use by all tests
-        participant = G(User, is_active=True, given_name="Participant 1")
-        participant.save()
-        child = G(Child, user=participant, given_name="Sally")
-        child.save()
-        lab = Lab.objects.create(name="MIT")
-        lab.save()
-        researcher = G(
+        cls.participant = G(User, is_active=True, given_name="Participant 1")
+        cls.child = G(Child, user=cls.participant, given_name="Sally")
+        cls.lab = G(Lab, name="MIT")
+        cls.researcher = G(
             User, is_active=True, is_researcher=True, given_name="Researcher 1"
         )
-        researcher.save()
-        study = G(Study, creator=researcher, lab=lab)
-        study.save()
-        response = G(Response, child=child, study=study, completed=False)
-        response.save()
+        cls.study = G(Study, creator=cls.researcher, lab=cls.lab)
+        cls.response = G(Response, child=cls.child, study=cls.study, completed=False)
+        print(Study.objects.count())
 
     def setUp(self):
+        print("set up - should run next and before each test")
+        print(Study.objects.count())
         self.video_url = reverse("api:video-list", kwargs={"version": "v1"})
-        self.study = Study.objects.get(id=1)
-        self.response = Response.objects.get(id=1)
+        self.study = VideoTestCase.study
+        self.response = VideoTestCase.response
         study_str = str(self.study.uuid)
         resp_str = str(self.response.uuid)
         ts_str = "".join(random.choices(string.digits, k=13))
