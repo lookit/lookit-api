@@ -7,10 +7,11 @@ from datetime import datetime
 
 import pytz
 from django.conf import settings
-from django.test import TestCase, override_settings
+from django.test import override_settings
 from django.urls import reverse
 from django_dynamic_fixture import G
 from rest_framework import status
+from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
 from studies.models import Lab, Response, Study, Video
@@ -19,7 +20,7 @@ from studies.models import Lab, Response, Study, Video
 @override_settings(
     AWS_LAMBDA_SECRET_ACCESS_KEY="abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmn"
 )
-class VideoTestCase(TestCase):
+class VideoTestCase(APITestCase):
     # helper functions
     def dict_to_json_bytes(self, dict_data):
         """Helper function to convert a Python dictionary to JSON bytes string."""
@@ -43,7 +44,6 @@ class VideoTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        print("set up test data - should run first")
         # set up non-modified objects for use by all tests
         cls.participant = G(User, is_active=True, given_name="Participant 1")
         cls.child = G(Child, user=cls.participant, given_name="Sally")
@@ -53,11 +53,8 @@ class VideoTestCase(TestCase):
         )
         cls.study = G(Study, creator=cls.researcher, lab=cls.lab)
         cls.response = G(Response, child=cls.child, study=cls.study, completed=False)
-        print(Study.objects.count())
 
     def setUp(self):
-        print("set up - should run next and before each test")
-        print(Study.objects.count())
         self.video_url = reverse("api:video-list", kwargs={"version": "v1"})
         self.study = VideoTestCase.study
         self.response = VideoTestCase.response
@@ -95,20 +92,24 @@ class VideoTestCase(TestCase):
         self.create_data_to_hash()
         self.calculate_signature()
         self.headers = {"X_AWS_LAMBDA_HMAC_SIG": self.signature}
+        self.client = APIClient()
 
     # POST Responses tests
-    def sendPostResponse(self):
-        return self.client.post(
+    def sendPostRequest(self):
+        print("post request")
+        response = self.client.post(
             self.video_url,
             self.video_data_json,
             content_type="application/vnd.api+json",
             headers=self.headers,
         )
+        print(response)
+        return response
 
     def testPostResponse(self):
         """Vaild POST request with video data should create new video object"""
         self.assertEqual(Video.objects.count(), 0)
-        api_response = self.sendPostResponse()
+        api_response = self.sendPostRequest()
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(api_response.data["full_name"], self.video_name)
         self.assertEqual(api_response.data["is_consent_footage"], True)
@@ -230,7 +231,7 @@ class VideoTestCase(TestCase):
         self.assertEqual(Video.objects.count(), 0)
 
     # Non-POST requests should all fail - method not allowed
-    def testGetResponse(self):
+    def testAGetResponse(self):
         """GET requests should fail"""
         api_response = self.client.get(
             self.video_url,
@@ -242,7 +243,7 @@ class VideoTestCase(TestCase):
     def testPutResponse(self):
         """Put should fail even with a valid ID/PK and signature"""
         self.assertEqual(Video.objects.count(), 0)
-        api_response = self.sendPostResponse()
+        api_response = self.sendPostRequest()
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Video.objects.count(), 1)
         video_pk = Video.objects.get().id
@@ -269,7 +270,7 @@ class VideoTestCase(TestCase):
     def testPatchResponse(self):
         """Patch should fail even with a valid ID/PK and signature"""
         self.assertEqual(Video.objects.count(), 0)
-        api_response = self.sendPostResponse()
+        api_response = self.sendPostRequest()
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Video.objects.count(), 1)
         video_pk = Video.objects.get().id
@@ -296,8 +297,10 @@ class VideoTestCase(TestCase):
 
     def testDeleteResponse(self):
         """Delete should fail even with a valid ID/PK and signature"""
+        print("started")
+        print(Video.objects.count())
         self.assertEqual(Video.objects.count(), 0)
-        api_response = self.sendPostResponse()
+        api_response = self.sendPostRequest()
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Video.objects.count(), 1)
         api_response_no_pk = self.client.delete(
