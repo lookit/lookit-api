@@ -40,7 +40,10 @@ class VideoTestCase(APITestCase):
         )
 
     def delete_video_by_name(self, name):
-        Video.objects.get(full_name=name).delete()
+        print("delete " + name)
+        vid_obj = Video.objects.get(full_name=name)
+        print("vid obj ")
+        vid_obj.delete()
 
     @classmethod
     def setUpTestData(cls):
@@ -96,7 +99,6 @@ class VideoTestCase(APITestCase):
 
     # POST Responses tests
     def sendPostRequest(self):
-        print("post request")
         response = self.client.post(
             self.video_url,
             self.video_data_json,
@@ -297,10 +299,9 @@ class VideoTestCase(APITestCase):
 
     def testDeleteResponse(self):
         """Delete should fail even with a valid ID/PK and signature"""
-        print("started")
-        print(Video.objects.count())
         self.assertEqual(Video.objects.count(), 0)
         api_response = self.sendPostRequest()
+        print(api_response.status_code)
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Video.objects.count(), 1)
         api_response_no_pk = self.client.delete(
@@ -308,11 +309,13 @@ class VideoTestCase(APITestCase):
             content_type="application/vnd.api+json",
             headers=self.headers,
         )
+        print(api_response_no_pk.status_code)
         self.assertEqual(
             api_response_no_pk.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
         )
         self.assertEqual(Video.objects.count(), 1)
         video_pk = Video.objects.get().id
+        print(video_pk)
         video_url_with_pk = self.video_url + str(video_pk)
         api_response_with_pk = self.client.delete(
             video_url_with_pk,
@@ -321,10 +324,12 @@ class VideoTestCase(APITestCase):
             headers=self.headers,
             follow=True,
         )
+        print(api_response_with_pk)
         self.assertEqual(
             api_response_with_pk.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
         )
         self.assertEqual(Video.objects.count(), 1)
+        print(self.video_name)
         self.delete_video_by_name(self.video_name)
         self.assertEqual(Video.objects.count(), 0)
 
