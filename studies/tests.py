@@ -432,10 +432,13 @@ class TestAnnouncementEmailFunctionality(TestCase):
             'Moe and Curly are invited to take part in "The Most Fake Study Ever" on Lookit (Children Helping Science)!',
         )
         self.assertEqual(list(message_object.recipients.all()), [self.participant_two])
-        self.assertEqual(
-            list(message_object.children_of_interest.all()),
-            [self.child_two, self.child_three],
+        children_of_interest_message_obj = list(
+            message_object.children_of_interest.all().order_by("given_name")
         )
+        children_of_interest_args = sorted(
+            [self.child_two, self.child_three], key=lambda x: x.given_name
+        )
+        self.assertEqual(children_of_interest_message_obj, children_of_interest_args)
         self.assertEqual(message_object.related_study, self.study_two)
         self.assertIsNone(message_object.sender)
 
