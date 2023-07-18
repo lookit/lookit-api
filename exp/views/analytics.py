@@ -88,7 +88,7 @@ class StudyParticipantAnalyticsView(
 
         # now, map studies for each child, and gather demographic data as well.
         studies_for_child = defaultdict(set)
-        paginator = Paginator(annotated_responses, RESPONSE_PAGE_SIZE)
+        paginator = Paginator(annotated_responses.order_by("id"), RESPONSE_PAGE_SIZE)
         for page_num in paginator.page_range:
             page_of_responses = paginator.page(page_num)
             for resp in page_of_responses:
@@ -138,7 +138,7 @@ def get_flattened_responses(response_qs, studies_for_child):
     TODO: consider whether or not this work should be extracted out into a dataframe.
     """
     response_data = []
-    paginator = Paginator(response_qs, RESPONSE_PAGE_SIZE)
+    paginator = Paginator(response_qs.order_by("id"), RESPONSE_PAGE_SIZE)
     for page_num in paginator.page_range:
         page_of_responses = paginator.page(page_num)
         for resp in page_of_responses:
