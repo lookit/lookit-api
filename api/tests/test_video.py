@@ -99,7 +99,6 @@ class VideoTestCase(APITestCase):
             content_type="application/vnd.api+json",
             headers=self.headers,
         )
-        print(response)
         return response
 
     def testPostResponse(self):
@@ -213,7 +212,7 @@ class VideoTestCase(APITestCase):
         self.assertEqual(api_response.status_code, status.HTTP_400_BAD_REQUEST)
 
     # Non-POST requests should all fail - method not allowed
-    def testAGetResponse(self):
+    def testGetResponse(self):
         """GET requests should fail"""
         api_response = self.client.get(
             self.video_url,
@@ -270,19 +269,16 @@ class VideoTestCase(APITestCase):
     def testDeleteResponse(self):
         """Delete should fail even with a valid ID/PK and signature"""
         api_response = self.sendPostRequest()
-        print(api_response.status_code)
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
         api_response_no_pk = self.client.delete(
             self.video_url,
             content_type="application/vnd.api+json",
             headers=self.headers,
         )
-        print(api_response_no_pk.status_code)
         self.assertEqual(
             api_response_no_pk.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
         )
         video_pk = Video.objects.get().id
-        print(video_pk)
         video_url_with_pk = self.video_url + str(video_pk)
         api_response_with_pk = self.client.delete(
             video_url_with_pk,
@@ -291,7 +287,6 @@ class VideoTestCase(APITestCase):
             headers=self.headers,
             follow=True,
         )
-        print(api_response_with_pk)
         self.assertEqual(
             api_response_with_pk.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
         )
