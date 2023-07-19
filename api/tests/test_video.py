@@ -107,22 +107,22 @@ class VideoTestCase(APITestCase):
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(api_response.data["full_name"], self.video_name)
         self.assertEqual(api_response.data["is_consent_footage"], True)
-        self.assertEqual(Video.objects.get().full_name, self.video_name)
+        posted_video = Video.objects.get(
+            full_name=self.video_name
+        )  # full_name is unique
         self.assertEqual(
-            Video.objects.get().is_consent_footage,
+            posted_video.is_consent_footage,
             self.video_data["data"]["attributes"]["is_consent_footage"],
         )
         self.assertEqual(
-            Video.objects.get().pipe_name,
+            posted_video.pipe_name,
             self.video_data["data"]["attributes"]["pipe_name"],
         )
         self.assertEqual(
-            Video.objects.get().pipe_numeric_id,
+            posted_video.pipe_numeric_id,
             int(self.video_data["data"]["attributes"]["pipe_numeric_id"]),
         )
-        timestamp_from_db = Video.objects.get().s3_timestamp.strftime(
-            "%Y-%m-%d %H:%M:%S.%f"
-        )
+        timestamp_from_db = posted_video.s3_timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
         utc_tz = pytz.timezone("UTC")
         timestamp_sent = (
             datetime.strptime(
@@ -134,11 +134,11 @@ class VideoTestCase(APITestCase):
         )
         self.assertEqual(timestamp_from_db, timestamp_sent)
         self.assertEqual(
-            Video.objects.get().frame_id,
+            posted_video.frame_id,
             self.video_data["data"]["attributes"]["frame_id"],
         )
-        self.assertEqual(Video.objects.get().response_id, self.response.id)
-        self.assertEqual(Video.objects.get().study_id, self.study.id)
+        self.assertEqual(posted_video.response_id, self.response.id)
+        self.assertEqual(posted_video.study_id, self.study.id)
 
     def testPostResponseNeedSignature(self):
         """Request should fail if there's no signature in the header"""
@@ -225,8 +225,10 @@ class VideoTestCase(APITestCase):
         """Put should fail even with a valid ID/PK and signature"""
         api_response = self.sendPostRequest()
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
-        video_pk = Video.objects.get().id
-        self.video_data["data"]["attributes"]["pk"] = video_pk
+        posted_video = Video.objects.get(
+            full_name=self.video_name
+        )  # full_name is unique
+        self.video_data["data"]["attributes"]["pk"] = posted_video.id
         self.video_data["data"]["attributes"]["frame_id"] = "0-different-frame-name"
         self.video_data_json = self.dict_to_json_bytes(self.video_data)
         self.create_data_to_hash()
@@ -241,14 +243,17 @@ class VideoTestCase(APITestCase):
         self.assertEqual(
             api_response_put.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
         )
-        self.assertEqual(Video.objects.get().frame_id, "0-video-consent")
+        posted_video.refresh_from_db()
+        self.assertEqual(posted_video.frame_id, "0-video-consent")
 
     def testPatchResponse(self):
         """Patch should fail even with a valid ID/PK and signature"""
         api_response = self.sendPostRequest()
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
-        video_pk = Video.objects.get().id
-        self.video_data["data"]["attributes"]["pk"] = video_pk
+        posted_video = Video.objects.get(
+            full_name=self.video_name
+        )  # full_name is unique
+        self.video_data["data"]["attributes"]["pk"] = posted_video.id
         self.video_data["data"]["attributes"]["frame_id"] = "0-different-frame-name"
         del self.video_data["data"]["attributes"]["s3_timestamp"]
         del self.video_data["data"]["relationships"]
@@ -265,6 +270,8 @@ class VideoTestCase(APITestCase):
         self.assertEqual(
             api_response_patch.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
         )
+        posted_video.refresh_from_db()
+        self.assertEqual(posted_video.frame_id, "0-video-consent")
 
     def testDeleteResponse(self):
         """Delete should fail even with a valid ID/PK and signature"""
@@ -278,8 +285,10 @@ class VideoTestCase(APITestCase):
         self.assertEqual(
             api_response_no_pk.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
         )
-        video_pk = Video.objects.get().id
-        video_url_with_pk = self.video_url + str(video_pk)
+        posted_video = Video.objects.get(
+            full_name=self.video_name
+        )  # full_name is unique
+        video_url_with_pk = self.video_url + str(posted_video.id)
         api_response_with_pk = self.client.delete(
             video_url_with_pk,
             self.video_data_json,
@@ -290,6 +299,9 @@ class VideoTestCase(APITestCase):
         self.assertEqual(
             api_response_with_pk.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
         )
+        self.assertTrue(
+            Video.objects.filter(full_name=self.video_name).exists()
+        )  # full_name is unique
 
     def testHeadResponse(self):
         api_response = self.client.head(
