@@ -13,7 +13,6 @@ jobs:
       - run:
           name: Run tests
           command: poetry run ./manage.py test -v 2 --failfast
-          no_output_timeout: 30m
   build-and-lint: 
     docker:
       - image: cimg/python:3.9
