@@ -61,9 +61,9 @@ python_dotenv = "0.18.0"
 django-dynamic-fixture = "^3.1.2"
 beautifulsoup4 = "^4.10.0"
 black = "22.3.0"
-djlint = "1.19.16"
 pre-commit = "2.18.1"
 libsass = "^0.22.0"
+djlint = "1.32.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
