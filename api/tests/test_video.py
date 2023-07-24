@@ -39,6 +39,10 @@ class VideoTestCase(APITestCase):
             self.video_data["data"]["attributes"]
         )
 
+    def delete_video_by_name(self, name):
+        vid_obj = Video.objects.get(full_name=name)  # full name is unique
+        vid_obj.delete()
+
     @classmethod
     def setUpTestData(cls):
         # set up non-modified objects for use by all tests
@@ -103,10 +107,12 @@ class VideoTestCase(APITestCase):
 
     def testPostResponse(self):
         """Vaild POST request with video data should create new video object"""
+        self.assertEqual(Video.objects.count(), 0)
         api_response = self.sendPostRequest()
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(api_response.data["full_name"], self.video_name)
         self.assertEqual(api_response.data["is_consent_footage"], True)
+        self.assertEqual(Video.objects.count(), 1)
         posted_video = Video.objects.get(
             full_name=self.video_name
         )  # full_name is unique
@@ -139,18 +145,23 @@ class VideoTestCase(APITestCase):
         )
         self.assertEqual(posted_video.response_id, self.response.id)
         self.assertEqual(posted_video.study_id, self.study.id)
+        self.delete_video_by_name(self.video_name)
+        self.assertEqual(Video.objects.count(), 0)
 
     def testPostResponseNeedSignature(self):
         """Request should fail if there's no signature in the header"""
+        self.assertEqual(Video.objects.count(), 0)
         api_response = self.client.post(
             self.video_url,
             self.video_data_json,
             content_type="application/vnd.api+json",
         )
         self.assertEqual(api_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(Video.objects.count(), 0)
 
     def testPostResponseNeedValidSignature(self):
         """Request should fail if the signature exists but doesn't match"""
+        self.assertEqual(Video.objects.count(), 0)
         self.headers = {
             "X_AWS_LAMBDA_HMAC_SIG": "".join(
                 random.choices(string.ascii_lowercase + string.digits, k=64)
@@ -163,9 +174,11 @@ class VideoTestCase(APITestCase):
             headers=self.headers,
         )
         self.assertEqual(api_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(Video.objects.count(), 0)
 
     def testPostResponseNeedData(self):
         """POST request with empty data should fail"""
+        self.assertEqual(Video.objects.count(), 0)
         self.video_data = {}
         self.video_data_json = self.dict_to_json_bytes(self.video_data)
         self.video_data_to_hash = self.dict_to_json_bytes(self.video_data)
@@ -180,9 +193,11 @@ class VideoTestCase(APITestCase):
         self.assertEqual(api_response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(api_response.data[0]["detail"].code, "parse_error")
         self.assertEqual(api_response.data[0]["source"]["pointer"], "/data")
+        self.assertEqual(Video.objects.count(), 0)
 
     def testPostResponseNeedVideoProperties(self):
         """POST request with incorrect resource type should fail"""
+        self.assertEqual(Video.objects.count(), 0)
         self.video_data["data"]["type"] = "bad"
         self.video_data_json = self.dict_to_json_bytes(self.video_data)
         self.create_data_to_hash()
@@ -195,9 +210,11 @@ class VideoTestCase(APITestCase):
             headers=self.headers,
         )
         self.assertEqual(api_response.status_code, status.HTTP_409_CONFLICT)
+        self.assertEqual(Video.objects.count(), 0)
 
     def testPostResponseWithMissingAttribute(self):
         """POST request with missing required data attribute should fail"""
+        self.assertEqual(Video.objects.count(), 0)
         del self.video_data["data"]["attributes"]["full_name"]
         self.video_data_json = self.dict_to_json_bytes(self.video_data)
         self.create_data_to_hash()
@@ -210,6 +227,7 @@ class VideoTestCase(APITestCase):
             headers=self.headers,
         )
         self.assertEqual(api_response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Video.objects.count(), 0)
 
     # Non-POST requests should all fail - method not allowed
     def testGetResponse(self):
@@ -223,8 +241,10 @@ class VideoTestCase(APITestCase):
 
     def testPutResponse(self):
         """Put should fail even with a valid ID/PK and signature"""
+        self.assertEqual(Video.objects.count(), 0)
         api_response = self.sendPostRequest()
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Video.objects.count(), 1)
         posted_video = Video.objects.get(
             full_name=self.video_name
         )  # full_name is unique
@@ -243,13 +263,18 @@ class VideoTestCase(APITestCase):
         self.assertEqual(
             api_response_put.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
         )
+        self.assertEqual(Video.objects.count(), 1)
         posted_video.refresh_from_db()
         self.assertEqual(posted_video.frame_id, "0-video-consent")
+        self.delete_video_by_name(self.video_name)
+        self.assertEqual(Video.objects.count(), 0)
 
     def testPatchResponse(self):
         """Patch should fail even with a valid ID/PK and signature"""
+        self.assertEqual(Video.objects.count(), 0)
         api_response = self.sendPostRequest()
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Video.objects.count(), 1)
         posted_video = Video.objects.get(
             full_name=self.video_name
         )  # full_name is unique
@@ -272,11 +297,16 @@ class VideoTestCase(APITestCase):
         )
         posted_video.refresh_from_db()
         self.assertEqual(posted_video.frame_id, "0-video-consent")
+        self.assertEqual(Video.objects.count(), 1)
+        self.delete_video_by_name(self.video_name)
+        self.assertEqual(Video.objects.count(), 0)
 
     def testDeleteResponse(self):
         """Delete should fail even with a valid ID/PK and signature"""
+        self.assertEqual(Video.objects.count(), 0)
         api_response = self.sendPostRequest()
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Video.objects.count(), 1)
         api_response_no_pk = self.client.delete(
             self.video_url,
             content_type="application/vnd.api+json",
@@ -285,6 +315,7 @@ class VideoTestCase(APITestCase):
         self.assertEqual(
             api_response_no_pk.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
         )
+        self.assertEqual(Video.objects.count(), 1)
         posted_video = Video.objects.get(
             full_name=self.video_name
         )  # full_name is unique
@@ -299,20 +330,27 @@ class VideoTestCase(APITestCase):
         self.assertEqual(
             api_response_with_pk.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
         )
+        self.assertEqual(Video.objects.count(), 1)
         self.assertTrue(
             Video.objects.filter(full_name=self.video_name).exists()
         )  # full_name is unique
+        self.delete_video_by_name(self.video_name)
+        self.assertEqual(Video.objects.count(), 0)
 
     def testHeadResponse(self):
+        """HEAD requests should fail"""
+        self.assertEqual(Video.objects.count(), 0)
         api_response = self.client.head(
             self.video_url,
             content_type="application/vnd.api+json",
             headers=self.headers,
         )
         self.assertEqual(api_response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(Video.objects.count(), 0)
 
     def testOptionsResponse(self):
         """OPTIONS requests should fail"""
+        self.assertEqual(Video.objects.count(), 0)
         api_response_no_data = self.client.options(
             self.video_url,
             content_type="application/vnd.api+json",
@@ -330,12 +368,15 @@ class VideoTestCase(APITestCase):
         self.assertEqual(
             api_response_data.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
         )
+        self.assertEqual(Video.objects.count(), 0)
 
     def testTraceResponse(self):
         """TRACE requests should fail"""
+        self.assertEqual(Video.objects.count(), 0)
         api_response = self.client.trace(
             self.video_url,
             content_type="application/vnd.api+json",
             headers=self.headers,
         )
         self.assertEqual(api_response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(Video.objects.count(), 0)
