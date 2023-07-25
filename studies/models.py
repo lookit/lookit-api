@@ -1400,7 +1400,7 @@ class Video(models.Model):
 
     @property
     def download_url(self):
-        return get_download_url(self.full_name)
+        return get_download_url(self.full_name, self.recording_method_is_pipe)
 
     @property
     def recording_method_is_pipe(self):
