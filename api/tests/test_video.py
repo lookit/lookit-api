@@ -20,6 +20,10 @@ from studies.models import Lab, Response, Study, Video
 @override_settings(
     AWS_LAMBDA_SECRET_ACCESS_KEY="abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmn"
 )
+# Run celery tasks right away, but don't catch errors from them. The relevant task for
+# this case is S3 access for deleting videos, which we're not testing here.
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+@override_settings(CELERY_TASK_EAGER_PROPAGATES=False)
 class VideoTestCase(APITestCase):
     # helper functions
     def dict_to_json_bytes(self, dict_data):
