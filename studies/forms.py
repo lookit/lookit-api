@@ -1,5 +1,7 @@
 import json
 
+import js2py
+import requests
 from ace_overlay.widgets import AceOverlayWidget
 from django import forms
 from django.db.models import Q
@@ -175,14 +177,17 @@ class StudyForm(ModelForm):
         required=False,
     )
 
-    external = forms.BooleanField(
-        required=False,
-        help_text="Post an external link to a study, rather than Lookit's experiment builder.",
-    )
-    scheduled = forms.BooleanField(
-        required=False,
-        help_text="Schedule participants for one-on-one appointments with a researcher.",
-    )
+    ######
+    # TODO: Remove these comments after the external config has been built
+
+    # external = forms.BooleanField(
+    #     required=False,
+    #     help_text="Post an external link to a study, rather than Lookit's experiment builder.",
+    # )
+    # scheduled = forms.BooleanField(
+    #     required=False,
+    #     help_text="Schedule participants for one-on-one appointments with a researcher.",
+    # )
 
     # Define initial value here rather than providing actual default so that any updates don't
     # require migrations: this isn't a true "default" value that would ever be used, but rather
@@ -300,6 +305,7 @@ class StudyForm(ModelForm):
             "criteria_expression",
             "must_have_participated",
             "must_not_have_participated",
+            "study_type",
         ]
         labels = {
             "name": "Study Name",
@@ -365,13 +371,9 @@ class StudyForm(ModelForm):
             ),
             "public": "List this study on the 'Studies' page once you start it.",
             "shared_preview": "Allow other Lookit researchers to preview your study and give feedback.",
-            "study_type": f"""<p>After selecting an experiment runner type above, you'll be asked
-                to provide some additional configuration information.</p>
-                <p>If you're not sure what to enter here, just leave the defaults (you can change this later).
-                For more information on experiment runner types, please
-                <a href={STUDY_TYPE_HELP_LINK}>see the documentation.</a></p>""",
+            "study_type": "Choose what type of study you are creating - this will change the fields that appear in the Experiment Details section.",
             "structure": PROTOCOL_HELP_TEXT_INITIAL,
-            "priority": f"This affects how studies are ordered at your lab's custom URL, not the main study page. If you leave all studies at the highest priority (99), then all of your lab's active/discoverable studies will be shown in a randomized order on your lab page. If you lower the priority of this study to 1, then it will appear last in the list on your lab page. You can find your lab's custom URL from the <a href='/exp/labs/'>labs page</a>. For more info, see the documentation on <a href='https://lookit.readthedocs.io/en/develop/researchers-manage-org.html#ordering-studies-on-your-lab-page'>study prioritization</a>.",
+            "priority": "This affects how studies are ordered at your lab's custom URL, not the main study page. If you leave all studies at the highest priority (99), then all of your lab's active/discoverable studies will be shown in a randomized order on your lab page. If you lower the priority of this study to 1, then it will appear last in the list on your lab page. You can find your lab's custom URL from the <a href='/exp/labs/'>labs page</a>. For more info, see the documentation on <a href='https://lookit.readthedocs.io/en/develop/researchers-manage-org.html#ordering-studies-on-your-lab-page'>study prioritization</a>.",
         }
 
 
@@ -380,8 +382,6 @@ class StudyEditForm(StudyForm):
 
     def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["external"].disabled = True
-        self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_EDIT
         # Restrict ability to edit study lab based on user permissions
         can_change_lab = user.has_study_perms(
             StudyPermission.CHANGE_STUDY_LAB, self.instance
@@ -411,16 +411,19 @@ class StudyEditForm(StudyForm):
             )
             self.fields["lab"].disabled = True
 
-    def clean_external(self):
-        study = self.instance
-        external = self.cleaned_data["external"]
+    #####
+    # TODO:  Remove this commented code after external view has been built
 
-        if (not external and study.study_type.is_external) or (
-            external and study.study_type.is_ember_frame_player
-        ):
-            raise forms.ValidationError("Attempt to change study type not allowed.")
+    # def clean_external(self):
+    #     study = self.instance
+    #     external = self.cleaned_data["external"]
 
-        return external
+    #     if (not external and study.study_type.is_external) or (
+    #         external and study.study_type.is_ember_frame_player
+    #     ):
+    #         raise forms.ValidationError("Attempt to change study type not allowed.")
+
+    #     return external
 
 
 class StudyCreateForm(StudyForm):
@@ -428,7 +431,6 @@ class StudyCreateForm(StudyForm):
 
     def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_EDIT
         # Limit initial lab options to labs this user is a member of & can create studies in
         self.fields["lab"].queryset = Lab.objects.filter(
             id__in=get_objects_for_user(
@@ -445,3 +447,76 @@ class EmailParticipantsForm(forms.Form):
     recipients = forms.ChoiceField(widget=EmailRecipientSelectMultiple())
     subject = forms.CharField()
     body = forms.CharField(widget=forms.Textarea())
+
+
+class ExperimentRunnerForm(ModelForm):
+    player_repo_url = forms.URLField()
+    last_known_player_sha = forms.CharField()
+    structure = forms.CharField(
+        widget=AceOverlayWidget(
+            mode="json",
+            wordwrap=True,
+            theme="textmate",
+            width="100%",
+            height="100%",
+            showprintmargin=False,
+        ),
+        required=False,
+    )
+    generator = forms.CharField(
+        widget=AceOverlayWidget(
+            mode="javascript",
+            wordwrap=True,
+            theme="textmate",
+            width="100%",
+            height="100%",
+            showprintmargin=False,
+        ),
+        required=False,
+    )
+
+    class Meta:
+        model = Study
+        fields = ("use_generator", "generator", "structure")
+
+    def clean_structure(self):
+        try:
+            structure = json.loads(self.cleaned_data["structure"])
+            structure["exact_text"] = self.cleaned_data["structure"]
+            return structure
+        except json.JSONDecodeError:
+            raise forms.ValidationError(
+                "Saving protocol configuration failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost."
+            )
+
+    def clean_generator(self):
+        try:
+            generator = self.cleaned_data["generator"]
+            js2py.eval_js(generator)
+            return generator
+        except js2py.internals.simplex.JsException:
+            raise forms.ValidationError(
+                "Generator javascript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost."
+            )
+
+    def clean_player_repo_url(self):
+        player_repo_url = self.cleaned_data["player_repo_url"]
+
+        if not requests.get(player_repo_url).ok:
+            raise forms.ValidationError(
+                f"Frameplayer repo url {player_repo_url} does not work."
+            )
+
+        return player_repo_url
+
+    def clean_last_known_player_sha(self):
+        last_known_player_sha = self.cleaned_data["last_known_player_sha"]
+        player_repo_url = self.cleaned_data["player_repo_url"]
+
+        if last_known_player_sha and player_repo_url:
+            if not requests.get(f"{player_repo_url}/commit/{last_known_player_sha}").ok:
+                raise forms.ValidationError(
+                    f"Frameplayer commit {last_known_player_sha} does not exist."
+                )
+
+        return last_known_player_sha
