@@ -17,8 +17,8 @@
                size="50"
                type="text"
                value="{{ match }}"/>
-        <input type="hidden" name="sort" value="{{ sort }}"/>
-        <input type="hidden" name="page" value="1"/>
+        <input type="hidden" name="sort" value="{{ sort }}" />
+        <input type="hidden" name="page" value="1" />
     </form>
     <table class="table" aria-describedby="Study participant list">
         <thead>
@@ -49,7 +49,7 @@
             {% for user in object_list %}
                 {% url 'exp:participant-detail' user.id as url_participant_detail %}
                 <tr>
-                    <td >
+                    <td>
                         <a href={{ url_participant_detail }}>
                             {% if user.nickname %}
                                 {{ user.nickname }}
