@@ -61,6 +61,7 @@ from exp.views import (
 from exp.views.study import (
     ChangeStudyStatusView,
     CloneStudyView,
+    ExperimentRunnerEdit,
     ManageResearcherPermissionsView,
     StudyListViewActive,
     StudyListViewApproved,
@@ -251,4 +252,9 @@ urlpatterns = [
         name="preview-proxy",
     ),
     path("support/", SupportView.as_view(), name="support"),
+    path(
+        "studies/<int:pk>/runner/edit/",
+        ExperimentRunnerEdit.as_view(),
+        name="runner-edit",
+    ),
 ]

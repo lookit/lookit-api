@@ -8,7 +8,8 @@ from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Q
 from django.db.models.functions import Lower
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.forms.models import BaseModelForm
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, reverse
 from django.views import generic
@@ -24,7 +25,7 @@ from exp.views.mixins import (
     StudyTypeMixin,
 )
 from project import settings
-from studies.forms import StudyCreateForm, StudyEditForm
+from studies.forms import ExperimentRunnerForm, StudyCreateForm, StudyEditForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
@@ -1077,3 +1078,81 @@ def get_permitted_triggers(view_instance, triggers):
         permitted_triggers.append(trigger)
 
     return permitted_triggers
+
+
+class ExperimentRunnerEdit(
+    ResearcherLoginRequiredMixin,
+    UserPassesTestMixin,
+    StudyTypeMixin,
+    SingleObjectFetchProtocol[Study],
+    generic.UpdateView,
+    # generic.FormView
+):
+    template_name = "studies/runner_edit.html"
+    model = Study
+    form_class = ExperimentRunnerForm
+
+    def user_can_edit_study(self):
+        """Test predicate for the experiment runner edit view. Borrowed permissions from study edit view.
+
+        Returns:
+            True if this user can edit this Study, False otherwise
+
+        """
+        user: User = self.request.user
+        study = self.get_object()
+
+        return (
+            user
+            and user.is_researcher
+            and user.has_study_perms(StudyPermission.WRITE_STUDY_DETAILS, study)
+        )
+
+    test_func = user_can_edit_study
+
+    def get_initial(self):
+        """Populate Exp Runner with data from the study metadata field.  Also, convert structure code to json."""
+        initial = super().get_initial()
+        study = self.object
+        metadata = study.metadata
+        structure = study.structure
+
+        if "exact_text" in structure:
+            structure = structure["exact_text"]
+        else:
+            structure = json.dumps(structure)
+
+        initial.update(
+            player_repo_url=metadata["player_repo_url"],
+            last_known_player_sha=metadata["last_known_player_sha"],
+            structure=structure,
+        )
+
+        return initial
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        """After form has been determined to be valid, place metadata into the appropriate field in the study table. If
+        There are changes to metadata, set to study to NOT BUILT.
+
+        Args:
+            form (BaseModelForm): _description_
+
+        Returns:
+            HttpResponse: _description_
+        """
+        study = self.object
+        metadata = {
+            "player_repo_url": form.data["player_repo_url"],
+            "last_known_player_sha": form.data["last_known_player_sha"],
+        }
+
+        if metadata != study.metadata:
+            study.built = False
+            study.is_building = False
+            study.metadata = metadata
+
+        return super().form_valid(form)
+
+    def get_success_url(self, **kwargs):
+        """Upon successful form submission, change the view to study detail."""
+        return reverse("exp:study-detail", kwargs={"pk": self.object.pk})
