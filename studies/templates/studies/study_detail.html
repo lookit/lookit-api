@@ -130,7 +130,7 @@
                   method="post"
                   style="display:none">
                 {% csrf_token %}
-                <input type="hidden" name="clone_study" value="{{ study.id }}"/>
+                <input type="hidden" name="clone_study" value="{{ study.id }}" />
             </form>
             <div class="list-group small">
                 {% if "read_study__responses(is_preview=True)" in study_perms %}
@@ -140,6 +140,8 @@
                 {% if can_edit_study_details %}
                     <a class="list-group-item list-group-item-action"
                        href="{% url 'exp:study-edit' pk=study.id %}">{% bs_icon "pencil-square" %} Edit Study</a>
+                    <a class="list-group-item list-group-item-action"
+                       href="{% url 'exp:runner-edit' pk=study.id %}">{% bs_icon "pencil-square" %} Edit Runner</a>
                 {% endif %}
                 {% if "read_study__responses" in study_perms or "read_study__responses(is_preview=True)" in study_perms %}
                     <a class="list-group-item list-group-item-action"
@@ -161,7 +163,7 @@
                     <a type="button"
                        class="list-group-item list-group-item-action"
                        role="button"
-                       onclick="cloneStudy()"> {% bs_icon "clipboard-check-fill" %} Clone Study</a>
+                       onclick="cloneStudy()">{% bs_icon "clipboard-check-fill" %} Clone Study</a>
                 {% endif %}
             </div>
         </div>
