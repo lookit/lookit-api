@@ -1,0 +1,83 @@
+{% extends "exp/base.html" %}
+{% load django_bootstrap5 %}
+{% load web_extras %}
+{% load static %}
+{% block title %}
+    Edit | {{ study.name }}
+{% endblock title %}
+{% block head %}
+    {{ block.super }}
+    {% comment %} ace editor fix cannot be defered {% endcomment %}
+    <script src="{% static 'js/ace-editor.js' %}"></script>
+    {% comment %} <script src="{% static 'js/study-type.js' %}" defer></script> {% endcomment %}
+    <script src="{% static 'js/runner.js' %}" defer></script>
+    {{ form.media }}
+{% endblock head %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:study-list' %} Manage Studies
+    {% url 'exp:study-detail' pk=study.id %} {{ study.name }}
+    Experiment Runner Edit
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
+{% block content %}
+    {% button_secondary_classes as btn_secondary_classes %}
+    {% url 'exp:study-detail' pk=study.pk as url_study_detail %}
+    {% bootstrap_form_errors form %}
+    <form action="" method="post" class="form">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <div id="commit-description" class="card bg-light my-4">
+            <div class="card-header">
+                <h3 class="card-subtitle my-1">
+                    About this version
+                    <div class="float-end me-4">
+                        {% bootstrap_button "Check for updates" button_class=btn_secondary_classes id="update-button" %}
+                    </div>
+                </h3>
+            </div>
+            <div class="card-body">
+                <p>
+                    Your study will use commit <a class="sha" href></a>:
+                </p>
+                <div class="container">
+                    <div class="row border-bottom py-2">
+                        <div class="col-2 fw-bold">Date</div>
+                        <div class="col date"></div>
+                    </div>
+                    <div class="row border-bottom py-2">
+                        <div class="col-2 fw-bold">Author</div>
+                        <div class="col name"></div>
+                    </div>
+                    <div class="row border-bottom pt-2">
+                        <div class="col-2 fw-bold">Message</div>
+                        <div class="col message"></div>
+                    </div>
+                    <div class="row py-2">
+                        <div class="col-2 fw-bold">Files changed</div>
+                        <div class="col files"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="commit-update-info" class="card bg-light my-4 d-none">
+            <div class="card-header">
+                <h3 class="card-subtitle my-1">Update info</h3>
+            </div>
+            <div class="card-body">
+                <p>
+                    Since the version you are using, there have been updates to the master branch of https://github.com/lookit/ember-lookit-frameplayer.
+                </p>
+                <div class="container">
+                    <div class="row fw-bold mb-3 pb-1 border-bottom">
+                        <div class="col-2">Date</div>
+                        <div class="col">Description</div>
+                        <div class="col">Commit Sha</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% bootstrap_button "Submit" type="submit" %}
+        {% bootstrap_button "Cancel" href=url_study_detail %}
+    </form>
+{% endblock content %}
