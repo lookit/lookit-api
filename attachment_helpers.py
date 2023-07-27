@@ -25,27 +25,21 @@ def get_download_url(video_key, recording_method_is_pipe):
     """
     url = None
     if recording_method_is_pipe:
-        # get video from Pipe bucket
-        try:
-            url = S3_CLIENT.generate_presigned_url(
-                "get_object",
-                Params={"Bucket": settings.BUCKET_NAME, "Key": video_key},
-                ExpiresIn=600,
-            )
-        except ClientError as e:
-            logging.error(e)
-            return None
+        # Pipe bucket
+        bucket = settings.BUCKET_NAME
     else:
-        # get video from RecordRTC bucket
-        try:
-            url = S3_CLIENT.generate_presigned_url(
-                "get_object",
-                Params={"Bucket": settings.S3_BUCKET_NAME, "Key": video_key},
-                ExpiresIn=600,
-            )
-        except ClientError as e:
-            logger.warning(f"Video not found in bucket. {e}")
-            return None
+        # RecordRTC bucket
+        bucket = settings.S3_BUCKET_NAME
+
+    try:
+        url = S3_CLIENT.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": bucket, "Key": video_key},
+            ExpiresIn=600,
+        )
+    except ClientError as e:
+        logger.warning(f"Video {video_key} not found in bucket. {e}")
+        return None
 
     return url
 
