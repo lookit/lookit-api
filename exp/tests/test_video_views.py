@@ -1,3 +1,4 @@
+import logging
 import urllib.parse
 from unittest import skip
 
@@ -55,6 +56,7 @@ class RenameVideoTestCase(APITestCase):
 
 class CheckPipeProcessingTestCase(TestCase):
     def setUp(self):
+        logging.disable(logging.CRITICAL)
         self.lab = G(Lab, name="MIT", approved_to_test=True)
         self.study_creator = G(User, is_active=True, is_researcher=True)
         self.study = G(
@@ -136,3 +138,6 @@ class CheckPipeProcessingTestCase(TestCase):
         self.assertRaises(
             ValueError, Video.check_and_parse_pipe_payload, initial_payload
         )
+
+    def tearDown(self):
+        logging.disable(logging.NOTSET)

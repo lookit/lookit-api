@@ -436,7 +436,11 @@ class FeedbackViewSet(FilterByUrlKwargsMixin, ConvertUuidToIdMixin, views.ModelV
             | (Q(study__id__in=studies_for_preview) & Q(is_preview=True))
         )
         response_ids = consented_responses.values_list("id", flat=True)
-        return qs.filter(
-            Q(response__id__in=response_ids)
-            | Q(response__child__user=self.request.user)
-        ).distinct()
+        return (
+            qs.filter(
+                Q(response__id__in=response_ids)
+                | Q(response__child__user=self.request.user)
+            )
+            .distinct()
+            .order_by("-id")
+        )
