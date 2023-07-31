@@ -5,15 +5,14 @@ FROM node:12-slim
 #####
 
 RUN set -eux; 
-RUN echo "deb http://archive.debian.org/debian/ stretch main contrib non-free \
-deb http://archive.debian.org/debian/ stretch-proposed-updates main contrib non-free \
-deb http://archive.debian.org/debian-security stretch/updates main contrib non-free" > /etc/apt/sources.list
+RUN echo "deb http://archive.debian.org/debian/ stretch main contrib non-free\ndeb http://archive.debian.org/debian/ stretch-proposed-updates main contrib non-free\ndeb http://archive.debian.org/debian-security stretch/updates main contrib non-free" > /etc/apt/sources.list #NOSONAR
+
 RUN apt-get update \
 && apt-get install --no-install-recommends -y \
     gosu=1.10-1+b2 \
     phantomjs=2.1.1+dfsg-2 \
     ca-certificates=20200601~deb9u1 \
-    python2.7=2.7.13-2+deb9u3 \
+    python2.7 \
     build-essential=12.3 \
     git=1:2.11.0-3+deb9u7 \
 && apt-get clean \
