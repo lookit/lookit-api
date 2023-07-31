@@ -922,7 +922,7 @@ class StudyDeletePreviewResponses(
         preview_responses = study.responses.filter(is_preview=True).prefetch_related(
             "videos", "consent_rulings", "feedback"
         )
-        paginator = Paginator(preview_responses, RESPONSE_PAGE_SIZE)
+        paginator = Paginator(preview_responses.order_by("id"), RESPONSE_PAGE_SIZE)
         for page_num in paginator.page_range:
             page_of_responses = paginator.page(page_num)
             for resp in page_of_responses:
