@@ -61,7 +61,9 @@ from exp.views import (
 from exp.views.study import (
     ChangeStudyStatusView,
     CloneStudyView,
+    EFPEdit,
     ExperimentRunnerEdit,
+    ExternalEdit,
     ManageResearcherPermissionsView,
     StudyListViewActive,
     StudyListViewApproved,
@@ -256,5 +258,9 @@ urlpatterns = [
         "studies/<int:pk>/runner/edit/",
         ExperimentRunnerEdit.as_view(),
         name="runner-edit",
+    ),
+    path("studies/<int:pk>/efp/edit/", EFPEdit.as_view(), name="efp-edit"),
+    path(
+        "studies/<int:pk>/external/edit/", ExternalEdit.as_view(), name="external-edit"
     ),
 ]

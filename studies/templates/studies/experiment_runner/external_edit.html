@@ -1,0 +1,29 @@
+{% extends "exp/base.html" %}
+{% load django_bootstrap5 %}
+{% load web_extras %}
+{% load static %}
+{% block title %}
+    Edit | {{ study.name }}
+{% endblock title %}
+{% block head %}
+    {{ block.super }}
+    {% comment %} <script src="{% static 'js/study-type.js' %}" defer></script> {% endcomment %}
+    <script src="{% static 'js/external-runner.js' %}" defer></script>
+{% endblock head %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:study-list' %} Manage Studies
+    {% url 'exp:study-detail' pk=study.id %} {{ study.name }}
+    Experiment Runner Edit
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
+{% block content %}
+    {% url 'exp:study-detail' pk=study.pk as url_study_detail %}
+    {% bootstrap_form_errors form %}
+    <form action="" method="post" class="form">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% bootstrap_button "Submit" type="submit" %}
+        {% bootstrap_button "Cancel" href=url_study_detail %}
+    </form>
+{% endblock content %}

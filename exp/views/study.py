@@ -2,16 +2,21 @@ import json
 import operator
 import re
 from functools import reduce
-from typing import NamedTuple, Text
+from typing import Any, NamedTuple, Text
 
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Q
 from django.db.models.functions import Lower
 from django.forms.models import BaseModelForm
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseForbidden,
+    HttpResponseRedirect,
+)
 from django.http.response import HttpResponse
-from django.shortcuts import get_object_or_404, reverse
+from django.shortcuts import get_object_or_404, redirect, reverse
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 from revproxy.views import ProxyView
@@ -25,7 +30,7 @@ from exp.views.mixins import (
     StudyTypeMixin,
 )
 from project import settings
-from studies.forms import ExperimentRunnerForm, StudyCreateForm, StudyEditForm
+from studies.forms import EFPForm, ExternalForm, StudyCreateForm, StudyEditForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
@@ -1086,11 +1091,46 @@ class ExperimentRunnerEdit(
     StudyTypeMixin,
     SingleObjectFetchProtocol[Study],
     generic.UpdateView,
-    # generic.FormView
 ):
-    template_name = "studies/runner_edit.html"
     model = Study
-    form_class = ExperimentRunnerForm
+
+    def user_can_edit_study(self):
+        """Test predicate for the experiment runner edit view. Borrowed permissions from study edit view.
+
+        Returns:
+            True if this user can edit this Study, False otherwise
+
+        """
+        user: User = self.request.user
+        study = self.get_object()
+
+        return (
+            user
+            and user.is_researcher
+            and user.has_study_perms(StudyPermission.WRITE_STUDY_DETAILS, study)
+        )
+
+    test_func = user_can_edit_study
+
+    def get(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+        study_type = self.object.study_type
+
+        if study_type.is_ember_frame_player:
+            return redirect(reverse("exp:efp-edit", kwargs={"pk": self.object.id}))
+        if study_type.is_external:
+            return redirect(reverse("exp:external-edit", kwargs={"pk": self.object.id}))
+
+
+class EFPEdit(
+    ResearcherLoginRequiredMixin,
+    UserPassesTestMixin,
+    StudyTypeMixin,
+    SingleObjectFetchProtocol[Study],
+    generic.UpdateView,
+):
+    template_name = "studies/experiment_runner/efp_edit.html"
+    model = Study
+    form_class = EFPForm
 
     def user_can_edit_study(self):
         """Test predicate for the experiment runner edit view. Borrowed permissions from study edit view.
@@ -1142,8 +1182,8 @@ class ExperimentRunnerEdit(
         """
         study = self.object
         metadata = {
-            "player_repo_url": form.data["player_repo_url"],
-            "last_known_player_sha": form.data["last_known_player_sha"],
+            "player_repo_url": form.cleaned_data["player_repo_url"],
+            "last_known_player_sha": form.cleaned_data["last_known_player_sha"],
         }
 
         if metadata != study.metadata:
@@ -1156,3 +1196,70 @@ class ExperimentRunnerEdit(
     def get_success_url(self, **kwargs):
         """Upon successful form submission, change the view to study detail."""
         return reverse("exp:study-detail", kwargs={"pk": self.object.pk})
+
+
+class ExternalEdit(
+    ResearcherLoginRequiredMixin,
+    UserPassesTestMixin,
+    StudyTypeMixin,
+    SingleObjectFetchProtocol[Study],
+    generic.UpdateView,
+):
+    template_name = "studies/experiment_runner/external_edit.html"
+    model = Study
+    form_class = ExternalForm
+
+    def user_can_edit_study(self):
+        """Test predicate for the experiment runner edit view. Borrowed permissions from study edit view.
+
+        Returns:
+            True if this user can edit this Study, False otherwise
+
+        """
+        user: User = self.request.user
+        study = self.get_object()
+
+        return (
+            user
+            and user.is_researcher
+            and user.has_study_perms(StudyPermission.WRITE_STUDY_DETAILS, study)
+        )
+
+    test_func = user_can_edit_study
+
+    def get_success_url(self, **kwargs):
+        """Upon successful form submission, change the view to study detail."""
+        return reverse("exp:study-detail", kwargs={"pk": self.object.pk})
+
+    def get_initial(self):
+        initial = super().get_initial()
+        study = self.object
+        metadata = study.metadata
+
+        initial.update(
+            scheduled=metadata["scheduled"],
+            url=metadata["url"],
+            scheduling=metadata["scheduling"],
+            study_platform=metadata["study_platform"],
+        )
+
+        return initial
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        study = self.object
+
+        metadata = {
+            "scheduled": form.cleaned_data["scheduled"],
+            "url": form.cleaned_data["url"],
+            "scheduling": form.cleaned_data["scheduling"],
+            "other_scheduling": form.cleaned_data["other_scheduling"],
+            "study_platform": form.cleaned_data["study_platform"],
+            "other_study_platform": form.cleaned_data["other_study_platform"],
+        }
+
+        if metadata != study.metadata:
+            study.built = False
+            study.is_building = False
+            study.metadata = metadata
+
+        return super().form_valid(form)

@@ -449,7 +449,7 @@ class EmailParticipantsForm(forms.Form):
     body = forms.CharField(widget=forms.Textarea())
 
 
-class ExperimentRunnerForm(ModelForm):
+class EFPForm(ModelForm):
     player_repo_url = forms.URLField()
     last_known_player_sha = forms.CharField()
     structure = forms.CharField(
@@ -520,3 +520,42 @@ class ExperimentRunnerForm(ModelForm):
                 )
 
         return last_known_player_sha
+
+
+class ExternalForm(ModelForm):
+    scheduled = forms.BooleanField(
+        required=False,
+        help_text="Schedule participants for one-on-one appointments with a researcher.",
+    )
+    url = forms.URLField(
+        label="Study URL",
+        help_text="This is the link that participants will be sent to from the Lookit details page.",
+    )
+    scheduling = forms.ChoiceField(
+        required=False,
+        choices=[
+            ("Calendly", "Calendly"),
+            ("Google Calendar", "Google Calendar"),
+            ("Google Form", "Google Form"),
+            ("Other", "Other"),
+        ],
+        widget=forms.RadioSelect,
+        help_text="Indicate how participants schedule appointments for your section. Remember that Lookit encourages you to use its messaging system rather than collecting email addresses - this presents a privacy risk for your participants.",
+    )
+    other_scheduling = forms.CharField(label="", required=False)
+    study_platform = forms.ChoiceField(
+        required=False,
+        choices=[
+            ("Qualtrics", "Qualtrics"),
+            ("Prolific", "Prolific"),
+            ("Mechanical Turk", "Mechanical Turk"),
+            ("Other", "Other"),
+        ],
+        widget=forms.RadioSelect,
+        help_text="What software or website will you use to present & collect data for your study?",
+    )
+    other_study_platform = forms.CharField(label="", required=False)
+
+    class Meta:
+        model = Study
+        fields = []
