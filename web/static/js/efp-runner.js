@@ -6,9 +6,8 @@ function updateGeneratorDisplay() {
 
 function updateCommitDescription() {
     const httpRequest = new XMLHttpRequest();
-    const playerSha = document.querySelector('#id_last_known_player_sha').value.trim();
-    const playerRepoUrl = document.querySelector('#id_player_repo_url').value.trim();
-    const githubApiUrl = `${playerRepoUrl}/commits/${playerSha}`.replace('github.com', 'api.github.com/repos')
+
+
     const commitUpdateInfo = document.querySelector('#commit-update-info');
     const commitDescription = document.querySelector('#commit-description');
 
@@ -47,8 +46,14 @@ function updateCommitDescription() {
             }
         }
     };
-    httpRequest.open("GET", githubApiUrl, true);
-    httpRequest.send();
+
+    const playerSha = document.querySelector('#id_last_known_player_sha').value.trim();
+    const playerRepoUrl = document.querySelector('#id_player_repo_url').value.trim();
+    if (playerSha && playerRepoUrl) {
+        const githubApiUrl = `${playerRepoUrl}/commits/${playerSha}`.replace('github.com', 'api.github.com/repos')
+        httpRequest.open("GET", githubApiUrl, true);
+        httpRequest.send();
+    }
 }
 
 function updateCommitUpdateInfo() {
@@ -73,7 +78,7 @@ function updateCommitUpdateInfo() {
 
                     row.classList.add('row', 'pb-3');
                     date.classList.add('col-2');
-                    [message, sha].map(e => e.classList.add('col'));
+                    [message, sha].forEach(e => e.classList.add('col'));
 
                     date.innerHTML = e.commit.author.date;
                     message.innerHTML = e.commit.message;
@@ -92,17 +97,40 @@ function updateCommitUpdateInfo() {
 
     const currentCommitDate = document.querySelector('#commit-description .date').innerHTML;
     const playerRepoUrl = document.querySelector('#id_player_repo_url').value;
-    const githubApiUrl = `${playerRepoUrl}/commits?since=${currentCommitDate}`.replace('github.com', 'api.github.com/repos')
-    httpRequest.open("GET", githubApiUrl, true);
-    httpRequest.send();
+    if (playerRepoUrl && currentCommitDate) {
+        const githubApiUrl = `${playerRepoUrl}/commits?since=${currentCommitDate}`.replace('github.com', 'api.github.com/repos')
+        httpRequest.open("GET", githubApiUrl, true);
+        httpRequest.send();
+    }
 }
 
+function updateLastPlayerSha() {
+    const form = document.forms[0];
+
+    if (!form.last_known_player_sha.value) {
+        const playerRepoUrl = document.querySelector('#id_player_repo_url').value;
+        const githubApiUrl = `${playerRepoUrl}/commits`.replace('github.com', 'api.github.com/repos')
+        const httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = () => {
+            if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                if (httpRequest.status === 200) {
+                    const response = JSON.parse(httpRequest.responseText);
+                    form.last_known_player_sha.value = response[0].sha;
+                    updateCommitDescription();
+                }
+            }
+        }
+        httpRequest.open("GET", githubApiUrl, true);
+        httpRequest.send();
+    }
+}
 
 /**
  * Page load
  */
 updateGeneratorDisplay();
 updateCommitDescription();
+updateLastPlayerSha();
 
 /**
  * Event Listeners
