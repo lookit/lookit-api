@@ -408,8 +408,10 @@ class EmailParticipantsForm(forms.Form):
 
 
 class EFPForm(ModelForm):
-    player_repo_url = forms.URLField()
-    last_known_player_sha = forms.CharField()
+    player_repo_url = forms.URLField(label="Experiment runner code URL")
+    last_known_player_sha = forms.CharField(
+        label="Experiment runner version (commit SHA)"
+    )
     structure = forms.CharField(
         widget=AceOverlayWidget(
             mode="json",
@@ -436,6 +438,14 @@ class EFPForm(ModelForm):
     class Meta:
         model = Study
         fields = ("use_generator", "generator", "structure")
+        labels = {"use_generator": "Use protocol generator (advanced)"}
+        help_texts = {
+            "use_generator": (
+                "Write a Javascript function that returns a study protocol object with 'frames' and "
+                "'sequence' keys. This allows more flexible randomization and dependence on past sessions in "
+                f"complex cases. See <a href={PROTOCOL_GENERATOR_HELP_LINK}>documentation</a> for details."
+            )
+        }
 
     def clean_structure(self):
         try:
@@ -502,6 +512,7 @@ class ExternalForm(ModelForm):
     )
     other_scheduling = forms.CharField(label="", required=False)
     study_platform = forms.ChoiceField(
+        label="Study Platform",
         required=False,
         choices=[
             ("Qualtrics", "Qualtrics"),

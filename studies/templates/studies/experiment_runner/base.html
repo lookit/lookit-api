@@ -1,0 +1,39 @@
+{% extends "exp/base.html" %}
+{% load django_bootstrap5 %}
+{% load web_extras %}
+{% load static %}
+{% block title %}
+    Edit | {{ study.name }}
+{% endblock title %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:study-list' %} Manage Studies
+    {% url 'exp:study-detail' pk=study.id %} {{ study.name }}
+    Experiment Runner Edit
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
+{% block content %}
+    {% bootstrap_form_errors form %}
+    <div class="col-lg-10 offset-lg-1">
+        <div class="card bg-light my-4">
+            <div class="card-header">
+                <h3 class="card-subtitle my-1">Experiment Runner Editor</h3>
+            </div>
+            <div class="card-body">
+                {% block header %}
+                {% endblock header %}
+                <form action="" method="post" class="form">
+                    {% csrf_token %}
+                    {% block form %}
+                    {% endblock form %}
+                    {% form_buttons %}
+                        {% button_secondary_classes as btn_secondary_classes %}
+                        {% button_primary_classes as btn_primary_classes %}
+                        {% bootstrap_button "Cancel" button_class=btn_secondary_classes href=url_study_detail %}
+                        {% bootstrap_button "Submit" button_class=btn_primary_classes type="submit" %}
+                    {% endform_buttons %}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
