@@ -177,18 +177,6 @@ class StudyForm(ModelForm):
         required=False,
     )
 
-    ######
-    # TODO: Remove these comments after the external config has been built
-
-    # external = forms.BooleanField(
-    #     required=False,
-    #     help_text="Post an external link to a study, rather than Lookit's experiment builder.",
-    # )
-    # scheduled = forms.BooleanField(
-    #     required=False,
-    #     help_text="Schedule participants for one-on-one appointments with a researcher.",
-    # )
-
     # Define initial value here rather than providing actual default so that any updates don't
     # require migrations: this isn't a true "default" value that would ever be used, but rather
     # a helpful skeleton to guide the user
@@ -239,22 +227,6 @@ class StudyForm(ModelForm):
                 "The maximum age must be greater than the minimum age."
             )
         return cleaned_data
-
-    def clean_structure(self):
-        structure_text = self.cleaned_data["structure"]
-
-        # Parse edited text representation of structure object, and additionally store the
-        # exact text (so user can organize frames, parameters, etc. for readability)
-        try:
-            json_data = json.loads(structure_text)  # loads string as json
-            json_data["exact_text"] = structure_text
-        except Exception:
-            raise forms.ValidationError(
-                "Saving protocol configuration failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost."
-            )
-
-        # Store the object which includes the exact text (not just the text)
-        return json_data
 
     def clean_criteria_expression(self):
         criteria_expression = self.cleaned_data["criteria_expression"]
@@ -410,20 +382,6 @@ class StudyEditForm(StudyForm):
                 uuid=self.instance.lab.uuid
             )
             self.fields["lab"].disabled = True
-
-    #####
-    # TODO:  Remove this commented code after external view has been built
-
-    # def clean_external(self):
-    #     study = self.instance
-    #     external = self.cleaned_data["external"]
-
-    #     if (not external and study.study_type.is_external) or (
-    #         external and study.study_type.is_ember_frame_player
-    #     ):
-    #         raise forms.ValidationError("Attempt to change study type not allowed.")
-
-    #     return external
 
 
 class StudyCreateForm(StudyForm):

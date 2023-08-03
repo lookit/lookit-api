@@ -27,7 +27,6 @@ from exp.views.mixins import (
     ResearcherAuthenticatedRedirectMixin,
     ResearcherLoginRequiredMixin,
     SingleObjectFetchProtocol,
-    StudyTypeMixin,
 )
 from project import settings
 from studies.forms import EFPForm, ExternalForm, StudyCreateForm, StudyEditForm
@@ -108,7 +107,6 @@ KEY_HELP_TEXT = {
 class StudyCreateView(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
-    StudyTypeMixin,
     generic.CreateView,
 ):
     """
@@ -191,7 +189,6 @@ class StudyCreateView(
 class StudyUpdateView(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
-    StudyTypeMixin,
     SingleObjectFetchProtocol[Study],
     generic.UpdateView,
 ):
@@ -282,26 +279,7 @@ class StudyUpdateView(
         )
         study.must_have_participated.set(form.cleaned_data["must_have_participated"])
 
-        metadata, meta_errors = self.validate_and_fetch_metadata(
-            study_type=study.study_type
-        )
-        if meta_errors:
-            messages.error(
-                self.request,
-                f'WARNING: Changes to experiment were not saved: {", ".join(meta_errors)}',
-            )
-        else:
-            # Check that study type hasn't changed.
-            if metadata != study.metadata:
-                # Invalidate the previous build
-                study.built = False
-                # May still be building, but we're now good to allow another build
-                study.is_building = False
-                # Update metadata
-                study.metadata = metadata
-
-            study.save()
-            messages.success(self.request, f"{study.name} study details saved.")
+        messages.success(self.request, f"{study.name} study details saved.")
 
         return super().form_valid(form)
 
@@ -1088,7 +1066,6 @@ def get_permitted_triggers(view_instance, triggers):
 class ExperimentRunnerEdit(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
-    StudyTypeMixin,
     SingleObjectFetchProtocol[Study],
     generic.UpdateView,
 ):
@@ -1124,7 +1101,6 @@ class ExperimentRunnerEdit(
 class EFPEdit(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
-    StudyTypeMixin,
     SingleObjectFetchProtocol[Study],
     generic.UpdateView,
 ):
@@ -1158,13 +1134,15 @@ class EFPEdit(
         structure = study.structure
 
         if "exact_text" in structure:
-            structure = structure["exact_text"]
+            structure = structure.get("exact_text")
         else:
             structure = json.dumps(structure)
 
         initial.update(
-            player_repo_url=metadata["player_repo_url"],
-            last_known_player_sha=metadata["last_known_player_sha"],
+            player_repo_url=metadata.get(
+                "player_repo_url", settings.EMBER_EXP_PLAYER_REPO
+            ),
+            last_known_player_sha=metadata.get("last_known_player_sha"),
             structure=structure,
         )
 
@@ -1201,7 +1179,6 @@ class EFPEdit(
 class ExternalEdit(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
-    StudyTypeMixin,
     SingleObjectFetchProtocol[Study],
     generic.UpdateView,
 ):
