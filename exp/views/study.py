@@ -1214,10 +1214,12 @@ class ExternalEdit(
         metadata = study.metadata
 
         initial.update(
-            scheduled=metadata["scheduled"],
-            url=metadata["url"],
-            scheduling=metadata["scheduling"],
-            study_platform=metadata["study_platform"],
+            scheduled=metadata.get("scheduled"),
+            url=metadata.get("url"),
+            scheduling=metadata.get("scheduling"),
+            other_scheduling=metadata.get("other_scheduling"),
+            study_platform=metadata.get("study_platform"),
+            other_study_platform=metadata.get("other_study_platform"),
         )
 
         return initial
