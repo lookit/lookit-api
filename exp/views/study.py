@@ -306,7 +306,7 @@ class StudyUpdateView(
         return context
 
     def get_success_url(self):
-        return reverse("exp:study-edit", kwargs={"pk": self.object.id})
+        return reverse("exp:study-detail", kwargs={"pk": self.object.id})
 
 
 class StudyListView(
