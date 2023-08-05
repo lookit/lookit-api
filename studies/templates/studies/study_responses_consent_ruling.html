@@ -38,15 +38,9 @@
                                     name="response-status-filters"
                                     class="form-select w-auto"
                                     aria-label="Filter by repsonse status">
-                                <option id="filter-pending" value="pending">
-                                    Pending
-                                </option>
-                                <option id="filter-accepted" value="accepted">
-                                    Accepted
-                                </option>
-                                <option id="filter-rejected" value="rejected">
-                                    Rejected
-                                </option>
+                                <option id="filter-pending" value="pending">Pending</option>
+                                <option id="filter-accepted" value="accepted">Accepted</option>
+                                <option id="filter-rejected" value="rejected">Rejected</option>
                             </select>
                         </div>
                         <div class="col-auto text-start ">&nbsp;Responses*</div>
@@ -82,9 +76,7 @@
                                         type="button"
                                         id="consentJudgementDropdown"
                                         data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                    {{ response.current_ruling }}
-                                </button>
+                                        aria-expanded="false">{{ response.current_ruling }}</button>
                                 <ul class="dropdown-menu" aria-labelledby="consentJudgementDropdown">
                                     <li>
                                         <button class="consent-judgment dropdown-item"
@@ -183,23 +175,15 @@
                         </li>
                         <li class="list-group-item list-group-item-success d-flex justify-content-between align-items-center">
                             <div class="me-auto">
-                                <div class="fw-bold">
-                                    Accepted Responses
-                                </div>
-                                <div class="small">
-                                    Unique Children
-                                </div>
+                                <div class="fw-bold">Accepted Responses</div>
+                                <div class="small">Unique Children</div>
                             </div>
                             <span class="badge bg-secondary rounded-pill">{{ summary_statistics.responses.accepted }} / {{ summary_statistics.children.with_accepted_responses }}</span>
                         </li>
                         <li class="list-group-item list-group-item-danger d-flex justify-content-between align-items-center">
                             <div class="me-auto">
-                                <div class="fw-bold">
-                                    Rejected Responses
-                                </div>
-                                <div class="small">
-                                    Children with no accepted responses
-                                </div>
+                                <div class="fw-bold">Rejected Responses</div>
+                                <div class="small">Children with no accepted responses</div>
                             </div>
                             <span class="badge bg-secondary rounded-pill">{{ summary_statistics.responses.rejected }} / {{ summary_statistics.children.without_accepted_responses }}</span>
                         </li>
@@ -220,85 +204,49 @@
     </div>
     <div id="response-info-container" class="card bg-light my-3">
         <div class="card-body">
-            <h2 class="card-title">
-                Session Data
-            </h2>
+            <h2 class="card-title">Session Data</h2>
             <table id="participant" class="table caption-top">
                 <caption class="h3">Account Information</caption>
                 <thead>
                     <tr>
-                        <th>
-                            ID
-                        </th>
-                        <th>
-                            Global ID
-                        </th>
-                        <th>
-                            Parent name
-                        </th>
+                        <th>ID</th>
+                        <th>Global ID</th>
+                        <th>Parent name</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        {# Participant data inserted here #}
-                    </tr>
+                    <tr>{# Participant data inserted here #}</tr>
                 </tbody>
             </table>
             <table id="child" class="table caption-top">
                 <caption class="h3">  Child Information</caption>
                 <thead>
                     <tr>
-                        <th>
-                            ID
-                        </th>
-                        <th>
-                            Global ID
-                        </th>
-                        <th>
-                            Name
-                        </th>
-                        <th>
-                            Birthday
-                        </th>
-                        <th>
-                            Gender
-                        </th>
-                        <th>
-                            Additional Info
-                        </th>
+                        <th>ID</th>
+                        <th>Global ID</th>
+                        <th>Name</th>
+                        <th>Birthday</th>
+                        <th>Gender</th>
+                        <th>Additional Info</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        {# Child data inserted here #}
-                    </tr>
+                    <tr>{# Child data inserted here #}</tr>
                 </tbody>
             </table>
             <table id="general" class="table caption-top">
                 <caption class="h3">    Response Information</caption>
                 <thead>
                     <tr>
-                        <th>
-                            Uuid
-                        </th>
-                        <th>
-                            Global Event Timings
-                        </th>
-                        <th>
-                            Sequence
-                        </th>
-                        <th>
-                            Completed
-                        </th>
-                        <th>
-                            Date Created
-                        </th>
+                        <th>Uuid</th>
+                        <th>Global Event Timings</th>
+                        <th>Sequence</th>
+                        <th>Completed</th>
+                        <th>Date Created</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        {# General data inserted here #}
-                    </tr>
+                    <tr>{# General data inserted here #}</tr>
                 </tbody>
             </table>
         </div>

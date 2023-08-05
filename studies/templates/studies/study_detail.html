@@ -82,14 +82,14 @@
                                class="form-control"
                                id="study-preview-link"
                                value="{% url 'exp:preview-detail' uuid=study.uuid %}"
-                               aria-describedby="copy-link-button"/>
+                               aria-describedby="copy-link-button" />
                         <span onmouseout="removeTooltip(this)"
                               data-toggle="tooltip"
                               class="input-group-addon btn copy-link-button"
                               data-clipboard-target="#study-preview-link">
                             <img src="{% static 'images/clippy.svg' %}"
                                  alt="copy preview link"
-                                 width="13"/>
+                                 width="13" />
                         </span>
                     </div>
                 {% else %}
@@ -109,14 +109,14 @@
                                class="form-control"
                                id="private-study-link"
                                value="{% url 'web:study-detail' study.uuid %}"
-                               aria-describedby="copy-link-button"/>
+                               aria-describedby="copy-link-button" />
                         <span onmouseout="removeTooltip(this)"
                               data-toggle="tooltip"
                               class="input-group-addon btn copy-link-button"
                               data-clipboard-target="#private-study-link">
                             <img src="{% static 'images/clippy.svg' %}"
                                  alt="copy study link"
-                                 width="13"/>
+                                 width="13" />
                         </span>
                     </div>
                 {% else %}

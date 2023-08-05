@@ -14,24 +14,24 @@
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 {% form_buttons %}
-                    {% bootstrap_button button_type="submit" content=login %}
-                {% endform_buttons %}
-                <input type="hidden" name="next" value="{{ next }}" />
-            </form>
-            {# Assumes you setup the password_reset view in your URLconf #}
-            {% if not request.user.is_authenticated %}
-                {# This conditional block is so we can use the this template for 2FA as well #}
-                <p class="text-center">
-                    <a href="{% url 'password_reset' %}">{% trans "Forgot password?" %}</a>
-                </p>
-                <p class="text-center">
-                    <strong>{% trans "New to Children Helping Science?" %}</strong> <a href="{% url 'web:participant-signup' %}">{% trans "Register your family!" %}</a>
-                </p>
-            {% else %}
-                <p class="text-center">
-                    <a href="https://lookit.readthedocs.io/en/develop/researchers-log-in.html#troubleshooting">Need help with your one time password?</a>
-                </p>
-            {% endif %}
-        </div>
+                {% bootstrap_button button_type="submit" content=login %}
+            {% endform_buttons %}
+            <input type="hidden" name="next" value="{{ next }}" />
+        </form>
+        {# Assumes you setup the password_reset view in your URLconf #}
+        {% if not request.user.is_authenticated %}
+            {# This conditional block is so we can use the this template for 2FA as well #}
+            <p class="text-center">
+                <a href="{% url 'password_reset' %}">{% trans "Forgot password?" %}</a>
+            </p>
+            <p class="text-center">
+                <strong>{% trans "New to Children Helping Science?" %}</strong> <a href="{% url 'web:participant-signup' %}">{% trans "Register your family!" %}</a>
+            </p>
+        {% else %}
+            <p class="text-center">
+                <a href="https://lookit.readthedocs.io/en/develop/researchers-log-in.html#troubleshooting">Need help with your one time password?</a>
+            </p>
+        {% endif %}
     </div>
+</div>
 {% endblock content %}

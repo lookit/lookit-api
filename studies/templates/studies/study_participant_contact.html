@@ -66,7 +66,7 @@
                                     <input type="text"
                                            id="dateRangeFilter"
                                            class="form-control"
-                                           name="daterange"/>
+                                           name="daterange" />
                                 </th>
                                 <th scope="col"></th>
                             </tr>
@@ -90,35 +90,35 @@
                                    id="btnradio1"
                                    autocomplete="off"
                                    data-filter="next-session"
-                                   checked/>
+                                   checked />
                             <label class="btn btn-outline-secondary" for="btnradio1">{% bs_icon "calendar2-check" %}</label>
                             <input type="radio"
                                    class="btn-check"
                                    name="btnradio"
                                    id="btnradio2"
                                    autocomplete="off"
-                                   data-filter="new-studies"/>
+                                   data-filter="new-studies" />
                             <label class="btn btn-outline-secondary" for="btnradio2">{% bs_icon "file-earmark-plus" %}</label>
                             <input type="radio"
                                    class="btn-check"
                                    name="btnradio"
                                    id="btnradio3"
                                    autocomplete="off"
-                                   data-filter="study-updates"/>
+                                   data-filter="study-updates" />
                             <label class="btn btn-outline-secondary" for="btnradio3">{% bs_icon "arrow-counterclockwise" %}</label>
                             <input type="radio"
                                    class="btn-check"
                                    name="btnradio"
                                    id="btnradio4"
                                    autocomplete="off"
-                                   data-filter="response-questions"/>
+                                   data-filter="response-questions" />
                             <label class="btn btn-outline-secondary" for="btnradio4">{% bs_icon "chat" %}</label>
                             <input type="radio"
                                    class="btn-check"
                                    name="btnradio"
                                    id="btnradio5"
                                    autocomplete="off"
-                                   data-filter="transactional-message"/>
+                                   data-filter="transactional-message" />
                             <label class="btn btn-outline-warning" for="btnradio5">{% bs_icon "arrow-down-up" %}</label>
                         </div>
                     </div>
@@ -141,9 +141,9 @@
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 {% form_buttons %}
-                    {% bootstrap_button "Submit" %}
-                {% endform_buttons %}
-            </form>
-        </div>
+                {% bootstrap_button "Submit" %}
+            {% endform_buttons %}
+        </form>
     </div>
+</div>
 {% endblock content %}

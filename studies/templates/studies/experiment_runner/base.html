@@ -37,11 +37,11 @@
                     {% block form %}
                     {% endblock form %}
                     {% form_buttons %}
-                        {% bootstrap_button "Cancel" button_class=btn_secondary_classes href=url_study_detail %}
-                        {% bootstrap_button "Save Changes" button_class=btn_primary_classes type="submit" %}
-                    {% endform_buttons %}
-                </form>
-            </div>
+                    {% bootstrap_button "Cancel" button_class=btn_secondary_classes href=url_study_detail %}
+                    {% bootstrap_button "Save Changes" button_class=btn_primary_classes type="submit" %}
+                {% endform_buttons %}
+            </form>
         </div>
     </div>
+</div>
 {% endblock content %}

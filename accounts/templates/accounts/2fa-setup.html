@@ -30,15 +30,15 @@
                                     {% csrf_token %}
                                     {% bootstrap_form form %}
                                     {% form_buttons %}
-                                        {% bootstrap_button "Test Code" button_type="submit" button_class=btn_primary_classes %}
-                                    {% endform_buttons %}
-                                </form>
-                            </li>
-                        </ol>
-                    </div>
-                    <div class="col d-flex me-4 justify-content-center pt-5">{{ svg_qr_code | safe }}</div>
+                                    {% bootstrap_button "Test Code" button_type="submit" button_class=btn_primary_classes %}
+                                {% endform_buttons %}
+                            </form>
+                        </li>
+                    </ol>
                 </div>
+                <div class="col d-flex me-4 justify-content-center pt-5">{{ svg_qr_code | safe }}</div>
             </div>
         </div>
     </div>
+</div>
 {% endblock content %}

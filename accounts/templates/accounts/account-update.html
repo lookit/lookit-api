@@ -17,60 +17,60 @@
                         {% csrf_token %}
                         {% bootstrap_form update_account_form %}
                         {% form_buttons %}
-                            {% bootstrap_button "Save" name="form-handle" value="update-account" %}
-                        {% endform_buttons %}
-                    </form>
-                </div>
+                        {% bootstrap_button "Save" name="form-handle" value="update-account" %}
+                    {% endform_buttons %}
+                </form>
             </div>
-            {# Change password card #}
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h1 class="card-title">{% trans "Change Your Password" %}</h1>
+        </div>
+        {# Change password card #}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h1 class="card-title">{% trans "Change Your Password" %}</h1>
+                <form method="post">
+                    {% csrf_token %}
+                    {% bootstrap_form change_password_form %}
+                    {% form_buttons %}
+                    {% bootstrap_button "Save" name="form-handle" value="change-password" %}
+                {% endform_buttons %}
+            </form>
+        </div>
+    </div>
+    {% if request.user.is_researcher %}
+        {# 2FA card #}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h1 class="card-title">{% trans "Manage Two-Factor Authentication" %}</h1>
+                {% if otp %}
+                    {# If we have OTP, enable setup completion in the case where it's not yet activated, and allow reset with verified OTP if it is. #}
                     <form method="post">
-                        {% csrf_token %}
-                        {% bootstrap_form change_password_form %}
-                        {% form_buttons %}
-                            {% bootstrap_button "Save" name="form-handle" value="change-password" %}
-                        {% endform_buttons %}
-                    </form>
-                </div>
-            </div>
-            {% if request.user.is_researcher %}
-                {# 2FA card #}
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h1 class="card-title">{% trans "Manage Two-Factor Authentication" %}</h1>
-                        {% if otp %}
-                            {# If we have OTP, enable setup completion in the case where it's not yet activated, and allow reset with verified OTP if it is. #}
-                            <form method="post">
-                                {% if otp.activated %}
-                                    {# enable reset of OTP #}
-                                    <p>
-                                        {% trans "If you'd like, you can turn two-factor authentication off here. Just enter your one-time password here, hit submit, and it'll get deleted for you!" %}
-                                    </p>
-                                {% else %}
-                                    <div class="col-md-4">{{ otp.get_svg_qr_code | safe }}</div>
-                                    <p>
-                                        {% trans "It looks like you were in the middle of setting up two factor authentication, but didn't complete the process. You can capture the QR code here, verify with a one-time password, and finish the process." %}
-                                    </p>
-                                {% endif %}
-                                {% csrf_token %}
-                                {% bootstrap_form otp_check_form %}
-                                {% form_buttons %}
-                                    {% if otp.activated %}
-                                        {% bootstrap_button "Submit" name="form-handle" value="deactivate-otp" %}
-                                    {% else %}
-                                        {% bootstrap_button "Submit" name="form-handle" value="activate-otp" %}
-                                    {% endif %}
-                                {% endform_buttons %}
-                            </form>
+                        {% if otp.activated %}
+                            {# enable reset of OTP #}
+                            <p>
+                                {% trans "If you'd like, you can turn two-factor authentication off here. Just enter your one-time password here, hit submit, and it'll get deleted for you!" %}
+                            </p>
                         {% else %}
-                            {# if we don't have OTP, link to 2FA setup directly. #}
-                            <a href="{% url "accounts:2fa-setup" %}">{% trans "Set up Two-Factor Authentication" %}</a>
+                            <div class="col-md-4">{{ otp.get_svg_qr_code | safe }}</div>
+                            <p>
+                                {% trans "It looks like you were in the middle of setting up two factor authentication, but didn't complete the process. You can capture the QR code here, verify with a one-time password, and finish the process." %}
+                            </p>
                         {% endif %}
-                    </div>
-                </div>
+                        {% csrf_token %}
+                        {% bootstrap_form otp_check_form %}
+                        {% form_buttons %}
+                        {% if otp.activated %}
+                            {% bootstrap_button "Submit" name="form-handle" value="deactivate-otp" %}
+                        {% else %}
+                            {% bootstrap_button "Submit" name="form-handle" value="activate-otp" %}
+                        {% endif %}
+                    {% endform_buttons %}
+                </form>
+            {% else %}
+                {# if we don't have OTP, link to 2FA setup directly. #}
+                <a href="{% url "accounts:2fa-setup" %}">{% trans "Set up Two-Factor Authentication" %}</a>
             {% endif %}
         </div>
     </div>
+{% endif %}
+</div>
+</div>
 {% endblock content %}

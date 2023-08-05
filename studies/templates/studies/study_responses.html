@@ -210,24 +210,16 @@
                             <p class="card-text">Include with response download:</p>
                             <div class="two-column-list mb-3">{% include "studies/_data_options.html" with data_options=data_options %}</div>
                             <p class="card-text">
-                                <label for="data-type-selector">
-                                    Data Type
-                                </label>
+                                <label for="data-type-selector">Data Type</label>
                             </p>
                             <div class="input-group">
                                 <select class="form-select"
                                         id="data-type-selector"
                                         name="data-type-selector"
                                         aria-label="Select data type">
-                                    <option value="json">
-                                        JSON
-                                    </option>
-                                    <option value="csv">
-                                        CSV summary
-                                    </option>
-                                    <option value="framedata">
-                                        CSV frame data
-                                    </option>
+                                    <option value="json">JSON</option>
+                                    <option value="csv">CSV summary</option>
+                                    <option value="framedata">CSV frame data</option>
                                 </select>
                                 <span class="input-group-btn">
                                     {% bootstrap_button "Download response" button_type="submit" button_class=btn_primary_classes name="download-individual-data" %}
@@ -241,30 +233,20 @@
                          id="response-summary-{{ forloop.counter }}"
                          style="display:none">
                         <div class="card-body">
-                            <h5 class="card-title">
-                                Response details
-                            </h5>
+                            <h5 class="card-title">Response details</h5>
                             <table class="table table-sm table-hover response-details">
                                 <caption class="visually-hidden">Response Details</caption>
                                 <thead>
                                     <tr>
-                                        <th>
-                                            Name
-                                        </th>
-                                        <th>
-                                            Value
-                                        </th>
+                                        <th>Name</th>
+                                        <th>Value</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for pair in response.summary %}
                                         <tr class="{% if pair.name == 'Video privacy level' %} {% if pair.value == 'public' %} list-group-item-success {% elif pair.value == 'scientific' %} list-group-item-warning {% else %} list-group-item-danger {% endif %} {% endif %}">
-                                            <td tabindex="0" title="{{ pair.description }}">
-                                                {{ pair.name }}
-                                            </td>
-                                            <td>
-                                                {{ pair.value }}
-                                            </td>
+                                            <td tabindex="0" title="{{ pair.description }}">{{ pair.name }}</td>
+                                            <td>{{ pair.value }}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -275,8 +257,6 @@
             </div>
         </div>
     {% else %}
-        <div class="empty-text">
-            No responses with confirmed consent.
-        </div>
+        <div class="empty-text">No responses with confirmed consent.</div>
     {% endif %}
 {% endblock content %}

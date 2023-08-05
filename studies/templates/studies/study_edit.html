@@ -47,73 +47,71 @@
                         {% csrf_token %}
                         {% include "studies/_study_fields.html" with form=form study=study %}
                         {% form_buttons %}
-                            {% bootstrap_button "Cancel" button_class=btn_secondary_classes href=url_cancel %}
-                            <button type="button"
-                                    class="{% button_primary_classes %}"
-                                    data-bs-target="#save-study-confirmation"
-                                    id="save-button"
-                                    data-bs-toggle="modal">
-                                Save Changes
-                            </button>
-                        {% endform_buttons %}
-                        <div class="modal fade"
-                             id="save-study-confirmation"
-                             tabindex="-1"
-                             aria-labelledby="save-study-confirmation-title"
-                             aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="save-study-confirmation-title">Are you sure you want to modify {{ study.name }}?</h5>
-                                        <button type="button"
-                                                class="btn-close"
-                                                data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
+                        {% bootstrap_button "Cancel" button_class=btn_secondary_classes href=url_cancel %}
+                        <button type="button"
+                                class="{% button_primary_classes %}"
+                                data-bs-target="#save-study-confirmation"
+                                id="save-button"
+                                data-bs-toggle="modal">Save Changes</button>
+                    {% endform_buttons %}
+                    <div class="modal fade"
+                         id="save-study-confirmation"
+                         tabindex="-1"
+                         aria-labelledby="save-study-confirmation-title"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="save-study-confirmation-title">Are you sure you want to modify {{ study.name }}?</h5>
+                                    <button type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                {% if study.built or save_confirmation %}
+                                    <div id="save-study-confirmation-body" class="modal-body">
+                                        {% if study.built %}
+                                            <p id="invalidate-build-warning">
+                                                You have already built an experiment runner!
+                                                Because you are changing the runner version, you will need to rebuild these
+                                                before you can preview or start your study.
+                                            </p>
+                                        {% endif %}
+                                        {% if save_confirmation %}
+                                            <p>
+                                                This study has already been
+                                                <strong>approved</strong>. If you edit this study, the system will
+                                                automatically give it a rejected status. You will have to resubmit
+                                                the study so your changes can be reviewed.
+                                            </p>
+                                            <p>
+                                                If your changes are limited to
+                                                <ul>
+                                                    <li>whether the study is discoverable</li>
+                                                    <li>whether the preview is shared</li>
+                                                    <li>the minimum and maximum age or criteria expression</li>
+                                                    <li>the participant eligibility description</li>
+                                                    <li>
+                                                        the
+                                                        <em>formatting</em>
+                                                        of your study protocol
+                                                    </li>
+                                                </ul>
+                                                then your study will stay in its {{ study.state }} state.
+                                            </p>
+                                        {% endif %}
                                     </div>
-                                    {% if study.built or save_confirmation %}
-                                        <div id="save-study-confirmation-body" class="modal-body">
-                                            {% if study.built %}
-                                                <p id="invalidate-build-warning">
-                                                    You have already built an experiment runner!
-                                                    Because you are changing the runner version, you will need to rebuild these
-                                                    before you can preview or start your study.
-                                                </p>
-                                            {% endif %}
-                                            {% if save_confirmation %}
-                                                <p>
-                                                    This study has already been
-                                                    <strong>approved</strong>. If you edit this study, the system will
-                                                    automatically give it a rejected status. You will have to resubmit
-                                                    the study so your changes can be reviewed.
-                                                </p>
-                                                <p>
-                                                    If your changes are limited to
-                                                    <ul>
-                                                        <li>whether the study is discoverable</li>
-                                                        <li>whether the preview is shared</li>
-                                                        <li>the minimum and maximum age or criteria expression</li>
-                                                        <li>the participant eligibility description</li>
-                                                        <li>
-                                                            the
-                                                            <em>formatting</em>
-                                                            of your study protocol
-                                                        </li>
-                                                    </ul>
-                                                    then your study will stay in its {{ study.state }} state.
-                                                </p>
-                                            {% endif %}
-                                        </div>
-                                    {% endif %}
-                                    <div class="modal-footer">
-                                        {% bootstrap_button "Discard Changes" button_class=btn_secondary_classes href=url_cancel %}
-                                        {% bootstrap_button "Save" button_class="btn btn-danger" id="save_study_details_confirm" type="submit" %}
-                                    </div>
+                                {% endif %}
+                                <div class="modal-footer">
+                                    {% bootstrap_button "Discard Changes" button_class=btn_secondary_classes href=url_cancel %}
+                                    {% bootstrap_button "Save" button_class="btn btn-danger" id="save_study_details_confirm" type="submit" %}
                                 </div>
                             </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
 {% endblock content %}

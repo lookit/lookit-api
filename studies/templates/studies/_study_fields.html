@@ -50,9 +50,7 @@
                     title=""
                     id="id_min_age_years">
                 {% for x, y in form.fields.min_age_years.choices %}
-                    <option value="{{ x }}" {% if study.min_age_years == x %}selected{% endif %}>
-                        {{ y }}
-                    </option>
+                    <option value="{{ x }}" {% if study.min_age_years == x %}selected{% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -67,9 +65,7 @@
                     name="min_age_months"
                     title="">
                 {% for x, y in form.fields.min_age_months.choices %}
-                    <option value="{{ x }}"{% if study.min_age_months == x %} selected{% endif %}>
-                        {{ y }}
-                    </option>
+                    <option value="{{ x }}"{% if study.min_age_months == x %} selected{% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -84,9 +80,7 @@
                     name="min_age_days"
                     title="">
                 {% for x, y in form.fields.min_age_days.choices %}
-                    <option value="{{ x }}" {% if study.min_age_days == x %}selected{% endif %}>
-                        {{ y }}
-                    </option>
+                    <option value="{{ x }}" {% if study.min_age_days == x %}selected{% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -114,9 +108,7 @@
                     title=""
                     id="id_max_age_years">
                 {% for x, y in form.fields.max_age_years.choices %}
-                    <option value="{{ x }}" {% if study.max_age_years == x %}selected{% endif %}>
-                        {{ y }}
-                    </option>
+                    <option value="{{ x }}" {% if study.max_age_years == x %}selected{% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -131,9 +123,7 @@
                     name="max_age_months"
                     title="">
                 {% for x, y in form.fields.max_age_months.choices %}
-                    <option value="{{ x }}" {% if study.max_age_months == x %}selected{% endif %}>
-                        {{ y }}
-                    </option>
+                    <option value="{{ x }}" {% if study.max_age_months == x %}selected{% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -148,9 +138,7 @@
                     name="max_age_days"
                     title="">
                 {% for x, y in form.fields.max_age_days.choices %}
-                    <option value="{{ x }}" {% if study.max_age_days == x %}selected{% endif %}>
-                        {{ y }}
-                    </option>
+                    <option value="{{ x }}" {% if study.max_age_days == x %}selected{% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>

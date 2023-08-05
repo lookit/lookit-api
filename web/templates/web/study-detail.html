@@ -39,7 +39,7 @@
                         <img class="img-responsive"
                              alt="{{ study.name }}"
                              src="{{ study.image.url }}"
-                             width="100%"/>
+                             width="100%" />
                     </div>
                     <div class="col-9 col-md-5 px-5">
                         <h1 class="mt-4">{{ study.name }}</h1>
@@ -111,17 +111,13 @@
                                 data-study-max-age-months="{{ study.max_age_months }}"
                                 data-study-max-age-years="{{ study.max_age_years }}"
                                 onchange="childSelected(this)">
-                            <option value=none>
-                                {% trans "None Selected" %}
-                            </option>
+                            <option value=none>{% trans "None Selected" %}</option>
                             {% for child in children %}
                                 {% child_is_valid_for_study_criteria_expression child object as child_is_eligible %}
                                 <option onemptied=""
                                         value="{{ child.uuid }}"
                                         data-birthdate="{{ child.birthday|date:'c' }}"
-                                        data-eligible="{{ child_is_eligible }}">
-                                    {{ child.given_name }}
-                                </option>
+                                        data-eligible="{{ child_is_eligible }}">{{ child.given_name }}</option>
                             {% endfor %}
                         </select>
                         <p class="text-danger mb-0 mt-3 d-none" id="too-young">

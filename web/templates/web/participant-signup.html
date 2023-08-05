@@ -28,9 +28,9 @@
                     {% trans "By clicking 'Create Account', I agree that I have read and accepted the " %} <a href="{% url 'web:privacy' %}" target="_blank" rel="noopener">{% trans "Privacy Statement" %}.</a>
                 </p>
                 {% form_buttons %}
-                    {% bootstrap_button bs_icon_plus|add:trans_create_account %}
-                {% endform_buttons %}
-            </form>
-        </div>
+                {% bootstrap_button bs_icon_plus|add:trans_create_account %}
+            {% endform_buttons %}
+        </form>
     </div>
+</div>
 {% endblock content %}
