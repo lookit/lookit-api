@@ -290,7 +290,7 @@ class StudyForm(ModelForm):
             "contact_info": "Researcher Contact Information",
             "public": "Discoverable",
             "shared_preview": "Share Preview",
-            "study_type": "Experiment Runner Type",
+            "study_type": "Experiment Type",
             "compensation_description": "Compensation",
             "use_generator": "Use protocol generator (advanced)",
             "priority": "Lab Page Priority",
@@ -345,7 +345,7 @@ class StudyForm(ModelForm):
             ),
             "public": "List this study on the 'Studies' page once you start it.",
             "shared_preview": "Allow other Lookit researchers to preview your study and give feedback.",
-            "study_type": "Choose what type of study you are creating - this will change the fields that appear in the Experiment Details section.",
+            "study_type": "Choose the type of experiment you are creating - this will change the fields that appear on the Study Details page.",
             "structure": PROTOCOL_HELP_TEXT_INITIAL,
             "priority": "This affects how studies are ordered at your lab's custom URL, not the main study page. If you leave all studies at the highest priority (99), then all of your lab's active/discoverable studies will be shown in a randomized order on your lab page. If you lower the priority of this study to 1, then it will appear last in the list on your lab page. You can find your lab's custom URL from the <a href='/exp/labs/'>labs page</a>. For more info, see the documentation on <a href='https://lookit.readthedocs.io/en/develop/researchers-manage-org.html#ordering-studies-on-your-lab-page'>study prioritization</a>.",
         }
