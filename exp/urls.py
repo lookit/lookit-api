@@ -257,14 +257,16 @@ urlpatterns = [
     path(
         "studies/<int:pk>/study-detail/",
         ExperimentRunnerEdit.as_view(),
-        name="study-detail",
+        name="study-details",
     ),
     path(
-        "studies/<int:pk>/study-detail/efp/", EFPEdit.as_view(), name="efp-study-detail"
+        "studies/<int:pk>/study-detail/efp/",
+        EFPEdit.as_view(),
+        name="efp-study-details",
     ),
     path(
         "studies/<int:pk>/study-detail/external/",
         ExternalEdit.as_view(),
-        name="external-study-detail",
+        name="external-study-details",
     ),
 ]

@@ -306,7 +306,7 @@ class StudyUpdateView(
         return context
 
     def get_success_url(self):
-        return reverse("exp:study-detail", kwargs={"pk": self.object.id})
+        return reverse("exp:study-details", kwargs={"pk": self.object.id})
 
 
 class StudyListView(
@@ -1094,11 +1094,11 @@ class ExperimentRunnerEdit(
 
         if study_type.is_ember_frame_player:
             return redirect(
-                reverse("exp:efp-study-detail", kwargs={"pk": self.object.id})
+                reverse("exp:efp-study-details", kwargs={"pk": self.object.id})
             )
         if study_type.is_external:
             return redirect(
-                reverse("exp:external-study-detail", kwargs={"pk": self.object.id})
+                reverse("exp:external-study-details", kwargs={"pk": self.object.id})
             )
 
 
