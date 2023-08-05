@@ -239,7 +239,7 @@
                 {% for study in studies %}
                     <tr>
                         <td>
-                            <a href="{% url 'exp:study-detail' study.study.id %}">{{ study.study.name }}</a>
+                            <a href="{% url 'exp:study' study.study.id %}">{{ study.study.name }}</a>
                         </td>
                         <td>
                             {{ study.response.uuid }}

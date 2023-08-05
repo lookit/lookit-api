@@ -12,7 +12,7 @@
         {% comment %}
             When we upgrade to django 2.x, please convert to json_script. Please see:
             https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#json-script
-        {% endcomment %}
+{% endcomment %}
         {{ response_key_value_store | safe }}
     </script>
     <script src="{% static 'js/study-responses-consent-ruling.js' %}" defer></script>
@@ -20,7 +20,7 @@
 {% block breadcrumb %}
     {% breadcrumb %}
     {% url 'exp:study-list' %} Manage Studies
-    {% url 'exp:study-detail' pk=study.id %} {{ study.name }}
+    {% url 'exp:study' pk=study.id %} {{ study.name }}
     Consent Manager
 {% endbreadcrumb %}
 {% endblock breadcrumb %}
@@ -63,7 +63,7 @@
                            overflow-y: scroll">
                     {% for response in loaded_responses %}
                         <li id="response-option-{{ response.uuid }}"
-                            class="border-start-0 border-end-0 response-option list-group-item {{ response.current_ruling }} {% if response.is_preview %} preview-row{% endif %}"
+                            class="border-start-0 border-end-0 response-option list-group-item {{ response.current_ruling }} {% if response.is_preview %}preview-row{% endif %}"
                             data-id="{{ response.uuid }}"
                             data-original-status="{{ response.current_ruling }}">
                             <span>
@@ -128,7 +128,7 @@
                                 <span class="rejections-count badge bg-secondary rounded-pill">0</span>
                             </li>
                         </ul>
-                        <input name="comments" type="hidden" value="{}"/>
+                        <input name="comments" type="hidden" value="{}" />
                         <button type="submit" class="{% button_primary_classes %}">Submit Rulings & Comments {% bs_icon "send" %}</button>
                         <button id="reset-choices"
                                 type="button"
@@ -147,7 +147,7 @@
                 </div>
             </div>
             <video controls id="video-under-consideration" height="270" width="360">
-                <source src="" type="video/mp4"/>
+                <source src="" type="video/mp4" />
             </video>
             <textarea id="response-commentary"
                       class="form-control"

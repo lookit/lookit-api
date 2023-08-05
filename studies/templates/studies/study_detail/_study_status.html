@@ -61,7 +61,7 @@
                 <div class="col-3">
                     <form action="{% url 'exp:study-build' study.uuid %}" method="post">
                         {% csrf_token %}
-                        <input type="hidden" name="return" value="exp:study-detail"/>
+                        <input type="hidden" name="return" value="exp:study" />
                         <button type="submit"
                                 class="{% button_secondary_classes %} btn-sm"
                                 {% if study.built or study.is_building %}disabled{% endif %}>

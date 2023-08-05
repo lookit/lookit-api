@@ -11,7 +11,7 @@
 {% block breadcrumb %}
     {% breadcrumb %}
     {% url 'exp:study-list' %} Manage Studies
-    {% url 'exp:study-detail' pk=study.id %} {{ study.name }}
+    {% url 'exp:study' pk=study.id %} {{ study.name }}
     Videos
 {% endbreadcrumb %}
 {% endblock breadcrumb %}
@@ -46,7 +46,7 @@
                placeholder="Filter video name"
                type="text"
                value="{{ match }}"/>
-        <input type="hidden" name="sort" value="{{ sort }}"/>
+        <input type="hidden" name="sort" value="{{ sort }}" />
     </form>
     <div class="row mt-3">
         <div class="col-12">
@@ -85,7 +85,7 @@
                                 <td>{{ video.created_at|date:"n/j/Y g:i A"|default:"N/A" }}</td>
                                 <td>
                                     <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
-                                       class="{% button_primary_classes %} btn-sm"> Download </a>
+                                       class="{% button_primary_classes %} btn-sm">Download</a>
                                 </td>
                             </tr>
                         {% empty %}

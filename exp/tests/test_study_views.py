@@ -151,7 +151,7 @@ class StudyViewsTestCase(TestCase):
         self.all_study_views_urls = [
             reverse("exp:study-list"),
             reverse("exp:study-create"),
-            reverse("exp:study-detail", kwargs={"pk": self.study.pk}),
+            reverse("exp:study", kwargs={"pk": self.study.pk}),
             reverse("exp:study-participant-contact", kwargs={"pk": self.study.pk}),
             reverse("exp:preview-detail", kwargs={"uuid": self.study.uuid}),
             reverse(
@@ -530,7 +530,7 @@ class StudyViewsTestCase(TestCase):
             "Create Study button not displayed on study list view",
         )
         detail_view_response = self.client.get(
-            reverse("exp:study-detail", kwargs={"pk": self.study.pk})
+            reverse("exp:study", kwargs={"pk": self.study.pk})
         )
         self.assertIn(
             "Clone Study",
@@ -556,7 +556,7 @@ class StudyViewsTestCase(TestCase):
             "Create Study button displayed on study list view",
         )
         detail_view_response = self.client.get(
-            reverse("exp:study-detail", kwargs={"pk": self.study.pk})
+            reverse("exp:study", kwargs={"pk": self.study.pk})
         )
         self.assertNotIn(
             "Clone Study",
@@ -727,7 +727,7 @@ class ChangeStudyStatusViewTestCase(TestCase):
         self.assertEqual(change_study_status_view.post(), mock_http_response_redirect())
         mock_http_response_redirect.assert_called_with()
         mock_reverse.assert_called_with(
-            "exp:study-detail", kwargs={"pk": mock_get_object().pk}
+            "exp:study", kwargs={"pk": mock_get_object().pk}
         )
         change_study_status_view.update_trigger.assert_called_with()
 
@@ -753,7 +753,7 @@ class ChangeStudyStatusViewTestCase(TestCase):
             mock_request, f"TRANSITION ERROR: {sentinel.error_message}"
         )
         mock_reverse.assert_called_with(
-            "exp:study-detail", kwargs={"pk": mock_get_object().pk}
+            "exp:study", kwargs={"pk": mock_get_object().pk}
         )
 
     @patch.object(ChangeStudyStatusView, "request", create=True)
@@ -869,7 +869,7 @@ class ManageResearcherPermissionsViewTestCase(TestCase):
         )
         mock_https_response_redirect.assert_called_with()
         mock_reverse.assert_called_once_with(
-            "exp:study-detail", kwargs={"pk": mock_get_object().pk}
+            "exp:study", kwargs={"pk": mock_get_object().pk}
         )
         mock_manage_researcher_permissions.assert_called_once_with()
 
@@ -1314,14 +1314,14 @@ class StudyDetailViewTestCase(TestCase):
     def test_study_detail_review_consent(self):
         # check if review consent is viewable on a frame player study
         response = self.client.get(
-            reverse("exp:study-detail", kwargs={"pk": self.frame_player_study.pk})
+            reverse("exp:study", kwargs={"pk": self.frame_player_study.pk})
         )
         self.assertEqual(200, response.status_code)
         self.assertIn(b"Review Consent", response.content)
 
         # check that review consent is not view on an external study
         response = self.client.get(
-            reverse("exp:study-detail", kwargs={"pk": self.external_study.pk})
+            reverse("exp:study", kwargs={"pk": self.external_study.pk})
         )
         self.assertEqual(200, response.status_code)
         self.assertNotIn(b"Review Consent", response.content)

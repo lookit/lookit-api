@@ -24,9 +24,9 @@
                size="50"
                type="text"
                value="{{ match }}"/>
-        <input type="hidden" name="sort" value="{{ sort }}"/>
-        <input type="hidden" name="state" value="{{ state }}"/>
-        <input type="hidden" name="page" value="1"/>
+        <input type="hidden" name="sort" value="{{ sort }}" />
+        <input type="hidden" name="state" value="{{ state }}" />
+        <input type="hidden" name="page" value="1" />
     </form>
     <div class="row text-center mb-5 mt-2">
         <ul class="nav nav-pills justify-content-center">
@@ -78,7 +78,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-6">
-                        <a href="{% url 'exp:study-detail' pk=study.id %}">
+                        <a href="{% url 'exp:study' pk=study.id %}">
                             <strong>{{ study.name }}</strong>
                         </a>
                     </div>

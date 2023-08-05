@@ -6,7 +6,7 @@ function toggleScheduling() {
         scheduling.parentNode.classList.remove('d-none');
     } else {
         scheduling.parentNode.classList.add('d-none');
-        checked_scheduling ? checked_scheduling.checked = false : null;
+        if (checked_scheduling) checked_scheduling.checked = false;
     }
 }
 

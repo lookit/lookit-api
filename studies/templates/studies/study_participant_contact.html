@@ -16,7 +16,7 @@
 {% block breadcrumb %}
     {% breadcrumb %}
     {% url 'exp:study-list' %} Manage Studies
-    {% url 'exp:study-detail' pk=study.id %} {{ study.name }}
+    {% url 'exp:study' pk=study.id %} {{ study.name }}
     Contact Participants
 {% endbreadcrumb %}
 {% endblock breadcrumb %}
@@ -54,13 +54,13 @@
                         <tfoot>
                             <tr>
                                 <th scope="col">
-                                    <input type="text" class="form-control" placeholder="Filter Sender"/>
+                                    <input type="text" class="form-control" placeholder="Filter Sender" />
                                 </th>
                                 <th scope="col">
-                                    <input type="text" class="form-control" placeholder="Filter Subject"/>
+                                    <input type="text" class="form-control" placeholder="Filter Subject" />
                                 </th>
                                 <th scope="col">
-                                    <input type="text" class="form-control" placeholder="Filter Recipients"/>
+                                    <input type="text" class="form-control" placeholder="Filter Recipients" />
                                 </th>
                                 <th scope="col">
                                     <input type="text"

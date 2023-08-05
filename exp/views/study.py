@@ -154,7 +154,7 @@ class StudyCreateView(
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse("exp:study-detail", kwargs=dict(pk=self.object.id))
+        return reverse("exp:study", kwargs=dict(pk=self.object.id))
 
     def get_context_data(self, **kwargs):
         """
@@ -598,7 +598,7 @@ class ManageResearcherPermissionsView(
             return HttpResponseForbidden()
 
         return HttpResponseRedirect(
-            reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
+            reverse("exp:study", kwargs=dict(pk=self.get_object().pk))
         )
 
     def send_study_email(self, user, permission):
@@ -737,7 +737,7 @@ class ChangeStudyStatusView(
             messages.error(self.request, f"TRANSITION ERROR: {e}")
 
         return HttpResponseRedirect(
-            reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
+            reverse("exp:study", kwargs=dict(pk=self.get_object().pk))
         )
 
     def update_declarations(self, trigger: Text, study: Study):
@@ -862,7 +862,7 @@ class StudyBuildView(
     slug_field = "uuid"
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse("exp:study-detail", kwargs={"pk": str(self.get_object().pk)})
+        return reverse("exp:study", kwargs={"pk": str(self.get_object().pk)})
 
     def user_can_build_study(self):
         user = self.request.user
@@ -1093,9 +1093,13 @@ class ExperimentRunnerEdit(
         study_type = self.object.study_type
 
         if study_type.is_ember_frame_player:
-            return redirect(reverse("exp:efp-edit", kwargs={"pk": self.object.id}))
+            return redirect(
+                reverse("exp:efp-study-detail", kwargs={"pk": self.object.id})
+            )
         if study_type.is_external:
-            return redirect(reverse("exp:external-edit", kwargs={"pk": self.object.id}))
+            return redirect(
+                reverse("exp:external-study-detail", kwargs={"pk": self.object.id})
+            )
 
 
 class EFPEdit(
@@ -1173,7 +1177,7 @@ class EFPEdit(
 
     def get_success_url(self, **kwargs):
         """Upon successful form submission, change the view to study detail."""
-        return reverse("exp:study-detail", kwargs={"pk": self.object.pk})
+        return reverse("exp:study", kwargs={"pk": self.object.pk})
 
 
 class ExternalEdit(
@@ -1206,7 +1210,7 @@ class ExternalEdit(
 
     def get_success_url(self, **kwargs):
         """Upon successful form submission, change the view to study detail."""
-        return reverse("exp:study-detail", kwargs={"pk": self.object.pk})
+        return reverse("exp:study", kwargs={"pk": self.object.pk})
 
     def get_initial(self):
         initial = super().get_initial()

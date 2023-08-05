@@ -124,7 +124,7 @@ urlpatterns = [
         name="study-participant-analytics",
     ),
     path("studies/create/", StudyCreateView.as_view(), name="study-create"),
-    path("studies/<int:pk>/", StudyDetailView.as_view(), name="study-detail"),
+    path("studies/<int:pk>/", StudyDetailView.as_view(), name="study"),
     path("studies/<int:pk>/clone-study", CloneStudyView.as_view(), name="clone-study"),
     path(
         "studies/<int:pk>/change-study-status",
@@ -255,12 +255,16 @@ urlpatterns = [
     ),
     path("support/", SupportView.as_view(), name="support"),
     path(
-        "studies/<int:pk>/runner/edit/",
+        "studies/<int:pk>/study-detail/",
         ExperimentRunnerEdit.as_view(),
-        name="runner-edit",
+        name="study-detail",
     ),
-    path("studies/<int:pk>/efp/edit/", EFPEdit.as_view(), name="efp-edit"),
     path(
-        "studies/<int:pk>/external/edit/", ExternalEdit.as_view(), name="external-edit"
+        "studies/<int:pk>/study-detail/efp/", EFPEdit.as_view(), name="efp-study-detail"
+    ),
+    path(
+        "studies/<int:pk>/study-detail/external/",
+        ExternalEdit.as_view(),
+        name="external-study-detail",
     ),
 ]
