@@ -55,6 +55,9 @@ dispatch_frame_action = FrameActionDispatcher()
 
 
 def default_configuration():
+    """This function was used in the StudyType model.  The field requiring this has
+    been removed.  However, migrations still reference this function
+    """
     return {
         # task module should have a build_experiment method decorated as a
         # celery task that takes a study uuid
@@ -222,13 +225,12 @@ def notify_lab_of_approval(sender, instance, **kwargs):
 
 
 class StudyTypeEnum(Enum):
-    external = "External"
-    ember_frame_player = "Ember Frame Player (default)"
+    external = "External Study (Choose this if you are posting a study link rather using an experiment builder)"
+    ember_frame_player = "Lookit/Ember Frame Player (Default experiment builder)"
 
 
 class StudyType(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
-    configuration = models.JSONField(default=default_configuration)
 
     def __str__(self):
         return self.name
