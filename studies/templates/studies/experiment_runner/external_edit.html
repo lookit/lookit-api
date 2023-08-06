@@ -6,6 +6,12 @@
     {{ block.super }}
     <script src="{% static 'js/external-runner.js' %}" defer></script>
 {% endblock head %}
+{% block header %}
+    <p>
+        You have created an External study. If you need to change study types,
+        please <a href="{% url "exp:study-create" %}">create a new study</a> instead.
+    </p>
+{% endblock header %}
 {% block form %}
     {% bootstrap_form form %}
 {% endblock form %}
