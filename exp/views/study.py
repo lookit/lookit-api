@@ -31,7 +31,7 @@ from exp.views.mixins import (
 from project import settings
 from studies.forms import EFPForm, ExternalForm, StudyCreateForm, StudyEditForm
 from studies.helpers import send_mail
-from studies.models import Study, StudyType
+from studies.models import Study
 from studies.permissions import LabPermission, StudyPermission
 from studies.queries import get_study_list_qs
 from studies.tasks import ember_build_and_gcp_deploy
@@ -89,21 +89,6 @@ def get_discoverability_text(study):
     return DISCOVERABILITY_HELP_TEXT.get(discoverability_key)
 
 
-KEY_DISPLAY_NAMES = {
-    "player_repo_url": "Experiment runner code URL",
-    "last_known_player_sha": "Experiment runner version (commit SHA)",
-    "url": "Study URL",
-    "scheduling": "Scheduling",
-    "study_platform": "Study Platform",
-}
-
-KEY_HELP_TEXT = {
-    "url": "This is the link that participants will be sent to from the Lookit details page.",
-    "scheduling": "Indicate how participants schedule appointments for your section. Remember that Lookit encourages you to use its messaging system rather than collecting email addresses - this presents a privacy risk for your participants.",
-    "study_platform": "What software or website will you use to present & collect data for your study?",
-}
-
-
 class StudyCreateView(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
@@ -117,6 +102,7 @@ class StudyCreateView(
     model = Study
     raise_exception = True
     form_class = StudyCreateForm
+    template_name = "studies/study_create.html"
 
     def user_can_make_study(self):
         # If returning False,
@@ -148,25 +134,6 @@ class StudyCreateView(
 
     def get_success_url(self):
         return reverse("exp:study-details", kwargs=dict(pk=self.object.id))
-
-    def get_context_data(self, **kwargs):
-        """
-        Adds study types to get_context_data
-        """
-        context = super().get_context_data(**kwargs)
-        context["study_types"] = StudyType.objects.all()
-        context["key_display_names"] = KEY_DISPLAY_NAMES
-        context["key_help_text"] = KEY_HELP_TEXT
-        return context
-
-    def get_initial(self):
-        """
-        Returns initial data to use for the create study form - make default
-        structure field data an empty dict
-        """
-        initial = super().get_initial()
-        initial["structure"] = json.dumps(Study._meta.get_field("structure").default())
-        return initial
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -219,37 +186,8 @@ class StudyUpdateView(
     test_func = user_can_edit_study
 
     def get_initial(self):
-        """Get initial data for the study update form.
-
-        Provides the exact_text stored in the structure field as the initial
-        value to edit, to preserve ordering and formatting from user's standpoint.
-
-        Provides the initial value of the generator function if current value is empty.
-
-        Returns:
-            A dictionary containing initial data for the form
-
-        """
         initial = super().get_initial()
-
         study = self.object
-        structure = study.structure
-
-        # For editing, display the exact text that was used to generate the structure,
-        # if available. We rely on form validation to make sure structure["exact_text"]
-        # is valid JSON.
-
-        if structure:
-            if "exact_text" in structure:
-                initial["structure"] = structure["exact_text"]
-            else:
-                initial["structure"] = json.dumps(structure)
-        if not study.generator.strip():
-            initial["generator"] = StudyEditForm.base_fields["generator"].initial
-
-        if study.study_type.is_external:
-            initial["external"] = True
-            initial["scheduled"] = study.metadata.get("scheduled", False)
 
         # Must have participated was a huge query, custom form code allowed us to make this
         # large query more efficiently. Because are using custom form fields, we have add the values to initial.
@@ -285,17 +223,12 @@ class StudyUpdateView(
         In addition to the study, adds several items to the context dictionary.
         """
         context = super().get_context_data(**kwargs)
-
-        context["study_types"] = StudyType.objects.all()
-        context["key_display_names"] = KEY_DISPLAY_NAMES
-        context["key_help_text"] = KEY_HELP_TEXT
         context["save_confirmation"] = self.object.state in [
             "approved",
             "active",
             "paused",
             "deactivated",
         ]
-
         return context
 
     def get_success_url(self):
