@@ -349,6 +349,11 @@ class StudyEditForm(StudyForm):
 
     def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # Disable ablility to change study type after study creation.
+        self.fields["study_type"].disabled = True
+        self.fields["study_type"].help_text = ""
+
         # Restrict ability to edit study lab based on user permissions
         can_change_lab = user.has_study_perms(
             StudyPermission.CHANGE_STUDY_LAB, self.instance
