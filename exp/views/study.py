@@ -135,14 +135,7 @@ class StudyCreateView(
 
         user = self.request.user
 
-        if form.cleaned_data["external"]:
-            target_study_type = StudyType.get_external()
-        else:
-            target_study_type = StudyType.get_ember_frame_player()
-
-        form.instance.metadata = self.extract_type_metadata(target_study_type)
         form.instance.creator = user
-        form.instance.study_type = target_study_type
 
         # Add user to admin group for study.
         new_study = self.object = form.save()
@@ -154,7 +147,7 @@ class StudyCreateView(
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse("exp:study", kwargs=dict(pk=self.object.id))
+        return reverse("exp:study-details", kwargs=dict(pk=self.object.id))
 
     def get_context_data(self, **kwargs):
         """
