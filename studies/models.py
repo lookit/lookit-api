@@ -237,7 +237,7 @@ class StudyType(models.Model):
 
     @classmethod
     def default_pk(cls):
-        return cls.objects.get(name=StudyTypeEnum.ember_frame_player.value).pk
+        return 1
 
     @property
     def is_ember_frame_player(self):
@@ -256,11 +256,11 @@ class StudyType(models.Model):
 
     @classmethod
     def get_ember_frame_player(cls):
-        return cls.objects.get(name=StudyTypeEnum.ember_frame_player.value)
+        return cls.objects.get(id=1)
 
     @classmethod
     def get_external(cls):
-        return cls.objects.get(name=StudyTypeEnum.external.value)
+        return cls.objects.get(id=2)
 
 
 def default_study_structure():
