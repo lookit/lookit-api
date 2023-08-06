@@ -410,7 +410,10 @@ class EmailParticipantsForm(forms.Form):
 
 
 class EFPForm(ModelForm):
-    player_repo_url = forms.URLField(label="Experiment runner code URL")
+    player_repo_url = forms.URLField(
+        label="Experiment runner code URL",
+        help_text="Leave this value alone unless you are using a custom version of the experiment builder.",
+    )
     last_known_player_sha = forms.CharField(
         label="Experiment runner version (commit SHA)"
     )
