@@ -468,6 +468,10 @@ class EFPForm(ModelForm):
     def clean_generator(self):
         try:
             generator = self.cleaned_data["generator"]
+
+            if not generator:
+                generator = DEFAULT_GENERATOR
+
             js2py.eval_js(generator)
             return generator
         except js2py.internals.simplex.JsException:
@@ -477,17 +481,21 @@ class EFPForm(ModelForm):
 
     def clean_player_repo_url(self):
         player_repo_url = self.cleaned_data["player_repo_url"]
+        validation_error = forms.ValidationError(
+            f"Frameplayer repo url {player_repo_url} does not work."
+        )
 
-        if not requests.get(player_repo_url).ok:
-            raise forms.ValidationError(
-                f"Frameplayer repo url {player_repo_url} does not work."
-            )
+        try:
+            if not requests.get(player_repo_url).ok:
+                raise validation_error
+        except requests.exceptions.ConnectionError:
+            raise validation_error
 
         return player_repo_url
 
     def clean_last_known_player_sha(self):
-        last_known_player_sha = self.cleaned_data["last_known_player_sha"]
-        player_repo_url = self.cleaned_data["player_repo_url"]
+        last_known_player_sha = self.cleaned_data.get("last_known_player_sha")
+        player_repo_url = self.cleaned_data.get("player_repo_url")
 
         if last_known_player_sha and player_repo_url:
             if not requests.get(f"{player_repo_url}/commit/{last_known_player_sha}").ok:

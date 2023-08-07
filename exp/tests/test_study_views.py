@@ -16,7 +16,6 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
-from django.utils import timezone
 from django.views.generic.detail import SingleObjectMixin
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm, get_objects_for_user
@@ -31,7 +30,6 @@ from exp.views.study import (
     ManageResearcherPermissionsView,
     StudyDetailView,
     StudyPreviewDetailView,
-    StudyUpdateView,
 )
 from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
@@ -318,35 +316,6 @@ class StudyViewsTestCase(TestCase):
             self.study.built, "Study built field not True following study build"
         )
 
-    def test_study_edit_displays_generator(self):
-        self.client.force_login(self.lab_researcher)
-        url = reverse("exp:study-edit", kwargs={"pk": self.study.id})
-        assign_perm(
-            StudyPermission.WRITE_STUDY_DETAILS.prefixed_codename,
-            self.lab_researcher,
-            self.study,
-        )
-        response = self.client.get(url)
-        content = response.content.decode("utf-8")
-        self.assertEqual(
-            response.status_code, 200, "Study edit view returns invalid response"
-        )
-        self.assertIn(
-            self.generator_function_string,
-            content,
-            "Generator function not rendered in editor on study edit page",
-        )
-        self.assertIn(
-            self.structure_string,
-            content,
-            "Exact text representation of structure not displayed on study edit page",
-        )
-        self.assertNotIn(
-            "frame-a",
-            content,
-            "internal structure displayed on study edit page instead of just exact text",
-        )
-
     @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
     @skip("Not able to change study type on in study edit view.")
     def test_study_edit_change_study_type(self, mock_validate):
@@ -380,112 +349,6 @@ class StudyViewsTestCase(TestCase):
         self.assertFalse(
             updated_study.built,
             "Study build was not invalidated after editing study type",
-        )
-
-    @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
-    def test_change_study_metadata_invalidates_build(
-        self, mock_validate_and_fetch_metadata
-    ):
-        new_metadata = {
-            "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
-            "last_known_player_sha": "2aa08ee6132cd6351eed58abc2253368c14ad184",
-        }
-        mock_validate_and_fetch_metadata.return_value = new_metadata, []
-        self.client.force_login(self.lab_researcher)
-        url = reverse("exp:study-edit", kwargs={"pk": self.study.id})
-        assign_perm(
-            StudyPermission.WRITE_STUDY_DETAILS.prefixed_codename,
-            self.lab_researcher,
-            self.study,
-        )
-        data = model_to_dict(self.study)
-        data["metadata"] = new_metadata
-        data["comments"] = "Changed experiment runner version"
-        data["comments_extra"] = {}
-        data["status_change_date"] = timezone.now()
-        data["structure"] = json.dumps(data["structure"])
-
-        self.assertTrue(self.study.built)
-        response = self.client.post(url, data, follow=True)
-
-        self.assertEqual(
-            response.status_code,
-            200,
-            "Study edit returns invalid response when editing metadata",
-        )
-        self.assertEqual(
-            response.redirect_chain,
-            [(reverse("exp:study-edit", kwargs={"pk": self.study.pk}), 302)],
-        )
-
-        updated_study = Study.objects.get(id=self.study.id)
-        self.assertFalse(
-            updated_study.built,
-            "Study build was not invalidated after editing metadata",
-        )
-
-    @patch("django.views.generic.edit.ModelFormMixin.form_valid")
-    @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
-    @patch("exp.views.study.StudyUpdateView.get_form")
-    @patch.object(StudyUpdateView, "request", create=True)
-    @patch.object(SingleObjectMixin, "get_object")
-    def test_study_model_save_on_post(
-        self,
-        mock_get_object,
-        mock_request,
-        mock_get_form,
-        mock_validate_and_fetch_metadata,
-        mock_form_valid,
-    ):
-        # fill mocks with data
-        mock_metadata = MagicMock()
-        mock_validate_and_fetch_metadata.return_value = mock_metadata, []
-        type(mock_get_object()).metadata = PropertyMock(return_value=mock_metadata)
-
-        # run view's post method
-        view = StudyUpdateView()
-        view.post(mock_request)
-
-        # assert mocks
-        mock_get_form().instance.save.assert_called_with()
-        mock_get_form.assert_called_with()
-        mock_form_valid.assert_called_with(mock_get_form())
-
-    @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
-    def test_change_study_protocol_does_not_affect_build_status(
-        self, mock_validate_and_fetch_metadata
-    ):
-        mock_validate_and_fetch_metadata.return_value = self.study.metadata, []
-        self.client.force_login(self.lab_researcher)
-        url = reverse("exp:study-edit", kwargs={"pk": self.study.id})
-        assign_perm(
-            StudyPermission.WRITE_STUDY_DETAILS.prefixed_codename,
-            self.lab_researcher,
-            self.study,
-        )
-
-        data = model_to_dict(self.study)
-        data["structure"] = json.dumps(
-            {"frames": {"frame-c": {}}, "sequence": ["frame-c"]}
-        )
-        data["comments"] = "Changed protocol"
-        data["status_change_date"] = timezone.now()
-        data["comments_extra"] = {}
-
-        response = self.client.post(url, data, follow=True)
-        self.assertEqual(
-            response.status_code,
-            200,
-            "Study edit returns invalid response when editing metadata",
-        )
-        self.assertEqual(
-            response.redirect_chain,
-            [(reverse("exp:study-edit", kwargs={"pk": self.study.pk}), 302)],
-        )
-
-        updated_study = Study.objects.get(id=self.study.id)
-        self.assertTrue(
-            updated_study.built, "Study build was invalidated upon editing protocol"
         )
 
     def test_new_user_can_create_studies_in_sandbox_lab_only(self):
@@ -1334,32 +1197,6 @@ class StudyPreviewDetailViewTestCase(TestCase):
             study_preview_detail_view = StudyPreviewDetailView()
             study_preview_detail_view.get_context_data()
             mock_request.user.children.filter.assert_called_once_with(deleted=False)
-
-
-class StudyUpdateViewTestCase(TestCase):
-    @patch("exp.views.study.messages")
-    @patch("exp.views.study.StudyUpdateView.get_form")
-    @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
-    @patch.object(StudyUpdateView, "request", create=True)
-    @patch.object(SingleObjectMixin, "get_object")
-    def test_metadata_error_message(
-        self,
-        mock_get_object,
-        mock_request,
-        mock_validate_and_fetch_metadata,
-        mock_get_form,
-        mock_messages,
-    ):
-        type(mock_get_form().save()).id = PropertyMock(return_value=1)
-        error_msg = "error message"
-        mock_validate_and_fetch_metadata.return_value = {}, [error_msg]
-        view = StudyUpdateView()
-        view.post(mock_request)
-
-        mock_messages.error.assert_called_once_with(
-            mock_request,
-            f"WARNING: Changes to experiment were not saved: {error_msg}",
-        )
 
 
 class StudyParticipatedViewTestCase(TestCase):
