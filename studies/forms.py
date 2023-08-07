@@ -1,4 +1,5 @@
 import json
+from enum import Enum
 
 import js2py
 import requests
@@ -497,10 +498,23 @@ class EFPForm(ModelForm):
         return last_known_player_sha
 
 
+class ScheduledChoice(Enum):
+    scheduled = "Scheduled"
+    unmoderated = "Unmoderated"
+
+
 class ExternalForm(ModelForm):
-    scheduled = forms.BooleanField(
-        required=False,
-        help_text="Schedule participants for one-on-one appointments with a researcher.",
+    scheduled = forms.ChoiceField(
+        choices=[
+            (
+                ScheduledChoice.scheduled.value,
+                f"{ScheduledChoice.scheduled.value} (Schedule participants for one-on-one appointments with a researcher.)",
+            ),
+            (
+                ScheduledChoice.unmoderated.value,
+                f"{ScheduledChoice.unmoderated.value} (Give participants a link to take the study on their own.)",
+            ),
+        ]
     )
     url = forms.URLField(
         label="Study URL",

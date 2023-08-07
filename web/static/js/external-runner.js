@@ -2,7 +2,7 @@ function toggleScheduling() {
     const scheduled = document.forms[0].scheduled;
     const scheduling = document.querySelector('#id_scheduling');
     const checked_scheduling = document.querySelector('input[name="scheduling"]:checked')
-    if (scheduled.checked) {
+    if (scheduled.value === "Scheduled") {
         scheduling.parentNode.classList.remove('d-none');
     } else {
         scheduling.parentNode.classList.add('d-none');

@@ -29,7 +29,13 @@ from exp.views.mixins import (
     SingleObjectFetchProtocol,
 )
 from project import settings
-from studies.forms import EFPForm, ExternalForm, StudyCreateForm, StudyEditForm
+from studies.forms import (
+    EFPForm,
+    ExternalForm,
+    ScheduledChoice,
+    StudyCreateForm,
+    StudyEditForm,
+)
 from studies.helpers import send_mail
 from studies.models import Study
 from studies.permissions import LabPermission, StudyPermission
@@ -1140,11 +1146,19 @@ class ExternalEdit(
 
     def get_initial(self):
         initial = super().get_initial()
-        study = self.object
-        metadata = study.metadata
+        metadata = self.object.metadata
+
+        # Scheduled is stored as a boolean value, but repesented in the form as a choice field.  We want to
+        # retain the three states this value is stored (true, false, none).
+        scheduled = metadata.get("scheduled")
+        if scheduled is not None:
+            if scheduled:
+                scheduled = ScheduledChoice.scheduled.value
+            else:
+                scheduled = ScheduledChoice.unmoderated.value
 
         initial.update(
-            scheduled=metadata.get("scheduled"),
+            scheduled=scheduled,
             url=metadata.get("url"),
             scheduling=metadata.get("scheduling"),
             other_scheduling=metadata.get("other_scheduling"),
@@ -1158,7 +1172,8 @@ class ExternalEdit(
         study = self.object
 
         metadata = {
-            "scheduled": form.cleaned_data["scheduled"],
+            "scheduled": form.cleaned_data["scheduled"]
+            == ScheduledChoice.scheduled.value,
             "url": form.cleaned_data["url"],
             "scheduling": form.cleaned_data["scheduling"],
             "other_scheduling": form.cleaned_data["other_scheduling"],
