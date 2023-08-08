@@ -14,7 +14,7 @@ function toggleOtherScheduling() {
     const scheduled = document.forms[0].scheduled;
     const scheduling = document.forms[0].scheduling;
     const otherScheduling = document.querySelector('#id_other_scheduling')
-    if (scheduling.value === 'Other' && scheduled.checked) {
+    if (scheduling.value === 'Other' && scheduled.value === "Scheduled") {
         otherScheduling.parentNode.classList.remove('d-none');
     } else {
         otherScheduling.parentNode.classList.add('d-none');
