@@ -5,7 +5,7 @@ FROM node:12-slim
 #####
 
 RUN set -eux; 
-RUN echo "deb http://archive.debian.org/debian/ stretch main contrib non-free\ndeb http://archive.debian.org/debian/ stretch-proposed-updates main contrib non-free\ndeb http://archive.debian.org/debian-security stretch/updates main contrib non-free" > /etc/apt/sources.list #NOSONAR
+RUN echo "deb http://archive.debian.org/debian/ stretch main contrib non-free\ndeb http://archive.debian.org/debian/ stretch-proposed-updates main contrib non-free\ndeb http://archive.debian.org/debian-security stretch/updates main contrib non-free" > /etc/apt/sources.list
 
 RUN apt-get update \
 && apt-get install --no-install-recommends -y \
