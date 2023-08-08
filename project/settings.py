@@ -264,6 +264,8 @@ CORS_ORIGIN_WHITELIST = [
     h for h in os.environ.get("CORS_ORIGIN_WHITELIST", "").split(" ") if h
 ]
 
+EXPERIMENT_LOCATION = "experiments"
+
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     # if we're trying to use cloud storage
     STATICFILES_LOCATION = "static"
@@ -273,8 +275,6 @@ if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     MEDIAFILES_LOCATION = "media"
     DEFAULT_FILE_STORAGE = "project.storages.LookitMediaStorage"
     MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
-
-    EXPERIMENT_LOCATION = "experiments"
 
     GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME", "")
     GS_PROJECT_ID = os.environ.get("GS_PROJECT_ID", "")
@@ -291,8 +291,6 @@ else:
     STATICFILES_LOCATION = "/static"
 
     MEDIAFILES_LOCATION = "/media"
-
-    EXPERIMENT_LOCATION = "/experiments"
 
     GS_BUCKET_NAME = None
     GS_PROJECT_ID = None

@@ -327,13 +327,15 @@ def deploy_to_remote(local_path, storage):
 
 
 def _upload_in_serial(local_path, storage):
-    """Inner worker function for storage uploads in serial."""
-    for root_directory, dirs, files in os.walk(local_path, topdown=True):
-        for filename in files:
-            full_path = os.path.join(root_directory, filename)
-            with open(full_path, mode="rb") as f:
-                remote_path = full_path.split("/ember_build/deployments/")[1]
-                storage.save(remote_path, File(f))
+    """Inner worker function for storage uploads in serial.  This should be skipped when
+    developing locally."""
+    if not settings.DEBUG:
+        for root_directory, dirs, files in os.walk(local_path, topdown=True):
+            for filename in files:
+                full_path = os.path.join(root_directory, filename)
+                with open(full_path, mode="rb") as f:
+                    remote_path = full_path.split("/ember_build/deployments/")[1]
+                    storage.save(remote_path, File(f))
 
 
 def download_repos(player_repo_url, player_sha=None):
