@@ -21,7 +21,7 @@ class Force2FAClient(Client):
         return _session
 
 
-class ExternalDetailsViewsTestCase(TestCase):
+class RunnerDetailsViewsTestCase(TestCase):
     def setUp(self):
         self.client = Force2FAClient()
 
@@ -41,7 +41,7 @@ class ExternalDetailsViewsTestCase(TestCase):
         assign_perm(StudyPermission.WRITE_STUDY_DETAILS.codename, user, study)
         assign_perm(StudyPermission.READ_STUDY_DETAILS.codename, user, study)
 
-        self.client.force_login(user=user)
+        self.client.force_login(user)
         response = self.client.post(
             reverse("exp:external-study-details", kwargs={"pk": study.id}),
             {"scheduled": ScheduledChoice.scheduled.value, "url": metadata["url"]},
@@ -65,7 +65,7 @@ class ExternalDetailsViewsTestCase(TestCase):
         assign_perm(StudyPermission.WRITE_STUDY_DETAILS.codename, user, study)
         assign_perm(StudyPermission.READ_STUDY_DETAILS.codename, user, study)
 
-        self.client.force_login(user=user)
+        self.client.force_login(user)
         response = self.client.post(
             reverse("exp:efp-study-details", kwargs={"pk": study.id}),
             {
@@ -118,3 +118,36 @@ class ExternalDetailsViewsTestCase(TestCase):
                 )
             ],
         )
+
+    def test_efp_study_set_not_built(self):
+        user = G(User, is_active=True, is_researcher=True)
+        lab = G(Lab)
+        study = G(
+            Study, creator=user, lab=lab, study_type=1, built=True, is_building=True
+        )
+
+        assign_perm(StudyPermission.WRITE_STUDY_DETAILS.codename, user, study)
+        assign_perm(StudyPermission.READ_STUDY_DETAILS.codename, user, study)
+
+        self.assertTrue(study.built)
+        self.assertTrue(study.is_building)
+
+        self.client.force_login(user)
+        response = self.client.post(
+            reverse("exp:efp-study-details", kwargs={"pk": study.id}),
+            {
+                "structure": "{}",
+                "last_known_player_sha": "862604874f7eeff8c9d72adcb8914b21bfb5427e",
+                "player_repo_url": settings.EMBER_EXP_PLAYER_REPO,
+            },
+            follow=True,
+        )
+
+        if "form" in response.context:
+            self.assertEqual(response.context_data["form"].errors, {})
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        study = Study.objects.get(id=study.id)
+
+        self.assertFalse(study.built)
+        self.assertFalse(study.is_building)
