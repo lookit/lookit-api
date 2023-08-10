@@ -27,7 +27,7 @@ function updateCommitDescription() {
                 const files = commitDescription.querySelector('.files');
 
                 sha.innerHTML = response.sha;
-                sha.href = response.url;
+                sha.href = response.html_url;
                 date.innerHTML = response.commit.author.date;
                 name.innerHTML = response.commit.author.name;
 
