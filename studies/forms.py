@@ -371,7 +371,12 @@ class EFPForm(ModelForm):
         help_text="Leave this value alone unless you are using a custom version of the experiment builder.",
     )
     last_known_player_sha = forms.CharField(
-        label="Experiment runner version (commit SHA)"
+        label="Experiment runner version (commit SHA)",
+        help_text=(
+            "If you're using the default Ember Frame Player, you can see <a "
+            'href="https://github.com/lookit/ember-lookit-frameplayer/commits/master">'
+            "the commits page</a> for other commit SHA options."
+        ),
     )
     structure = forms.CharField(
         label="Protocol configuration",
