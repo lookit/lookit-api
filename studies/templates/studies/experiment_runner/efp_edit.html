@@ -17,7 +17,6 @@
     </p>
 {% endblock header %}
 {% block form %}
-    {% url 'exp:study' pk=study.pk as url_study_detail %}
     {% bootstrap_form form %}
     <div id="commit-description" class="card bg-light my-4">
         <div class="card-header">

@@ -14,6 +14,7 @@
 {% endbreadcrumb %}
 {% endblock breadcrumb %}
 {% block content %}
+    {% url 'exp:study' pk=study.pk as url_study_detail %}
     {% button_secondary_classes as btn_secondary_classes %}
     {% button_primary_classes as btn_primary_classes %}
     {% url 'exp:preview-detail' uuid=study.uuid as url_preview_detail %}
