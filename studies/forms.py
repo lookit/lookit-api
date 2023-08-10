@@ -155,49 +155,6 @@ class LabApprovalForm(LabForm):
 class StudyForm(ModelForm):
     """Base form for creating or editing a study"""
 
-    # Eventually when we support other experiment runner types (labjs, jspsych, etc.)
-    # we may do one of the following:
-    # - separate the 'study protocol specification' fields into their own
-    # form which collects various information and cleans it and sets a single 'structure' object,
-    # with the selected
-    # - creating a model to represent each study type, likely such that each study has a nullable
-    # relation for lookit_runner_protocol, jspsych_runner_protocol, etc.
-
-    structure = forms.CharField(
-        label="Protocol configuration",
-        widget=AceOverlayWidget(
-            mode="json",
-            wordwrap=True,
-            theme="textmate",
-            width="100%",
-            height="100%",
-            showprintmargin=False,
-        ),
-        required=False,
-    )
-
-    # Define initial value here rather than providing actual default so that any updates don't
-    # require migrations: this isn't a true "default" value that would ever be used, but rather
-    # a helpful skeleton to guide the user
-    generator = forms.CharField(
-        label="Protocol generator",
-        widget=AceOverlayWidget(
-            mode="javascript",
-            wordwrap=True,
-            theme="textmate",
-            width="100%",
-            height="100%",
-            showprintmargin=False,
-        ),
-        required=False,
-        help_text=(
-            "Write a Javascript function that returns a study protocol object with 'frames' and "
-            "'sequence' keys. This allows more flexible randomization and dependence on past sessions in "
-            f"complex cases. See <a href={PROTOCOL_GENERATOR_HELP_LINK}>documentation</a> for details."
-        ),
-        initial=DEFAULT_GENERATOR,
-    )
-
     def participated_choices():
         return [
             (s[0], f"{s[1]} ({s[2]})")
@@ -417,6 +374,7 @@ class EFPForm(ModelForm):
         label="Experiment runner version (commit SHA)"
     )
     structure = forms.CharField(
+        label="Protocol configuration",
         widget=AceOverlayWidget(
             mode="json",
             wordwrap=True,
@@ -432,6 +390,7 @@ class EFPForm(ModelForm):
         ),
     )
     generator = forms.CharField(
+        label="Protocol generator",
         widget=AceOverlayWidget(
             mode="javascript",
             wordwrap=True,
@@ -469,7 +428,7 @@ class EFPForm(ModelForm):
         try:
             generator = self.cleaned_data["generator"]
 
-            if not generator:
+            if not generator.strip():
                 generator = DEFAULT_GENERATOR
 
             js2py.eval_js(generator)

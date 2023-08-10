@@ -30,6 +30,7 @@ from exp.views.mixins import (
 )
 from project import settings
 from studies.forms import (
+    DEFAULT_GENERATOR,
     EFPForm,
     ExternalForm,
     ScheduledChoice,
@@ -1099,6 +1100,9 @@ class EFPEditView(ExperimentRunnerEditView):
             last_known_player_sha=metadata.get("last_known_player_sha"),
             structure=structure,
         )
+
+        if not study.generator.strip():
+            initial.update(generator=DEFAULT_GENERATOR)
 
         return initial
 
