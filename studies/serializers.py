@@ -8,7 +8,7 @@ from api.serializers import (
     UuidHyperlinkedModelSerializer,
     UuidResourceModelSerializer,
 )
-from studies.models import Feedback, Response, Study
+from studies.models import Feedback, Response, Study, Video
 
 
 class StudySerializer(UuidHyperlinkedModelSerializer):
@@ -129,6 +129,7 @@ class ResponseSerializer(UuidHyperlinkedModelSerializer):
             "pk",
             "withdrawn",
             "hash_child_id",
+            "recording_method",
         )
 
     def get_hash_child_id(self, obj):
@@ -178,4 +179,41 @@ class ResponseWriteableSerializer(UuidResourceModelSerializer):
             "is_preview",
             "pk",
             "withdrawn",
+            "recording_method",
+        )
+
+
+class VideoSerializer(UuidResourceModelSerializer):
+    """Create and return a new Video instance, given validated data."""
+
+    url = serializers.HyperlinkedIdentityField(
+        view_name="api:video-detail", lookup_field="uuid"
+    )
+
+    study = PatchedResourceRelatedField(
+        queryset=Study.objects,
+        related_link_view_name="api:study-detail",
+        related_link_lookup_field="study_id",
+        related_link_url_kwarg="uuid",
+    )
+
+    response = PatchedResourceRelatedField(
+        queryset=Response.objects,
+        related_link_view_name="api:response-detail",
+        related_link_lookup_field="response_id",
+        related_link_url_kwarg="uuid",
+    )
+
+    class Meta:
+        model = Video
+        fields = (
+            "url",
+            "pipe_name",
+            "pipe_numeric_id",
+            "s3_timestamp",
+            "frame_id",
+            "full_name",
+            "study",
+            "response",
+            "is_consent_footage",
         )

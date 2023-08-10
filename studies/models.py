@@ -997,6 +997,7 @@ class Response(models.Model):
     study_type = models.ForeignKey(
         StudyType, on_delete=models.PROTECT, default=StudyType.default_pk
     )
+    recording_method = models.CharField(max_length=50, default="pipe")
 
     def __str__(self):
         return self.display_name
@@ -1399,7 +1400,15 @@ class Video(models.Model):
 
     @property
     def download_url(self):
-        return get_download_url(self.full_name)
+        return get_download_url(self.full_name, self.recording_method_is_pipe)
+
+    @property
+    def recording_method_is_pipe(self):
+        return str.lower(self.response.recording_method) == "pipe"
+
+    @property
+    def recording_method_is_recordrtc(self):
+        return str.lower(self.response.recording_method) == "recordrtc"
 
 
 @receiver(pre_delete, sender=Video)
