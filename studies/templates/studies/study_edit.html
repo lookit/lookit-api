@@ -22,7 +22,7 @@
 {% block content %}
     {% bs_icon "play-circle" as bs_icon_play_circle %}
     {% url 'exp:preview-detail' uuid=study.uuid as url_preview_detail %}
-    {% url 'exp:study-edit' pk=study.id as url_cancel %}
+    {% url 'exp:study' pk=study.id as url_cancel %}
     {% button_secondary_classes as btn_secondary_classes %}
     {% button_primary_classes as btn_primary_classes %}
     <div class="row">
