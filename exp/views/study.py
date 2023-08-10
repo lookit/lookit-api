@@ -2,7 +2,7 @@ import json
 import operator
 import re
 from functools import reduce
-from typing import Any, NamedTuple, Text
+from typing import Any, Dict, NamedTuple, Text
 
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -995,7 +995,7 @@ def get_permitted_triggers(view_instance, triggers):
     return permitted_triggers
 
 
-class ExperimentRunnerEdit(
+class ExperimentRunnerEditRedirect(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectFetchProtocol[Study],
@@ -1034,15 +1034,14 @@ class ExperimentRunnerEdit(
             )
 
 
-class EFPEdit(
+class ExperimentRunnerEditView(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectFetchProtocol[Study],
     generic.UpdateView,
 ):
-    template_name = "studies/experiment_runner/efp_edit.html"
+
     model = Study
-    form_class = EFPForm
 
     def user_can_edit_study(self):
         """Test predicate for the experiment runner edit view. Borrowed permissions from study edit view.
@@ -1061,6 +1060,25 @@ class EFPEdit(
         )
 
     test_func = user_can_edit_study
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["save_confirmation"] = self.object.state in [
+            "approved",
+            "active",
+            "paused",
+            "deactivated",
+        ]
+        return context
+
+    def get_success_url(self, **kwargs):
+        """Upon successful form submission, change the view to study detail."""
+        return reverse("exp:study", kwargs={"pk": self.object.pk})
+
+
+class EFPEditView(ExperimentRunnerEditView):
+    template_name = "studies/experiment_runner/efp_edit.html"
+    form_class = EFPForm
 
     def get_initial(self):
         """Populate Exp Runner with data from the study metadata field.  Also, convert structure code to json."""
@@ -1107,38 +1125,10 @@ class EFPEdit(
 
         return super().form_valid(form)
 
-    def get_success_url(self, **kwargs):
-        """Upon successful form submission, change the view to study detail."""
-        return reverse("exp:study", kwargs={"pk": self.object.pk})
 
-
-class ExternalEdit(
-    ResearcherLoginRequiredMixin,
-    UserPassesTestMixin,
-    SingleObjectFetchProtocol[Study],
-    generic.UpdateView,
-):
+class ExternalEditView(ExperimentRunnerEditView):
     template_name = "studies/experiment_runner/external_edit.html"
-    model = Study
     form_class = ExternalForm
-
-    def user_can_edit_study(self):
-        """Test predicate for the experiment runner edit view. Borrowed permissions from study edit view.
-
-        Returns:
-            True if this user can edit this Study, False otherwise
-
-        """
-        user: User = self.request.user
-        study = self.get_object()
-
-        return (
-            user
-            and user.is_researcher
-            and user.has_study_perms(StudyPermission.WRITE_STUDY_DETAILS, study)
-        )
-
-    test_func = user_can_edit_study
 
     def get_success_url(self, **kwargs):
         """Upon successful form submission, change the view to study detail."""

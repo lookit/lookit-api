@@ -43,6 +43,11 @@
                     {% csrf_token %}
                     {% block form %}
                     {% endblock form %}
+                    {% if save_confirmation or study.built %}
+                        <p class="text-danger">
+                            Changes to any of these values (aside from code formatting), may cause your study to be rejected or need to be built again.
+                        </p>
+                    {% endif %}
                     {% form_buttons %}
                     {% bootstrap_button "Cancel" button_class=btn_secondary_classes href=url_study_detail %}
                     {% bootstrap_button "Save Changes" button_class=btn_primary_classes type="submit" %}
