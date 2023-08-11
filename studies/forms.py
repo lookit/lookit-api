@@ -415,6 +415,12 @@ class EFPForm(ModelForm):
         required=False,
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["use_generator"].widget.attrs.update(
+            {"class": "dark-checkbox-border"}
+        )
+
     class Meta:
         model = Study
         fields = (
