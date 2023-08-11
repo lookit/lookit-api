@@ -417,7 +417,13 @@ class EFPForm(ModelForm):
 
     class Meta:
         model = Study
-        fields = ("use_generator", "generator", "structure")
+        fields = (
+            "structure",
+            "use_generator",
+            "generator",
+            "player_repo_url",
+            "last_known_player_sha",
+        )
         labels = {"use_generator": "Use protocol generator (advanced)"}
         help_texts = {
             "use_generator": (
