@@ -1272,7 +1272,7 @@ class Video(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     s3_timestamp = models.DateTimeField()
-    pipe_name = models.CharField(max_length=255, unique=True, blank=False)
+    pipe_name = models.CharField(max_length=255, unique=True, blank=False, null=True)
     pipe_numeric_id = models.IntegerField(
         null=True
     )  # Sad that we don't keep this metadata elsewhere...
