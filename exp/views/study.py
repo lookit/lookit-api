@@ -235,26 +235,46 @@ class StudyUpdateView(
 
         """
         initial = super().get_initial()
+
+        study = self.object
+        structure = study.structure
+
         # For editing, display the exact text that was used to generate the structure,
         # if available. We rely on form validation to make sure structure["exact_text"]
         # is valid JSON.
-        structure = self.object.structure
+
         if structure:
             if "exact_text" in structure:
                 initial["structure"] = structure["exact_text"]
             else:
                 initial["structure"] = json.dumps(structure)
-        if not self.object.generator.strip():
+        if not study.generator.strip():
             initial["generator"] = StudyEditForm.base_fields["generator"].initial
 
-        if self.object.study_type.is_external:
+        if study.study_type.is_external:
             initial["external"] = True
-            initial["scheduled"] = self.object.metadata.get("scheduled", False)
+            initial["scheduled"] = study.metadata.get("scheduled", False)
+
+        # Must have participated was a huge query, custom form code allowed us to make this
+        # large query more efficiently. Because are using custom form fields, we have add the values to initial.
+        initial.update(
+            must_not_have_participated=list(
+                study.must_not_have_participated.values_list("id", flat=True)
+            ),
+            must_have_participated=list(
+                study.must_have_participated.values_list("id", flat=True)
+            ),
+        )
 
         return initial
 
     def form_valid(self, form: StudyEditForm):
         study = form.instance
+
+        study.must_not_have_participated.set(
+            form.cleaned_data["must_not_have_participated"]
+        )
+        study.must_have_participated.set(form.cleaned_data["must_have_participated"])
 
         metadata, meta_errors = self.validate_and_fetch_metadata(
             study_type=study.study_type
@@ -493,7 +513,6 @@ class StudyDetailView(
 
         # if study is submitted, see if there are any declarations to display
         if study.state == "submitted" and "declarations" in study.comments_extra:
-
             declarations_state = ", ".join(
                 DECLARATIONS["submit"][k]
                 for k, v in study.comments_extra["declarations"].items()
@@ -767,7 +786,6 @@ class ChangeStudyStatusView(
         study: Study = self.get_object()
 
         if trigger and hasattr(study, trigger):
-
             self.update_declarations(trigger, study)
 
             if "comments-text" in self.request.POST.keys():
@@ -895,7 +913,6 @@ class StudyPreviewDetailView(
     SingleObjectFetchProtocol[Study],
     generic.DetailView,
 ):
-
     queryset = Study.objects.all()
     http_method_names = ["get", "post"]
     raise_exception = True
