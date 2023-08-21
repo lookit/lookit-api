@@ -65,3 +65,7 @@ lint: poetry
 
 css: poetry 
 	poetry run ./manage.py custom_bootstrap5
+
+compilemessages:
+	docker compose run --rm web-international poetry run ./manage.py compilemessages
+

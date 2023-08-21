@@ -2,9 +2,12 @@
 **/*.pyc
 README.md
 Dockerfile
+Dockerfile.web
+Dockerfile.web-international
 docker-compose.yml
 .dockerignore
 .gitignore
 celerybeat.pid
 /static/
 cloudbuild.yaml
+data
