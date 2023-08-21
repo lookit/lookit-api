@@ -11,6 +11,7 @@ from guardian.shortcuts import get_objects_for_user
 from PIL import Image
 
 from accounts.queries import compile_expression
+from project import settings
 from studies.models import Lab, Response, Study
 from studies.permissions import LabPermission, StudyPermission
 
@@ -374,7 +375,7 @@ class EFPForm(ModelForm):
         label="Experiment runner version (commit SHA)",
         help_text=(
             "If you're using the default Ember Frame Player, you can see <a "
-            'href="https://github.com/lookit/ember-lookit-frameplayer/commits/master">'
+            f'href="{settings.EMBER_EXP_PLAYER_REPO}/commits/{settings.EMBER_EXP_PLAYER_BRANCH}">'
             "the commits page</a> for other commit SHA options."
         ),
     )
