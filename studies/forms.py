@@ -206,6 +206,19 @@ class StudyForm(ModelForm):
         initial=DEFAULT_GENERATOR,
     )
 
+    def participated_choices():
+        return [
+            (s[0], f"{s[1]} ({s[2]})")
+            for s in Study.objects.values_list("id", "name", "uuid")
+        ]
+
+    must_have_participated = forms.MultipleChoiceField(
+        choices=participated_choices, required=False
+    )
+    must_not_have_participated = forms.MultipleChoiceField(
+        choices=participated_choices, required=False
+    )
+
     def clean(self):
         cleaned_data = super().clean()
         min_age_days = self.cleaned_data.get("min_age_days")
