@@ -1,5 +1,6 @@
 import datetime
 import json
+from http import HTTPStatus
 from unittest import skip
 from unittest.mock import (
     MagicMock,
@@ -1022,7 +1023,6 @@ class ManageResearcherPermissionsViewTestCase(TestCase):
         mock_messages: Mock,
         mock_user_only_admin: Mock,
     ):
-
         mock_update_user = MagicMock(name="update_user")
         mock_study = MagicMock(name="study")
 
@@ -1298,7 +1298,6 @@ class StudyDetailViewTestCase(TestCase):
         mock_get_object: Mock,
         mock_request: Mock,
     ) -> None:
-
         mock_request.user.has_study_perms.return_value = has_study_perms
         mock_is_researcher = PropertyMock(return_value=is_researcher)
         type(mock_request.user).is_researcher = mock_is_researcher
@@ -1361,6 +1360,119 @@ class StudyUpdateViewTestCase(TestCase):
             mock_request,
             f"WARNING: Changes to experiment were not saved: {error_msg}",
         )
+
+
+class StudyParticipatedViewTestCase(TestCase):
+    def setUp(self):
+        self.client = Force2FAClient()
+
+    def data(self):
+        return {
+            "min_age_years": 0,
+            "min_age_months": 0,
+            "min_age_days": 0,
+            "max_age_years": 1,
+            "max_age_months": 0,
+            "max_age_days": 0,
+            "name": "study",
+            "priority": 1,
+            "image": SimpleUploadedFile(
+                name="test_image.jpg",
+                content=open("exp/tests/static/study_image.png", "rb").read(),
+                content_type="image/jpeg",
+            ),
+            "preview_summary": "n/a",
+            "short_description": "n/a",
+            "purpose": "n/a",
+            "exit_url": "https://mit.edu",
+            "criteria": "n/a",
+            "duration": "n/a",
+            "contact_info": "n/a",
+            "structure": "{}",
+        }
+
+    def error_check(self, response):
+        if "form" in response.context:
+            self.assertEqual(response.context_data["form"].errors, {})
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_must_have_participated(self):
+        user = G(User, is_active=True, is_researcher=True)
+        lab = G(Lab)
+        study = G(Study, creator=user, lab=lab, study_type=1)
+        another_study = G(Study, creator=user, lab=lab, study_type=1)
+
+        # login
+        self.client.force_login(user)
+
+        # set permissions
+        assign_perm(StudyPermission.WRITE_STUDY_DETAILS.prefixed_codename, user, study)
+
+        # Confirm that field is empty
+        self.assertDictEqual(dict(study.must_have_participated.all()), {})
+
+        # Submit data
+        data = self.data()
+        data.update(must_have_participated=[study.id, another_study.id])
+        response = self.client.post(
+            reverse("exp:study-edit", kwargs={"pk": study.id}), data, follow=True
+        )
+        self.error_check(response)
+
+        # Check that field has data
+        study = Study.objects.get(pk=study.id)
+        self.assertSetEqual(
+            set(study.must_have_participated.all()), {study, another_study}
+        )
+
+        # Remove data from field
+        data = self.data()
+        data.update(must_have_participated=[])
+        response = self.client.post(
+            reverse("exp:study-edit", kwargs={"pk": study.id}), data, follow=True
+        )
+        self.error_check(response)
+
+        self.assertSetEqual(set(study.must_have_participated.all()), set())
+
+    def test_must_not_have_participated(self):
+        user = G(User, is_active=True, is_researcher=True)
+        lab = G(Lab)
+        study = G(Study, creator=user, lab=lab, study_type=1)
+        another_study = G(Study, creator=user, lab=lab, study_type=1)
+
+        # login
+        self.client.force_login(user)
+
+        # set permissions
+        assign_perm(StudyPermission.WRITE_STUDY_DETAILS.prefixed_codename, user, study)
+
+        # Confirm that field is empty
+        self.assertDictEqual(dict(study.must_not_have_participated.all()), {})
+
+        # Submit data
+        data = self.data()
+        data.update(must_not_have_participated=[study.id, another_study.id])
+        response = self.client.post(
+            reverse("exp:study-edit", kwargs={"pk": study.id}), data, follow=True
+        )
+        self.error_check(response)
+
+        # Check that field has data
+        study = Study.objects.get(pk=study.id)
+        self.assertSetEqual(
+            set(study.must_not_have_participated.all()), {study, another_study}
+        )
+
+        # Remove data from field
+        data = self.data()
+        data.update(must_not_have_participated=[])
+        response = self.client.post(
+            reverse("exp:study-edit", kwargs={"pk": study.id}), data, follow=True
+        )
+        self.error_check(response)
+
+        self.assertSetEqual(set(study.must_not_have_participated.all()), set())
 
 
 # TODO: StudyCreateView
