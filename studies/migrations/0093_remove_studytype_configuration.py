@@ -39,9 +39,8 @@ def revert_study_type_names(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ("studies", "0090_alter_study_preview_summary"),
+        ("studies", "0092_allow_null_video_pipe_name"),
     ]
 
     operations = [
