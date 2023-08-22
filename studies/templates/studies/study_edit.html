@@ -30,7 +30,7 @@
             <div class="card bg-light my-4">
                 <div class="card-header">
                     <h3 class="card-subtitle my-1">
-                        Study Ad
+                        Study Ad and Recruitment
                         <div class="float-end me-4">
                             {% bootstrap_button bs_icon_play_circle|add:"Preview Study" href=url_preview_detail button_class=btn_secondary_classes %}
                         </div>
@@ -38,10 +38,12 @@
                 </div>
                 <div class="card-body">
                     <p>
-                        We have split the study forms into two views for easier navigation. On this page, you will
-                        provide all the information needed for advertising your study on CHS - images, descriptions,
-                        and choices about who the study should be advertised to. You will add the actual links or code
-                        for your study on the <a href="{% url "exp:study-details" pk=study.id %}">Study Details</a> page.
+                        We have split the study forms into two views for easier
+                        navigation. On this page, you will provide all the information
+                        needed for advertising your study on Children Helping Science
+                        - images, descriptions, and choices about who should be
+                        recruited for your study. You will add the actual links
+                        or code for your study on the next page.
                     </p>
                     <form id="study-details-form" enctype="multipart/form-data" method="post">
                         {% csrf_token %}

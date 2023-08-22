@@ -311,7 +311,16 @@ class StudyEditForm(StudyForm):
 
         # Disable ablility to change study type after study creation.
         self.fields["study_type"].disabled = True
-        self.fields["study_type"].help_text = ""
+        self.fields["study_type"].help_text = (
+            "<p>The type of experiment cannot be changed after creating a study, so please "
+            '<a href="https://lookit.readthedocs.io/en/develop/index.html?highlight=external#what-is-lookit">'
+            "review the distinction between experiment builder (internal) studies and external studies</a>"
+            ', and ask a question on <a href="http://lookit-mit.slack.com/">Slack</a> '
+            "if you need help selecting the right option!</p>"
+            "<p>If you are building a study that will happen partially on Lookit (e.g. "
+            "by using the Lookit consent process) and partially on a link that you "
+            "provide, choose the experiment builder option.</p>"
+        )
 
         # Restrict ability to edit study lab based on user permissions
         can_change_lab = user.has_study_perms(
