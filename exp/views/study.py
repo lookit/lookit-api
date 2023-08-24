@@ -455,50 +455,47 @@ class StudyDetailView(
         """
         context = super(StudyDetailView, self).get_context_data(**kwargs)
 
-        study: Study = context["study"]
+        study = self.object
         admin_group = study.admin_group
+        state = study.state
+        triggers = get_permitted_triggers(self, study.machine.get_triggers(state))
+        study_perms = self.request.user.perms_for_study(study)
 
-        context["triggers"] = get_permitted_triggers(
-            self, self.object.machine.get_triggers(self.object.state)
-        )
-        context["logs"] = self.study_logs
-        state = context["state"] = self.object.state
-        context["status_tooltip"] = STATUS_HELP_TEXT.get(state, state)
-        context["current_researchers"] = self.get_annotated_study_researchers()
-        context["users_result"] = self.search_researchers()
-        context["build_ui_tag"] = "success" if study.built else "warning"
-        context["state_ui_tag"] = STATE_UI_SIGNALS.get(study.state, "info")
-        context["search_query"] = self.request.GET.get("match", "")
-        context["name"] = self.request.GET.get("match", None)
-        context["multiple_admins"] = (
-            len(User.objects.filter(groups__name=admin_group.name)) > 1
-        )
-        context["study_admins"] = User.objects.filter(
-            groups__name=admin_group.name
-        ).values_list("id", flat=True)
-        context["discoverability_text"] = get_discoverability_text(study)
-        context["comments_help"] = json.dumps(COMMENTS_HELP_TEXT)
-        context["transition_help"] = json.dumps(TRANSITION_HELP_TEXT)
-        context["triggers_with_labels"] = [
-            {"name": trigger, "label": TRANSITION_LABELS[trigger]}
-            for trigger in context["triggers"]
-        ]
-        context["can_change_status"] = self.request.user.has_study_perms(
-            StudyPermission.CHANGE_STUDY_STATUS, study
-        )
-        context["can_manage_researchers"] = self.request.user.has_study_perms(
-            StudyPermission.MANAGE_STUDY_RESEARCHERS, study
-        )
-        context["can_create_study"] = self.request.user.can_create_study()
-        # Since get_obj_perms template tag doesn't collect study + lab perms
-        context["study_perms"] = self.request.user.perms_for_study(study)
-        context["can_edit_study_details"] = (
-            "edit_study__<DETAILS>" in context["study_perms"]
+        context.update(
+            triggers=triggers,
+            logs=self.study_logs,
+            state=state,
+            status_tooltip=STATUS_HELP_TEXT.get(state, state),
+            build_ui_tag="success" if study.built else "warning",
+            state_ui_tag=STATE_UI_SIGNALS.get(state, "info"),
+            search_query=self.request.GET.get("match", ""),
+            name=self.request.GET.get("match", None),
+            multiple_admins=User.objects.filter(groups__name=admin_group.name).count()
+            > 1,
+            discoverability_text=get_discoverability_text(study),
+            comments_help=json.dumps(COMMENTS_HELP_TEXT),
+            transition_help=json.dumps(TRANSITION_HELP_TEXT),
+            triggers_with_labels=[
+                {"name": trigger, "label": TRANSITION_LABELS[trigger]}
+                for trigger in triggers
+            ],
+            can_change_status=self.request.user.has_study_perms(
+                StudyPermission.CHANGE_STUDY_STATUS, study
+            ),
+            can_manage_researchers=self.request.user.has_study_perms(
+                StudyPermission.MANAGE_STUDY_RESEARCHERS, study
+            ),
+            can_create_study=self.request.user.can_create_study(),
+            comments=self.comments(study),
+            declarations=json.dumps(DECLARATIONS),
+            declarations_dict=DECLARATIONS,
+            users_result=self.search_researchers(),
+            current_researchers=self.get_annotated_study_researchers(),
+            study_perms=study_perms,
+            ### Since get_obj_perms template tag doesn't collect study + lab perms
+            can_edit_study_details="edit_study__<DETAILS>" in study_perms,
         )
 
-        context["comments"] = self.comments(study)
-        context["declarations"] = json.dumps(DECLARATIONS)
-        context["declarations_dict"] = DECLARATIONS
         return context
 
     def comments(self, study: Study) -> Text:
