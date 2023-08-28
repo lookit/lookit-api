@@ -26,7 +26,7 @@
                   action="{% url 'exp:change-study-status' study.id %}"
                   method="post">
                 {% csrf_token %}
-                <input type="hidden" name="trigger"/>
+                <input type="hidden" name="trigger" />
                 <div class="modal-body">
                     <div id="study-comments-help-text" class="help-text"></div>
                     <textarea class="form-control"
@@ -40,7 +40,7 @@
                     {% if study.study_type.is_external %}<div class="collecting-data"></div>{% endif %}
                 </div>
                 <div class="modal-footer">
-                    {% url 'exp:study-detail' pk=study.id as url_study_detail %}
+                    {% url 'exp:study' pk=study.id as url_study_detail %}
                     {% bootstrap_button "Close" href=url_study_detail button_class=btn_secondary_classes %}
                     {% bootstrap_button "Save" value="submit" button_class=btn_primary_classes %}
                 </div>

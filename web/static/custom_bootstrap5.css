@@ -6,13 +6,11 @@
   -moz-column-count: 3;
   -webkit-column-count: 3; }
 
-#study-details-form .ace-overlay,
-#study-create-form .ace-overlay {
+.ace-overlay {
   width: 100%;
   margin-bottom: 1.5rem; }
 
-#structure-container .code-container,
-#generator-container .code-container {
+.code-container {
   max-height: 10em; }
 
 span.priority-highest {
@@ -8467,3 +8465,6 @@ textarea.form-control-lg {
   color: #fff;
   background-color: #636464;
   border-color: #636464; }
+
+[type="checkbox"].dark-checkbox-border {
+  border-color: black; }

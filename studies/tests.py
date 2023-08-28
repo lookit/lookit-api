@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -10,7 +10,7 @@ from more_itertools import quantify
 
 from accounts.models import Child, Message, User
 from studies.helpers import send_mail
-from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum
+from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum, Video
 from studies.permissions import StudyPermission
 from studies.tasks import (
     MessageTarget,
@@ -431,10 +431,10 @@ class TestAnnouncementEmailFunctionality(TestCase):
             message_object.subject,
             'Moe and Curly are invited to take part in "The Most Fake Study Ever" on Lookit (Children Helping Science)!',
         )
-        self.assertEqual(list(message_object.recipients.all()), [self.participant_two])
+        self.assertEqual(set(message_object.recipients.all()), {self.participant_two})
         self.assertEqual(
-            list(message_object.children_of_interest.all()),
-            [self.child_two, self.child_three],
+            set(message_object.children_of_interest.all()),
+            {self.child_two, self.child_three},
         )
         self.assertEqual(message_object.related_study, self.study_two)
         self.assertIsNone(message_object.sender)
@@ -700,3 +700,187 @@ class StudyModelTestCase(TestCase):
         assign_perm(StudyPermission.READ_STUDY_RESPONSE_DATA.codename, user, study)
 
         self.assertIn(response, study.responses_for_researcher(user))
+
+
+class VideoModelTestCase(TestCase):
+    def setUp(self):
+        self.fake_lab = G(
+            Lab, name="ECCL", institution="MIT", contact_email="faker@fakelab.com"
+        )
+        self.study = G(
+            Study,
+            name="Test study",
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),
+            public=True,
+            built=True,
+            lab=self.fake_lab,
+            min_age_years=0,
+            min_age_months=11,
+            min_age_days=0,
+            max_age_years=2,
+            max_age_months=0,
+            max_age_days=0,
+        )
+        self.study.state = "active"
+        self.study.save()
+        self.participant = G(User, is_active=True)
+        one_year_ago = date.today() - timedelta(days=365)
+        self.child = G(
+            Child, given_name="Larry", user=self.participant, birthday=one_year_ago
+        )
+        self.responses = [
+            G(
+                Response,
+                study=self.study,
+                child=self.child,
+                completed_consent_frame=True,
+                recording_method="pipe",
+            ),
+            G(
+                Response,
+                study=self.study,
+                child=self.child,
+                completed_consent_frame=True,
+                recording_method="Pipe",
+            ),
+            G(
+                Response,
+                study=self.study,
+                child=self.child,
+                completed_consent_frame=True,
+                recording_method="PIPE",
+            ),
+            G(
+                Response,
+                study=self.study,
+                child=self.child,
+                completed_consent_frame=True,
+                recording_method="recordrtc",
+            ),
+            G(
+                Response,
+                study=self.study,
+                child=self.child,
+                completed_consent_frame=True,
+                recording_method="Recordrtc",
+            ),
+            G(
+                Response,
+                study=self.study,
+                child=self.child,
+                completed_consent_frame=True,
+                recording_method="RECORDRTC",
+            ),
+            G(
+                Response,
+                study=self.study,
+                child=self.child,
+                completed_consent_frame=True,
+                recording_method="bad",
+            ),
+        ]
+        date_obj = datetime.now()
+        date_obj = date_obj.replace(tzinfo=timezone.utc)
+        self.videos = [
+            G(
+                Video,
+                s3_timestamp=date_obj,
+                pipe_name="pipe0",
+                pipe_numeric_id=0,
+                frame_id="0-video-consent",
+                full_name="pipe0",
+                study=self.study,
+                response=self.responses[0],
+                is_consent_footage=True,
+            ),
+            G(
+                Video,
+                s3_timestamp=date_obj,
+                pipe_name="pipe1",
+                pipe_numeric_id=1,
+                frame_id="0-video-consent",
+                full_name="pipe1",
+                study=self.study,
+                response=self.responses[1],
+                is_consent_footage=True,
+            ),
+            G(
+                Video,
+                s3_timestamp=date_obj,
+                pipe_name="pipe2",
+                pipe_numeric_id=2,
+                frame_id="0-video-consent",
+                full_name="pipe2",
+                study=self.study,
+                response=self.responses[2],
+                is_consent_footage=True,
+            ),
+            G(
+                Video,
+                s3_timestamp=date_obj,
+                pipe_name="recordrtc0",
+                pipe_numeric_id=3,
+                frame_id="0-video-consent",
+                full_name="recordrtc0",
+                study=self.study,
+                response=self.responses[3],
+                is_consent_footage=True,
+            ),
+            G(
+                Video,
+                s3_timestamp=date_obj,
+                pipe_name="recordrtc1",
+                pipe_numeric_id=4,
+                frame_id="0-video-consent",
+                full_name="recordrtc1",
+                study=self.study,
+                response=self.responses[4],
+                is_consent_footage=True,
+            ),
+            G(
+                Video,
+                s3_timestamp=date_obj,
+                pipe_name="recordrtc2",
+                pipe_numeric_id=5,
+                frame_id="0-video-consent",
+                full_name="recordrtc2",
+                study=self.study,
+                response=self.responses[5],
+                is_consent_footage=True,
+            ),
+            G(
+                Video,
+                s3_timestamp=date_obj,
+                pipe_name="bad0",
+                pipe_numeric_id=6,
+                frame_id="0-video-consent",
+                full_name="bad0",
+                study=self.study,
+                response=self.responses[6],
+                is_consent_footage=True,
+            ),
+        ]
+
+    def test_recording_method_is_pipe(self):
+        # different case variations of the 'pipe' string should return true
+        self.assertTrue(self.videos[0].recording_method_is_pipe)
+        self.assertTrue(self.videos[1].recording_method_is_pipe)
+        self.assertTrue(self.videos[2].recording_method_is_pipe)
+        # anything other than that should return false
+        self.assertFalse(self.videos[3].recording_method_is_pipe)
+        self.assertFalse(self.videos[4].recording_method_is_pipe)
+        self.assertFalse(self.videos[5].recording_method_is_pipe)
+        self.assertFalse(self.videos[6].recording_method_is_pipe)
+
+    def test_recording_method_is_recordrtc(self):
+        # different case variations of the 'recordrtc' string should return true
+        self.assertTrue(self.videos[3].recording_method_is_recordrtc)
+        self.assertTrue(self.videos[4].recording_method_is_recordrtc)
+        self.assertTrue(self.videos[5].recording_method_is_recordrtc)
+        # anything other than that should return false
+        self.assertFalse(self.videos[0].recording_method_is_recordrtc)
+        self.assertFalse(self.videos[1].recording_method_is_recordrtc)
+        self.assertFalse(self.videos[2].recording_method_is_recordrtc)
+        self.assertFalse(self.videos[6].recording_method_is_recordrtc)

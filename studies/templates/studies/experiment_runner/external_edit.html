@@ -1,0 +1,17 @@
+{% extends "studies/experiment_runner/base.html" %}
+{% load django_bootstrap5 %}
+{% load static %}
+{% load web_extras %}
+{% block head %}
+    {{ block.super }}
+    <script src="{% static 'js/external-runner.js' %}" defer></script>
+{% endblock head %}
+{% block header %}
+    <p>
+        You have created an External study. If you need to change study types,
+        please <a href="{% url "exp:study-create" %}">create a new study</a> instead.
+    </p>
+{% endblock header %}
+{% block form %}
+    {% bootstrap_form form label_class="fw-bold" %}
+{% endblock form %}

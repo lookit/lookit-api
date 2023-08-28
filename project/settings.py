@@ -46,6 +46,16 @@ GUARDIAN_MONKEY_PATCH = False
 BUCKET_NAME = os.environ.get("BUCKET_NAME", "fakeBucketName")
 # Pipe webhook key for authentication
 PIPE_WEBHOOK_KEY = os.environ.get("PIPE_WEBHOOK_KEY", "abcdefghijkl1")
+# S3 bucket name and keys for videos recorded via RecordRTC rather than Pipe
+S3_BUCKET_NAME = os.environ.get("S3_BUCKET", "fakeBucketName")
+S3_BUCKET_REGION = os.environ.get("S3_REGION", "fake-region-1")
+S3_ACCESS_KEY_ID = os.environ.get("S3_ACCESS_KEY_ID", "ABCDEFGHIJKLMNOPQRST")
+S3_SECRET_ACCESS_KEY = os.environ.get(
+    "S3_SECRET_ACCESS_KEY", "abcdefghijklmnopqrstuvwxyz01234567891012"
+)
+AWS_LAMBDA_SECRET_ACCESS_KEY = os.environ.get(
+    "AWS_LAMBDA_SECRET_ACCESS_KEY", "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmn"
+)
 
 # Application definition
 
@@ -264,6 +274,8 @@ CORS_ORIGIN_WHITELIST = [
     h for h in os.environ.get("CORS_ORIGIN_WHITELIST", "").split(" ") if h
 ]
 
+EXPERIMENT_LOCATION = "experiments"
+
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     # if we're trying to use cloud storage
     STATICFILES_LOCATION = "static"
@@ -273,8 +285,6 @@ if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     MEDIAFILES_LOCATION = "media"
     DEFAULT_FILE_STORAGE = "project.storages.LookitMediaStorage"
     MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
-
-    EXPERIMENT_LOCATION = "experiments"
 
     GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME", "")
     GS_PROJECT_ID = os.environ.get("GS_PROJECT_ID", "")
@@ -291,8 +301,6 @@ else:
     STATICFILES_LOCATION = "/static"
 
     MEDIAFILES_LOCATION = "/media"
-
-    EXPERIMENT_LOCATION = "/experiments"
 
     GS_BUCKET_NAME = None
     GS_PROJECT_ID = None

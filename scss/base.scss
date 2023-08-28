@@ -62,3 +62,8 @@
     background-color: #636464;
     border-color: #636464;
 }
+
+// Darker border around checkbox
+[type="checkbox"].dark-checkbox-border {
+    border-color: black;
+}

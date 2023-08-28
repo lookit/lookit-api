@@ -232,6 +232,10 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
                 "SENTRY_DSN": os.environ.get("SENTRY_DSN_JS", None),
                 "PIPE_ACCOUNT_HASH": os.environ.get("PIPE_ACCOUNT_HASH"),
                 "PIPE_ENVIRONMENT": os.environ.get("PIPE_ENVIRONMENT"),
+                "S3_REGION": os.environ.get("S3_REGION"),
+                "S3_ACCESS_KEY_ID": os.environ.get("S3_ACCESS_KEY_ID"),
+                "S3_SECRET_ACCESS_KEY": os.environ.get("S3_SECRET_ACCESS_KEY"),
+                "S3_BUCKET": os.environ.get("S3_BUCKET"),
             },
             volumes={
                 local_paths.checkouts: {"bind": "/checkouts", "mode": "ro"},
@@ -323,13 +327,15 @@ def deploy_to_remote(local_path, storage):
 
 
 def _upload_in_serial(local_path, storage):
-    """Inner worker function for storage uploads in serial."""
-    for root_directory, dirs, files in os.walk(local_path, topdown=True):
-        for filename in files:
-            full_path = os.path.join(root_directory, filename)
-            with open(full_path, mode="rb") as f:
-                remote_path = full_path.split("/ember_build/deployments/")[1]
-                storage.save(remote_path, File(f))
+    """Inner worker function for storage uploads in serial.  This should be skipped when
+    developing locally."""
+    if not settings.DEBUG:
+        for root_directory, dirs, files in os.walk(local_path, topdown=True):
+            for filename in files:
+                full_path = os.path.join(root_directory, filename)
+                with open(full_path, mode="rb") as f:
+                    remote_path = full_path.split("/ember_build/deployments/")[1]
+                    storage.save(remote_path, File(f))
 
 
 def download_repos(player_repo_url, player_sha=None):

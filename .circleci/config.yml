@@ -12,7 +12,7 @@ jobs:
           pkg-manager: poetry
       - run:
           name: Run tests
-          command: poetry run ./manage.py test --failfast
+          command: poetry run ./manage.py test -v 2 --failfast
   build-and-lint: 
     docker:
       - image: cimg/python:3.9

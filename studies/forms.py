@@ -1,5 +1,8 @@
 import json
+from enum import Enum
 
+import js2py
+import requests
 from ace_overlay.widgets import AceOverlayWidget
 from django import forms
 from django.db.models import Q
@@ -8,6 +11,7 @@ from guardian.shortcuts import get_objects_for_user
 from PIL import Image
 
 from accounts.queries import compile_expression
+from project import settings
 from studies.models import Lab, Response, Study
 from studies.permissions import LabPermission, StudyPermission
 
@@ -19,8 +23,6 @@ PROTOCOL_CONFIG_HELP_LINK = (
 PROTOCOL_GENERATOR_HELP_LINK = (
     "https://lookit.readthedocs.io/en/develop/researchers-protocol-generators.html"
 )
-PROTOCOL_HELP_TEXT_EDIT = f"Configure frames to use in your study and specify their order. For information on how to set up your protocol, please <a href={PROTOCOL_CONFIG_HELP_LINK}>see the documentation.</a>"
-PROTOCOL_HELP_TEXT_INITIAL = f"{PROTOCOL_HELP_TEXT_EDIT}  You can leave the default for now and come back to this later."
 DEFAULT_GENERATOR = """function generateProtocol(child, pastSessions) {
     /*
      * Generate the protocol for this study.
@@ -154,56 +156,17 @@ class LabApprovalForm(LabForm):
 class StudyForm(ModelForm):
     """Base form for creating or editing a study"""
 
-    # Eventually when we support other experiment runner types (labjs, jspsych, etc.)
-    # we may do one of the following:
-    # - separate the 'study protocol specification' fields into their own
-    # form which collects various information and cleans it and sets a single 'structure' object,
-    # with the selected
-    # - creating a model to represent each study type, likely such that each study has a nullable
-    # relation for lookit_runner_protocol, jspsych_runner_protocol, etc.
+    def participated_choices():
+        return [
+            (s[0], f"{s[1]} ({s[2]})")
+            for s in Study.objects.values_list("id", "name", "uuid")
+        ]
 
-    structure = forms.CharField(
-        label="Protocol configuration",
-        widget=AceOverlayWidget(
-            mode="json",
-            wordwrap=True,
-            theme="textmate",
-            width="100%",
-            height="100%",
-            showprintmargin=False,
-        ),
-        required=False,
+    must_have_participated = forms.MultipleChoiceField(
+        choices=participated_choices, required=False
     )
-
-    external = forms.BooleanField(
-        required=False,
-        help_text="Post an external link to a study, rather than Lookit's experiment builder.",
-    )
-    scheduled = forms.BooleanField(
-        required=False,
-        help_text="Schedule participants for one-on-one appointments with a researcher.",
-    )
-
-    # Define initial value here rather than providing actual default so that any updates don't
-    # require migrations: this isn't a true "default" value that would ever be used, but rather
-    # a helpful skeleton to guide the user
-    generator = forms.CharField(
-        label="Protocol generator",
-        widget=AceOverlayWidget(
-            mode="javascript",
-            wordwrap=True,
-            theme="textmate",
-            width="100%",
-            height="100%",
-            showprintmargin=False,
-        ),
-        required=False,
-        help_text=(
-            "Write a Javascript function that returns a study protocol object with 'frames' and "
-            "'sequence' keys. This allows more flexible randomization and dependence on past sessions in "
-            f"complex cases. See <a href={PROTOCOL_GENERATOR_HELP_LINK}>documentation</a> for details."
-        ),
-        initial=DEFAULT_GENERATOR,
+    must_not_have_participated = forms.MultipleChoiceField(
+        choices=participated_choices, required=False
     )
 
     def clean(self):
@@ -221,22 +184,6 @@ class StudyForm(ModelForm):
                 "The maximum age must be greater than the minimum age."
             )
         return cleaned_data
-
-    def clean_structure(self):
-        structure_text = self.cleaned_data["structure"]
-
-        # Parse edited text representation of structure object, and additionally store the
-        # exact text (so user can organize frames, parameters, etc. for readability)
-        try:
-            json_data = json.loads(structure_text)  # loads string as json
-            json_data["exact_text"] = structure_text
-        except Exception:
-            raise forms.ValidationError(
-                "Saving protocol configuration failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost."
-            )
-
-        # Store the object which includes the exact text (not just the text)
-        return json_data
 
     def clean_criteria_expression(self):
         criteria_expression = self.cleaned_data["criteria_expression"]
@@ -281,12 +228,10 @@ class StudyForm(ModelForm):
             "contact_info",
             "public",
             "shared_preview",
-            "structure",
-            "generator",
-            "use_generator",
             "criteria_expression",
             "must_have_participated",
             "must_not_have_participated",
+            "study_type",
         ]
         labels = {
             "name": "Study Name",
@@ -299,9 +244,8 @@ class StudyForm(ModelForm):
             "contact_info": "Researcher Contact Information",
             "public": "Discoverable",
             "shared_preview": "Share Preview",
-            "study_type": "Experiment Runner Type",
+            "study_type": "Experiment Type",
             "compensation_description": "Compensation",
-            "use_generator": "Use protocol generator (advanced)",
             "priority": "Lab Page Priority",
         }
         widgets = {
@@ -339,7 +283,9 @@ class StudyForm(ModelForm):
             "lab": "Which lab this study will be affiliated with",
             "image": "This is the image participants will see when browsing studies. Please make sure that your image file dimensions are square and the size is less than 1 MB.",
             "exit_url": "Specify the page where you want to send your participants after they've completed the study. (The 'Past studies' page on Lookit is a good default option.)",
-            "preview_summary": "This is the text participants will see when browsing studies. The limit is 300 characters.",
+            "preview_summary": """<p>This is the text (limit 300 characters) that participants will see when browsing studies. Most CHS studies involve a single testing session that a family can complete right now on their own. If your study involves something different, please note this in the description! Use a format something like the following:</p>
+            <p>"In this (study)/(scheduled video call with a researcher)/(four-session study), your child/baby will..."</p>
+            <p>"Help us learn about [topic] (...in a live video call with a researcher)/(...in a four-session study)"</p>""",
             "short_description": "Describe what happens during your study here. This should give families a concrete idea of what they will be doing - e.g., reading a story together and answering questions, watching a short video, playing a game about numbers. If you are running a scheduled study, make sure to include a description of how they will sign up and access the study session.",
             "purpose": "Explain the purpose of your study here. This should address what question this study answers AND why that is an interesting or important question, in layperson-friendly terms.",
             "contact_info": "This should give the name of the PI for your study, and an email address where the PI or study staff can be reached with questions. Format: PIs Name (contact: youremail@lab.edu)",
@@ -352,13 +298,8 @@ class StudyForm(ModelForm):
             ),
             "public": "List this study on the 'Studies' page once you start it.",
             "shared_preview": "Allow other Lookit researchers to preview your study and give feedback.",
-            "study_type": f"""<p>After selecting an experiment runner type above, you'll be asked
-                to provide some additional configuration information.</p>
-                <p>If you're not sure what to enter here, just leave the defaults (you can change this later).
-                For more information on experiment runner types, please
-                <a href={STUDY_TYPE_HELP_LINK}>see the documentation.</a></p>""",
-            "structure": PROTOCOL_HELP_TEXT_INITIAL,
-            "priority": f"This affects how studies are ordered at your lab's custom URL, not the main study page. If you leave all studies at the highest priority (99), then all of your lab's active/discoverable studies will be shown in a randomized order on your lab page. If you lower the priority of this study to 1, then it will appear last in the list on your lab page. You can find your lab's custom URL from the <a href='/exp/labs/'>labs page</a>. For more info, see the documentation on <a href='https://lookit.readthedocs.io/en/develop/researchers-manage-org.html#ordering-studies-on-your-lab-page'>study prioritization</a>.",
+            "study_type": "Choose the type of experiment you are creating - this will change the fields that appear on the Study Details page.",
+            "priority": "This affects how studies are ordered at your lab's custom URL, not the main study page. If you leave all studies at the highest priority (99), then all of your lab's active/discoverable studies will be shown in a randomized order on your lab page. If you lower the priority of this study to 1, then it will appear last in the list on your lab page. You can find your lab's custom URL from the <a href='/exp/labs/'>labs page</a>. For more info, see the documentation on <a href='https://lookit.readthedocs.io/en/develop/researchers-manage-org.html#ordering-studies-on-your-lab-page'>study prioritization</a>.",
         }
 
 
@@ -367,8 +308,18 @@ class StudyEditForm(StudyForm):
 
     def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["external"].disabled = True
-        self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_EDIT
+
+        # Disable ablility to change study type after study creation.
+        self.fields["study_type"].disabled = True
+        self.fields["study_type"].help_text = (
+            "<p>NOTE: The study type cannot be changed after creation.</p>"
+            "Before saving for the first time, please "
+            '<a rel="noopener noreferrer" target="_blank" href="https://lookit.readthedocs.io/en/develop/index.html?highlight=external#what-is-lookit">review the distinction between experiment builder (internal) studies and external studies</a>'
+            ", and ask a question on "
+            '<a rel="noopener noreferrer" target="_blank" href="http://lookit-mit.slack.com/">Slack</a>'
+            " if you need help selecting the right option!"
+        )
+
         # Restrict ability to edit study lab based on user permissions
         can_change_lab = user.has_study_perms(
             StudyPermission.CHANGE_STUDY_LAB, self.instance
@@ -398,24 +349,12 @@ class StudyEditForm(StudyForm):
             )
             self.fields["lab"].disabled = True
 
-    def clean_external(self):
-        study = self.instance
-        external = self.cleaned_data["external"]
-
-        if (not external and study.study_type.is_external) or (
-            external and study.study_type.is_ember_frame_player
-        ):
-            raise forms.ValidationError("Attempt to change study type not allowed.")
-
-        return external
-
 
 class StudyCreateForm(StudyForm):
     """Form for creating a new study"""
 
     def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_EDIT
         # Limit initial lab options to labs this user is a member of & can create studies in
         self.fields["lab"].queryset = Lab.objects.filter(
             id__in=get_objects_for_user(
@@ -432,3 +371,173 @@ class EmailParticipantsForm(forms.Form):
     recipients = forms.ChoiceField(widget=EmailRecipientSelectMultiple())
     subject = forms.CharField()
     body = forms.CharField(widget=forms.Textarea())
+
+
+class EFPForm(ModelForm):
+    player_repo_url = forms.URLField(
+        label="Experiment runner code URL",
+        help_text="Leave this value alone unless you are using a custom version of the experiment builder.",
+    )
+    last_known_player_sha = forms.CharField(
+        label="Experiment runner version (commit SHA)",
+        help_text=(
+            "If you're using the default Ember Frame Player, you can see <a "
+            f'href="{settings.EMBER_EXP_PLAYER_REPO}/commits/{settings.EMBER_EXP_PLAYER_BRANCH}" target="_blank" rel="noopener noreferrer">'
+            "the commits page</a> for other commit SHA options."
+        ),
+    )
+    structure = forms.CharField(
+        label="Protocol configuration",
+        widget=AceOverlayWidget(
+            mode="json",
+            wordwrap=True,
+            theme="textmate",
+            width="100%",
+            height="100%",
+            showprintmargin=False,
+        ),
+        required=False,
+        help_text=(
+            "Configure frames to use in your study and specify their order. For information on how to "
+            "set up your protocol, please <a href={PROTOCOL_CONFIG_HELP_LINK}>see the documentation</a>."
+        ),
+    )
+    generator = forms.CharField(
+        label="Protocol generator",
+        widget=AceOverlayWidget(
+            mode="javascript",
+            wordwrap=True,
+            theme="textmate",
+            width="100%",
+            height="100%",
+            showprintmargin=False,
+        ),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["use_generator"].widget.attrs.update(
+            {"class": "dark-checkbox-border"}
+        )
+
+    class Meta:
+        model = Study
+        fields = (
+            "structure",
+            "use_generator",
+            "generator",
+            "player_repo_url",
+            "last_known_player_sha",
+        )
+        labels = {"use_generator": "Use protocol generator (advanced)"}
+        help_texts = {
+            "use_generator": (
+                "Write a Javascript function that returns a study protocol object with 'frames' and "
+                "'sequence' keys. This allows more flexible randomization and dependence on past sessions in "
+                f"complex cases. See <a href={PROTOCOL_GENERATOR_HELP_LINK}>documentation</a> for details."
+            )
+        }
+
+    def clean_structure(self):
+        try:
+            structure = json.loads(self.cleaned_data["structure"])
+            structure["exact_text"] = self.cleaned_data["structure"]
+            return structure
+        except json.JSONDecodeError:
+            raise forms.ValidationError(
+                "Saving protocol configuration failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost."
+            )
+
+    def clean_generator(self):
+        try:
+            generator = self.cleaned_data["generator"]
+
+            if not generator.strip():
+                generator = DEFAULT_GENERATOR
+
+            js2py.eval_js(generator)
+            return generator
+        except js2py.internals.simplex.JsException:
+            raise forms.ValidationError(
+                "Generator javascript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost."
+            )
+
+    def clean_player_repo_url(self):
+        player_repo_url = self.cleaned_data["player_repo_url"]
+        validation_error = forms.ValidationError(
+            f"Frameplayer repo url {player_repo_url} does not work."
+        )
+
+        try:
+            if not requests.get(player_repo_url).ok:
+                raise validation_error
+        except requests.exceptions.ConnectionError:
+            raise validation_error
+
+        return player_repo_url
+
+    def clean_last_known_player_sha(self):
+        last_known_player_sha = self.cleaned_data.get("last_known_player_sha")
+        player_repo_url = self.cleaned_data.get("player_repo_url")
+
+        if last_known_player_sha and player_repo_url:
+            if not requests.get(f"{player_repo_url}/commit/{last_known_player_sha}").ok:
+                raise forms.ValidationError(
+                    f"Frameplayer commit {last_known_player_sha} does not exist."
+                )
+
+        return last_known_player_sha
+
+
+class ScheduledChoice(Enum):
+    scheduled = "Scheduled"
+    unmoderated = "Unmoderated"
+
+
+class ExternalForm(ModelForm):
+    scheduled = forms.ChoiceField(
+        choices=[
+            (
+                ScheduledChoice.scheduled.value,
+                f"{ScheduledChoice.scheduled.value} (Schedule participants for one-on-one appointments with a researcher.)",
+            ),
+            (
+                ScheduledChoice.unmoderated.value,
+                f"{ScheduledChoice.unmoderated.value} (Give participants a link to take the study on their own.)",
+            ),
+        ]
+    )
+    url = forms.URLField(
+        label="Study URL",
+        help_text="This is the link that participants will be sent to from the Lookit details page.",
+    )
+    scheduling = forms.ChoiceField(
+        required=False,
+        choices=[
+            ("Calendly", "Calendly"),
+            ("Google Calendar", "Google Calendar"),
+            ("Google Form", "Google Form"),
+            ("Other", "Other"),
+        ],
+        widget=forms.RadioSelect,
+        help_text="Indicate how participants schedule appointments for your section. Remember that Lookit encourages you to use its messaging system rather than collecting email addresses - this presents a privacy risk for your participants.",
+    )
+    other_scheduling = forms.CharField(label="", required=False)
+    study_platform = forms.ChoiceField(
+        label="Study Platform",
+        required=False,
+        choices=[
+            ("Qualtrics", "Qualtrics"),
+            ("Prolific", "Prolific"),
+            ("Mechanical Turk", "Mechanical Turk"),
+            ("Other", "Other"),
+        ],
+        widget=forms.RadioSelect,
+        help_text="What software or website will you use to present & collect data for your study?",
+    )
+    other_study_platform = forms.CharField(label="", required=False)
+
+    class Meta:
+        model = Study
+        fields = ()

@@ -16,7 +16,7 @@
 {% block breadcrumb %}
     {% breadcrumb %}
     {% url 'exp:study-list' %} Manage Studies
-    {% url 'exp:study-detail' pk=study.id %} {{ study.name }}
+    {% url 'exp:study' pk=study.id %} {{ study.name }}
     {{ active_tab }}
 {% endbreadcrumb %}
 {% endblock breadcrumb %}
@@ -229,7 +229,7 @@
                         <input id="include-participant-global"
                                name="demo_options"
                                type="checkbox"
-                               value="participant__global_id"/>
+                               value="participant__global_id" />
                         <label for="include-participant-global">Include participant global IDs</label>
                     </div>
                     <hr />

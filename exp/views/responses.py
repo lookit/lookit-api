@@ -857,7 +857,7 @@ class StudyResponsesConsentManager(
     def get(self, request, *args, **kwargs):
         if self.get_object().study_type.is_external:
             messages.error(request, "There is no consent manager for external studies.")
-            return HttpResponseRedirect(reverse("exp:study-detail", kwargs=kwargs))
+            return HttpResponseRedirect(reverse("exp:study", kwargs=kwargs))
         else:
             return super().get(request, *args, **kwargs)
 
@@ -922,7 +922,7 @@ class StudyDeletePreviewResponses(
         preview_responses = study.responses.filter(is_preview=True).prefetch_related(
             "videos", "consent_rulings", "feedback"
         )
-        paginator = Paginator(preview_responses, RESPONSE_PAGE_SIZE)
+        paginator = Paginator(preview_responses.order_by("id"), RESPONSE_PAGE_SIZE)
         for page_num in paginator.page_range:
             page_of_responses = paginator.page(page_num)
             for resp in page_of_responses:

@@ -55,6 +55,9 @@ dispatch_frame_action = FrameActionDispatcher()
 
 
 def default_configuration():
+    """This function was used in the StudyType model.  The field requiring this has
+    been removed.  However, migrations still reference this function
+    """
     return {
         # task module should have a build_experiment method decorated as a
         # celery task that takes a study uuid
@@ -222,20 +225,19 @@ def notify_lab_of_approval(sender, instance, **kwargs):
 
 
 class StudyTypeEnum(Enum):
-    external = "External"
-    ember_frame_player = "Ember Frame Player (default)"
+    external = "External Study (Choose this if you are posting a study link rather using an experiment builder)"
+    ember_frame_player = "Lookit/Ember Frame Player (Default experiment builder)"
 
 
 class StudyType(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
-    configuration = models.JSONField(default=default_configuration)
 
     def __str__(self):
         return self.name
 
     @classmethod
     def default_pk(cls):
-        return cls.objects.get(name=StudyTypeEnum.ember_frame_player.value).pk
+        return 1
 
     @property
     def is_ember_frame_player(self):
@@ -254,11 +256,11 @@ class StudyType(models.Model):
 
     @classmethod
     def get_ember_frame_player(cls):
-        return cls.objects.get(name=StudyTypeEnum.ember_frame_player.value)
+        return cls.objects.get(id=1)
 
     @classmethod
     def get_external(cls):
-        return cls.objects.get(name=StudyTypeEnum.external.value)
+        return cls.objects.get(id=2)
 
 
 def default_study_structure():
@@ -997,6 +999,7 @@ class Response(models.Model):
     study_type = models.ForeignKey(
         StudyType, on_delete=models.PROTECT, default=StudyType.default_pk
     )
+    recording_method = models.CharField(max_length=50, default="pipe")
 
     def __str__(self):
         return self.display_name
@@ -1271,7 +1274,7 @@ class Video(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     s3_timestamp = models.DateTimeField()
-    pipe_name = models.CharField(max_length=255, unique=True, blank=False)
+    pipe_name = models.CharField(max_length=255, unique=True, blank=False, null=True)
     pipe_numeric_id = models.IntegerField(
         null=True
     )  # Sad that we don't keep this metadata elsewhere...
@@ -1399,7 +1402,15 @@ class Video(models.Model):
 
     @property
     def download_url(self):
-        return get_download_url(self.full_name)
+        return get_download_url(self.full_name, self.recording_method_is_pipe)
+
+    @property
+    def recording_method_is_pipe(self):
+        return str.lower(self.response.recording_method) == "pipe"
+
+    @property
+    def recording_method_is_recordrtc(self):
+        return str.lower(self.response.recording_method) == "recordrtc"
 
 
 @receiver(pre_delete, sender=Video)

@@ -7,17 +7,17 @@ Dear Lookit Admin,
 
     {{ comments|linebreaks }}
 
-    You can approve or disapprove the study here: {{ base_url }}{% url 'exp:study-detail' pk=study_id %}
+    You can approve or disapprove the study here: {{ base_url }}{% url 'exp:study' pk=study_id %}
 {% elif action == 'retracted' %}
     {{ researcher_name }} has retracted the submission of a study: {{ study_name }}
 {% elif action == 'active' %}
-    {{ researcher_name }} has started the study {{study_name}}. {{ base_url }}{% url 'exp:study-detail' pk=study_id %}
+    {{ researcher_name }} has started the study {{study_name}}. {{ base_url }}{% url 'exp:study' pk=study_id %}
 {% elif action == 'paused' %}
-    {{ researcher_name }} has paused the study {{study_name}}. {{ base_url }}{% url 'exp:study-detail' pk=study_id %}
+    {{ researcher_name }} has paused the study {{study_name}}. {{ base_url }}{% url 'exp:study' pk=study_id %}
 {% elif action == 'deactivated' %}
-    {{ researcher_name }} has deactivated the study {{study_name}}. {{ base_url }}{% url 'exp:study-detail' pk=study_id %}
+    {{ researcher_name }} has deactivated the study {{study_name}}. {{ base_url }}{% url 'exp:study' pk=study_id %}
 {% elif action == 'deployed' %}
-    An experiment runner has been built for {{ study_name }} ({{ base_url }}{% url 'exp:study-detail' pk=study_id %})
+    An experiment runner has been built for {{ study_name }} ({{ base_url }}{% url 'exp:study' pk=study_id %})
 
     This study can be previewed here: {{base_url}}{% url 'exp:preview-detail' uuid=study_uuid %}
 

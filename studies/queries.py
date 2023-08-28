@@ -134,9 +134,12 @@ def get_responses_with_current_rulings_and_videos(study_id, preview_only):
     ).values("full_name", "response_id")
     videos_per_response = defaultdict(list)
     for video in consent_videos:
+        recording_is_pipe = Video.objects.get(
+            full_name=video["full_name"]
+        ).recording_method_is_pipe
         videos_per_response[video["response_id"]].append(
             {
-                "aws_url": get_download_url(video["full_name"]),
+                "aws_url": get_download_url(video["full_name"], recording_is_pipe),
                 "filename": video["full_name"],
             }
         )

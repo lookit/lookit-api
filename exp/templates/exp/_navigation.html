@@ -13,9 +13,7 @@
                id="navbarDropdown"
                role="button"
                data-bs-toggle="dropdown"
-               aria-expanded="false">
-                Help
-            </a>
+               aria-expanded="false">Help</a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <div>
                     <a class="dropdown-item"
@@ -31,9 +29,7 @@
                id="navbarDropdown"
                role="button"
                data-bs-toggle="dropdown"
-               aria-expanded="false">
-                {{ request.user.identicon_small_html }} {{ request.user.get_short_name }}
-            </a>
+               aria-expanded="false">{{ request.user.identicon_small_html }} {{ request.user.get_short_name }}</a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 {% dropdown_item request 'accounts:manage-account' 'Manage Account' %}
                 {% dropdown_item request 'exp:lab-list' 'Manage Labs' %}
