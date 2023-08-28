@@ -112,7 +112,7 @@
                             included in the table.
                         </p>
                         <input id="date-filter" class="form-control input-sm" type="text" />
-                        <table id="total-counts" class="table table-condensed">
+                        <table id="total-counts" class="table table-condensed" aria-describedby="">
                             <tr>
                                 <th scope="row"># Unique Responses</th>
                                 <td id="total-count-responses"></td>
@@ -260,7 +260,7 @@
             </div>
             <article id="characteristics-table" class="col-md-4">
                 <h4>Characteristics</h4>
-                <table class="table small">
+                <table class="table small" aria-describedby="">
                     <thead>
                         <tr>
                             <th scope="col">Characteristic</th>
@@ -279,7 +279,7 @@
             </article>
             <article id="languages-table" class="col-md-4">
                 <h4>Languages</h4>
-                <table class="table small">
+                <table class="table small" aria-describedby="">
                     <thead>
                         <tr>
                             <th scope="col">Language</th>
@@ -298,7 +298,7 @@
             </article>
             <article id="studies-table" class="col-md-4">
                 <h4>Studies</h4>
-                <table class="table small">
+                <table class="table small" aria-describedby="">
                     <thead>
                         <tr>
                             <th scope="col">Study</th>
@@ -318,7 +318,7 @@
             {% if can_view_all_children %}
                 <article id="studies-table" class="col-md-4">
                     <h4>Ages</h4>
-                    <table class="table small">
+                    <table class="table small" aria-describedby="">
                         <thead>
                             <tr>
                                 <th scope="col">Age</th>
