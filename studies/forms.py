@@ -382,7 +382,7 @@ class EFPForm(ModelForm):
         label="Experiment runner version (commit SHA)",
         help_text=(
             "If you're using the default Ember Frame Player, you can see <a "
-            f'href="{settings.EMBER_EXP_PLAYER_REPO}/commits/{settings.EMBER_EXP_PLAYER_BRANCH}">'
+            f'href="{settings.EMBER_EXP_PLAYER_REPO}/commits/{settings.EMBER_EXP_PLAYER_BRANCH}" target="_blank" rel="noopener noreferrer">'
             "the commits page</a> for other commit SHA options."
         ),
     )
@@ -415,9 +415,21 @@ class EFPForm(ModelForm):
         required=False,
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["use_generator"].widget.attrs.update(
+            {"class": "dark-checkbox-border"}
+        )
+
     class Meta:
         model = Study
-        fields = ("use_generator", "generator", "structure")
+        fields = (
+            "structure",
+            "use_generator",
+            "generator",
+            "player_repo_url",
+            "last_known_player_sha",
+        )
         labels = {"use_generator": "Use protocol generator (advanced)"}
         help_texts = {
             "use_generator": (
