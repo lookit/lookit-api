@@ -21,12 +21,12 @@
                         {% csrf_token %}
                         {% bootstrap_form form %}
                         {% form_buttons %}
-                            {% bootstrap_button trans_cancel href=url_email_prefs button_class=btn_secondary_classes %}
-                            {% bootstrap_button trans_save name="password_update" button_class=btn_primary_classes %}
-                        {% endform_buttons %}
-                    </form>
-                </div>
+                        {% bootstrap_button trans_cancel href=url_email_prefs button_class=btn_secondary_classes %}
+                        {% bootstrap_button trans_save name="password_update" button_class=btn_primary_classes %}
+                    {% endform_buttons %}
+                </form>
             </div>
         </div>
     </div>
+</div>
 {% endblock content %}

@@ -89,89 +89,47 @@
                 </tr>
                 <tr>
                     <th scope="row">{% trans "Number of Guardians" %}:</th>
-                    <td>
-                        {{ demographics.number_of_guardians|default:"No Response" }}
-                    </td>
+                    <td>{{ demographics.number_of_guardians|default:"No Response" }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">
-                        {% trans "Explanation for Guardians:" %}
-                    </th>
-                    <td>
-                        {{ demographics.number_of_guardians_explanation|default:"No Response" }}
-                    </td>
+                    <th scope="row">{% trans "Explanation for Guardians:" %}</th>
+                    <td>{{ demographics.number_of_guardians_explanation|default:"No Response" }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">
-                        {% trans "Race" %}:
-                    </th>
-                    <td>
-                        {{ demographics.us_race_ethnicity_identification|default:"No Response" }}
-                    </td>
+                    <th scope="row">{% trans "Race" %}:</th>
+                    <td>{{ demographics.us_race_ethnicity_identification|default:"No Response" }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">
-                        Age:
-                    </th>
-                    <td>
-                        {{ demographics.age|default:"No Response" }}
-                    </td>
+                    <th scope="row">Age:</th>
+                    <td>{{ demographics.age|default:"No Response" }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">
-                        Gender:
-                    </th>
-                    <td>
-                        {{ demographics.gender|default:"No Response" }}
-                    </td>
+                    <th scope="row">Gender:</th>
+                    <td>{{ demographics.gender|default:"No Response" }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">
-                        Education Level:
-                    </th>
-                    <td>
-                        {{ demographics.education_level|default:"No Response" }}
-                    </td>
+                    <th scope="row">Education Level:</th>
+                    <td>{{ demographics.education_level|default:"No Response" }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">
-                        Spouse's Education Level:
-                    </th>
-                    <td>
-                        {{ demographics.spouse_education_level|default:"No Response" }}
-                    </td>
+                    <th scope="row">Spouse's Education Level:</th>
+                    <td>{{ demographics.spouse_education_level|default:"No Response" }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">
-                        Annual Income:
-                    </th>
-                    <td>
-                        {{ demographics.annual_income|default:"No Response" }}
-                    </td>
+                    <th scope="row">Annual Income:</th>
+                    <td>{{ demographics.annual_income|default:"No Response" }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">
-                        Children's Books at Home:
-                    </th>
-                    <td>
-                        {{ demographics.number_of_books|default:"No Response" }}
-                    </td>
+                    <th scope="row">Children's Books at Home:</th>
+                    <td>{{ demographics.number_of_books|default:"No Response" }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">
-                        Additional Comments:
-                    </th>
-                    <td>
-                        {{ demographics.additional_comments|default:"No Response" }}
-                    </td>
+                    <th scope="row">Additional Comments:</th>
+                    <td>{{ demographics.additional_comments|default:"No Response" }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">
-                        Lookit Referrer:
-                    </th>
-                    <td>
-                        {{ demographics.lookit_referrer|default:"No Response" }}
-                    </td>
+                    <th scope="row">Lookit Referrer:</th>
+                    <td>{{ demographics.lookit_referrer|default:"No Response" }}</td>
                 </tr>
             </table>
         </div>
@@ -201,12 +159,8 @@
                             {% bs_icon "chevron-down" %}
                         </a>
                     </th>
-                    <th scope="col">
-                        Response
-                    </th>
-                    <th scope="col">
-                        Child
-                    </th>
+                    <th scope="col">Response</th>
+                    <th scope="col">Child</th>
                     <th scope="col">
                         Completion Status
                         <a class="text-decoration-none"
@@ -239,14 +193,10 @@
                 {% for study in studies %}
                     <tr>
                         <td>
-                            <a href="{% url 'exp:study-detail' study.study.id %}">{{ study.study.name }}</a>
+                            <a href="{% url 'exp:study' study.study.id %}">{{ study.study.name }}</a>
                         </td>
-                        <td>
-                            {{ study.response.uuid }}
-                        </td>
-                        <td>
-                            {{ study.response.child.given_name }}
-                        </td>
+                        <td>{{ study.response.uuid }}</td>
+                        <td>{{ study.response.child.given_name }}</td>
                         <td>
                             {% if study.completed %}
                                 Completed
@@ -254,17 +204,13 @@
                                 In Progress
                             {% endif %}
                         </td>
-                        <td>
-                            {{ study.created |date:"n/d/Y"|default:"N/A" }}
-                        </td>
+                        <td>{{ study.created |date:"n/d/Y"|default:"N/A" }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
         {% include "studies/_paginator.html" with page=studies request=request %}
     {% else %}
-        <p class="fst-italic">
-            {{ user.nickname }} has not participated in any studies yet!
-        </p>
+        <p class="fst-italic">{{ user.nickname }} has not participated in any studies yet!</p>
     {% endif %}
 {% endblock content %}

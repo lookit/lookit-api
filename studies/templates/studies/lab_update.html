@@ -20,8 +20,8 @@
         {% csrf_token %}
         {% bootstrap_form form %}
         {% form_buttons %}
-            {% bootstrap_button "Discard Changes" href=url_lab_edit button_class=btn_secondary_classes %}
-            {% bootstrap_button "Save" type="submit" button_class=btn_primary_classes %}
-        {% endform_buttons %}
-    </form>
+        {% bootstrap_button "Discard Changes" href=url_lab_edit button_class=btn_secondary_classes %}
+        {% bootstrap_button "Save" type="submit" button_class=btn_primary_classes %}
+    {% endform_buttons %}
+</form>
 {% endblock content %}

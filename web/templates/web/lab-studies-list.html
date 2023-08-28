@@ -2,11 +2,11 @@
 {% load web_extras %}
 {% block content %}
     {% if lab.banner %}
-        <image class="img-fluid" src="{{ lab.banner.url }}"/>
+        <image class="img-fluid" src="{{ lab.banner.url }}" />
     {% elif lab.badge %}
         <div class="row">
             <div class="col-3">
-                <image class="img-fluid" src="{{ lab.badge.url }}"/>
+                <image class="img-fluid" src="{{ lab.badge.url }}" />
             </div>
             <div class="col-9">
                 <h1>{{ lab.name }}</h1>

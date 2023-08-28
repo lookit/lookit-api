@@ -8,17 +8,6 @@
 <hr />
 <div class="row">
     <div class="col-xs-12 mb-4">
-        <label class="form-label fw-bold">Study Type</label>
-        <p>
-            Choose what type of study you are creating - this will change the fields that appear in the Experiment Details section.
-        </p>
-        {% bootstrap_field form.external %}
-        {% bootstrap_field form.scheduled wrapper_class="" %}
-    </div>
-</div>
-<hr />
-<div class="row">
-    <div class="col-xs-12 mb-4">
         <label class="form-label fw-bold">"Studies" Card and Study Detail Page</label>
         <p>Add details about your study and how it should be displayed on Lookit</p>
         {% bootstrap_field form.public %}
@@ -59,9 +48,7 @@
                     title=""
                     id="id_min_age_years">
                 {% for x, y in form.fields.min_age_years.choices %}
-                    <option value="{{ x }}" {% if study.min_age_years == x %} selected{% endif %}>
-                        {{ y }}
-                    </option>
+                    <option value="{{ x }}" {% if study.min_age_years == x %}selected{% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -76,9 +63,7 @@
                     name="min_age_months"
                     title="">
                 {% for x, y in form.fields.min_age_months.choices %}
-                    <option value="{{ x }}"{% if study.min_age_months == x %} selected{% endif %}>
-                        {{ y }}
-                    </option>
+                    <option value="{{ x }}"{% if study.min_age_months == x %} selected{% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -93,9 +78,7 @@
                     name="min_age_days"
                     title="">
                 {% for x, y in form.fields.min_age_days.choices %}
-                    <option value="{{ x }}" {% if study.min_age_days == x %} selected{% endif %}>
-                        {{ y }}
-                    </option>
+                    <option value="{{ x }}" {% if study.min_age_days == x %}selected{% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -123,9 +106,7 @@
                     title=""
                     id="id_max_age_years">
                 {% for x, y in form.fields.max_age_years.choices %}
-                    <option value="{{ x }}" {% if study.max_age_years == x %} selected{% endif %}>
-                        {{ y }}
-                    </option>
+                    <option value="{{ x }}" {% if study.max_age_years == x %}selected{% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -140,10 +121,7 @@
                     name="max_age_months"
                     title="">
                 {% for x, y in form.fields.max_age_months.choices %}
-                    <option value="{{ x }}"
-                            {% if study.max_age_months == x %} selected{% endif %}>
-                        {{ y }}
-                    </option>
+                    <option value="{{ x }}" {% if study.max_age_months == x %}selected{% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -158,9 +136,7 @@
                     name="max_age_days"
                     title="">
                 {% for x, y in form.fields.max_age_days.choices %}
-                    <option value="{{ x }}" {% if study.max_age_days == x %} selected{% endif %}>
-                        {{ y }}
-                    </option>
+                    <option value="{{ x }}" {% if study.max_age_days == x %}selected{% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -181,17 +157,4 @@
 {% bootstrap_field form.must_not_have_participated label_class="form-label fw-bold" wrapper_class="mb-4" %}
 {% bootstrap_field form.criteria_expression label_class="form-label fw-bold" wrapper_class="mb-4" %}
 <hr />
-<div class="row">
-    <div class="col-xs-12">
-        <label class="form-label fw-bold">Experiment Details</label>
-        <p>
-            Now it's time for the actual study! For internal studies, you will add a protocol configuration or generator. For external studies, you will paste in your study or scheduling link. If you don't see what you expect, check the "External" and "Scheduled" checkboxes at the top of this form!
-        </p>
-    </div>
-</div>
-<div id="structure-container">{% bootstrap_field form.structure label_class="form-label fw-bold" %}</div>
-{% bootstrap_field form.use_generator label_class="form-label" wrapper_class="form-group" %}
-<div class="use-generator form-text mb-4">{{ form.generator.help_text|safe }}</div>
-<div id="generator-container">
-    {% bootstrap_field form.generator show_help=False label_class="form-label fw-bold" %}
-</div>
+{% bootstrap_field form.study_type label_class="form-label fw-bold" wrapper_class="mb-4" %}

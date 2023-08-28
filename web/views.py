@@ -34,7 +34,7 @@ from accounts.queries import (
 )
 from accounts.utils import hash_id
 from project import settings
-from studies.models import Lab, Response, Study, StudyType, Video
+from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum, Video
 from web.mixins import AuthenticatedRedirectMixin
 from web.models import Institution, InstitutionSection
 
@@ -360,11 +360,11 @@ class StudiesListView(generic.ListView, FormView):
 
         # study location
         if study_location_value == StudyListSearchForm.StudyLocation.lookit.value[0]:
-            query = Q(study_type__name="Ember Frame Player (default)")
+            query = Q(study_type__name=StudyTypeEnum.ember_frame_player.value)
         elif (
             study_location_value == StudyListSearchForm.StudyLocation.external.value[0]
         ):
-            query = Q(study_type__name="External")
+            query = Q(study_type__name=StudyTypeEnum.external.value)
 
         if query:
             studies = studies.filter(query)
@@ -372,11 +372,13 @@ class StudiesListView(generic.ListView, FormView):
 
         # Scheduled or unscheduled studies
         if tab_value == StudyListSearchForm.Tabs.synchronous_studies.value[0]:
-            query = Q(study_type__name="External", metadata__scheduled=False) | Q(
-                study_type__name="Ember Frame Player (default)"
-            )
+            query = Q(
+                study_type__name=StudyTypeEnum.external.value, metadata__scheduled=False
+            ) | Q(study_type__name=StudyTypeEnum.ember_frame_player.value)
         elif tab_value == StudyListSearchForm.Tabs.asynchronous_studies.value[0]:
-            query = Q(study_type__name="External", metadata__scheduled=True)
+            query = Q(
+                study_type__name=StudyTypeEnum.external.value, metadata__scheduled=True
+            )
 
         if query:
             studies = studies.filter(query)
@@ -556,10 +558,10 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
         study_query = Q()
 
         if tab_value == PastStudiesFormTabChoices.lookit_studies.value[0]:
-            study_query = Q(study_type__name="Ember Frame Player (default)")
+            study_query = Q(study_type__name=StudyTypeEnum.ember_frame_player.value)
             response_query = Q(completed_consent_frame=True)
         elif tab_value == PastStudiesFormTabChoices.external_studies.value[0]:
-            study_query = Q(study_type__name="External")
+            study_query = Q(study_type__name=StudyTypeEnum.external.value)
 
         children_ids = Child.objects.filter(user__id=self.request.user.id).values_list(
             "id", flat=True

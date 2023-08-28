@@ -7,19 +7,17 @@
         <div class="row">
             <div class="col-6">
                 <form method="get" action="./#manage-researchers">
-                    <input type="hidden" name="page" value="1"/>
+                    <input type="hidden" name="page" value="1" />
                     <div class="input-group">
                         <input id="search-organization"
                                class="form-control"
                                name="match"
                                placeholder="Search lab"
                                type="text"
-                               value="{{ search_query }}"/>
+                               value="{{ search_query }}" />
                         <button class="{% button_secondary_classes %}"
                                 type="submit"
-                                aria-label="Search researchers">
-                            {% bs_icon "search" %}
-                        </button>
+                                aria-label="Search researchers">{% bs_icon "search" %}</button>
                     </div>
                 </form>
                 {% if users_result %}
@@ -31,13 +29,11 @@
                                 <form method="post"
                                       action="{% url 'exp:manage-researcher-permissions' study.id %}">
                                     {% csrf_token %}
-                                    <input type="hidden" name="add_user" value="{{ user.id }}"/>
+                                    <input type="hidden" name="add_user" value="{{ user.id }}" />
                                     <button aria-label="Add researcher to study"
                                             type="submit"
                                             value="{{ user.id }}"
-                                            class="{% button_primary_classes %} btn-sm">
-                                        {% bs_icon "plus" %}
-                                    </button>
+                                            class="{% button_primary_classes %} btn-sm">{% bs_icon "plus" %}</button>
                                 </form>
                             </div>
                         </div>
@@ -70,19 +66,17 @@
                                        data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
                                        data-id="{{ researcher.user.get_short_name }}"
                                        data-pk="{{ researcher.user.id }}"
-                                       data-title="Select researcher permissions"> {{ researcher.current_group }} </a>
+                                       data-title="Select researcher permissions">{{ researcher.current_group }}</a>
                                 </div>
                             </div>
                             <div class="col-2">
                                 <form method="post"
                                       action="{% url 'exp:manage-researcher-permissions' study.id %}">
                                     {% csrf_token %}
-                                    <input type="hidden" name="remove_user" value="{{ researcher.user.id }}"/>
+                                    <input type="hidden" name="remove_user" value="{{ researcher.user.id }}" />
                                     <button aria-label="Remove researcher from study"
                                             type="submit"
-                                            class="btn btn-danger btn-sm">
-                                        {% bs_icon "dash" %}
-                                    </button>
+                                            class="btn btn-danger btn-sm">{% bs_icon "dash" %}</button>
                                 </form>
                             </div>
                         {% else %}

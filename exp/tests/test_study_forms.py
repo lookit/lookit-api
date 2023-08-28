@@ -1,16 +1,12 @@
-from typing import Dict, Text
 from unittest.case import skip
-from unittest.mock import Mock, patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
 from django.test import TestCase
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
-from parameterized import parameterized
 
 from accounts.models import User
-from exp.views.mixins import StudyTypeMixin
 from studies.forms import StudyCreateForm, StudyEditForm
 from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
@@ -85,44 +81,6 @@ class StudyFormTestCase(TestCase):
         self.study.design_group.user_set.add(self.study_designer)
         self.study.save()
         self.age_error_message = "The maximum age must be greater than the minimum age."
-
-    def test_valid_structure_accepted(self):
-        data = model_to_dict(self.study)
-        structure_text = """{
-            "frames": {"frame-a": {}, "frame-b": {}}, 
-            "sequence": ["frame-a", "frame-b"]
-        }"""
-        data["structure"] = structure_text
-        form = StudyEditForm(data=data, instance=self.study, user=self.study_designer)
-        self.assertNotIn("structure", form.errors)
-        form.is_valid()
-        self.assertDictEqual(
-            form.cleaned_data["structure"],
-            {
-                "frames": {"frame-a": {}, "frame-b": {}},
-                "sequence": ["frame-a", "frame-b"],
-                "exact_text": structure_text,
-            },
-        )
-
-    def test_structure_with_extra_comma_invalid(self):
-        data = model_to_dict(self.study)
-        data[
-            "structure"
-        ] = """
-            {
-                "frames": {"frame-a": {}, "frame-b": {}}, 
-                "sequence": ["frame-a", "frame-b"],
-            }
-            """
-        form = StudyEditForm(data=data, instance=self.study, user=self.study_designer)
-        self.assertIn("structure", form.errors)
-
-    def test_empty_structure_invalid(self):
-        data = model_to_dict(self.study)
-        data["structure"] = ""
-        form = StudyEditForm(data=data, instance=self.study, user=self.study_designer)
-        self.assertIn("structure", form.errors)
 
     def test_valid_criteria_expression(self):
         data = model_to_dict(self.study)
@@ -424,73 +382,3 @@ class StudyFormTestCase(TestCase):
         self.assertIn(self.second_lab, edit_form.fields["lab"].queryset)
         self.assertNotIn(self.other_lab, edit_form.fields["lab"].queryset)
         self.assertNotIn("lab", edit_form.errors)
-
-    def test_scheduled_checkbox_enabled(self):
-        """Checking that the Study Edit Form's sheduled field is always enabled.  JavaScript will disable this field when study is internal."""
-        data = model_to_dict(self.study)
-        structure_text = '{"frames": {"frame-a": {}, "frame-b": {}}, "sequence": ["frame-a", "frame-b"]}'
-        data["structure"] = structure_text
-        form = StudyEditForm(data=data, instance=self.study, user=self.study_designer)
-        self.assertFalse(form.fields["scheduled"].disabled)
-
-
-class StudyMixinsTestCase(TestCase):
-    @parameterized.expand(
-        [
-            ("", "", False, "", "", "", ""),
-            ("", "on", True, "scheduling value", "", "study platform value", ""),
-            ("https://lookit.mit.edu", "", False, "", "", "", ""),
-            (
-                "https://lookit.mit.edu",
-                "on",
-                True,
-                "Other",
-                "Other value",
-                "Other",
-                "Other value",
-            ),
-        ]
-    )
-    @patch.object(StudyTypeMixin, "request", create=True)
-    def test_validate_and_fetch_metadata(
-        self,
-        url: Text,
-        post_scheduled: Text,
-        meta_scheduled: bool,
-        scheduling: Text,
-        other_scheduling: Text,
-        study_platform: Text,
-        other_study_platform: Text,
-        mock_request: Mock,
-    ):
-        type(mock_request).POST = expected_metadata = {
-            "url": url,
-            "scheduled": post_scheduled,
-            "scheduling": scheduling,
-            "other_scheduling": other_scheduling,
-            "study_platform": study_platform,
-            "other_study_platform": other_study_platform,
-        }
-        external = StudyType.get_external()
-        metadata, errors = StudyTypeMixin().validate_and_fetch_metadata(external)
-
-        expected_metadata["scheduled"] = meta_scheduled
-
-        self.assertFalse(errors)
-        self.assertEqual(expected_metadata, metadata)
-
-    @parameterized.expand(
-        [
-            ({},),
-            ({"scheduled": False},),
-            ({"scheduled": True},),
-        ]
-    )
-    @patch.object(StudyTypeMixin, "request", create=True)
-    def test_validate_and_fetch_metadata_invalid_metadata(
-        self, post_data: Dict, mock_request: Mock
-    ):
-        type(mock_request).POST = post_data
-        external = StudyType.get_external()
-        _, errors = StudyTypeMixin().validate_and_fetch_metadata(external)
-        self.assertTrue(errors)

@@ -2,15 +2,21 @@ import json
 import operator
 import re
 from functools import reduce
-from typing import NamedTuple, Text
+from typing import Any, Dict, NamedTuple, Text
 
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Q
 from django.db.models.functions import Lower
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.forms.models import BaseModelForm
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseForbidden,
+    HttpResponseRedirect,
+)
 from django.http.response import HttpResponse
-from django.shortcuts import get_object_or_404, reverse
+from django.shortcuts import get_object_or_404, redirect, reverse
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 from revproxy.views import ProxyView
@@ -21,12 +27,18 @@ from exp.views.mixins import (
     ResearcherAuthenticatedRedirectMixin,
     ResearcherLoginRequiredMixin,
     SingleObjectFetchProtocol,
-    StudyTypeMixin,
 )
 from project import settings
-from studies.forms import StudyCreateForm, StudyEditForm
+from studies.forms import (
+    DEFAULT_GENERATOR,
+    EFPForm,
+    ExternalForm,
+    ScheduledChoice,
+    StudyCreateForm,
+    StudyEditForm,
+)
 from studies.helpers import send_mail
-from studies.models import Study, StudyType
+from studies.models import Study
 from studies.permissions import LabPermission, StudyPermission
 from studies.queries import get_study_list_qs
 from studies.tasks import ember_build_and_gcp_deploy
@@ -84,25 +96,9 @@ def get_discoverability_text(study):
     return DISCOVERABILITY_HELP_TEXT.get(discoverability_key)
 
 
-KEY_DISPLAY_NAMES = {
-    "player_repo_url": "Experiment runner code URL",
-    "last_known_player_sha": "Experiment runner version (commit SHA)",
-    "url": "Study URL",
-    "scheduling": "Scheduling",
-    "study_platform": "Study Platform",
-}
-
-KEY_HELP_TEXT = {
-    "url": "This is the link that participants will be sent to from the Lookit details page.",
-    "scheduling": "Indicate how participants schedule appointments for your section. Remember that Lookit encourages you to use its messaging system rather than collecting email addresses - this presents a privacy risk for your participants.",
-    "study_platform": "What software or website will you use to present & collect data for your study?",
-}
-
-
 class StudyCreateView(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
-    StudyTypeMixin,
     generic.CreateView,
 ):
     """
@@ -113,6 +109,7 @@ class StudyCreateView(
     model = Study
     raise_exception = True
     form_class = StudyCreateForm
+    template_name = "studies/study_create.html"
 
     def user_can_make_study(self):
         # If returning False,
@@ -131,14 +128,7 @@ class StudyCreateView(
 
         user = self.request.user
 
-        if form.cleaned_data["external"]:
-            target_study_type = StudyType.get_external()
-        else:
-            target_study_type = StudyType.get_ember_frame_player()
-
-        form.instance.metadata = self.extract_type_metadata(target_study_type)
         form.instance.creator = user
-        form.instance.study_type = target_study_type
 
         # Add user to admin group for study.
         new_study = self.object = form.save()
@@ -150,26 +140,7 @@ class StudyCreateView(
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse("exp:study-detail", kwargs=dict(pk=self.object.id))
-
-    def get_context_data(self, **kwargs):
-        """
-        Adds study types to get_context_data
-        """
-        context = super().get_context_data(**kwargs)
-        context["study_types"] = StudyType.objects.all()
-        context["key_display_names"] = KEY_DISPLAY_NAMES
-        context["key_help_text"] = KEY_HELP_TEXT
-        return context
-
-    def get_initial(self):
-        """
-        Returns initial data to use for the create study form - make default
-        structure field data an empty dict
-        """
-        initial = super().get_initial()
-        initial["structure"] = json.dumps(Study._meta.get_field("structure").default())
-        return initial
+        return reverse("exp:study-details", kwargs=dict(pk=self.object.id))
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -185,7 +156,6 @@ class StudyCreateView(
 class StudyUpdateView(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
-    StudyTypeMixin,
     SingleObjectFetchProtocol[Study],
     generic.UpdateView,
 ):
@@ -223,37 +193,8 @@ class StudyUpdateView(
     test_func = user_can_edit_study
 
     def get_initial(self):
-        """Get initial data for the study update form.
-
-        Provides the exact_text stored in the structure field as the initial
-        value to edit, to preserve ordering and formatting from user's standpoint.
-
-        Provides the initial value of the generator function if current value is empty.
-
-        Returns:
-            A dictionary containing initial data for the form
-
-        """
         initial = super().get_initial()
-
         study = self.object
-        structure = study.structure
-
-        # For editing, display the exact text that was used to generate the structure,
-        # if available. We rely on form validation to make sure structure["exact_text"]
-        # is valid JSON.
-
-        if structure:
-            if "exact_text" in structure:
-                initial["structure"] = structure["exact_text"]
-            else:
-                initial["structure"] = json.dumps(structure)
-        if not study.generator.strip():
-            initial["generator"] = StudyEditForm.base_fields["generator"].initial
-
-        if study.study_type.is_external:
-            initial["external"] = True
-            initial["scheduled"] = study.metadata.get("scheduled", False)
 
         # Must have participated was a huge query, custom form code allowed us to make this
         # large query more efficiently. Because are using custom form fields, we have add the values to initial.
@@ -276,26 +217,7 @@ class StudyUpdateView(
         )
         study.must_have_participated.set(form.cleaned_data["must_have_participated"])
 
-        metadata, meta_errors = self.validate_and_fetch_metadata(
-            study_type=study.study_type
-        )
-        if meta_errors:
-            messages.error(
-                self.request,
-                f'WARNING: Changes to experiment were not saved: {", ".join(meta_errors)}',
-            )
-        else:
-            # Check that study type hasn't changed.
-            if metadata != study.metadata:
-                # Invalidate the previous build
-                study.built = False
-                # May still be building, but we're now good to allow another build
-                study.is_building = False
-                # Update metadata
-                study.metadata = metadata
-
-            study.save()
-            messages.success(self.request, f"{study.name} study details saved.")
+        messages.success(self.request, f"{study.name} study details saved.")
 
         return super().form_valid(form)
 
@@ -308,21 +230,16 @@ class StudyUpdateView(
         In addition to the study, adds several items to the context dictionary.
         """
         context = super().get_context_data(**kwargs)
-
-        context["study_types"] = StudyType.objects.all()
-        context["key_display_names"] = KEY_DISPLAY_NAMES
-        context["key_help_text"] = KEY_HELP_TEXT
         context["save_confirmation"] = self.object.state in [
             "approved",
             "active",
             "paused",
             "deactivated",
         ]
-
         return context
 
     def get_success_url(self):
-        return reverse("exp:study-edit", kwargs={"pk": self.object.id})
+        return reverse("exp:study-details", kwargs={"pk": self.object.id})
 
 
 class StudyListView(
@@ -611,7 +528,7 @@ class ManageResearcherPermissionsView(
             return HttpResponseForbidden()
 
         return HttpResponseRedirect(
-            reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
+            reverse("exp:study", kwargs=dict(pk=self.get_object().pk))
         )
 
     def send_study_email(self, user, permission):
@@ -750,7 +667,7 @@ class ChangeStudyStatusView(
             messages.error(self.request, f"TRANSITION ERROR: {e}")
 
         return HttpResponseRedirect(
-            reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
+            reverse("exp:study", kwargs=dict(pk=self.get_object().pk))
         )
 
     def update_declarations(self, trigger: Text, study: Study):
@@ -875,7 +792,7 @@ class StudyBuildView(
     slug_field = "uuid"
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse("exp:study-detail", kwargs={"pk": str(self.get_object().pk)})
+        return reverse("exp:study", kwargs={"pk": str(self.get_object().pk)})
 
     def user_can_build_study(self):
         user = self.request.user
@@ -1074,3 +991,190 @@ def get_permitted_triggers(view_instance, triggers):
         permitted_triggers.append(trigger)
 
     return permitted_triggers
+
+
+class ExperimentRunnerEditRedirect(
+    ResearcherLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectFetchProtocol[Study],
+    generic.UpdateView,
+):
+    model = Study
+
+    def user_can_edit_study(self):
+        """Test predicate for the experiment runner edit view. Borrowed permissions from study edit view.
+
+        Returns:
+            True if this user can edit this Study, False otherwise
+
+        """
+        user: User = self.request.user
+        study = self.get_object()
+
+        return (
+            user
+            and user.is_researcher
+            and user.has_study_perms(StudyPermission.WRITE_STUDY_DETAILS, study)
+        )
+
+    test_func = user_can_edit_study
+
+    def get(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+        study_type = self.object.study_type
+
+        if study_type.is_ember_frame_player:
+            return redirect(
+                reverse("exp:efp-study-details", kwargs={"pk": self.object.id})
+            )
+        if study_type.is_external:
+            return redirect(
+                reverse("exp:external-study-details", kwargs={"pk": self.object.id})
+            )
+
+
+class ExperimentRunnerEditView(
+    ResearcherLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectFetchProtocol[Study],
+    generic.UpdateView,
+):
+
+    model = Study
+
+    def user_can_edit_study(self):
+        """Test predicate for the experiment runner edit view. Borrowed permissions from study edit view.
+
+        Returns:
+            True if this user can edit this Study, False otherwise
+
+        """
+        user: User = self.request.user
+        study = self.get_object()
+
+        return (
+            user
+            and user.is_researcher
+            and user.has_study_perms(StudyPermission.WRITE_STUDY_DETAILS, study)
+        )
+
+    test_func = user_can_edit_study
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["save_confirmation"] = self.object.state in [
+            "approved",
+            "active",
+            "paused",
+            "deactivated",
+        ]
+        return context
+
+    def get_success_url(self, **kwargs):
+        """Upon successful form submission, change the view to study detail."""
+        return reverse("exp:study", kwargs={"pk": self.object.pk})
+
+
+class EFPEditView(ExperimentRunnerEditView):
+    template_name = "studies/experiment_runner/efp_edit.html"
+    form_class = EFPForm
+
+    def get_initial(self):
+        """Populate Exp Runner with data from the study metadata field.  Also, convert structure code to json."""
+        initial = super().get_initial()
+        study = self.object
+        metadata = study.metadata
+        structure = study.structure
+
+        if "exact_text" in structure:
+            structure = structure.get("exact_text")
+        else:
+            structure = json.dumps(structure)
+
+        initial.update(
+            player_repo_url=metadata.get(
+                "player_repo_url", settings.EMBER_EXP_PLAYER_REPO
+            ),
+            last_known_player_sha=metadata.get("last_known_player_sha"),
+            structure=structure,
+        )
+
+        if not study.generator.strip():
+            initial.update(generator=DEFAULT_GENERATOR)
+
+        return initial
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        """After form has been determined to be valid, place metadata into the appropriate field in the study table. If
+        There are changes to metadata, set to study to NOT BUILT.
+
+        Args:
+            form (BaseModelForm): _description_
+
+        Returns:
+            HttpResponse: _description_
+        """
+        study = self.object
+        metadata = {
+            "player_repo_url": form.cleaned_data["player_repo_url"],
+            "last_known_player_sha": form.cleaned_data["last_known_player_sha"],
+        }
+
+        if metadata != study.metadata:
+            study.built = False
+            study.is_building = False
+            study.metadata = metadata
+
+        return super().form_valid(form)
+
+
+class ExternalEditView(ExperimentRunnerEditView):
+    template_name = "studies/experiment_runner/external_edit.html"
+    form_class = ExternalForm
+
+    def get_success_url(self, **kwargs):
+        """Upon successful form submission, change the view to study detail."""
+        return reverse("exp:study", kwargs={"pk": self.object.pk})
+
+    def get_initial(self):
+        initial = super().get_initial()
+        metadata = self.object.metadata
+
+        # Scheduled is stored as a boolean value, but repesented in the form as a choice field.  We want to
+        # retain the three states this value is stored (true, false, none).
+        scheduled = metadata.get("scheduled")
+        if scheduled is not None:
+            if scheduled:
+                scheduled = ScheduledChoice.scheduled.value
+            else:
+                scheduled = ScheduledChoice.unmoderated.value
+
+        initial.update(
+            scheduled=scheduled,
+            url=metadata.get("url"),
+            scheduling=metadata.get("scheduling"),
+            other_scheduling=metadata.get("other_scheduling"),
+            study_platform=metadata.get("study_platform"),
+            other_study_platform=metadata.get("other_study_platform"),
+        )
+
+        return initial
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        study = self.object
+
+        metadata = {
+            "scheduled": form.cleaned_data["scheduled"]
+            == ScheduledChoice.scheduled.value,
+            "url": form.cleaned_data["url"],
+            "scheduling": form.cleaned_data["scheduling"],
+            "other_scheduling": form.cleaned_data["other_scheduling"],
+            "study_platform": form.cleaned_data["study_platform"],
+            "other_study_platform": form.cleaned_data["other_study_platform"],
+        }
+
+        if metadata != study.metadata:
+            study.built = False
+            study.is_building = False
+            study.metadata = metadata
+
+        return super().form_valid(form)

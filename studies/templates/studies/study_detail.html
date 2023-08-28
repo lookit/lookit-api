@@ -82,14 +82,14 @@
                                class="form-control"
                                id="study-preview-link"
                                value="{% url 'exp:preview-detail' uuid=study.uuid %}"
-                               aria-describedby="copy-link-button"/>
+                               aria-describedby="copy-link-button" />
                         <span onmouseout="removeTooltip(this)"
                               data-toggle="tooltip"
                               class="input-group-addon btn copy-link-button"
                               data-clipboard-target="#study-preview-link">
                             <img src="{% static 'images/clippy.svg' %}"
                                  alt="copy preview link"
-                                 width="13"/>
+                                 width="13" />
                         </span>
                     </div>
                 {% else %}
@@ -109,14 +109,14 @@
                                class="form-control"
                                id="private-study-link"
                                value="{% url 'web:study-detail' study.uuid %}"
-                               aria-describedby="copy-link-button"/>
+                               aria-describedby="copy-link-button" />
                         <span onmouseout="removeTooltip(this)"
                               data-toggle="tooltip"
                               class="input-group-addon btn copy-link-button"
                               data-clipboard-target="#private-study-link">
                             <img src="{% static 'images/clippy.svg' %}"
                                  alt="copy study link"
-                                 width="13"/>
+                                 width="13" />
                         </span>
                     </div>
                 {% else %}
@@ -130,7 +130,7 @@
                   method="post"
                   style="display:none">
                 {% csrf_token %}
-                <input type="hidden" name="clone_study" value="{{ study.id }}"/>
+                <input type="hidden" name="clone_study" value="{{ study.id }}" />
             </form>
             <div class="list-group small">
                 {% if "read_study__responses(is_preview=True)" in study_perms %}
@@ -139,7 +139,9 @@
                 {% endif %}
                 {% if can_edit_study_details %}
                     <a class="list-group-item list-group-item-action"
-                       href="{% url 'exp:study-edit' pk=study.id %}">{% bs_icon "pencil-square" %} Edit Study</a>
+                       href="{% url 'exp:study-edit' pk=study.id %}">{% bs_icon "megaphone-fill" %}Study Ad and Recruitment</a>
+                    <a class="list-group-item list-group-item-action"
+                       href="{% url 'exp:study-details' pk=study.id %}">{% bs_icon "pencil-square" %}Study Details</a>
                 {% endif %}
                 {% if "read_study__responses" in study_perms or "read_study__responses(is_preview=True)" in study_perms %}
                     <a class="list-group-item list-group-item-action"
@@ -161,7 +163,7 @@
                     <a type="button"
                        class="list-group-item list-group-item-action"
                        role="button"
-                       onclick="cloneStudy()"> {% bs_icon "clipboard-check-fill" %} Clone Study</a>
+                       onclick="cloneStudy()">{% bs_icon "clipboard-check-fill" %} Clone Study</a>
                 {% endif %}
             </div>
         </div>

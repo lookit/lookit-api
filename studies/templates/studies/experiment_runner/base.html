@@ -1,0 +1,59 @@
+{% extends "exp/base.html" %}
+{% load django_bootstrap5 %}
+{% load bootstrap_icons %}
+{% load web_extras %}
+{% load static %}
+{% block title %}
+    Edit | {{ study.name }}
+{% endblock title %}
+{% block breadcrumb %}
+    {% breadcrumb %}
+    {% url 'exp:study-list' %} Manage Studies
+    {% url 'exp:study' pk=study.id %} {{ study.name }}
+    Edit
+{% endbreadcrumb %}
+{% endblock breadcrumb %}
+{% block content %}
+    {% url 'exp:study' pk=study.pk as url_study_detail %}
+    {% button_secondary_classes as btn_secondary_classes %}
+    {% button_primary_classes as btn_primary_classes %}
+    {% url 'exp:preview-detail' uuid=study.uuid as url_preview_detail %}
+    {% bs_icon "play-circle" as bs_icon_play_circle %}
+    {% bootstrap_form_errors form %}
+    <div class="col-lg-10 offset-lg-1">
+        <div class="card bg-light my-4">
+            <div class="card-header">
+                <h3 class="card-subtitle my-1">
+                    Study Details
+                    <div class="float-end me-4">
+                        {% bootstrap_button bs_icon_play_circle|add:"Preview Study" href=url_preview_detail button_class=btn_secondary_classes %}
+                    </div>
+                </h3>
+            </div>
+            <div class="card-body">
+                <p>
+                    We have split the study forms into two views for easier navigation.
+                    You can update eligibility and other recruiting information on
+                    the <a href="{% url "exp:study-edit" pk=study.id %}">Study Ad
+                    and Recruitment</a> page.
+                </p>
+                {% block header %}
+                {% endblock header %}
+                <form action="" method="post" class="form">
+                    {% csrf_token %}
+                    {% block form %}
+                    {% endblock form %}
+                    {% if save_confirmation or study.built %}
+                        <p class="text-danger">
+                            Changes to any of these values may cause your study to be rejected or need to be built again.
+                        </p>
+                    {% endif %}
+                    {% form_buttons %}
+                    {% bootstrap_button "Cancel" button_class=btn_secondary_classes href=url_study_detail %}
+                    {% bootstrap_button "Save Changes" button_class=btn_primary_classes type="submit" %}
+                {% endform_buttons %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

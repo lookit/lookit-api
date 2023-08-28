@@ -2,7 +2,7 @@ Dear {{ researcher_name }},
 
 You have been given {{ permission }} permissions to collaborate on {{ study_name }}.
 
-Here is a link to start collaborating: {{ base_url }}{% url 'exp:study-detail' study_id %}.
+Here is a link to start collaborating: {{ base_url }}{% url 'exp:study' study_id %}.
 
 Best,
 {{ lab_name }} Admin

@@ -28,9 +28,7 @@
                         <p>Declarations:</p>
                         <ul>
                             {% for key, value in declarations_dict.submit.items %}
-                                {% if log.extra.declarations|get_key:key %}
-                                    <li>{{ value }}</li>
-                                {% endif %}
+                                {% if log.extra.declarations|get_key:key %}<li>{{ value }}</li>{% endif %}
                             {% endfor %}
                         </ul>
                         {% if log.extra.declarations.issues_description %}<p>{{ log.extra.declarations.issues_description }}</p>{% endif %}

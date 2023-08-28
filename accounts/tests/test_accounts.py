@@ -106,7 +106,7 @@ class AuthenticationTestCase(TestCase):
             reverse("exp:participant-detail", kwargs={"pk": self.participant.pk}),
             reverse("exp:study-participant-analytics"),
             reverse("exp:study-create"),
-            reverse("exp:study-detail", kwargs={"pk": self.study.pk}),
+            reverse("exp:study", kwargs={"pk": self.study.pk}),
             reverse("exp:study-participant-contact", kwargs={"pk": self.study.pk}),
             reverse("exp:study-edit", kwargs={"pk": self.study.pk}),
             reverse("exp:study-responses-list", kwargs={"pk": self.study.pk}),

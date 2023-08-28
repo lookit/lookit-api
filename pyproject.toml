@@ -51,6 +51,7 @@ transitions = "0.9.0"
 uWSGI = "2.0.19.1"
 pillow = "9.4.0"
 django-bootstrap-icons = "0.8.2"
+js2py = "^0.74"
 
 [tool.poetry.group.dev.dependencies]
 coverage = "^7.2"

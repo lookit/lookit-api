@@ -30,13 +30,13 @@
                         {% csrf_token %}
                         {% bootstrap_form form %}
                         {% form_buttons %}
-                            {% bootstrap_button trans_delete button_class="btn-danger" name="deleteChild" %}
-                            {% bootstrap_button trans_cancel href=url_children_list button_class=btn_secondary_classes %}
-                            {% bootstrap_button trans_save button_class=btn_primary_classes %}
-                        {% endform_buttons %}
-                    </div>
-                </form>
-            </div>
+                        {% bootstrap_button trans_delete button_class="btn-danger" name="deleteChild" %}
+                        {% bootstrap_button trans_cancel href=url_children_list button_class=btn_secondary_classes %}
+                        {% bootstrap_button trans_save button_class=btn_primary_classes %}
+                    {% endform_buttons %}
+                </div>
+            </form>
         </div>
     </div>
+</div>
 {% endblock content %}

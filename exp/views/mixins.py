@@ -1,8 +1,6 @@
 from functools import cached_property
 from typing import Dict, Iterable, Optional, Protocol, Type, TypeVar, Union
 
-import requests
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import AnonymousUser
@@ -15,7 +13,7 @@ from guardian.mixins import LoginRequiredMixin
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import User
-from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum
+from studies.models import Lab, Response, Study
 from studies.permissions import StudyPermission
 
 LookitUser = Union[User, AnonymousUser]
@@ -127,99 +125,3 @@ class SingleObjectFetchProtocol(Protocol[ModelType]):
             # Only call get_object() when self.object isn't present.
             self.object: ModelType = super().get_object(queryset)
         return self.object
-
-
-class StudyTypeMixin:
-
-    request: LookitRequest
-
-    def validate_and_fetch_metadata(self, study_type: Optional[StudyType] = None):
-        """Gets the study type and runs hardcoded validations.
-
-        TODO: this is obviously a fragile pattern, and there's probably a better way to do this.
-            Let's think of a way to do this more dynamically in the future.
-
-        :return: A tuple of boolean and tuple, the inner tuple containing error data.
-        """
-        if not study_type:
-            target_study_type_id = self.request.POST["study_type"]
-            study_type = StudyType.objects.get(id=target_study_type_id)
-        metadata = self.extract_type_metadata(study_type=study_type)
-
-        errors = VALIDATIONS.get(study_type.name, is_valid_ember_frame_player)(metadata)
-
-        return metadata, errors
-
-    def extract_type_metadata(self, study_type: StudyType):
-        """
-        Pull the metadata related to the selected StudyType from the POST request
-        """
-        type_fields = study_type.configuration["metadata"]["fields"]
-
-        metadata = {}
-
-        for type_field in type_fields:
-            if type_field["input_type"] == "checkbox":
-                metadata[type_field["name"]] = type_field["name"] in self.request.POST
-            else:
-                metadata[type_field["name"]] = self.request.POST.get(
-                    type_field["name"], None
-                )
-
-        if study_type.is_external:
-            metadata["scheduled"] = self.request.POST.get("scheduled", "") == "on"
-            metadata["other_scheduling"] = self.request.POST.get("other_scheduling", "")
-            metadata["other_study_platform"] = self.request.POST.get(
-                "other_study_platform", ""
-            )
-
-        return metadata
-
-
-def is_valid_ember_frame_player(metadata):
-    """Checks commit sha and player repo url.
-
-    This must fulfill the contract of returning a list. We are exploiting the fact that empty
-    lists evaluate falsey.
-
-    :param metadata: the metadata object containing shas for both frameplayer and addons repo
-    :type metadata: dict
-    :return: a list of errors.
-    :rtype: list.
-    """
-    player_repo_url = metadata.get("player_repo_url", settings.EMBER_EXP_PLAYER_REPO)
-    frameplayer_commit_sha = metadata.get("last_known_player_sha", "")
-
-    errors = []
-
-    if not player_repo_url:
-        errors.append("Frameplayer repo url is not set.")
-    else:
-        if not player_repo_url or not requests.get(player_repo_url).ok:
-            errors.append(f"Frameplayer repo url {player_repo_url} does not work.")
-        if (
-            not player_repo_url
-            or not requests.get(f"{player_repo_url}/commit/{frameplayer_commit_sha}").ok
-        ):
-            errors.append(
-                f"Frameplayer commit {frameplayer_commit_sha} does not exist."
-            )
-
-    return errors
-
-
-def is_valid_external(metadata):
-    errors = []
-
-    if "url" not in metadata or metadata["url"] is None:
-        errors.append("External Study doesn't have URL")
-    if "scheduled" not in metadata:
-        errors.append("External Study doesn't have Scheduled value")
-
-    return errors
-
-
-VALIDATIONS = {
-    StudyTypeEnum.ember_frame_player.value: is_valid_ember_frame_player,
-    StudyTypeEnum.external.value: is_valid_external,
-}
