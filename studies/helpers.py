@@ -43,7 +43,7 @@ def send_mail(
     # TODO: use a custom filter rather than striptags to preserve image placeholders in the
     # custom_email template
     if template_name == "custom_email" and "custom_message" in context_plain_text:
-        image_scheme = re.compile(r"<img .*?>", re.MULTILINE)
+        image_scheme = re.compile(r"<img [^>]*>", re.MULTILINE)
         context_plain_text["custom_message"] = re.sub(
             image_scheme, "[IMAGE]", context_plain_text["custom_message"]
         )
@@ -129,7 +129,7 @@ class FrameActionDispatcher(object):
             current_frame_id: ID of the current frame (e.g. 1-my-video-consent)
         """
 
-    def exit(self, response, frame_data: dict, *args, **kwargs):
+    def exit(self, response, frame_data: dict, *_args, **_kwargs):
         """Exit frame hook.
 
         Args:
@@ -148,7 +148,7 @@ class FrameActionDispatcher(object):
         else:  # Withdrawal is false, do nothing.
             pass
 
-    def consent(self, response, frame_data: dict, current_frame_id, *args, **kwargs):
+    def consent(self, response, _frame_data: dict, current_frame_id, *_args, **_kwargs):
         """Upon saving data from a consent frame, mark the video collected as consent footage.
         This means the participant will have to proceed from the consent frame before
         consent footage is accessible to researchers. Video model is ALSO marked as consent
@@ -158,7 +158,7 @@ class FrameActionDispatcher(object):
 
         Args:
             response: Response Model.
-            frame_data: dictionary of frame data.
+            _frame_data: dictionary of frame data.
             current_frame_id: ID of the current frame (e.g. 1-my-video-consent)
         """
         for video in response.videos.filter(frame_id=current_frame_id):
