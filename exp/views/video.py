@@ -29,7 +29,6 @@ class RenameVideoView(View):
         # of events in the future; some of the Pipe event data includes semicolons which
         # throw the automatic parsing for a loop.
         rawbody = list(request.body)  # bytes to ints
-        # rawbody = [45 if i==59 else i for i in rawbody] # semicolons -> dashes
         postbody = urllib.parse.parse_qs(
             bytes(rawbody).decode("utf-8")
         )  # NOW parse the request string
@@ -37,18 +36,18 @@ class RenameVideoView(View):
         # Authenticate the webhook (see https://addpipe.com/docs#authenticating-webhooks)
         key = settings.PIPE_WEBHOOK_KEY
         # Append the JSON POST data received via webhook to the URL string.
-        thisURL = request.scheme + "://" + request.META["HTTP_HOST"] + request.path
-        message = thisURL + postbody["payload"][0]  # TODO
+        this_url = request.scheme + "://" + request.META["HTTP_HOST"] + request.path
+        message = this_url + postbody["payload"][0]  # TODO
         key = bytes(key, "UTF-8")
         message = bytes(message, "UTF-8")
         # Hash the resulting string with HMAC-SHA1, using the webhook authentication key; generate binary signature.
-        digester = hmac.new(key, message, hashlib.sha1)
-        signatureBinary = digester.digest()
+        digester = hmac.new(key, message, hashlib.sha512())
+        signature_binary = digester.digest()
         # Base64 encode the binary signature.
-        signatureComputed = base64.b64encode(signatureBinary)
+        signature_computed = base64.b64encode(signature_binary)
         # Compare to the one in the header
-        signatureSent = bytes(request.META["HTTP_X_PIPE_SIGNATURE"], "UTF-8")
-        authenticated = signatureComputed == signatureSent
+        signature_sent = bytes(request.META["HTTP_X_PIPE_SIGNATURE"], "UTF-8")
+        authenticated = signature_computed == signature_sent
 
         d = ast.literal_eval(
             postbody["payload"][0]
@@ -57,7 +56,6 @@ class RenameVideoView(View):
         if authenticated and (
             d["data"]["s3UploadStatus"] == "upload success"
         ):  # Go ahead and move the file
-
             new_name = d["data"]["payload"]
 
             if not new_name:  # Make sure we don't have an empty payload string
