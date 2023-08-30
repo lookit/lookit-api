@@ -247,15 +247,15 @@ class StudyType(models.Model):
 
     @property
     def is_ember_frame_player(self):
-        return self.name == StudyTypeEnum.ember_frame_player.value
+        return self.id == 1
 
     @property
     def is_external(self):
-        return self.name == StudyTypeEnum.external.value
+        return self.id == 2
 
     @property
     def is_jspsych(self):
-        return self.name == StudyTypeEnum.jspsych.value
+        return self.id == 3
 
     @property
     def display_name(self):
