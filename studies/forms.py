@@ -557,6 +557,17 @@ class JSPsychForm(ModelForm):
         help_text="Please enter jsPysch experiment code.",
     )
 
+    def clean_experiment(self):
+        try:
+            experiment = self.cleaned_data["experiment"]
+
+            js2py.eval_js(experiment)
+            return experiment
+        except js2py.internals.simplex.JsException:
+            raise forms.ValidationError(
+                "Experiment javascript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost."
+            )
+
     class Meta:
         model = Study
         fields = ()
