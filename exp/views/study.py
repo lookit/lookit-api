@@ -33,12 +33,13 @@ from studies.forms import (
     DEFAULT_GENERATOR,
     EFPForm,
     ExternalForm,
+    JSPsychForm,
     ScheduledChoice,
     StudyCreateForm,
     StudyEditForm,
 )
 from studies.helpers import send_mail
-from studies.models import Study
+from studies.models import Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 from studies.queries import get_study_list_qs
 from studies.tasks import ember_build_and_gcp_deploy
@@ -993,7 +994,7 @@ def get_permitted_triggers(view_instance, triggers):
     return permitted_triggers
 
 
-class ExperimentRunnerEditRedirect(
+class ExperimentRunnerRedirect(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectFetchProtocol[Study],
@@ -1020,16 +1021,18 @@ class ExperimentRunnerEditRedirect(
     test_func = user_can_edit_study
 
     def get(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
-        study_type = self.object.study_type
+        study_type: StudyType = self.object.study_type
 
         if study_type.is_ember_frame_player:
-            return redirect(
-                reverse("exp:efp-study-details", kwargs={"pk": self.object.id})
-            )
+            url = reverse("exp:efp-study-details", kwargs={"pk": self.object.id})
+
         if study_type.is_external:
-            return redirect(
-                reverse("exp:external-study-details", kwargs={"pk": self.object.id})
-            )
+            url = reverse("exp:external-study-details", kwargs={"pk": self.object.id})
+
+        if study_type.is_jspsych:
+            url = reverse("exp:jspsych-study-details", kwargs={"pk": self.object.id})
+
+        return redirect(url)
 
 
 class ExperimentRunnerEditView(
@@ -1068,7 +1071,7 @@ class ExperimentRunnerEditView(
         ]
         return context
 
-    def get_success_url(self, **kwargs):
+    def get_success_url(self, **_kwargs):
         """Upon successful form submission, change the view to study detail."""
         return reverse("exp:study", kwargs={"pk": self.object.pk})
 
@@ -1135,10 +1138,6 @@ class ExternalEditView(ExperimentRunnerEditView):
     template_name = "studies/experiment_runner/external_edit.html"
     form_class = ExternalForm
 
-    def get_success_url(self, **kwargs):
-        """Upon successful form submission, change the view to study detail."""
-        return reverse("exp:study", kwargs={"pk": self.object.pk})
-
     def get_initial(self):
         initial = super().get_initial()
         metadata = self.object.metadata
@@ -1175,6 +1174,30 @@ class ExternalEditView(ExperimentRunnerEditView):
             "study_platform": form.cleaned_data["study_platform"],
             "other_study_platform": form.cleaned_data["other_study_platform"],
         }
+
+        if metadata != study.metadata:
+            study.built = False
+            study.is_building = False
+            study.metadata = metadata
+
+        return super().form_valid(form)
+
+
+class JSPsychEditView(ExperimentRunnerEditView):
+    template_name = "studies/experiment_runner/jspsych_edit.html"
+    form_class = JSPsychForm
+
+    def get_initial(self) -> Dict[str, Any]:
+        initial = super().get_initial()
+        metadata = self.object.metadata
+
+        initial.update(experiment=metadata.get("experiment"))
+
+        return initial
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        study = self.object
+        metadata = {"experiment": form.cleaned_data["experiment"]}
 
         if metadata != study.metadata:
             study.built = False
