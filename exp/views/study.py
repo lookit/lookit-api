@@ -1021,18 +1021,19 @@ class ExperimentRunnerRedirect(
     test_func = user_can_edit_study
 
     def get(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
-        study_type: StudyType = self.object.study_type
+        study = self.object
+        study_type: StudyType = study.study_type
 
         if study_type.is_ember_frame_player:
-            url = reverse("exp:efp-study-details", kwargs={"pk": self.object.id})
+            view_name = "exp:efp-study-details"
 
         if study_type.is_external:
-            url = reverse("exp:external-study-details", kwargs={"pk": self.object.id})
+            view_name = "exp:external-study-details"
 
         if study_type.is_jspsych:
-            url = reverse("exp:jspsych-study-details", kwargs={"pk": self.object.id})
+            view_name = "exp:jspsych-study-details"
 
-        return redirect(url)
+        return redirect(reverse(view_name, kwargs={"pk": study.id}))
 
 
 class ExperimentRunnerEditView(
