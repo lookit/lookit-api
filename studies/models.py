@@ -232,6 +232,7 @@ def notify_lab_of_approval(sender, instance, **kwargs):
 class StudyTypeEnum(Enum):
     external = "External Study (Choose this if you are posting a study link rather using an experiment builder)"
     ember_frame_player = "Lookit/Ember Frame Player (Default experiment builder)"
+    jspsych = "jsPsych"
 
 
 class StudyType(models.Model):
@@ -251,6 +252,10 @@ class StudyType(models.Model):
     @property
     def is_external(self):
         return self.name == StudyTypeEnum.external.value
+
+    @property
+    def is_jspsych(self):
+        return self.name == StudyTypeEnum.jspsych.value
 
     @property
     def display_name(self):
@@ -273,7 +278,6 @@ def default_study_structure():
 
 
 class Study(models.Model):
-
     MONITORING_FIELDS = [
         "structure",
         "generator",
@@ -420,7 +424,6 @@ class Study(models.Model):
         return None
 
     def __init__(self, *args, **kwargs):
-
         super(Study, self).__init__(*args, **kwargs)
         self.machine = Machine(
             self,
@@ -653,7 +656,6 @@ class Study(models.Model):
         )
 
     def notify_submitter_of_approval(self, ev):
-
         context = {
             "study_name": self.name,
             "study_id": self.pk,
