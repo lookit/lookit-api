@@ -1,0 +1,13 @@
+{% extends "studies/experiment_runner/base.html" %}
+{% load django_bootstrap5 %}
+{% load static %}
+{% load web_extras %}
+{% block head %}
+    {{ block.super }}
+    {% comment %} ace editor fix cannot be defered {% endcomment %}
+    <script src="{% static 'js/ace-editor.js' %}"></script>
+    {{ form.media }}
+{% endblock head %}
+{% block form %}
+    {% bootstrap_form form label_class="fw-bold" %}
+{% endblock form %}
