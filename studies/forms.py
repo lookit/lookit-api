@@ -563,7 +563,7 @@ class JSPsychForm(ModelForm):
             return experiment
         except js2py.internals.simplex.JsException:
             raise forms.ValidationError(
-                "Experiment javascript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost."
+                "JsPsych JavaScript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost."
             )
 
     class Meta:
