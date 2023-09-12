@@ -458,9 +458,12 @@ class EFPForm(ModelForm):
 
             js2py.eval_js(generator)
             return generator
-        except js2py.internals.simplex.JsException:
+        except js2py.internals.simplex.JsException as err:
             raise forms.ValidationError(
-                "Generator javascript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost."
+                [
+                    "Generator javascript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost.",
+                    err,
+                ]
             )
 
     def clean_player_repo_url(self):
