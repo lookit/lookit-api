@@ -554,16 +554,20 @@ class JSPsychForm(ModelForm):
         ),
         help_text="Please enter jsPysch experiment code.",
     )
+    player_sha = forms.CharField()
 
     def clean_experiment(self):
         try:
             experiment = self.cleaned_data["experiment"]
 
-            js2py.eval_js(experiment)
+            # js2py.eval_js6(experiment)
             return experiment
-        except js2py.internals.simplex.JsException:
+        except js2py.internals.simplex.JsException as err:
             raise forms.ValidationError(
-                "JsPsych JavaScript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost."
+                [
+                    "JsPsych JavaScript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost.",
+                    err,
+                ]
             )
 
     class Meta:
