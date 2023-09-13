@@ -811,13 +811,16 @@ class StudyBuildView(
     test_func = user_can_build_study
 
     def post(self, request, *args, **kwargs):
-        study = self.get_object()
+        study = self.object
         study.is_building = True
         study.save(update_fields=["is_building"])
         ember_build_and_gcp_deploy.delay(study.uuid, self.request.user.uuid)
         messages.success(
             request,
-            f"Scheduled experiment runner build for {study.name}. You will be emailed when it's completed. This may take up to 30 minutes.",
+            (
+                f"Scheduled experiment runner build for {study.name}. You will "
+                "be emailed when it's completed. This may take up to 30 minutes."
+            ),
         )
         return super().post(request, *args, **kwargs)
 
@@ -1192,13 +1195,18 @@ class JSPsychEditView(ExperimentRunnerEditView):
         initial = super().get_initial()
         metadata = self.object.metadata
 
-        initial.update(experiment=metadata.get("experiment"))
+        initial.update(
+            experiment=metadata.get("experiment"), player_sha=metadata.get("player_sha")
+        )
 
         return initial
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         study = self.object
-        metadata = {"experiment": form.cleaned_data["experiment"]}
+        metadata = {
+            "experiment": form.cleaned_data["experiment"],
+            "player_sha": form.cleaned_data["player_sha"],
+        }
 
         if metadata != study.metadata:
             study.built = False
