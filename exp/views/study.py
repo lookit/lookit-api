@@ -877,9 +877,42 @@ class StudyPreviewDetailView(
         TODO: No more POST masquerading as GET, rewrite the template and both the
             web and researcher views to be more reasonably sane.
         """
-        child_id = self.request.POST.get("child_id")
-        kwargs["child_id"] = child_id
-        return HttpResponseRedirect(reverse("exp:preview-proxy", kwargs=kwargs))
+        study: Study = self.get_object()
+        child: Child = Child.objects.get(uuid=self.request.POST.get("child_id"))
+
+        if study.study_type.is_ember_frame_player:
+            # EFP confuses "id" and "uuid"
+            kwargs["child_id"] = child.uuid
+            return HttpResponseRedirect(reverse("exp:preview-proxy", kwargs=kwargs))
+        else:
+            return redirect(
+                reverse(
+                    "exp:preview-jspsych", kwargs={"pk": study.id, "child_id": child.id}
+                )
+            )
+
+
+class JsPsychPreviewView(
+    ResearcherAuthenticatedRedirectMixin,
+    ResearcherLoginRequiredMixin,
+    UserPassesTestMixin,
+    generic.DetailView,
+):
+    template_name = "../../web/templates/web/jspsych-study-detail.html"
+    model = Study
+
+    def can_preview(self):
+        user = self.request.user
+        study = self.get_object()
+        # Relevant permission in order to preview is READ_STUDY_DETAILS (previewing is essentially
+        # examining the study protocol configuration), rather than READY_STUDY_PREVIEW_DATA
+        # (which has to do with accessing data from other preview sessions)
+        return user.is_researcher and (
+            user.has_study_perms(StudyPermission.READ_STUDY_DETAILS, study)
+            or (study.shared_preview and user.is_researcher)
+        )
+
+    test_func = can_preview
 
 
 class PreviewProxyView(
