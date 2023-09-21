@@ -203,8 +203,8 @@ class AccountManagementView(LoginRequiredMixin, generic.TemplateView):
         if form.is_valid():
             # Execute the action indicated by the form handle.
             if action == "update-account":
-                user = form.save()
-                messages.success(request, f"{user} Successfully saved")
+                form.save()
+                messages.success(request, "Account information successfully saved")
             elif action == "change-password":
                 user = form.save()
                 # Re-cycle session for user.

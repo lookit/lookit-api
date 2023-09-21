@@ -50,7 +50,8 @@ class EFPFormTestCase(TestCase):
             form.errors,
             {
                 "generator": [
-                    "Generator javascript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost."
+                    "Generator javascript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost.",
+                    "SyntaxError: Line 1: Unexpected identifier",
                 ]
             },
         )
