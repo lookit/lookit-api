@@ -3120,7 +3120,7 @@ msgid "\n"
 "                <li>Your demographic data</i>\n"
 "                <li>The study data for this particular study session</li>\n"
 "            </ul>"
-msgstr "            <ul>\n"
+msgstr "<ul>\n"
 "                <li>あなたのアカウント情報</li>\n"
 "                <li>研究・調査に参加するお子さんに関する情報</li>\n"
 "                <li>あなたの人口統計学的情報</i>\n"
@@ -3704,39 +3704,39 @@ msgstr "Children Helping Scienceプラットフォームには <a href = \"https
 
 #: web/templates/web/garden/about.html:13
 msgid "What is Project Garden?"
-msgstr "NO NEED TO TRANSLATE"
+msgstr "#NO NEED TO TRANSLATE"
 
 #: web/templates/web/garden/home.html:14
 msgid "Welcome to"
-msgstr "NO NEED TO TRANSLATE"
+msgstr "#NO NEED TO TRANSLATE"
 
 #: web/templates/web/garden/participate.html:16
 msgid "How to Participate"
-msgstr "NO NEED TO TRANSLATE"
+msgstr "#NO NEED TO TRANSLATE"
 
 #: web/templates/web/garden/scientists.html:13
 msgid "Meet the GARDEN Scientists"
-msgstr "NO NEED TO TRANSLATE"
+msgstr "#NO NEED TO TRANSLATE"
 
 #: web/templates/web/home.html:71
 msgid "Join researchers from these schools, and many more!"
-msgstr "NO NEED TO TRANSLATE"
+msgstr "#NO NEED TO TRANSLATE"
 
 #: web/templates/web/home.html:83
 msgid "Interested in participating in a project with many studies? Learn more about "
-msgstr "NO NEED TO TRANSLATE"
+msgstr "#NO NEED TO TRANSLATE"
 
 #: web/templates/web/home.html:83
 msgid "Project GARDEN"
-msgstr "NO NEED TO TRANSLATE"
+msgstr "#NO NEED TO TRANSLATE"
 
 #: web/templates/web/home.html:86
 msgid "In this series of studies, your child will help an animated fox named Fen find the “GARDEN Library” while playing games to help Children Helping Science understand children's development from many different angles!"
-msgstr "NO NEED TO TRANSLATE"
+msgstr "#NO NEED TO TRANSLATE"
 
 #: web/templates/web/home.html:89
 msgid "See our current studies for different age groups:"
-msgstr "NO NEED TO TRANSLATE"
+msgstr "#NO NEED TO TRANSLATE"
 
 #: web/templates/web/participant-signup.html:7
 msgid "Sign up to participate"
@@ -3762,6 +3762,7 @@ msgstr "Lookitは、さまざまな研究者が、子供の学習や発達過程
 "LookitはMITのEarly Childhood Cognition Lab（幼児認知研究室）によって運営され、その研究室はLookitで収集されたすべてのデータにアクセスすることができる。\n"
 "Lookit 上で特定の調査を行う研究者は、ご家族がその調査への参加に同意した場合のみ、ご家族の個人情報にアクセスできます。"
 
+#. Copied
 #: web/templates/web/privacy.html:33
 msgid "<ul>\n"
 "        <li>Account data: basic contact information that may include your email address, nickname, mailing\n"
@@ -3774,14 +3775,21 @@ msgid "<ul>\n"
 "            video of your family participating in the study, text entered in forms, the particular images that\n"
 "            were shown, the timing of progression through the study, etc.</li>\n"
 "        </ul>"
-msgstr ""
+msgstr "<ul>\n"
+"                <li>アカウントに関するデータ：メールアドレス、ニックネーム、住所、連絡方法の設定など、基本的な連絡先に関する情報。</li>\n"
+"                <li>お子さんに関するデータ：お子さんのニックネーム、生年月日、出生時の在胎週数など、お子さんに関する基本的な成育歴の情報。</li>\n"
+"                <li>人口統計に関するデータ：あなたの母語、人種、年齢、学歴、特定の疾患に関する家族情報といった、家族背景および経歴に関する情報。</li>\n"
+"                <li>研究・調査に関するデータ：研究・調査への参加中に記録されたwebカメラの録画映像、フォームに入力されたテキスト、提示された特定の画像、参加中の進捗のタイミングに関する情報など、Lookit上で実施された特定の研究・調査で収集された反応。</li>\n"
+"</ul>"
 
+#. Copied
 #: web/templates/web/privacy.html:48
 msgid "The information we collect and maintain about you is the information you provide to us when registering\n"
 "        for a Lookit account, registering your children, updating your account or your children’s profiles,\n"
 "        completing or updating surveys, or participating in individual Lookit studies."
-msgstr ""
+msgstr "収集・保持する個人情報とは、Lookitアカウントの登録、お子さんの登録、アカウントやお子さんのプロフィールの更新、アンケートへの記入や更新、Lookitを使った個々の研究・調査への参加などの際に、あなたが提供する情報のことを指します。"
 
+#. Copied
 #: web/templates/web/privacy.html:60
 msgid "\n"
 "        <ul>\n"
@@ -3790,14 +3798,21 @@ msgid "\n"
 "            <li>Your demographic data</i>\n"
 "            <li>The study data for this particular study session</li>\n"
 "        </ul>"
-msgstr ""
+msgstr " <ul>\n"
+"                <li>あなたのアカウント情報</li>\n"
+"                <li>研究・調査に参加するお子さんに関する情報</li>\n"
+"                <li>あなたの人口統計学的情報</i>\n"
+"                <li>今回参加する研究・調査セッションで収集されたデータ</li>\n"
+"            </ul>"
 
+#. copied
 #: web/templates/web/privacy.html:71
 msgid "Researchers may publish the results of a study, including individual responses. However, although they\n"
 "        may publish the ages of participants, they may not publish participant birthdates (or information that\n"
 "    could be used to calculate birthdates)."
-msgstr ""
+msgstr "研究者は、個人の回答を含む研究・調査の結果を公表する場合があります。なお、参加者の年齢が公表されることはありますが、参加者の生年月日（または生年月日の計算に利用できる情報）が公表されることはありません。"
 
+#. Copied
 #: web/templates/web/privacy.html:76
 msgid "We and/or the researchers responsible for a study may share video of your family’s participation for\n"
 "        scientific, educational, and/or publicity purposes, but only if you choose at the conclusion of a study\n"
@@ -3805,14 +3820,16 @@ msgid "We and/or the researchers responsible for a study may share video of your
 "        at the conclusion of a study to allow that. We don’t publish video of participants such that it can be\n"
 "        linked to individual demographic data (e.g., household income or number of parents/guardians), and\n"
 "    researchers must also agree not to do so in order to use Lookit."
-msgstr ""
+msgstr "Lookitチーム、または研究・調査を担当する研究者は、あなたが研究・調査の終了時に承諾した場合に限り、科学・教育・広報活動のために、あなたのご家族が研究・調査に参加している最中の動画を公開することがあります。また、研究者は、あなたが研究・調査の終了時に承諾した場合に限り、動画やその他のデータをデータブラリー（Databrary）と共有することがあります。なお、個人の人口統計に関するデータ（例：世帯収入や養育者の人数など）に紐づけられるような動画が公開されることはありませんし、研究者がLookitを使用するためには、この事項に同意しなければなりません。"
 
+#. copied
 #: web/templates/web/privacy.html:84
 msgid "We don’t share, sell, publish, or otherwise disclose your contact information (email and/or mailing\n"
 "        address) to anyone but the researchers involved in a study. Researchers must also agree not to disclose\n"
 "        your contact information in order to use Lookit."
-msgstr ""
+msgstr "あなたの連絡先情報（メールアドレスや住所など）が、研究・調査に関与する研究者以外に共有・販売・公開またはその他の方法で開示されることはありません。研究者がLookitを使用するためには、連絡先情報を開示しないことに同意しなければなりません。"
 
+#. copied
 #: web/templates/web/privacy.html:94
 msgid "<ul>\n"
 "        <li>Provide you with the research studies you have enrolled in, and information about which studies your\n"
@@ -3832,15 +3849,26 @@ msgid "<ul>\n"
 "            having fun – ONLY if you have chosen to allow use of the video for publicity)</li>\n"
 "        </ul>\n"
 "        "
-msgstr ""
+msgstr "<ul>\n"
+"                <li>あなたが登録した研究・調査や、お子さんがどの研究・調査の対象になるかの情報をお知らせするため</li>\n"
+"                <li>あなたの興味・関心に重なる可能性のある研究・調査に関する情報、複数のパートに分かれた研究・調査への参加リマインド、参加された研究・調査の結果などを、連絡先設定に応じてお送りするため\n"
+"                </li>\n"
+"                <li>Lookitプラットフォームの改善のため（例：技術的問題の特定・修正、役に立つ新機能の同定など）</li>\n"
+"                <li>Lookitを使う研究者のためのデータ解析ツールの開発のため</li>\n"
+"                <li>研究者への技術的支援を提供するため</li>\n"
+"                <li>Lookitプラットフォーム上で収集されたデータの質を評価するため（例：子どもが見ている方向を分析担当者がどのくらい正確に記述できるか、など）</li>\n"
+"                <li>E参加者の募集や研究・調査への参加負担を評価するため（例：農村部・都市部のそれぞれからの参加者数を調べる、など）</li>\n"
+"                <li>Lookitを使用する参加者や研究者を募集するため（例：お子さんが楽しく研究・調査に参加している様子の短い動画を公開する、など　※そのような動画の使用が承諾されている場合に限ります）</li>\n"
+"            </ul>"
 
+#. copied
 #: web/templates/web/privacy.html:113
 msgid "Researchers use the data collected in their studies to address particular scientific questions. It may\n"
 "            also turn out that data collected for one study can help to answer a related question later on. If\n"
 "            researchers are using any additional information about you in their study, beyond what is collected on\n"
 "            Lookit – for instance, if you are participating in a follow-up online session for an in-person study –\n"
 "            they must tell you that in the study consent form."
-msgstr ""
+msgstr "研究者は、研究・調査で収集したデータを使って、特定の科学的な問いに取り組みます。また、ある研究・調査で収集されたデータが、のちに関連する別の問題に答えることに役立つと判明する場合もあります。なお、Lookit上で収集された情報以外の追加情報が研究・調査に用いられる場合（例：対面での研究・調査のための追試を目的としたオンライン調査に参加している場合など）、研究者は研究参加同意書にその旨を記載しなければなりません。 "
 
 #: web/templates/web/privacy.html:122
 msgid "\n"
@@ -3886,11 +3914,13 @@ msgid "We may collect basic biographic/contact information about you and your re
 "    including name, title, business addresses, phone numbers, and email addresses."
 msgstr ""
 
+#. Copied
 #: web/templates/web/privacy.html:172
 msgid "The information we collect and maintain about you is that which you have provided to us when registering\n"
 "        to use Lookit, updating your profile, or creating or editing a study."
-msgstr ""
+msgstr "収集・保持する個人情報とは、Lookitの利用登録、プロフィールの更新、研究・調査の新規作成や編集などを行う際に、あなたが提供する情報のことを指します"
 
+#. copied
 #: web/templates/web/privacy.html:181
 msgid "<ul>\n"
 "            <li>Provide you with the research services for which you have enrolled.</li>\n"
@@ -3899,7 +3929,11 @@ msgid "<ul>\n"
 "                research purposes in support of our mission.</li>\n"
 "        </ul>\n"
 "        "
-msgstr ""
+msgstr "<ul>\n"
+"                <li>登録した分析サービスを提供する。</li>\n"
+"                <li>内部記録の保持のために、管理上の業務を遂行する。</li>\n"
+"                <li>Lookitプラットフォームのミッションをサポートするための統計的分析のために、ユーザーに関する (完全に匿名化された) 集計情報を作成・分析する。</li>\n"
+"            </ul>"
 
 #: web/templates/web/privacy.html:207
 msgid "We have implemented industry-standard security safeguards designed to protect the personal information\n"
@@ -3988,11 +4022,11 @@ msgstr "連絡先"
 
 #: web/templates/web/studies-list.html:65
 msgid "Want to learn more about research with babies & children? Check out the "
-msgstr "NO NEED TO TRANSLATE"
+msgstr "#NO NEED TO TRANSLATE"
 
 #: web/templates/web/studies-list.html:69
 msgid "page for activities to try at home and developmental labs near you!"
-msgstr "NO NEED TO TRANSLATE"
+msgstr "#NO NEED TO TRANSLATE"
 
 #: web/templates/web/study-detail.html:150
 msgid "This study runs on another website, and clicking to participate will take you to that link."
