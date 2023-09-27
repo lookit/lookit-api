@@ -48,21 +48,22 @@ msgstr "どちらの国にお住まいですか？"
 msgid "What state do you live in?"
 msgstr "どの都道府県にお住まいですか？"
 
+#. is this asking about the "environment" as in safety, neighborhood, and/or SES class of the place?
 #: accounts/forms.py:335
 msgid "How would you describe the area where you live?"
 msgstr "住んでいる地域をどんなところですか？"
 
 #: accounts/forms.py:314
 msgid "What language(s) does your family speak at home?"
-msgstr "ご家庭は何語を話しますか？"
+msgstr "ご家庭では何語を話しますか？（複数回答可）"
 
 #: accounts/forms.py:336
 msgid "How many children do you have?"
-msgstr "お子さんは何人いますか？"
+msgstr "お子様は何人いますか？"
 
 #: accounts/forms.py:337
 msgid "For each child, please enter his or her birthdate:"
-msgstr "お子さん一人一人の生年月日を記入してください。"
+msgstr "お子様一人一人の生年月日を記入してください。"
 
 #: accounts/forms.py:339
 msgid "How many parents/guardians do your children live with?"
@@ -94,11 +95,11 @@ msgstr "あなたの家には児童書が何冊程度ありますか？"
 
 #: accounts/forms.py:349
 msgid "Anything else you'd like us to know?"
-msgstr "何か他に私たちが知っておくべきことはありますか？"
+msgstr "他に何か私たちが知っておくべきことはありますか？"
 
 #: accounts/forms.py:350
 msgid "How did you hear about Lookit?"
-msgstr "Lookitをどのように知りましたか？"
+msgstr "Lookitをどのようにして知りましたか？"
 
 #: accounts/forms.py:341
 msgid "If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain."
@@ -106,7 +107,7 @@ msgstr "共同親権に関する取り決めや旅行などによって回答が
 
 #: accounts/forms.py:377
 msgid "This lets us figure out exactly how old your child is when they participate in a study. We never publish children's birthdates or information that would allow a reader to calculate the birthdate."
-msgstr "こちらは、調査参加時にお子さんが何歳であったかを正確に把握するためです。お子さんの誕生日や、誕生日を計算できるような情報は決して公開しません。"
+msgstr "こちらは、調査参加時にお子さんが何歳であったかを正確に把握するためです。お子さんの誕生日や、誕生日を計算できるような情報は決して公開いたしません。"
 
 #: accounts/forms.py:384
 msgid "Birthdays cannot be in the future."
@@ -129,7 +130,7 @@ msgstr "出産時の妊娠期間"
 
 #: accounts/forms.py:406 accounts/forms.py:462
 msgid "Any additional information you'd like us to know"
-msgstr "何か他に私たちが知っておくべきことはありますか？"
+msgstr "他に何か私たちが知っておくべきことはありますか？"
 
 #: accounts/forms.py:408 accounts/forms.py:464
 msgid "Characteristics and conditions"
@@ -145,7 +146,7 @@ msgstr "こちらは、研究に参加できるお子さんを選択するため
 
 #: accounts/forms.py:419 accounts/forms.py:475
 msgid "For instance, diagnosed developmental disorders or vision or hearing problems"
-msgstr "例えば、診断を受けた発達障害、視力・聴力の問題"
+msgstr "例えば、診断を受けた発達障がい、視力・聴力の障がい"
 
 #: accounts/forms.py:422
 msgid "Please round down to the nearest full week of pregnancy completed"
@@ -154,7 +155,7 @@ msgstr "数字を切り捨てて、妊娠週数に最も近いものにしてく
 #: accounts/migrations/0041_add_existing_conditions.py:12
 #: accounts/models.py:320 studies/fields.py:136
 msgid "Not sure or prefer not to answer"
-msgstr "わからりません／答えたくないありません"
+msgstr "わからない／答えたくない"
 
 #: accounts/migrations/0041_add_existing_conditions.py:13
 #: accounts/models.py:321 studies/fields.py:137
@@ -247,58 +248,72 @@ msgid "40 or more weeks"
 msgstr "40週以上"
 
 #: accounts/models.py:85
+#, fuzzy
 msgid "Can View Organization"
 msgstr "所属機関を見ることができる"
 
 #: accounts/models.py:86
+#, fuzzy
 msgid "Can Edit Organization"
 msgstr "所属機関を編集することができる"
 
 #: accounts/models.py:87
+#, fuzzy
 msgid "Can Create Organization"
 msgstr "所属機関を作成することができる"
 
 #: accounts/models.py:88
+#, fuzzy
 msgid "Can Remove Organization"
 msgstr "所属機関を削除することができる"
 
 #: accounts/models.py:89
+#, fuzzy
 msgid "Can View Experimenter"
 msgstr "研究者を見ることができる"
 
 #: accounts/models.py:90
+#, fuzzy
 msgid "Can View Analytics"
 msgstr "統計を表示することができる"
 
 #: accounts/models.py:305
+#, fuzzy
 msgid "Can Create User"
 msgstr "ユーザーを作成できる"
 
 #: accounts/models.py:306
+#, fuzzy
 msgid "Can View User"
 msgstr "ユーザーを表示できる"
 
 #: accounts/models.py:307
+#, fuzzy
 msgid "Can Edit User"
 msgstr "ユーザーを編集できる"
 
 #: accounts/models.py:308
+#, fuzzy
 msgid "Can Remove User"
 msgstr "ユーザーを削除できる"
 
 #: accounts/models.py:309
+#, fuzzy
 msgid "Can View User Permissions"
 msgstr "ユーザー権限を表示できる"
 
 #: accounts/models.py:310
+#, fuzzy
 msgid "Can Edit User Permissions"
 msgstr "ユーザー権限を編集できる"
 
 #: accounts/models.py:311
+#, fuzzy
 msgid "Can Read All User Data"
 msgstr "すべてのユーザーデータを読み取れる"
 
 #: accounts/models.py:312
+#, fuzzy
 msgid "Can Read User Usernames"
 msgstr "ユーザー名を読み取れる"
 
@@ -320,7 +335,7 @@ msgstr "答えたくありません"
 
 #: accounts/models.py:406
 msgid "White"
-msgstr "白"
+msgstr "白人"
 
 #: accounts/models.py:407
 msgid "Hispanic, Latino, or Spanish origin"
@@ -332,11 +347,11 @@ msgstr "黒人またはアフリカ系アメリカ人"
 
 #: accounts/models.py:409
 msgid "Asian"
-msgstr "アジア人"
+msgstr "アジア系"
 
 #: accounts/models.py:410
 msgid "American Indian or Alaska Native"
-msgstr "ネイティブアメリカンまたはアラスカ原住民"
+msgstr "ネイティブアメリカンまたはアラスカ原住民族"
 
 #: accounts/models.py:411
 msgid "Middle Eastern or North African"
@@ -344,11 +359,11 @@ msgstr "中近東または北アフリカ"
 
 #: accounts/models.py:412
 msgid "Native Hawaiian or Other Pacific Islander"
-msgstr "ネイティブハワイアンまたはその他の太平洋諸島人"
+msgstr "ハワイ先住民族またはその他の太平洋諸島民族"
 
 #: accounts/models.py:413
 msgid "Another race, ethnicity, or origin"
-msgstr "その他の人種・民族・出身"
+msgstr "その他の人種・民族"
 
 #: accounts/models.py:416 accounts/models.py:425
 msgid "some or attending high school"
@@ -356,7 +371,7 @@ msgstr "現在高校生または高校中退"
 
 #: accounts/models.py:417 accounts/models.py:426
 msgid "high school diploma or GED"
-msgstr "高校卒業"
+msgstr "高校卒業または高等学校卒業程度認定（全教科）"
 
 #: accounts/models.py:418 accounts/models.py:427
 msgid "some or attending college"
@@ -472,13 +487,14 @@ msgstr "60-69"
 
 #: accounts/models.py:459
 msgid "70 or over"
-msgstr "70以上"
+msgstr "70歳以上"
 
 #: accounts/models.py:450
 msgid "3 or more"
 msgstr "3以上"
 
 #: accounts/models.py:450
+#, fuzzy
 msgid "varies"
 msgstr "変化する"
 
@@ -641,6 +657,7 @@ msgid "State"
 msgstr "都道府県"
 
 #: accounts/templates/accounts/participant_detail.html:68
+#, fuzzy
 msgid "Area description"
 msgstr "地域の説明"
 
@@ -650,7 +667,7 @@ msgstr "家庭で使われている言語"
 
 #: accounts/templates/accounts/participant_detail.html:76
 msgid "Number of Children"
-msgstr "子供の数"
+msgstr "子供の人数"
 
 #: accounts/templates/accounts/participant_detail.html:80
 msgid "Children current ages"
@@ -658,17 +675,18 @@ msgstr "子供の現在の年齢"
 
 #: accounts/templates/accounts/participant_detail.html:91
 msgid "Number of Guardians"
-msgstr "保護者の数"
+msgstr "保護者の人数"
 
 #: accounts/templates/accounts/participant_detail.html:98
 msgid "Explanation for Guardians:"
-msgstr "保護者に関する説明："
+msgstr "保護者に対しての説明："
 
 #: accounts/templates/accounts/participant_detail.html:106
 msgid "Race"
 msgstr "人種"
 
 #: accounts/forms.py:222
+#, fuzzy
 msgid "Nickname"
 msgstr "ユーザー名"
 
@@ -749,6 +767,7 @@ msgid "Your password was changed."
 msgstr "パスワードが変更されました。"
 
 #: web/templates/registration/password_change_form.html:12
+#, fuzzy
 msgid "Documentation"
 msgstr "概要"
 
@@ -791,7 +810,7 @@ msgstr "パスワードのリセットが完了しました。"
 
 #: web/templates/registration/password_reset_complete.html:12
 msgid "Your password has been set.  You may go ahead and log in now."
-msgstr "パスワードが設定されています。今すぐログインしてください。"
+msgstr "パスワードが設定されました。ログインすることができます。"
 
 #: web/templates/registration/password_reset_complete.html:8
 msgid "Log in"
@@ -815,11 +834,11 @@ msgstr "パスワードの確認："
 
 #: web/templates/registration/password_reset_confirm.html:21
 msgid "The password reset link was invalid, possibly because it has already been used.  Please request a new password reset."
-msgstr "パスワードリセットのリンクが無効になっています。パスワードのリセットを新たにリクエストしてください。"
+msgstr "パスワードリセットのリンクが無効になっています。パスワードのリセットを再度申請してください。"
 
 #: web/templates/registration/password_reset_email.html:3
 msgid "You're receiving this email because you requested a password reset for your user account at %(site_name)s."
-msgstr "このメールを受信しているのは、%(site_name)s のアカウントのパスワードのリセットが要求されたためです。"
+msgstr "このメールを受信しているのは、%(site_name)s のアカウントのパスワードのリセットが申請されたためです。"
 
 #: web/templates/registration/password_reset_email.html:4
 msgid "Please go to the following page and choose a new password:"
@@ -1271,7 +1290,7 @@ msgstr "自閉スペクトラム症"
 
 #: studies/fields.py:8
 msgid "Deaf"
-msgstr "ろう（デフ）"
+msgstr "聴覚障害（ろう）"
 
 #: studies/fields.py:9
 msgid "Hard of Hearing"
@@ -1522,6 +1541,7 @@ msgid "Yue"
 msgstr "粤語/Yue"
 
 #: web/templates/frontpages/default.html:62
+#, fuzzy
 msgid "This material is based upon work supported by the National Science Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, Minds and Machines (CBMM), funded by NSF STC award CCF-1231216, and by an NSF Graduate Research Fellowship under Grant No. 1122374. Any opinion, findings, and conclusions or recommendations expressed in this material are those of the authors(s) and do not necessarily reflect the views of the National Science Foundation."
 msgstr "この素材は、アメリカ国立科学財団（National Science Foundation：NSF）による助成（1429216, 1823919）、脳・心・機械センター（Center for Brains, Minds and Machines：CBMM）による助成、NSF STC award CCF-1231216による助成、NSF大学院研究フェローシップ（1122374）による助成を受けています。この研究・調査課題で表現されているあらゆる意見・知見・結論・勧告は著者によるものであり、アメリカ国立科学財団の見解を必ずしも反映したものではありません。"
 
@@ -3319,7 +3339,8 @@ msgid "Lookit is growing! We are now showing links to outside studies along with
 "Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate, unless a specific study says otherwise."
 msgstr "Lookitは今もなお発展を続けています！Lookitで実施されている研究・調査に加えて、外部の研究・調査へのリンクもお知らせしています。上のタブを使って、今すぐにできるものや、日程調整して参加登録できるものがないかチェックしてみてください。\n"
 "\n"
-"研究・調査への参加にはノートPCまたはデスクトップPCが必要です (スマートフォンやタブレットは使用できません)。特に指定がない限りは、ChromeまたはFirefoxのブラウザが必要となります。"
+"研究・調査への参加にはノートPCまたはデスクトップPCが必要です (スマートフォンやタブレットは使用できません)。特に指定がない限りは、ChromeまたはFirefoxのブラウザが必要となります。\n"
+""
 
 #: web/templatetags/web_extras.py:189
 msgid "You and your child can participate in these studies right now by choosing a study and then clicking \"Participate.\" Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate, unless a specific study says otherwise."
@@ -3587,7 +3608,8 @@ msgid "\n"
 "                <p>We agree with the American Academy of Pediatrics <a href=\"https://pediatrics.aappublications.org/content/138/5/e20162591\" target=\"_blank\" rel=\"noopener\">advice</a> that children learn best from people, not screens! However, our studies are not intended to educate children, but to learn from them.</p>\n"
 "                <p>As part of a child's limited screen time, we hope that our studies will foster family conversation and engagement with science that offsets the few minutes spent watching a video instead of playing. And we do \"walk the walk\"--our own young children provide lots of feedback on our studies!</p>\n"
 "                "
-msgstr ""
+msgstr "<p>私たちは、アメリカ小児科学会（American Academy of Pediatrics）<a href=\"https://pediatrics.aappublications.org/content/138/5/e20162591\" target=\"_blank\" rel=\"noopener\">advice</a> の子どもたちはスクリーンを通してではなく、人から実際に学ぶのが一番だということだと同じ意見を持っています！しかし、私たちの研究は子どもたちを教育するためのものではなく、子どもたちから学ぶためのものであります。</p>\n"
+"<p>私たちの研究が家族の会話や科学への関心を育み、遊ぶ時間んの代わりにビデオを見ている数分を帳消しにしてくれることを願っています。そして、私たち自身でも \"実践 \"しています。私たちの研究に対して、私たち自身の子どもたちがたくさんのフィードバックをくれています！</p>"
 
 #: web/templates/web/faq.html:549
 msgid "I want to review the studies I have participated in, or I have a concern and want to contact the researchers."
@@ -3632,7 +3654,8 @@ msgid "\n"
 "                <p>If you are a parent or guardian who has participated with your child in a study on this website, or a university-based researcher who has posted a study on this website, then we consider you a member of the Parent Researcher Collaborative!</p>\n"
 "                <p>If you are asking who runs this website, the answer is that we are a group of scientists who decided it would be nice for there to be one place online where families and researchers could go to connect with each other to support research into child development! The new Children Helping Science website is a collaboration between two previous platforms, Lookit and (an earlier version of) Children Helping Science. Lookit was founded by <a href = \"https://kimberscott.github.io/\">Kim Scott</a> and <a href = \"http://eccl.mit.edu/\">Laura Schulz</a> at MIT, and is now lead by Executive Director <a href = \"http://www.melissaklinestruhl.com/\">Melissa Kline Struhl</a>.  The original Children Helping Science website was created by <a href = \"https://projects.iq.harvard.edu/ccdlab\">Elizabeth Bonawitz</a> at Harvard, <a href = \"http://sll.stanford.edu/\">Hyowon Gweon</a> at Stanford, <a href = \"https://compdevlab.yale.edu/\">Julian Jara-Ettinger</a> at Yale, <a href = \"https://www.utdallas.edu/thinklab/\">Candice Mills</a> at UT Dallas, <a href = \"http://eccl.mit.edu/\">Laura Schulz</a> at MIT, and <a href = \"https://www.minerva.kgi.edu/people/mark-sheskin-phd/\">Mark Sheskin</a> at Minerva University.</p>\n"
 "                "
-msgstr ""
+msgstr "<p>本サイトの研究にお子様と一緒に参加された保護者の方、または本サイトに研究を掲載された大学の研究者の方は、保護者研究者共同体（Parent Researcher Collaborative）のメンバーであると言えるでしょう！</p>\n"
+"<p>一体誰がこのウェブサイトを運営しているのかと聞かれたら、私たちは科学者の集まりで、子どもの発達に関する研究を支援するために、家族と研究者がお互いにつながることができる場所がオンライン上にあればいいと考えている者です！新しいChildren Helping Scienceのウェブサイトは、以前からある2つのプラットフォーム、LookitとChildren Helping Science（以前のバージョン）のコラボレーションであります。Lookitは<a href = \"https://kimberscott.github.io/\">Kim Scott</a> と マサチューセッツ工科大学の <a href = \"http://eccl.mit.edu/\">Laura Schulz</a>  によって設立されて、現在はエグゼクティブ・ディレクターである<a href = \"http://www.melissaklinestruhl.com/\">Melissa Kline Struhl</a>が率いている。オリジナルのChildren Helping Scienceウェブサイトは、ハーバード大学の<a href = \"https://projects.iq.harvard.edu/ccdlab\">Elizabeth Bonawitz</a>、スタンフォード大学の<a href = \"http://sll.stanford.edu/\">Hyowon Gweon</a>、 イェール大学の<a href = \"https://compdevlab.yale.edu/\">Julian Jara-Ettinger</a>、テキサス大学ダラス校の<a href = \"https://www.utdallas.edu/thinklab/\">Candice Mills</a>、マサチューセッツ工科大学の <a href = \"http://eccl.mit.edu/\">Laura Schulz</a>、とミネルバ大学の<a href = \"https://www.minerva.kgi.edu/people/mark-sheskin-phd/\">Mark Sheskin</a>によって立ち上げられた。</p>"
 
 #: web/templates/web/faq.html:656
 msgid "\n"
@@ -3702,41 +3725,48 @@ msgid "\n"
 msgstr "Children Helping Scienceプラットフォームには <a href = \"https://docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform\">Slackを使ったコミュニティ</a>があり、研究者はヘルプを求めたり、ピアレビューを実施したり、オンライン研究・調査について議論したりすることができます。</p>\n"
 "                                <p>The Society for Research in Child Developmentも同様に <a href = \"https://commons.srcd.org/communities/community-home/digestviewer/viewthread?CommunityKey=bd3d326e-b7db-49bf-abbb-73642ac0576c&GroupId=109&MessageKey=0871d623-bd97-48c5-b8e4-54ecda9de9d8&ReturnUrl=%%2Fcommunities%%2Fcommunity-home%%2Fdigestviewer%%3Fcommunitykey%%3Dbd3d326e-b7db-49bf-abbb-73642ac0576c%%26tab%%3Ddigestviewer&tab=digestviewer\">ディスカッションフォーラム</a>を設けているので、ぜひご確認ください！</p>"
 
+#. no need to translate
 #: web/templates/web/garden/about.html:13
 msgid "What is Project Garden?"
-msgstr "#NO NEED TO TRANSLATE"
+msgstr ""
 
 #: web/templates/web/garden/home.html:14
 msgid "Welcome to"
-msgstr "#NO NEED TO TRANSLATE"
+msgstr ""
 
+#. no need to translate
 #: web/templates/web/garden/participate.html:16
 msgid "How to Participate"
-msgstr "#NO NEED TO TRANSLATE"
+msgstr ""
 
+#. no need to translate
 #: web/templates/web/garden/scientists.html:13
 msgid "Meet the GARDEN Scientists"
-msgstr "#NO NEED TO TRANSLATE"
+msgstr ""
 
+#. no need to translate
 #: web/templates/web/home.html:71
 msgid "Join researchers from these schools, and many more!"
-msgstr "#NO NEED TO TRANSLATE"
+msgstr ""
 
+#. no need to translate
 #: web/templates/web/home.html:83
 msgid "Interested in participating in a project with many studies? Learn more about "
-msgstr "#NO NEED TO TRANSLATE"
+msgstr ""
 
+#. no need to translate
 #: web/templates/web/home.html:83
 msgid "Project GARDEN"
-msgstr "#NO NEED TO TRANSLATE"
+msgstr ""
 
 #: web/templates/web/home.html:86
 msgid "In this series of studies, your child will help an animated fox named Fen find the “GARDEN Library” while playing games to help Children Helping Science understand children's development from many different angles!"
-msgstr "#NO NEED TO TRANSLATE"
+msgstr ""
 
+#. No need to translate
 #: web/templates/web/home.html:89
 msgid "See our current studies for different age groups:"
-msgstr "#NO NEED TO TRANSLATE"
+msgstr ""
 
 #: web/templates/web/participant-signup.html:7
 msgid "Sign up to participate"
@@ -3878,13 +3908,16 @@ msgid "\n"
 "                or materials needed for participation.</li>\n"
 "        </ul>\n"
 "        "
-msgstr ""
+msgstr "<ul>\n"
+"<li>ユーザ名、お子さんのニックネーム、連絡先情報などを研究・調査の対象として使用することはできません</li>\n"
+"<li>研究者は、研究・調査への参加報酬や、研究・調査への参加に必要な資料を送付するためにのみ、郵送にて参加者に連絡を取ることができます</li>\n"
+"</ul>"
 
 #: web/templates/web/privacy.html:130 web/templates/web/privacy.html:189
 msgid "If you have concerns about any of these purposes, or how we communicate with you, please contact us at\n"
 "        dataprotection@mit.edu. We will always respect a request by you to stop processing your personal\n"
 "        information (subject to our legal obligations)."
-msgstr ""
+msgstr "これらの目的のいずれか、また、連絡をとる方法についてご不明な点がございましたら、dataprotection@mit.eduまでご連絡ください。私たちは、あなたからの個人情報の取り扱い停止に関する要請を常に尊重します（法的義務に従うことを条件とします）。"
 
 #: web/templates/web/privacy.html:138
 msgid "We have implemented industry-standard security safeguards designed to protect the personal information\n"
@@ -3897,7 +3930,7 @@ msgid "We have implemented industry-standard security safeguards designed to pro
 "        disclosed, altered, or destroyed by breach of any of our physical, technical, or managerial safeguards.\n"
 "        It's your responsibility to protect the security of your account details, including your username and\n"
 "        password."
-msgstr ""
+msgstr "私たちは、あなたが提供する個人情報を保護するために、業界標準のセキュリティ保護措置を実施しています。また、業界標準に準拠して、脆弱性や攻撃の可能性がないか定期的にシステムを監視しています。特定の権限を持つ認証済ユーザーのみがデータにアクセスできます。すべてのデータは安全なhttps接続を介して送信され、すべての動画データは、研究者へのデータ提供のために、Lookitが使用するストレージシステム上で暗号化されています。Lookitからデータを取得した後のデータの安全な保管については、研究者自身が責任を負います。ただし、インターネットは100％安全な環境ではないため、物理的・技術的・管理的な安全対策の侵害によって情報がアクセス・開示・変更・破壊されない保証はないということをご承知おきください。なお、ユーザー名とパスワードを含むアカウントの詳細に関するセキュリティ保護は、あなたご自身の責任となります。"
 
 #. Completely copied
 #: web/templates/web/privacy.html:153
@@ -3912,7 +3945,7 @@ msgstr "私たちは、研究コミュニティとの関係を生涯にわたる
 #: web/templates/web/privacy.html:165
 msgid "We may collect basic biographic/contact information about you and your representative organization,\n"
 "    including name, title, business addresses, phone numbers, and email addresses."
-msgstr ""
+msgstr "あなた、あるいはあなたの所属組織についての基本的な経歴／連絡先情報を収集する場合があります (氏名、肩書、所属機関の住所、電話番号、メールアドレスなど)。"
 
 #. Copied
 #: web/templates/web/privacy.html:172
@@ -3944,7 +3977,7 @@ msgid "We have implemented industry-standard security safeguards designed to pro
 "        accessed, disclosed, altered, or destroyed by breach of any of our physical, technical, or managerial\n"
 "        safeguards. It's your responsibility to protect the security of your account details, including your\n"
 "        username and password."
-msgstr ""
+msgstr "私たちは、あなたが提供する個人情報を保護するために、業界標準のセキュリティ保護措置を実施しています。また、業界標準に準拠して、脆弱性や攻撃の可能性がないか定期的にシステムを監視しています。特定の権限を持つ認証済ユーザーのみがデータにアクセスできます。すべてのデータは安全なhttps接続を介して送信されます。ただし、インターネットは100％安全な環境ではないため、物理的・技術的・管理的な安全対策の侵害によって情報がアクセス・開示・変更・破壊されない保証はないということをご承知おきください。なお、ユーザー名とパスワードを含むアカウントの詳細に関するセキュリティ保護は、あなたご自身の責任となります。"
 
 #: web/templates/web/privacy.html:222
 msgid "We consider our relationship with our research community to be lifelong. This means that we will maintain\n"
@@ -3959,7 +3992,7 @@ msgid "You have the right in certain circumstances to (1) access your personal i
 "        profiling. To the extent applicable, the EU’s General Data Protection Regulation provides further\n"
 "        information about your rights. You also have the right to lodge complaints with your national or\n"
 "        regional data protection authority."
-msgstr ""
+msgstr "あなたは、特定の状況において、(1) ご自身の個人情報へのアクセス、(2) 情報の修正または削除、(3) 情報の取り扱いの制限、(4) 通信、ダイレクトマーケティング、またはプロファイリングへの異議申し立てを行う権利をもっています。適用される範囲内において、EU一般データ保護規則には、あなたがもつ権利についてのより詳細な情報が記載されています。また、あなたには、国または地域のデータ保護当局に苦情を申し立てる権利があります。"
 
 #: web/templates/web/privacy.html:243
 msgid "If you are inclined to exercise these rights, we request an opportunity to discuss with you any concerns\n"
@@ -3970,83 +4003,87 @@ msgid "If you are inclined to exercise these rights, we request an opportunity t
 "        legal purposes, including US IRS compliance. In the event of an actual or threatened legal claim, we may\n"
 "        retain your information for purposes of establishing, defending against or exercising our rights with\n"
 "        respect to such claim."
-msgstr ""
+msgstr "これらの権利を行使することをご希望の場合、私たちは、あなたが抱いている懸念事項について話し合う機会を要求します。Lookitが保有する個人情報を保護するために、あなたがこれらの権利を行使する際には、あなたの身元情報を確認するための追加情報を要求することがあります。情報の削除をお求めの場合、私たちは、のちに誤ってあなたに連絡を取らないようにするために個人情報のコアセットを保持するとともに、アーカイブの目的で必要な情報を保持します。また、米国国税庁のコンプライアンスなど、法的な目的のために財務情報を保持しなければならない場合もあります。実際に法的請求があった場合、またはその恐れがあった場合、私たちは、そのような請求に関して私たちの権利を確立し、弁護し、行使するために、個人情報を引き続き保持することがあります。 "
 
 #: web/templates/web/privacy.html:253
 msgid "By providing information directly to Lookit, you consent to the transfer of your personal information\n"
 "        outside of the European Economic Area to the United States. You understand that the current laws and\n"
 "        regulations of the United States may not provide the same level of protection as the data and privacy\n"
 "        laws and regulations of the EEA."
-msgstr ""
+msgstr "Lookitに直接情報を提供することで、あなたは欧州経済領域外の個人情報が米国に転送されることに同意したことになります。なお、米国における現在の法律・規制が、欧州経済領域におけるデータおよびプライバシーに関する法律・規制と同じ保護水準を提供しているとは限らないことをご理解ください。"
 
 #: web/templates/web/privacy.html:267
 msgid "We may change this Privacy Statement from time to time. If we make any significant changes in the way we\n"
 "        treat your personal information we will make this clear on our website or by contacting you directly."
-msgstr ""
+msgstr "このプライバシー・ステートメントを随時変更することがあります。この際、登録者様の個人情報の取り扱い方法を大幅に変更する場合、ウェブサイト上で、 または登録者様に直接連絡することにより、これを明示したします。 "
 
 #: web/templates/web/scientists.html:10
 msgid "Meet the Children Helping Science team"
-msgstr ""
+msgstr "Children Helping Scienceチームの紹介"
 
 #: web/templates/web/scientists/affiliated-universities-and-researchers.html:3
 msgid "As of March 2023, there are over 950 researchers in our community, and over 90 universities affiliated with Lookit/Children Helping Science, including:"
-msgstr ""
+msgstr "2023年3月現在、私たちのコミュニティには950人以上の研究者がおり、Lookit/Children Helping Scienceと提携している大学は90校以上あります："
 
 #: web/templates/web/studies-history.html:15
 msgid "Next Video"
-msgstr ""
+msgstr "次のビデオ"
 
 #: web/templates/web/studies-history.html:31
 msgid "Lookit studies run here on our platform, and usually include a video of your session! "
-msgstr ""
+msgstr "Lookit 研究・調査は私たちのプラットフォームで実施され、通常は参加者様のビデオセッションも含まれています！"
 
 #: web/templates/web/studies-history.html:33
 msgid "You can find information about your previous study sessions, watch these videos, and see comments left by researchers below."
-msgstr ""
+msgstr "過去の研究セッションに関する情報を検索したり、ビデオを見たり、研究者が残したコメントを以下から見ることができます。"
 
 #: web/templates/web/studies-history.html:36
 msgid "External studies happen at other websites, and are listed below after you click the &quot;Participate Now&quot; button to follow a link. "
-msgstr ""
+msgstr "外部調査は他のウェブサイトでも行われており、&quot;「今すぐ参加する」&quot; ボタンをクリックしてリンクをたどると、以下にリストアップされます。"
 
 #: web/templates/web/studies-history.html:38
 msgid "You can find information on the studies you have accessed and contact information for the researchers on a specific study below."
-msgstr ""
+msgstr "あなたがアクセスした研究・調査についての情報や、特定の研究・調査についての研究者の連絡先については、以下をご覧ください。"
 
 #: web/templates/web/studies-history.html:55
 msgid "Eligibility"
-msgstr ""
+msgstr "参加資格："
 
 #: web/templates/web/studies-history.html:59
 msgid "Contact"
 msgstr "連絡先"
 
+#. No need to translate
 #: web/templates/web/studies-list.html:65
 msgid "Want to learn more about research with babies & children? Check out the "
-msgstr "#NO NEED TO TRANSLATE"
+msgstr ""
 
+#. No need to translate
 #: web/templates/web/studies-list.html:69
 msgid "page for activities to try at home and developmental labs near you!"
-msgstr "#NO NEED TO TRANSLATE"
+msgstr ""
 
 #: web/templates/web/study-detail.html:150
 msgid "This study runs on another website, and clicking to participate will take you to that link."
-msgstr ""
+msgstr "この研究は別のウェブサイトで実施されており、参加をクリックするとそのリンクに移動します。"
 
 #: web/templates/web/study-detail.html:152
 msgid "It will also make it possible for the researchers of this study to contact you, and will share your child's profile information with the researchers."
-msgstr ""
+msgstr "また、この研究の研究者があなたに連絡することを可能にし、あなたのお子さんのプロフィール情報を研究者と共有します。"
 
 #: web/templates/web/study-detail.html:155
 msgid "This study runs here on the Lookit platform."
-msgstr ""
+msgstr "この研究・調査はLookitのプラットフォーム上で行われます。"
 
 #: web/templates/web/study-detail.html:157
 msgid "Clicking to participate will make it possible for the researchers of this study to contact you, and will share your child's profile information with the researchers."
-msgstr ""
+msgstr "参加するをクリックすると、この研究・調査の研究者があなたに連絡することが可能になり、あなたのお子様のプロフィール情報が研究者と共有されます。"
 
 #: web/templatetags/web_extras.py:185
 msgid "Use the tabs above to see activities you can do right now, or scheduled activities you can sign up for.\n"
 "\n"
 "Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate, unless a specific study says otherwise."
-msgstr ""
+msgstr "上のタブを使って、今すぐにできるものや、日程調整して参加登録できるものがないかチェックしてみてください。\n"
+"\n"
+"研究・調査への参加にはノートPCまたはデスクトップPCが必要です (スマートフォンやタブレットは使用できません)。特に指定がない限りは、ChromeまたはFirefoxのブラウザが必要となります。"
 
