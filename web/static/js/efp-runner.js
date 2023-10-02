@@ -1,3 +1,6 @@
+// Get global variables from html
+const DATA = document.currentScript.dataset
+
 // Show the generator function field only if use_generator is checked.
 function updateGeneratorDisplay() {
     const generator = document.querySelector('[for=id_generator]').parentNode;
@@ -98,7 +101,7 @@ function updateCommitUpdateInfo() {
     const currentCommitDate = document.querySelector('#commit-description .date').innerHTML;
     const playerRepoUrl = document.querySelector('#id_player_repo_url').value;
     if (playerRepoUrl && currentCommitDate) {
-        const githubApiUrl = `${playerRepoUrl}/commits?since=${currentCommitDate}`.replace('github.com', 'api.github.com/repos')
+        const githubApiUrl = `${playerRepoUrl}/commits?since=${currentCommitDate}&sha=${DATA.branch}`.replace('github.com', 'api.github.com/repos')
         httpRequest.open("GET", githubApiUrl, true);
         httpRequest.send();
     }
@@ -109,7 +112,7 @@ function updateLastPlayerSha() {
 
     if (!form.last_known_player_sha.value) {
         const playerRepoUrl = document.querySelector('#id_player_repo_url').value;
-        const githubApiUrl = `${playerRepoUrl}/commits`.replace('github.com', 'api.github.com/repos')
+        const githubApiUrl = `${playerRepoUrl}/commits?sha=${DATA.branch}`.replace('github.com', 'api.github.com/repos')
         const httpRequest = new XMLHttpRequest();
         httpRequest.onreadystatechange = () => {
             if (httpRequest.readyState === XMLHttpRequest.DONE) {

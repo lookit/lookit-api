@@ -1038,7 +1038,6 @@ class ExperimentRunnerEditView(
     SingleObjectFetchProtocol[Study],
     generic.UpdateView,
 ):
-
     model = Study
 
     def user_can_edit_study(self):
@@ -1125,6 +1124,11 @@ class EFPEditView(ExperimentRunnerEditView):
             study.metadata = metadata
 
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["branch"] = settings.EMBER_EXP_PLAYER_BRANCH
+        return context
 
 
 class ExternalEditView(ExperimentRunnerEditView):
