@@ -3728,7 +3728,7 @@ msgstr "Children Helping Scienceプラットフォームには <a href = \"https
 #. no need to translate
 #: web/templates/web/garden/about.html:13
 msgid "What is Project Garden?"
-msgstr ""
+msgstr "&nbsp;"
 
 #: web/templates/web/garden/home.html:14
 msgid "Welcome to"
@@ -3752,12 +3752,12 @@ msgstr ""
 #. no need to translate
 #: web/templates/web/home.html:83
 msgid "Interested in participating in a project with many studies? Learn more about "
-msgstr ""
+msgstr "&nbsp;"
 
 #. no need to translate
 #: web/templates/web/home.html:83
 msgid "Project GARDEN"
-msgstr ""
+msgstr "&nbsp;"
 
 #: web/templates/web/home.html:86
 msgid "In this series of studies, your child will help an animated fox named Fen find the “GARDEN Library” while playing games to help Children Helping Science understand children's development from many different angles!"
