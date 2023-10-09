@@ -54,6 +54,7 @@ def nav_next(request, url, text, button):
     else:
         css_class = "nav-link navbar-link link-secondary border-0 text-center"
 
+    print(f'{_(text)}')
     form = f"""<form action="{url}" method="get">
     <button class="{css_class}" type="submit" value="login">{_(text)}</button>
     <input type="hidden" name="next" value="{request.path}" />
@@ -160,7 +161,7 @@ def nav_login(request, text="Login", button=False):
 
 
 @register.simple_tag
-def nav_signup(request, text="Sign up", button=False):
+def nav_signup(request, text=_("Sign up"), button=False):
     """Navigation sign up button
 
     Args:
