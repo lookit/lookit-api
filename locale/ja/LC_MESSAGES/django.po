@@ -1664,7 +1664,7 @@ msgstr "現在行われている研究・調査"
 
 #: accounts/forms.py:503
 msgid "Scheduled studies"
-msgstr "予定されている研究・調査\n"
+msgstr "予定されている研究・調査"
 ""
 
 #: accounts/forms.py:506
@@ -2053,7 +2053,7 @@ msgstr "\n<p>理由はたくさんあります！ここでは3つをご紹介し
 "                                <li>研究者は、子どもたちやご家族にとって研究・調査が魅力的なものになるよう努力しています。あなたとあなたのお子さんにとって、この研究・調査が楽しいものになることを願っています。</li>\n"
 "                                <li>あなたのご協力は、科学を支えます。子どもたちは世界で最もパワフルな学習者であり、子どもたちがどのように成長し、学んでいるのかを理解すればするほど、人間の心についての理解が深まるのです。</li>\n"
 "                                <li>研究・調査は通常、子どもたち一人ひとりに直接影響を与えるようには設計されていません。しかし、子どもたちについての理解を深めることで、子どもたちが学び・成長できる世界をより効果的に築くことができるのです。あなたの参加が、私たちみんなの支えになります！</li>\n"
-"                            </ul>"
+"                            </ul>\n"
 
 #: web/templates/web/faq.html:86
 msgid "\n"
@@ -2095,7 +2095,7 @@ msgstr "<p>このウェブサイトで行われている研究・調査はすべ
 msgid "\n"
 "                <p>The studies hosted on our site come from universities all around the world. For studies that involve a scheduled video chat, you will meet a researcher from the lab associated with the university doing the study. These researchers work as part of a team that always includes a \"principal investigator\" -- the supervisor (usually a professor) who is in charge of the lab). Studies will be conducted by someone under the direct supervision of that principal investigator (e.g., a lab manager, research assistant, or a postdoctoral, graduate, or undergraduate researcher in training).</p>\n"
 "                "
-msgstr "\n<p>私たちのサイトでホストされている研究・調査は、世界中の大学から来たものです。ビデオチャットを含む研究・調査では、あなたは研究を行っている大学の研究室の研究者に会うことになります。これらの研究者は、「研究責任者」（研究室の監督者で通常は教授）を含むチームの一員として働いています。研究・調査は、その研究責任者の直接の監督下にある人（例：研究室長、研究助手、ポスドク、大学院生、学部生）が実施することになります。.</p> \n"
+msgstr "\n<p>私たちのサイトでホストされている研究・調査は、世界中の大学から来たものです。ビデオチャットを含む研究・調査では、あなたは研究を行っている大学の研究室の研究者に会うことになります。これらの研究者は、「研究責任者」（研究室の監督者で通常は教授）を含むチームの一員として働いています。研究・調査は、その研究責任者の直接の監督下にある人（例：研究室長、研究助手、ポスドク、大学院生、学部生）が実施することになります。.</p> "
 ""
 
 #: web/templates/web/faq.html:163
@@ -2127,7 +2127,7 @@ msgstr "\n<p>従来、発達研究は、大学の研究室の静かな部屋で�
 "                                    <li>特定の発達障害をもつ子どもたちなど、特殊な集団について学ぶためのシステムを構築すること</li>\n"
 "                                    <li>研究・調査を行う際の手順をより透明化し、研究結果の再現を容易にすること</li>\n"
 "                                    <li>私たちが行っている研究・調査と、そこから学べることについて、ご家族とコミュニケーションをとること</li>\n"
-"                                </ul> \n"
+"                                </ul>"
 ""
 
 #: web/templates/web/faq.html:197
@@ -2136,7 +2136,7 @@ msgid "\n"
 "                <p>Researchers watch these consent videos on a special page of the researcher interface, and record for each one whether the video shows informed consent. They cannot view other video or download data from a session unless they have confirmed that you consented to participate! If they see a consent video that does NOT clearly demonstrate informed consent--for instance, there was a technical problem and there's no audio--they may contact you to check, depending on your email settings.</p>\n"
 "                "
 msgstr "\n<p>調査によって、研究内容の説明を読んだり、研究者に研究内容の説明を受けた後に、保護者がオンラインフォームへの署名にて同意を求められることがあります。また、保護者または法定後見人に署名をしてもらうのではなく、研究・調査への参加同意文を声に出して（または手話で）読み上げる様子を、ウェブカメラで録画させていただきます。この同意文は署名された書類と同等の重要性をもちますが、録画による同意の方があなたの手間が少なくて済むはずです。また、この手続きによって、あなたが英語で書かれた文章を理解し、録画されていることを理解した上で研究・調査に参加していることを私たちも確認することができます。</p>\n"
-"                <p>研究者は、研究者専用の特設ページにてこれらの同意録画を確認し、研究・調査への参加同意が得られているかどうか（インフォームド・コンセント）を記録します。研究者は、あなたが研究・調査への参加に同意したことを確認しない限り、ほかの録画記録を見たり、課題セッションからデータをダウンロードしたりすることはできません。インフォームド・コンセントが明確に示されていない同意録画があった場合（例：技術的なトラブルのために音声が記録されていない場合）、研究者があなたのメール設定に応じた形で、確認のための連絡することがあります。</p>\n"
+"                <p>研究者は、研究者専用の特設ページにてこれらの同意録画を確認し、研究・調査への参加同意が得られているかどうか（インフォームド・コンセント）を記録します。研究者は、あなたが研究・調査への参加に同意したことを確認しない限り、ほかの録画記録を見たり、課題セッションからデータをダウンロードしたりすることはできません。インフォームド・コンセントが明確に示されていない同意録画があった場合（例：技術的なトラブルのために音声が記録されていない場合）、研究者があなたのメール設定に応じた形で、確認のための連絡することがあります。</p>"
 ""
 
 #: web/templates/web/faq.html:229
@@ -2178,7 +2178,6 @@ msgstr "\n"
 "        \t\t\t\t\t\t\t\t</ul>\n"
 "        \t\t\t\t\t\t\t\t<p>何らかの理由でプライバシーレベルが選択されなかった場合、データは「プライベートな利用範囲」として扱われ、データブラリーとは共有されません。また、研究・調査への参加者は必要に応じて、研究・調査の終了時に同意録画以外のすべての録画データを撤回するオプションを選択することができます（例：誰かが後ろで機密事項に関する議論をしており、その様子が映り込んでしまった場合など）。このオプションが選択された場合、録画データは自動的に削除されます。完了した課題セッションのプライバシー設定を、遡って変更することは自動的にはできません。プライバシーに関するご不明な点がありましたら、Lookitチーム（<a href=\"mailto:lookit@mit.edu\">lookit@mit.edu</a>）までご連絡ください (英語対応のみ)。</p>\n"
 "␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣"
-"\n"
 ""
 
 #: web/templates/web/faq.html:315
@@ -2276,7 +2275,7 @@ msgid "\n"
 "                <p>If you are a researcher working on creating a study, you can find help in our <a href=\"https://lookit.readthedocs.io/en/develop/index.html\">documentation</a>, and in our <a href = \"https://docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform\">Slack community</a>.</p>\n"
 "                "
 msgstr "\n<p>ある特定の研究・調査に参加しようとしていて問題が発生した場合には、その研究・調査を作成した研究者に連絡することから始めてみてください。それでもなおヘルプが必要な場合には、Children Helping Scienceチーム <a href=\"mailto:lookit-tech@mit.edu\">lookit-tech@mit.edu</a>に連絡して助けを求めることもできます (英語対応のみ)。</p>\n"
-"                                <p>研究・調査を作成している研究者の方でヘルプが必要な場合には、<a href=\"https://lookit.readthedocs.io/en/develop/index.html\">こちらのドキュメント</a>、または<a href = \"https://docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform\">Slackコミュニティ</a>にて解決を図ることができます。</p>\n"
+"                                <p>研究・調査を作成している研究者の方でヘルプが必要な場合には、<a href=\"https://lookit.readthedocs.io/en/develop/index.html\">こちらのドキュメント</a>、または<a href = \"https://docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform\">Slackコミュニティ</a>にて解決を図ることができます。</p>"
 ""
 
 #: web/templates/web/faq.html:753
