@@ -30,5 +30,6 @@ RUN poetry install \
 
 COPY ./ ./
 
-RUN poetry run python manage.py compilemessages
+RUN poetry run python manage.py compilemessages ja
+
 
