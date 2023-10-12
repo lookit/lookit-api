@@ -2,9 +2,17 @@
 const DATA = document.currentScript.dataset
 
 // Show the generator function field only if use_generator is checked.
-function updateGeneratorDisplay() {
+function updateProtocolDisplay() {
     const generator = document.querySelector('[for=id_generator]').parentNode;
-    document.querySelector('#id_use_generator:checked') ? generator.classList.remove('d-none') : generator.classList.add('d-none');
+    const structure = document.querySelector('[for=id_structure]').parentNode;
+
+    if (document.querySelector('#id_use_generator:checked')) {
+        generator.classList.remove('d-none');
+        structure.classList.add('d-none');
+    } else {
+        generator.classList.add('d-none');
+        structure.classList.remove('d-none');
+    }
 }
 
 function updateCommitDescription() {
@@ -131,14 +139,14 @@ function updateLastPlayerSha() {
 /**
  * Page load
  */
-updateGeneratorDisplay();
+updateProtocolDisplay();
 updateCommitDescription();
 updateLastPlayerSha();
 
 /**
  * Event Listeners
  */
-document.querySelector('#id_use_generator').addEventListener("click", updateGeneratorDisplay);
+document.querySelector('#id_use_generator').addEventListener("click", updateProtocolDisplay);
 document.querySelector('#update-button').addEventListener("click", (event) => {
     event.preventDefault();
     updateCommitUpdateInfo();
