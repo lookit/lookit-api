@@ -424,8 +424,8 @@ class EFPForm(ModelForm):
     class Meta:
         model = Study
         fields = (
-            "structure",
             "use_generator",
+            "structure",
             "generator",
             "player_repo_url",
             "last_known_player_sha",
@@ -441,7 +441,12 @@ class EFPForm(ModelForm):
 
     def clean_structure(self):
         try:
-            structure = json.loads(self.cleaned_data["structure"])
+            # Validate structure if not using generator
+            if not self.cleaned_data["use_generator"]:
+                structure = json.loads(self.cleaned_data["structure"])
+            else:
+                structure = {}
+
             structure["exact_text"] = self.cleaned_data["structure"]
             return structure
         except json.JSONDecodeError:
@@ -456,7 +461,10 @@ class EFPForm(ModelForm):
             if not generator.strip():
                 generator = DEFAULT_GENERATOR
 
-            js2py.eval_js(generator)
+            # Validate generator only if using generator
+            if self.cleaned_data["use_generator"]:
+                js2py.eval_js(generator)
+
             return generator
         except js2py.internals.simplex.JsException as err:
             raise forms.ValidationError(

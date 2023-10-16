@@ -7,12 +7,24 @@ from studies.models import default_study_structure
 
 
 class EFPFormTestCase(TestCase):
-    def test_successful(self):
+    def test_successful_structure(self):
         form = EFPForm(
             data={
                 "last_known_player_sha": "862604874f7eeff8c9d72adcb8914b21bfb5427e",
                 "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
+                "use_generator": False,
                 "structure": json.dumps(default_study_structure()),
+            }
+        )
+        self.assertDictEqual(form.errors, {})
+        self.assertTrue(form.is_valid())
+
+    def test_successful_generator(self):
+        form = EFPForm(
+            data={
+                "last_known_player_sha": "862604874f7eeff8c9d72adcb8914b21bfb5427e",
+                "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
+                "use_generator": True,
             }
         )
         self.assertDictEqual(form.errors, {})
@@ -43,6 +55,7 @@ class EFPFormTestCase(TestCase):
                 "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
                 "structure": json.dumps(default_study_structure()),
                 "generator": "This is not valid Javascript.",
+                "use_generator": True,
             }
         )
 

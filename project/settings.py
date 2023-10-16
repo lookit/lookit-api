@@ -383,3 +383,7 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+# https://docs.djangoproject.com/en/4.2/ref/settings/#std:setting-SESSION_COOKIE_HTTPONLY
+# Per the above documentation setting SESSION_COOKIE_HTTPONLY might break JavaScript.
+SESSION_COOKIE_HTTPONLY = True

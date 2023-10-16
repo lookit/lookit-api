@@ -1,7 +1,18 @@
+// Get global variables from html
+const DATA = document.currentScript.dataset
+
 // Show the generator function field only if use_generator is checked.
-function updateGeneratorDisplay() {
+function updateProtocolDisplay() {
     const generator = document.querySelector('[for=id_generator]').parentNode;
-    document.querySelector('#id_use_generator:checked') ? generator.classList.remove('d-none') : generator.classList.add('d-none');
+    const structure = document.querySelector('[for=id_structure]').parentNode;
+
+    if (document.querySelector('#id_use_generator:checked')) {
+        generator.classList.remove('d-none');
+        structure.classList.add('d-none');
+    } else {
+        generator.classList.add('d-none');
+        structure.classList.remove('d-none');
+    }
 }
 
 function updateCommitDescription() {
@@ -98,7 +109,7 @@ function updateCommitUpdateInfo() {
     const currentCommitDate = document.querySelector('#commit-description .date').innerHTML;
     const playerRepoUrl = document.querySelector('#id_player_repo_url').value;
     if (playerRepoUrl && currentCommitDate) {
-        const githubApiUrl = `${playerRepoUrl}/commits?since=${currentCommitDate}`.replace('github.com', 'api.github.com/repos')
+        const githubApiUrl = `${playerRepoUrl}/commits?since=${currentCommitDate}&sha=${DATA.branch}`.replace('github.com', 'api.github.com/repos')
         httpRequest.open("GET", githubApiUrl, true);
         httpRequest.send();
     }
@@ -109,7 +120,7 @@ function updateLastPlayerSha() {
 
     if (!form.last_known_player_sha.value) {
         const playerRepoUrl = document.querySelector('#id_player_repo_url').value;
-        const githubApiUrl = `${playerRepoUrl}/commits`.replace('github.com', 'api.github.com/repos')
+        const githubApiUrl = `${playerRepoUrl}/commits?sha=${DATA.branch}`.replace('github.com', 'api.github.com/repos')
         const httpRequest = new XMLHttpRequest();
         httpRequest.onreadystatechange = () => {
             if (httpRequest.readyState === XMLHttpRequest.DONE) {
@@ -128,14 +139,14 @@ function updateLastPlayerSha() {
 /**
  * Page load
  */
-updateGeneratorDisplay();
+updateProtocolDisplay();
 updateCommitDescription();
 updateLastPlayerSha();
 
 /**
  * Event Listeners
  */
-document.querySelector('#id_use_generator').addEventListener("click", updateGeneratorDisplay);
+document.querySelector('#id_use_generator').addEventListener("click", updateProtocolDisplay);
 document.querySelector('#update-button').addEventListener("click", (event) => {
     event.preventDefault();
     updateCommitUpdateInfo();
