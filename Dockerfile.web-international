@@ -30,6 +30,6 @@ RUN poetry install \
 
 COPY ./ ./
 
-RUN poetry run python manage.py compilemessages ja
+RUN poetry run python manage.py compilemessages --locale ja
 
 
