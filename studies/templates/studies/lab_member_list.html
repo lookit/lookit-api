@@ -20,9 +20,9 @@
                placeholder="Filter by researcher name"
                size="50"
                type="text"
-               value="{{ match }}"/>
-        <input type="hidden" name="sort" value="{{ sort }}"/>
-        <input type="hidden" name="page" value="1"/>
+               value="{{ match }}" />
+        <input type="hidden" name="sort" value="{{ sort }}" />
+        <input type="hidden" name="page" value="1" />
     </form>
     <div class="row fw-bold border-bottom py-3 mb-3">
         <div class="col">Researcher Name</div>
@@ -46,48 +46,30 @@
                                 <select class="form-select mb-1"
                                         name="user_action"
                                         aria-label="lab memeber action">
-                                    <option value="">
-                                        ---
-                                    </option>
+                                    <option value="">---</option>
                                     {% if user_obj.user_data.group_label == "Requested to join" %}
-                                        <option value="make_guest">
-                                            Approve request
-                                        </option>
+                                        <option value="make_guest">Approve request</option>
                                     {% else %}
-                                        {% if user_obj.user_data.group_label != "Guest" %}
-                                            <option value="make_guest">
-                                                Change to guest
-                                            </option>
-                                        {% endif %}
+                                        {% if user_obj.user_data.group_label != "Guest" %}<option value="make_guest">Change to guest</option>{% endif %}
                                         {% if user_obj.user_data.group_label != "Member" %}
-                                            <option value="make_member">
-                                                Change to full lab member
-                                            </option>
+                                            <option value="make_member">Change to full lab member</option>
                                         {% endif %}
-                                        {% if user_obj.user_data.group_label != "Admin" %}
-                                            <option value="make_admin">
-                                                Change to lab admin
-                                            </option>
-                                        {% endif %}
+                                        {% if user_obj.user_data.group_label != "Admin" %}<option value="make_admin">Change to lab admin</option>{% endif %}
                                     {% endif %}
-                                    <option value="remove_researcher">
-                                        Remove from lab
-                                    </option>
-                                    <option value="reset_password">
-                                        Send password reset email
-                                    </option>
+                                    <option value="remove_researcher">Remove from lab</option>
+                                    <option value="reset_password">Send password reset email</option>
                                 </select>
                                 {% form_buttons %}
-                                    {% bootstrap_button "Submit" %}
-                                {% endform_buttons %}
-                            </form>
-                        </div>
-                    {% endif %}
-                </div>
+                                {% bootstrap_button "Submit" %}
+                            {% endform_buttons %}
+                        </form>
+                    </div>
+                {% endif %}
             </div>
         </div>
-    {% empty %}
-        <div class="empty-text">No researchers found!</div>
-    {% endfor %}
-    {% include "studies/_paginator.html" with page=lab_members_qs %}
+    </div>
+{% empty %}
+    <div class="empty-text">No researchers found!</div>
+{% endfor %}
+{% include "studies/_paginator.html" with page=lab_members_qs %}
 {% endblock content %}

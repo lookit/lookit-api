@@ -35,6 +35,7 @@ class ParticipantListView(
         Returns users that researcher has permission to view
         """
         qs = super().get_queryset()
+        ordering = self.get_ordering()
 
         match = self.request.GET.get("match", False)
 
@@ -49,21 +50,24 @@ class ParticipantListView(
                 )
             )
 
+        if ordering:
+            qs = qs.order_by(self.get_ordering())
+
         return qs
 
     def get_ordering(self):
-        """Override for get_ordering."""
-        order = self.request.GET.get("sort", "nickname")
-        if "nickname" not in order and "last_login" not in order:
-            return ("nickname",)
+        return self.request.GET.get("sort")
 
     def get_context_data(self, **kwargs):
         """
         Adds match and sort query params to context_data dict
         """
         context = super().get_context_data(**kwargs)
-        context["match"] = self.request.GET.get("match", "")
-        context["sort"] = self.request.GET.get("sort", "")
+        context.update(
+            match=self.request.GET.get("match", ""),
+            sort=self.request.GET.get("sort", ""),
+            page=self.request.GET.get("page", ""),
+        )
         return context
 
 

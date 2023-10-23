@@ -16,9 +16,9 @@
                placeholder="Filter by nickname or user global ID"
                size="50"
                type="text"
-               value="{{ match }}"/>
-        <input type="hidden" name="sort" value="{{ sort }}"/>
-        <input type="hidden" name="page" value="1"/>
+               value="{{ match }}" />
+        <input type="hidden" name="sort" value="{{ sort }}" />
+        <input type="hidden" name="page" value="1" />
     </form>
     <table class="table" aria-describedby="Study participant list">
         <thead>
@@ -27,20 +27,20 @@
                     Nickname
                     <a class="text-decoration-none"
                        aria-label="Sort ascending by nickname"
-                       href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='nickname' %}">{% bs_icon "chevron-up" %}</a>
+                       href="{% url 'exp:participant-list' %}?{% query_transform request page=page sort='nickname' %}">{% bs_icon "chevron-up" %}</a>
                     <a class="text-decoration-none"
                        aria-label="Sort descending by nickname"
-                       href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-nickname' %}">{% bs_icon "chevron-down" %}</a>
+                       href="{% url 'exp:participant-list' %}?{% query_transform request page=page sort='-nickname' %}">{% bs_icon "chevron-down" %}</a>
                 </th>
                 <th scope="col">User global ID</th>
                 <th scope="col">
                     Last Active
                     <a class="text-decoration-none"
                        aria-label="Sort ascending by last active"
-                       href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='last_login' %}">{% bs_icon "chevron-up" %}</a>
+                       href="{% url 'exp:participant-list' %}?{% query_transform request page=page sort='last_login' %}">{% bs_icon "chevron-up" %}</a>
                     <a class="text-decoration-none"
                        aria-label="Sort descending by last active"
-                       href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-last_login' %}">{% bs_icon "chevron-down" %}</a>
+                       href="{% url 'exp:participant-list' %}?{% query_transform request page=page sort='-last_login' %}">{% bs_icon "chevron-down" %}</a>
                 </th>
                 <th scope="col"></th>
             </tr>
@@ -49,7 +49,7 @@
             {% for user in object_list %}
                 {% url 'exp:participant-detail' user.id as url_participant_detail %}
                 <tr>
-                    <td >
+                    <td>
                         <a href={{ url_participant_detail }}>
                             {% if user.nickname %}
                                 {{ user.nickname }}

@@ -6,8 +6,8 @@
     <h1>TEST SERVER FOR MBAH - DEVELOPER USE ONLY</h1>
     <nav class="navbar navbar-expand-md bg-light text-dark">
         <div class="container-fluid">
-            <div class="navbar-nav nav-pills me-auto me-auto order-0">
-                {% nav_link request 'web:home' 'Home' %}
+            <div class="navbar-nav nav-pills navbar-collapse">
+                {% nav_link request 'web:home' 'CHS Home' %}
                 {% if user.is_researcher %}
                     {% nav_link request 'exp:study-list' experimenter %}
                 {% endif %}
@@ -19,13 +19,13 @@
                 </button>
             </div>
             {% block nav_links %}
-                <div class="navbar-nav nav-pills navbar-collapse collapse w-100 order-1 collapse1 mx-auto justify-content-center">
+                <div class="navbar-nav nav-pills navbar-collapse collapse collapse1 justify-content-center">
                     {% nav_link request 'web:studies-list' 'Studies' %}
                     {% nav_link request 'web:faq' 'FAQ' %}
                     {% nav_link request 'web:scientists' 'The Scientists' %}
                     {% nav_link request 'web:resources' 'Resources' %}
                 </div>
-                <div class="navbar-nav nav-pills navbar-collapse collapse w-100 order-2 collapse1 ms-auto justify-content-end">
+                <div class="navbar-nav nav-pills navbar-collapse collapse collapse1 justify-content-end">
                     {% if user.is_authenticated %}
                         {% nav_link request 'accounts:manage-account' 'My Account' %}
                         {% nav_link request 'web:studies-history' 'My Past Studies' %}

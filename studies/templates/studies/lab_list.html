@@ -19,30 +19,24 @@
                placeholder="Filter by name, PI, or institution"
                size="50"
                type="text"
-               value="{{ match }}"/>
-        <input type="hidden" name="set" value="{{ set }}"/>
-        <input type="hidden" name="page" value="1"/>
+               value="{{ match }}" />
+        <input type="hidden" name="set" value="{{ set }}" />
+        <input type="hidden" name="page" value="1" />
     </form>
     <ul class="nav nav-tabs">
         <li class="nav-item">
             <a class="nav-link{% if set == 'myLabs' %} active{% endif %}"
-               href="{% url 'exp:lab-list' %}?{% query_transform request page='1' set='myLabs' %}">
-                My Labs
-            </a>
+               href="{% url 'exp:lab-list' %}?{% query_transform request page='1' set='myLabs' %}">My Labs</a>
         </li>
         {% if can_approve_labs %}
             <li class="nav-item">
                 <a class="nav-link{% if set == 'unapproved' %} active{% endif %}"
-                   href="{% url 'exp:lab-list' %}?{% query_transform request page='1' set='unapproved' %}">
-                    Inactive
-                </a>
+                   href="{% url 'exp:lab-list' %}?{% query_transform request page='1' set='unapproved' %}">Inactive</a>
             </li>
         {% endif %}
         <li class="nav-item">
             <a class="nav-link{% if set == 'all' %} active{% endif %}"
-               href="{% url 'exp:lab-list' %}?{% query_transform request page='1' set='all' %}">
-                All
-            </a>
+               href="{% url 'exp:lab-list' %}?{% query_transform request page='1' set='all' %}">All</a>
         </li>
     </ul>
     <div class="row border-bottom py-3 fw-bold">

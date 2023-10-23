@@ -1,21 +1,19 @@
 {% extends "web/_navigation.html" %}
 {% load web_extras %}
 {% block nav_links %}
-    <div class="navbar-nav nav-pills navbar-collapse collapse w-100 order-1 collapse1 mx-auto justify-content-center">
+    <div class="navbar-nav nav-pills navbar-collapse collapse collapse1 justify-content-center">
         {% nav_link request 'exp:support' 'Support Lookit' %}
         {% nav_link request 'exp:study-list' 'Manage Studies' %}
         {% nav_link request 'exp:participant-list' 'View Participants' %}
     </div>
-    <div class="navbar-nav nav-pills navbar-collapse collapse order-2 collapse1 ms-auto justify-content-end">
+    <div class="navbar-nav nav-pills navbar-collapse collapse collapse1 justify-content-end">
         <div class="nav-item dropdown">
             <a class="nav-link dropdown-toggle"
                href="#"
                id="navbarDropdown"
                role="button"
                data-bs-toggle="dropdown"
-               aria-expanded="false">
-                Help
-            </a>
+               aria-expanded="false">Help</a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <div>
                     <a class="dropdown-item"
@@ -31,9 +29,7 @@
                id="navbarDropdown"
                role="button"
                data-bs-toggle="dropdown"
-               aria-expanded="false">
-                {{ request.user.identicon_small_html }} {{ request.user.get_short_name }}
-            </a>
+               aria-expanded="false">{{ request.user.identicon_small_html }} {{ request.user.get_short_name }}</a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 {% dropdown_item request 'accounts:manage-account' 'Manage Account' %}
                 {% dropdown_item request 'exp:lab-list' 'Manage Labs' %}

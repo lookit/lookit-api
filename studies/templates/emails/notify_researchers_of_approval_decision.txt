@@ -12,7 +12,7 @@ To start your study, log in to Lookit, navigate to the study, and select "Start"
 You can modify your study and resubmit for approval.
 {% endif %}
 
-Your study can be found here: {{base_url}}{% url 'exp:study-detail' study_id %}
+Your study can be found here: {{base_url}}{% url 'exp:study' study_id %}
 
 {% if comments %}
 Comments from the Lookit Admin:

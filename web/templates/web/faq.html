@@ -46,9 +46,7 @@
                         data-bs-toggle="collapse"
                         data-bs-target="#collapse-2"
                         aria-expanded="false"
-                        aria-controls="collapse-2">
-                    {% trans "Why participate in developmental research?" %}
-                </button>
+                        aria-controls="collapse-2">{% trans "Why participate in developmental research?" %}</button>
             </h2>
             <div id="collapse-2"
                  class="accordion-collapse collapse"
@@ -105,9 +103,7 @@
                         data-bs-toggle="collapse"
                         data-bs-target="#collapse-4"
                         aria-expanded="false"
-                        aria-controls="collapse-4">
-                    {% trans "Who creates the studies?" %}
-                </button>
+                        aria-controls="collapse-4">{% trans "Who creates the studies?" %}</button>
             </h2>
             <div id="collapse-4"
                  class="accordion-collapse collapse"
@@ -185,9 +181,7 @@
                         data-bs-toggle="collapse"
                         data-bs-target="#collapse-9"
                         aria-expanded="false"
-                        aria-controls="collapse-9">
-                    {% trans "How do we provide consent to participate?" %}
-                </button>
+                        aria-controls="collapse-9">{% trans "How do we provide consent to participate?" %}</button>
             </h2>
             <div id="collapse-9"
                  class="accordion-collapse collapse"
@@ -200,11 +194,11 @@
                 {% endblocktranslate %}
                     <div class="d-flex justify-content-center">
                         <video controls preload="metadata">
-                            <source src="{% static 'videos/consent.mp4' %}" type="video/mp4"/>
+                            <source src="{% static 'videos/consent.mp4' %}" type="video/mp4" />
                             <track label="English"
                                    kind="captions"
                                    srclang="en"
-                                   src="{% static 'videos/english/consent.vtt' %}"/>
+                                   src="{% static 'videos/english/consent.vtt' %}" />
                         </video>
                     </div>
                 </div>
@@ -242,9 +236,7 @@
                         data-bs-toggle="collapse"
                         data-bs-target="#collapse-11"
                         aria-expanded="false"
-                        aria-controls="collapse-11">
-                    {% trans "Who will see our video?" %}
-                </button>
+                        aria-controls="collapse-11">{% trans "Who will see our video?" %}</button>
             </h2>
             <div id="collapse-11"
                  class="accordion-collapse collapse"
@@ -287,11 +279,11 @@
                     </p>
                     <div class="d-flex justify-content-center">
                         <video controls preload="metadata">
-                            <source src="{% static 'videos/attentiongrabber.mp4' %}" type="video/mp4"/>
+                            <source src="{% static 'videos/attentiongrabber.mp4' %}" type="video/mp4" />
                             <track label="English"
                                    kind="captions"
                                    srclang="en"
-                                   src="{% static 'videos/english/attentiongrabber.vtt' %}"/>
+                                   src="{% static 'videos/english/attentiongrabber.vtt' %}" />
                         </video>
                     </div>
                     <p>
@@ -299,46 +291,38 @@
                     </p>
                     <div class="d-flex justify-content-center">
                         <video controls preload="metadata">
-                            <source src="{% static 'videos/spinningball.mp4' %}" type="video/mp4"/>
+                            <source src="{% static 'videos/spinningball.mp4' %}" type="video/mp4" />
                             <track label="English"
                                    kind="captions"
                                    srclang="en"
-                                   src="{% static 'videos/english/spinningball.vtt' %}"/>
+                                   src="{% static 'videos/english/spinningball.vtt' %}" />
                         </video>
                     </div>
                     <p>
                         {% trans "Your child's decisions about where to look can give us lots of information about what he or she understands. Here are some of the techniques labs use to learn more about how children learn." %}
                     </p>
-                    <h4>
-                        {% trans "Habituation" %}
-                    </h4>
+                    <h4>{% trans "Habituation" %}</h4>
                     {% blocktranslate %}
                 <p>In a habituation study, we first show infants many examples of one type of object or event, and they lose interest over time. Infants typically look for a long time at the first pictures, but then they start to look away more quickly. Once their looking times are much less than they were initially, we show either a picture from a new category or a new picture from the familiar category. If infants now look longer to the novel example, we can tell that they understood--and got bored of--the category we showed initially.</p> <p>Habituation requires waiting for each individual infant to achieve some threshold of "boredness"--for instance, looking half as long at a picture as he or she did initially. Sometimes this is impractical, and we use familiarization instead. In a familiarization study, we show all babies the same number of examples, and then see how interested they are in the familiar versus a new category. Younger infants and those who have seen few examples tend to show a familiarity preference--they look longer at images similar to what they have seen before. Older infants and those who have seen many examples tend to show a novelty preference--they look longer at images that are different from the ones they saw before. You probably notice the same phenomenon when you hear a new song on the radio: initially you don't recognize it; after it's played several times you may like it and sing along; after it's played hundreds of times you would choose to listen to anything else.</p>
                 {% endblocktranslate %}
-                    <h4>
-                        {% trans "Violation of expectation" %}
-                    </h4>
+                    <h4>{% trans "Violation of expectation" %}</h4>
                     <p>
                         {% trans "Infants and children already have rich expectations about how events work. Children (and adults for that matter) tend to look longer at things they find surprising, so in some cases, we can take their looking times as a measure of how surprised they are." %}
                     </p>
-                    <h4>
-                        {% trans "Preferential looking" %}
-                    </h4>
+                    <h4>{% trans "Preferential looking" %}</h4>
                     <p>
                         {% trans "Even when they seem to be passive observers, children are making lots of decisions about where to look and what to pay attention to. In this technique, we present children with a choice between two side-by-side images or videos, and see if children spend more time looking at one of them. We may additionally play audio that matches one of the videos. The video below shows a participant looking to her left when asked to 'find clapping'; the display she's watching is shown at the top." %}
                     </p>
                     <div class="d-flex justify-content-center">
                         <video controls preload="metadata">
-                            <source src="{% static 'videos/clapping.mp4' %}" type="video/mp4"/>
+                            <source src="{% static 'videos/clapping.mp4' %}" type="video/mp4" />
                             <track label="English"
                                    kind="captions"
                                    srclang="en"
-                                   src="{% static 'videos/english/clapping.vtt' %}"/>
+                                   src="{% static 'videos/english/clapping.vtt' %}" />
                         </video>
                     </div>
-                    <h4>
-                        {% trans "Predictive looking" %}
-                    </h4>
+                    <h4>{% trans "Predictive looking" %}</h4>
                     <p>
                         {% trans "Children can often make sophisticated predictions about what they expect to see or hear next. One way we can see those predictions in young children is to look at their eye movements. For example, if a child sees a ball roll behind a barrier, she may look to the other edge of the barrier, expecting the ball to emerge there. We may also set up artificial predictive relationships--for instance, the syllable 'da' means a toy will appear at the left of the screen, and 'ba' means a toy will appear at the right. Then we can see whether children learn these relationships, and how they generalize, by watching where they look when they hear a syllable." %}
                     </p>
@@ -347,11 +331,11 @@
                     </p>
                     <div class="d-flex justify-content-center">
                         <video controls preload="metadata">
-                            <source src="{% static 'videos/causal_ex2.mp4' %}" type="video/mp4"/>
+                            <source src="{% static 'videos/causal_ex2.mp4' %}" type="video/mp4" />
                             <track label="English"
                                    kind="captions"
                                    srclang="en"
-                                   src="{% static 'videos/english/causal_ex2.vtt' %}"/>
+                                   src="{% static 'videos/english/causal_ex2.vtt' %}" />
                         </video>
                     </div>
                     <p>
@@ -523,9 +507,7 @@
                         data-bs-toggle="collapse"
                         data-bs-target="#collapse-20"
                         aria-expanded="false"
-                        aria-controls="collapse-20">
-                    {% trans "Will we be paid for our participation?" %}
-                </button>
+                        aria-controls="collapse-20">{% trans "Will we be paid for our participation?" %}</button>
             </h2>
             <div id="collapse-20"
                  class="accordion-collapse collapse"
@@ -597,9 +579,7 @@
                         data-bs-toggle="collapse"
                         data-bs-target="#collapse-22"
                         aria-expanded="false"
-                        aria-controls="collapse-22">
-                    {% trans "I love this. How do I share this site?" %}
-                </button>
+                        aria-controls="collapse-22">{% trans "I love this. How do I share this site?" %}</button>
             </h2>
             <div id="collapse-22"
                  class="accordion-collapse collapse"
@@ -644,9 +624,7 @@
                         data-bs-toggle="collapse"
                         data-bs-target="#collapse-24"
                         aria-expanded="false"
-                        aria-controls="collapse-24">
-                    {% trans "How can I contact you?" %}
-                </button>
+                        aria-controls="collapse-24">{% trans "How can I contact you?" %}</button>
             </h2>
             <div id="collapse-24"
                  class="accordion-collapse collapse"
@@ -662,9 +640,7 @@
             </div>
         </div>
     </div>
-    <h3 class="subheading">
-        {% trans "Technical" %}
-    </h3>
+    <h3 class="subheading">{% trans "Technical" %}</h3>
     <div class="accordion m-4" id="faq-accordion-technical">
         <div class="accordion-item">
             <h2 class="accordion-header" id="heading-25">
@@ -673,9 +649,7 @@
                         data-bs-toggle="collapse"
                         data-bs-target="#collapse-25"
                         aria-expanded="false"
-                        aria-controls="collapse-25">
-                    {% trans "What browsers are supported?" %}
-                </button>
+                        aria-controls="collapse-25">{% trans "What browsers are supported?" %}</button>
             </h2>
             <div id="collapse-25"
                  class="accordion-collapse collapse"
@@ -695,9 +669,7 @@
                         data-bs-toggle="collapse"
                         data-bs-target="#collapse-26"
                         aria-expanded="false"
-                        aria-controls="collapse-26">
-                    {% trans "Can we do a study on my phone or tablet?" %}
-                </button>
+                        aria-controls="collapse-26">{% trans "Can we do a study on my phone or tablet?" %}</button>
             </h2>
             <div id="collapse-26"
                  class="accordion-collapse collapse"
@@ -718,9 +690,7 @@
                         data-bs-toggle="collapse"
                         data-bs-target="#collapse-27"
                         aria-expanded="false"
-                        aria-controls="collapse-27">
-                    {% trans "My study isn't working, what can I do?" %}
-                </button>
+                        aria-controls="collapse-27">{% trans "My study isn't working, what can I do?" %}</button>
             </h2>
             <div id="collapse-27"
                  class="accordion-collapse collapse"
@@ -741,9 +711,7 @@
                         data-bs-toggle="collapse"
                         data-bs-target="#collapse-28"
                         aria-expanded="false"
-                        aria-controls="collapse-28">
-                    {% trans "What security measures do you implement?" %}
-                </button>
+                        aria-controls="collapse-28">{% trans "What security measures do you implement?" %}</button>
             </h2>
             <div id="collapse-28"
                  class="accordion-collapse collapse"
@@ -757,9 +725,7 @@
             </div>
         </div>
     </div>
-    <h3 class="subheading">
-        {% trans "For Researchers" %}
-    </h3>
+    <h3 class="subheading">{% trans "For Researchers" %}</h3>
     <div class="accordion m-4" id="faq-accordion-for-researchers">
         <div class="accordion-item">
             <h2 class="accordion-header" id="heading-29">
@@ -768,9 +734,7 @@
                         data-bs-toggle="collapse"
                         data-bs-target="#collapse-29"
                         aria-expanded="false"
-                        aria-controls="collapse-29">
-                    {% trans "How can I list my study?" %}
-                </button>
+                        aria-controls="collapse-29">{% trans "How can I list my study?" %}</button>
             </h2>
             <div id="collapse-29"
                  class="accordion-collapse collapse"

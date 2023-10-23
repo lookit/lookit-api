@@ -8,13 +8,13 @@
             integrity="sha512-57oZ/vW8ANMjR/KQ6Be9v/+/h6bq9/l3f0Oc7vn6qMqyhvPd1cvKBRWWpzu0QoneImqr2SkmO4MSqU+RpHom3Q=="
             crossorigin="anonymous"
             referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="{% static 'css/bootstrap-select.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-select.min.css' %}" />
     <script src="{% static 'js/bootstrap-select.min.js' %}"
             integrity="sha384-8fu9aU0rBHyWhoS96J+3YorJqJZsUp8c3IkInX6NKYi/K/jmG98rDibD+JgkI+fZ"></script>
     <script src="{% static 'studies/js/d3.min.js' %}"
             integrity="sha384-M06Cb6r/Yrkprjr7ngOrJlzgekrkkdmGZDES/SUnkUpUol0/qjsaQWQfLzq0mcfg"></script>
     <link rel="stylesheet"
-          href="{% static 'studies/css/metricsgraphics.min.css' %}"/>
+          href="{% static 'studies/css/metricsgraphics.min.css' %}" />
     <script src="{% static 'studies/js/metricsgraphics.min.js' %}"
             integrity="sha384-1tg+Caggw2MOJb5XdqvPWuAdItLy/pYh+OKAUeUp2u3LcAjTuqEUraUNX7wVUgGO"></script>
     {# Moment #}
@@ -38,7 +38,7 @@
             integrity="sha384-ty7j9l9dyFJXResSJqxWIltBRwUxu77rLFQK18vubTvNC+6NUMAeu/xri9AU0WqK"></script>
     <link rel="stylesheet"
           type="text/css"
-          href="{% static 'css/daterangepicker.min.css' %}"/>
+          href="{% static 'css/daterangepicker.min.css' %}" />
     {% comment %}
         When we upgrade to django 2.x, please convert to the following insertions to json_script.
         Please see: https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#json-script
@@ -111,8 +111,8 @@
                             only data from responses (and the associated children/families) within this time frame will be
                             included in the table.
                         </p>
-                        <input id="date-filter" class="form-control input-sm" type="text"/>
-                        <table id="total-counts" class="table table-condensed">
+                        <input id="date-filter" class="form-control input-sm" type="text" />
+                        <table id="total-counts" class="table table-condensed" aria-describedby="">
                             <tr>
                                 <th scope="row"># Unique Responses</th>
                                 <td id="total-count-responses"></td>
@@ -125,37 +125,21 @@
                             </tr>
                             <tr>
                                 <th scope="row"># Registrations in date range</th>
-                                <td id="total-count-registrations">
-                                </td>
+                                <td id="total-count-registrations"></td>
                             </tr>
                             <tr>
-                                <th scope="row">
-                                    Total # Registrations at range end
-                                </th>
-                                <td id="end-count-registrations">
-                                </td>
+                                <th scope="row">Total # Registrations at range end</th>
+                                <td id="end-count-registrations"></td>
                             </tr>
                         </table>
-                        <label class="control-label" for="granularity-specifier">
-                            Bin Granularity
-                        </label>
-                        <p class="help-block small">
-                            Change the sampling width of the binned graphs.
-                        </p>
+                        <label class="control-label" for="granularity-specifier">Bin Granularity</label>
+                        <p class="help-block small">Change the sampling width of the binned graphs.</p>
                         <select id="granularity-specifier" class="selectpicker form-control">
-                            <option value="day" selected>
-                                Day
-                            </option>
-                            <option value="week">
-                                Week
-                            </option>
-                            <option value="month">
-                                Month
-                            </option>
+                            <option value="day" selected>Day</option>
+                            <option value="week">Week</option>
+                            <option value="month">Month</option>
                         </select>
-                        <label class="control-label" for="timeseries-filter">
-                            Included responses
-                        </label>
+                        <label class="control-label" for="timeseries-filter">Included responses</label>
                         <p class="help-block small">
                             Determine the kinds of responses that are counted in the binned participation graph
                             and have their own line plotted in the cumulative participation graph. (This does not
@@ -163,47 +147,29 @@
                         </p>
                         <select id="timeseries-filter" class="selectpicker form-control" multiple>
                             <optgroup id="all-studies-filter" label="ALL STUDIES">
-                                <option value="ALL:any" data-ruling="any">
-                                    All Rulings
-                                </option>
-                                <option value="ALL:pending" data-ruling="pending">
-                                    Pending
-                                </option>
-                                <option value="ALL:accepted" data-ruling="accepted">
-                                    Accepted
-                                </option>
-                                <option value="ALL:rejected" data-ruling="rejected">
-                                    Rejected
-                                </option>
+                                <option value="ALL:any" data-ruling="any">All Rulings</option>
+                                <option value="ALL:pending" data-ruling="pending">Pending</option>
+                                <option value="ALL:accepted" data-ruling="accepted">Accepted</option>
+                                <option value="ALL:rejected" data-ruling="rejected">Rejected</option>
                             </optgroup>
                             {% for study in all_studies %}
                                 <optgroup label="{{ study.name }}" data-study-id="{{ study.id }}">
                                     <option value="{{ study.id }}:any"
                                             data-subtext="{{ study.name }}"
-                                            data-ruling="any">
-                                        All Rulings
-                                    </option>
+                                            data-ruling="any">All Rulings</option>
                                     <option value="{{ study.id }}:pending"
                                             data-subtext="{{ study.name }}"
-                                            data-ruling="pending">
-                                        Pending
-                                    </option>
+                                            data-ruling="pending">Pending</option>
                                     <option value="{{ study.id }}:accepted"
                                             data-subtext="{{ study.name }}"
-                                            data-ruling="accepted">
-                                        Accepted
-                                    </option>
+                                            data-ruling="accepted">Accepted</option>
                                     <option value="{{ study.id }}:rejected"
                                             data-subtext="{{ study.name }}"
-                                            data-ruling="rejected">
-                                        Rejected
-                                    </option>
+                                            data-ruling="rejected">Rejected</option>
                                 </optgroup>
                             {% endfor %}
                         </select>
-                        <h5>
-                            Legend
-                        </h5>
+                        <h5>Legend</h5>
                         <section id="plot-legend" class="small">
                         </section>
                     </div>
@@ -217,9 +183,7 @@
             </section>
         </section>
         <section id="summary-section" class="row">
-            <h3>
-                Summary Statistics
-            </h3>
+            <h3>Summary Statistics</h3>
             <div>
                 <p class="help-block">
                     This section includes data from responses to your studies (a) within the time range specified above and (b) for which <strong class="text-success">consent has been confirmed</strong>,
@@ -242,9 +206,7 @@
                     from the dropdown at the left.
                 </p>
             </div>
-            <h4>
-                Pivot Table Examples
-            </h4>
+            <h4>Pivot Table Examples</h4>
             <div id="pivot-presets"
                  class="btn-group btn-group"
                  role="group"
@@ -254,49 +216,35 @@
                         data-cols="Study"
                         data-rows="Living Density"
                         data-aggregator="Total # Responses"
-                        data-renderer="Stacked Bar Chart">
-                    Living Density by Study
-                </button>
+                        data-renderer="Stacked Bar Chart">Living Density by Study</button>
                 <button type="button"
                         class="btn btn-default"
                         data-cols="Child Gender"
                         data-rows="Study"
                         data-aggregator="Unique Children"
-                        data-renderer="Table">
-                    Unique Children per Study by Gender
-                </button>
+                        data-renderer="Table">Unique Children per Study by Gender</button>
                 <button type="button"
                         class="btn btn-default"
                         data-cols="Parent/Guardian Education Level"
                         data-aggregator="Unique Families"
-                        data-renderer="Bar Chart">
-                    Unique Families per Parent/Guardian Education Level
-                </button>
+                        data-renderer="Bar Chart">Unique Families per Parent/Guardian Education Level</button>
                 <button type="button"
                         class="btn btn-default"
                         data-cols="Study"
                         data-rows="Lookit Referrer"
                         data-aggregator="Unique Families"
-                        data-renderer="Table">
-                    Referrers by Study
-                </button>
+                        data-renderer="Table">Referrers by Study</button>
                 <button type="button"
                         class="btn btn-default"
                         data-rows="Study"
                         data-aggregator="Additional Comments"
-                        data-renderer="Table">
-                    Additional info by Study
-                </button>
+                        data-renderer="Table">Additional info by Study</button>
             </div>
-            <h4>
-                Pivot Table
-            </h4>
+            <h4>Pivot Table</h4>
             <article id="responses-pivot" class="col-md-12"></article>
         </section>
         <section>
-            <h3>
-                Child Data Summary
-            </h3>
+            <h3>Child Data Summary</h3>
             <div>
                 <p class="help-block">
                     This section includes data from all children (except children of researcher accounts)
@@ -311,87 +259,57 @@
                 </p>
             </div>
             <article id="characteristics-table" class="col-md-4">
-                <h4>
-                    Characteristics
-                </h4>
-                <table class="table small">
+                <h4>Characteristics</h4>
+                <table class="table small" aria-describedby="">
                     <thead>
                         <tr>
-                            <th scope="col">
-                                Characteristic
-                            </th>
-                            <th scope="col">
-                                # Children
-                            </th>
+                            <th scope="col">Characteristic</th>
+                            <th scope="col"># Children</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for characteristic, child_count in characteristics.items %}
                             <tr>
-                                <td>
-                                    {{ characteristic }}
-                                </td>
-                                <td>
-                                    {{ child_count }}
-                                </td>
+                                <td>{{ characteristic }}</td>
+                                <td>{{ child_count }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </article>
             <article id="languages-table" class="col-md-4">
-                <h4>
-                    Languages
-                </h4>
-                <table class="table small">
+                <h4>Languages</h4>
+                <table class="table small" aria-describedby="">
                     <thead>
                         <tr>
-                            <th scope="col">
-                                Language
-                            </th>
-                            <th scope="col">
-                                # Children
-                            </th>
+                            <th scope="col">Language</th>
+                            <th scope="col"># Children</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for language, child_count in languages.items %}
                             <tr>
-                                <td>
-                                    {{ language }}
-                                </td>
-                                <td>
-                                    {{ child_count }}
-                                </td>
+                                <td>{{ language }}</td>
+                                <td>{{ child_count }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </article>
             <article id="studies-table" class="col-md-4">
-                <h4>
-                    Studies
-                </h4>
-                <table class="table small">
+                <h4>Studies</h4>
+                <table class="table small" aria-describedby="">
                     <thead>
                         <tr>
-                            <th scope="col">
-                                Study
-                            </th>
-                            <th scope="col">
-                                # Children
-                            </th>
+                            <th scope="col">Study</th>
+                            <th scope="col"># Children</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for study_name, child_count in studies.items %}
                             <tr>
-                                <td>
-                                    {{ study_name }}
-                                </td>
-                                <td>
-                                    {{ child_count }}
-                                </td>
+                                <td>{{ study_name }}</td>
+                                <td>{{ child_count }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -399,29 +317,19 @@
             </article>
             {% if can_view_all_children %}
                 <article id="studies-table" class="col-md-4">
-                    <h4>
-                        Ages
-                    </h4>
-                    <table class="table small">
+                    <h4>Ages</h4>
+                    <table class="table small" aria-describedby="">
                         <thead>
                             <tr>
-                                <th scope="col">
-                                    Age
-                                </th>
-                                <th scope="col">
-                                    # Children
-                                </th>
+                                <th scope="col">Age</th>
+                                <th scope="col"># Children</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for age, child_count in ages.items %}
                                 <tr>
-                                    <td>
-                                        {{ age }}
-                                    </td>
-                                    <td>
-                                        {{ child_count }}
-                                    </td>
+                                    <td>{{ age }}</td>
+                                    <td>{{ child_count }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
