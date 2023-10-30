@@ -28,7 +28,6 @@ function childSelected(selectElement) {
     } else if (ineligibleBasedOnAge < 0 && !(ineligibleBasedOnCriteriaExpression) && !(ineligibleBasedOnParticipation)) { // Too young, but otherwise eligible
         document.getElementById('too-young').classList.remove('d-none');
     } else if (ineligibleBasedOnCriteriaExpression || ineligibleBasedOnParticipation) {
-        console.log('show ineligible warning');
         // Doesn't meet criteria from the criteria expression and/or the prior study participation requirements
         document.getElementById('criteria-not-met').classList.remove('d-none');
     }
