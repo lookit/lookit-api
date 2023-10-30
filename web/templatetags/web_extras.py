@@ -7,7 +7,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
 from accounts.forms import StudyListSearchForm
-from accounts.queries import get_child_eligibility
+from accounts.queries import get_child_eligibility, get_child_participation_eligibility
 from project.settings import GOOGLE_TAG_MANAGER_ID
 
 register = template.Library()
@@ -66,8 +66,14 @@ def nav_next(request, url, text, button):
 
 
 @register.simple_tag
-def child_is_valid_for_study_criteria_expression(child, study):
-    return get_child_eligibility(child, study.criteria_expression)
+def child_is_valid_for_study_criteria(child, study):
+    eligibility = {
+        "participation_eligibility": get_child_participation_eligibility(child, study),
+        "criteria_expression_eligibility": get_child_eligibility(
+            child, study.criteria_expression
+        ),
+    }
+    return eligibility
 
 
 @register.simple_tag
