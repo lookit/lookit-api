@@ -113,11 +113,14 @@
                                 onchange="childSelected(this)">
                             <option value=none>{% trans "None Selected" %}</option>
                             {% for child in children %}
-                                {% child_is_valid_for_study_criteria_expression child object as child_is_eligible %}
+                                {% child_is_valid_for_study_criteria child object as child_is_eligible %}
                                 <option onemptied=""
                                         value="{{ child.uuid }}"
                                         data-birthdate="{{ child.birthday|date:'c' }}"
-                                        data-eligible="{{ child_is_eligible }}">{{ child.given_name }}</option>
+                                        data-eligible-participation="{{ child_is_eligible.participation_eligibility }}"
+                                        data-eligible-criteria="{{ child_is_eligible.criteria_expression_eligibility }}">
+                                    {{ child.given_name }}
+                                </option>
                             {% endfor %}
                         </select>
                         <p class="text-danger mb-0 mt-3 d-none" id="too-young">
