@@ -1,14 +1,34 @@
-function getAge() {
-    const day = document.getElementById('id_birthday_day').value
-    const month = document.getElementById('id_birthday_month').value
-    const year = document.getElementById('id_birthday_year').value
-    const birthday = new Date(`${month}/${day}/${year}`);
 
-    const years = moment().diff(birthday, 'years');
+$('.datepicker').datepicker({
+    changeMonth: true,
+    changeYear: true,
+    showButtonPanel: true,
+    maxDate: 0,
+    yearRange: "1900:+nn"
+}).on('change', function () {
+    const age = getAge(this);
+    if (document.getElementById('age_calc')) {
+        document.getElementById('age_calc').innerHTML = `Age: ${age}`;
+    } else {
+        const x = document.createElement("p");
+        x.setAttribute("id", "age_calc");
+        x.setAttribute("class", "age_format")
+        const t = document.createTextNode(`Age: ${age}`);
+        x.appendChild(t);
+        document.getElementById("id_birthday").parentNode.insertBefore(x, document.getElementById("id_birthday"));
+    }
+});
+
+
+function getAge(dateValue) {
+    if (dateValue.value === '') {
+        return '{% trans "Empty birthday" %} '
+    }
+    const years = moment().diff(new Date(dateValue.value), 'years');
     if (years === 0) {
-        const months = moment().diff(birthday, 'months');
+        const months = moment().diff(new Date(dateValue.value), 'months');
         if (months === 0) {
-            const days = moment().diff(birthday, 'days');
+            const days = moment().diff(new Date(dateValue.value), 'days');
             return days === 1 ? days + " day" : days + " days";
         }
         return months === 1 ? months + " month" : months + " months";
@@ -16,30 +36,3 @@ function getAge() {
         return years === 1 ? years + " year" : years + " years";
     }
 }
-
-function createAgeText() {
-    const birthdayWidget = document.querySelector('.birthday-widget');
-    const p = document.createElement("p");
-    p.setAttribute("id", "age_calc");
-    p.setAttribute("class", "age_format");
-    birthdayWidget.parentNode.insertBefore(p, birthdayWidget);
-}
-
-
-function updateAgeText() {
-    const age = getAge();
-    const p = document.getElementById("age_calc");
-    p.textContent = `Age: ${age}`;
-}
-
-/***
- * Page Load
- */
-createAgeText();
-
-/**
- * Event Listeners
- */
-document.querySelectorAll('#id_birthday_day, #id_birthday_month, #id_birthday_year').forEach(function (el) {
-    el.addEventListener('change', updateAgeText)
-});

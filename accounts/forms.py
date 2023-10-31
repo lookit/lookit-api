@@ -12,7 +12,6 @@ from django.utils.translation import gettext_lazy as _
 
 from accounts.backends import two_factor_auth_backend
 from accounts.models import Child, DemographicData, User
-from accounts.widgets import BirthdayWidget
 
 
 class ForceLowercaseEmailField(EmailField):
@@ -373,7 +372,7 @@ class DemographicDataForm(forms.ModelForm):
 
 class ChildForm(forms.ModelForm):
     birthday = forms.DateField(
-        widget=BirthdayWidget,
+        widget=forms.DateInput(attrs={"class": "datepicker"}),
         help_text=_(
             "This lets us figure out exactly how old your child is when they participate in a study. We never publish children's birthdates or information that would allow a reader to calculate the birthdate."
         ),
@@ -438,11 +437,57 @@ class ChildForm(forms.ModelForm):
         }
 
 
-class ChildUpdateForm(ChildForm):
-    birthday = forms.DateField(
-        disabled=True,
-        widget=BirthdayWidget,
-    )
+class ChildUpdateForm(forms.ModelForm):
+    birthday = forms.DateField(disabled=True, help_text="YYYY-MM-DD")
+
+    class Meta:
+        model = Child
+        fields = (
+            "given_name",
+            "birthday",
+            "gender",
+            "gender_self_describe",
+            "gestational_age_at_birth",
+            "languages_spoken",
+            "existing_conditions",
+            "additional_information",
+        )
+
+        labels = {
+            "given_name": _("First Name"),
+            "birthday": _("Birthday"),
+            "gender": _("Gender"),
+            "gestational_age_at_birth": _("Gestational Age at Birth"),
+            "additional_information": _(
+                "Any additional information you'd like us to know"
+            ),
+            "existing_conditions": _("Characteristics and conditions"),
+            "languages_spoken": _(
+                "Languages this child is exposed to at home, school, or with another caregiver."
+            ),
+        }
+
+        help_texts = {
+            "given_name": _(
+                "This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research."
+            ),
+            "additional_information": _(
+                "For instance, diagnosed developmental disorders or vision or hearing problems"
+            ),
+            "existing_conditions": _(
+                "Most research studies are designed for a general age range, but some focus on a particular group of children. The choices you make below are used to show you studies that are designed for children with these characteristics."
+            ),
+        }
+
+        widgets = {
+            "existing_conditions": BitFieldCheckboxSelectMultiple(
+                attrs={"class": "column-checkbox"}
+            ),
+            "languages_spoken": BitFieldCheckboxSelectMultiple(
+                attrs={"class": "column-checkbox"}
+            ),
+            "gender_self_describe": forms.Textarea(attrs={"rows": 2}),
+        }
 
 
 class FormChoiceEnum(Enum):
