@@ -20,15 +20,13 @@ function childSelected(selectElement) {
     let birthday = selectElement.selectedOptions[0].dataset["birthdate"];
     let age = calculateAgeInDays(birthday);
     let ineligibleBasedOnAge = ageCheck(age);
-    let ineligibleBasedOnCriteriaExpression = selectElement.selectedOptions[0].dataset["eligibleCriteria"] === "False";
-    let ineligibleBasedOnParticipation = selectElement.selectedOptions[0].dataset["eligibleParticipation"] === "False";
+    let ineligibleBasedOnCriteria = selectElement.selectedOptions[0].dataset["eligible"] === "False";
 
     if (ineligibleBasedOnAge > 0) { // Too old
         document.getElementById('too-old').classList.remove('d-none');
-    } else if (ineligibleBasedOnAge < 0 && !(ineligibleBasedOnCriteriaExpression) && !(ineligibleBasedOnParticipation)) { // Too young, but otherwise eligible
+    } else if (ineligibleBasedOnAge < 0 && !ineligibleBasedOnCriteria) { // Too young, but otherwise eligible
         document.getElementById('too-young').classList.remove('d-none');
-    } else if (ineligibleBasedOnCriteriaExpression || ineligibleBasedOnParticipation) {
-        // Doesn't meet criteria from the criteria expression and/or the prior study participation requirements
+    } else if (ineligibleBasedOnCriteria) {
         document.getElementById('criteria-not-met').classList.remove('d-none');
     }
 }
