@@ -48,6 +48,7 @@ class ResponseAdmin(GuardedModelAdmin):
         "completed_consent_frame",
         "withdrawn",
         "is_preview",
+        "eligibility",
     )
     raw_id_fields = ("child", "demographic_snapshot")
     empty_value_display = "None"
