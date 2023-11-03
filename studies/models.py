@@ -27,7 +27,12 @@ from accounts.models import Child, DemographicData, User
 from attachment_helpers import get_download_url
 from project import settings
 from studies import workflow
-from studies.helpers import FrameActionDispatcher, send_mail
+from studies.helpers import (
+    FrameActionDispatcher,
+    ResponseEligibility,
+    get_eligibility_for_response,
+    send_mail,
+)
 from studies.permissions import (
     UMBRELLA_LAB_PERMISSION_MAP,
     LabGroup,
@@ -1000,6 +1005,11 @@ class Response(models.Model):
         StudyType, on_delete=models.PROTECT, default=StudyType.default_pk
     )
     recording_method = models.CharField(max_length=50, default="pipe")
+    eligibility = ArrayField(
+        models.CharField(max_length=100, choices=ResponseEligibility.choices),
+        blank=True,
+        default=list,
+    )
 
     def __str__(self):
         return self.display_name
@@ -1187,6 +1197,13 @@ class Response(models.Model):
                         seen_ids.add(video_id)
 
         return Video.objects.bulk_create(video_objects)
+
+    def save(self, *args, **kwargs):
+        """Override save to set eligibility value"""
+        if self._state.adding is True:
+            # only set the eligibility value when the response is first being created, not when it is being updated later
+            self.eligibility = get_eligibility_for_response(self.child, self.study)
+        super(Response, self).save(*args, **kwargs)
 
 
 @receiver(post_save, sender=Response)

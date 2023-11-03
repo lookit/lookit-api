@@ -130,6 +130,7 @@ class ResponseSerializer(UuidHyperlinkedModelSerializer):
             "withdrawn",
             "hash_child_id",
             "recording_method",
+            "eligibility",
         )
 
     def get_hash_child_id(self, obj):
@@ -180,6 +181,7 @@ class ResponseWriteableSerializer(UuidResourceModelSerializer):
             "pk",
             "withdrawn",
             "recording_method",
+            "eligibility",
         )
 
 
