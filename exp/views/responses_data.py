@@ -59,6 +59,15 @@ RESPONSE_COLUMNS = [
         name="Withdrawn",
     ),
     ResponseDataColumn(
+        id="response__eligibility",
+        description=(
+            "List of eligibility codes (defined in Lookit docs), separated by spaces. Can be either 'Eligible' or "
+            "one or more of: 'Ineligible_TooYoung'/'Ineligible_TooOld', 'Ineligible_CriteriaExpression', 'Ineligible_Participation'."
+        ),
+        extractor=lambda resp: resp.eligibility,
+        name="Eligibility",
+    ),
+    ResponseDataColumn(
         id="response__parent_feedback",
         description=(
             "Freeform parent feedback entered into the exit survey, if any. This field may incidentally contain "
