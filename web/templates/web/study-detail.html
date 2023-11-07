@@ -109,13 +109,11 @@
                                 data-study-min-age-years="{{ study.min_age_years }}"
                                 data-study-max-age-days="{{ study.max_age_days }}"
                                 data-study-max-age-months="{{ study.max_age_months }}"
-                                data-study-max-age-years="{{ study.max_age_years }}"
-                                onchange="childSelected(this)">
-                            <option value=none>{% trans "None Selected" %}</option>
+                                data-study-max-age-years="{{ study.max_age_years }}">
+                            <option value="none">{% trans "None Selected" %}</option>
                             {% for child in children %}
                                 {% child_is_valid_for_study_criteria child object as child_is_eligible %}
-                                <option onemptied=""
-                                        value="{{ child.uuid }}"
+                                <option value="{{ child.uuid }}"
                                         data-birthdate="{{ child.birthday|date:'c' }}"
                                         data-eligible-participation="{{ child_is_eligible.participation_eligibility }}"
                                         data-eligible-criteria="{{ child_is_eligible.criteria_expression_eligibility }}">

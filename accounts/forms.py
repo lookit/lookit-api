@@ -65,7 +65,7 @@ class TOTPField(forms.CharField):
     def widget_attrs(self, widget):
         """Override - used to update widget attrs in Field initializer."""
         attrs = super().widget_attrs(widget)
-        return {**attrs, "placeholder": "123456", "style": "width: 50%;"}
+        return {**attrs, "placeholder": "123456", "class": "w-50"}
 
 
 class TOTPCheckForm(forms.Form):
