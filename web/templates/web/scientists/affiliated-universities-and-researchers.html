@@ -4,7 +4,7 @@
 </p>
 {% for section, institutions in institution_sections %}
     <p>{{ section.name }}:</p>
-    <ul style="columns:3">
+    <ul class="three-column-list">
         {% for institution in institutions %}<li>{{ institution.name }}</li>{% endfor %}
     </ul>
 {% endfor %}
