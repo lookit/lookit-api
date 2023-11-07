@@ -2,7 +2,7 @@
 name = "lookit-api"
 version = "0.1.0"
 description = ""
-authors = [""]
+authors = ["John Smith <john@example.com>"]
 
 [tool.poetry.dependencies]
 bcrypt = "3.2.0"
@@ -52,6 +52,7 @@ uWSGI = "2.0.19.1"
 pillow = "9.4.0"
 django-bootstrap-icons = "0.8.2"
 js2py = "0.74"
+django-csp = "^3.7"
 
 [tool.poetry.group.dev.dependencies]
 coverage = "^7.2"

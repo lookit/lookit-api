@@ -103,6 +103,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "csp.middleware.CSPMiddleware",
 ]
 
 if DEBUG:
@@ -387,3 +388,14 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#std:setting-SESSION_COOKIE_HTTPONLY
 # Per the above documentation setting SESSION_COOKIE_HTTPONLY might break JavaScript.
 SESSION_COOKIE_HTTPONLY = True
+
+
+CSP_DEFAULT_SRC = (
+    "'self' data:",
+    "fonts.googleapis.com",
+    "cdnjs.cloudflare.com",
+    "cdn.datatables.net",
+    "cdn.jsdelivr.net",
+    "fonts.gstatic.com",
+    "www.youtube.com",
+)

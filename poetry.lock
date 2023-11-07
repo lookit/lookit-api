@@ -583,6 +583,24 @@ pyuca = ["pyuca"]
 test = ["graphene-django", "pytest", "pytest-cov", "pytest-django"]
 
 [[package]]
+name = "django-csp"
+version = "3.7"
+description = "Django Content Security Policy support."
+optional = false
+python-versions = "*"
+files = [
+    {file = "django_csp-3.7-py2.py3-none-any.whl", hash = "sha256:01443a07723f9a479d498bd7bb63571aaa771e690f64bde515db6cdb76e8041a"},
+    {file = "django_csp-3.7.tar.gz", hash = "sha256:01eda02ad3f10261c74131cdc0b5a6a62b7c7ad4fd017fbefb7a14776e0a9727"},
+]
+
+[package.dependencies]
+Django = ">=1.8"
+
+[package.extras]
+jinja2 = ["jinja2 (>=2.9.6)"]
+tests = ["jinja2 (>=2.9.6)", "mock (==1.0.1)", "pep8 (==1.4.6)", "pytest (<4.0)", "pytest-django", "pytest-flakes (==1.0.1)", "pytest-pep8 (==1.0.6)", "six (==1.12.0)"]
+
+[[package]]
 name = "django-dynamic-fixture"
 version = "3.1.2"
 description = "A full library to create dynamic model instances for testing purposes."
@@ -2599,4 +2617,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9 <3.10"
-content-hash = "7c2a75bd53ccf6a151b9f8973c5663cbe06c15e55fbf32da9e6cdec8fa81f9d8"
+content-hash = "af2659f7e3abec861e9e2d0c8508cdedc19e2abdb6063dbf3fe69f2d251a795c"
