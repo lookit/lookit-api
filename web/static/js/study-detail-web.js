@@ -1,9 +1,6 @@
-$('.text-warning').hide();
-$("#child-dropdown").val("none");
-childSelected(document.getElementById('child-dropdown'));
-
-function childSelected(selectElement) {
-    var participateButton = document.getElementById('participate-button');
+function childSelected() {
+    const selectElement = document.getElementById('child-dropdown');
+    const participateButton = document.getElementById('participate-button');
     if (selectElement.value === 'none') {
         participateButton.disabled = true;
         document.getElementById('too-old').classList.add('d-none');
@@ -42,13 +39,13 @@ function calculateAgeInDays(birthday) {
 
 function ageCheck(age) {
     // Adapted from experiment model in exp-addons
-    var minDays;
-    var maxDays;
-    var study_age_criteria = document.getElementById('child-dropdown').dataset;
+    let minDays;
+    let maxDays;
+    const study_age_criteria = document.getElementById('child-dropdown').dataset;
     // These are now hard-coded to avoid unpredictable behavior from moment.duration().asDays()
     // e.g. 1 year = 365 days, 1 month = 30 days, and 1 year + 1 month = 396 days.
-    minDays = parseInt(study_age_criteria.studyMinAgeDays,10) + 30 * parseInt(study_age_criteria.studyMinAgeMonths,10) + 365 * parseInt(study_age_criteria.studyMinAgeYears,10);
-    maxDays = parseInt(study_age_criteria.studyMaxAgeDays,10) + 30 * parseInt(study_age_criteria.studyMaxAgeMonths,10) + 365 * parseInt(study_age_criteria.studyMaxAgeYears,10);
+    minDays = parseInt(study_age_criteria.studyMinAgeDays, 10) + 30 * parseInt(study_age_criteria.studyMinAgeMonths, 10) + 365 * parseInt(study_age_criteria.studyMinAgeYears, 10);
+    maxDays = parseInt(study_age_criteria.studyMaxAgeDays, 10) + 30 * parseInt(study_age_criteria.studyMaxAgeMonths, 10) + 365 * parseInt(study_age_criteria.studyMaxAgeYears, 10);
 
     minDays = minDays || -1;
     maxDays = maxDays || Number.MAX_SAFE_INTEGER;
@@ -61,3 +58,15 @@ function ageCheck(age) {
         return 0;
     }
 }
+
+/**
+ * On Page load
+ */
+$('.text-warning').hide();
+$("#child-dropdown").val("none");
+childSelected();
+
+/**
+ * Event listeners
+ */
+document.querySelector('#child-dropdown')?.addEventListener('change', childSelected)
