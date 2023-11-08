@@ -7,7 +7,6 @@ from email.mime.image import MIMEImage
 from django.core.mail.message import EmailMultiAlternatives
 from django.db import models
 from django.template.loader import get_template
-from lark import UnexpectedCharacters, UnexpectedInput
 
 from accounts.queries import (
     child_in_age_range_for_study_days_difference,
@@ -118,36 +117,23 @@ def get_eligibility_for_response(child_obj, study_obj):
     ineligible_participation = not get_child_participation_eligibility(
         child_obj, study_obj
     )
+    ineligible_criteria = not get_child_eligibility(
+        child_obj, study_obj.criteria_expression
+    )
 
-    # handle missing/invalid criteria_expression
-    try:
-        ineligible_criteria = not get_child_eligibility(
-            child_obj, study_obj.criteria_expression
-        )
-    except UnexpectedCharacters:
-        ineligible_criteria = False
-    except UnexpectedInput:
-        ineligible_criteria = False
-
-    if (
-        age_range_diff is None
-        or age_range_diff != 0
-        or ineligible_participation
-        or ineligible_criteria
-    ):
+    if age_range_diff != 0 or ineligible_participation or ineligible_criteria:
 
         eligibility_set = set()
 
-        if age_range_diff is not None and age_range_diff > 0:
+        if age_range_diff > 0:
             eligibility_set.add(resp_elig.INELIGIBLE_OLD)
-        elif age_range_diff is not None and age_range_diff < 0:
+        elif age_range_diff < 0:
             eligibility_set.add(resp_elig.INELIGIBLE_YOUNG)
 
         if ineligible_participation:
             eligibility_set.add(resp_elig.INELIGIBLE_PARTICIPATION)
 
-        # if birthday is missing then age_range_diff is None
-        if ineligible_criteria or age_range_diff is None:
+        if ineligible_criteria:
             eligibility_set.add(resp_elig.INELIGIBLE_CRITERIA)
 
     return list(eligibility_set)
