@@ -2,7 +2,7 @@
 name = "lookit-api"
 version = "0.1.0"
 description = ""
-authors = [""]
+authors = ["lookit <lookit@mit.edu>"]
 
 [tool.poetry.dependencies]
 bcrypt = "3.2.0"
