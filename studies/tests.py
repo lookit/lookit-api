@@ -324,7 +324,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
         user = User(is_active=True)
         user.save()
 
-        child = Child(user=user)
+        child = Child(user=user, birthday=date.today() - timedelta(days=365))
         child.save()
 
         self.assertTrue(
@@ -687,7 +687,7 @@ class StudyModelTestCase(TestCase):
             study_type=StudyType.get_external(),
         )
         user = User.objects.create(is_active=True, is_researcher=True)
-        child = Child.objects.create(user=user)
+        child = Child.objects.create(user=user, birthday=date.today())
         response = Response.objects.create(
             study=study,
             child=child,
