@@ -351,7 +351,7 @@ class Study(models.Model):
     built = models.BooleanField(default=False)
     is_building = models.BooleanField(default=False)
     compensation_description = models.TextField(blank=True)
-    criteria_expression = models.TextField(blank=True)
+    criteria_expression = models.TextField(blank=True, default="")
     must_have_participated = models.ManyToManyField(
         "self", blank=True, symmetrical=False, related_name="expected_participation"
     )
