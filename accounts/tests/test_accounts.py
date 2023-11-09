@@ -1014,6 +1014,85 @@ class EligibilityTestCase(TestCase):
         self.assertFalse(get_child_participation_eligibility(child, study))
         self.assertFalse(get_child_eligibility_for_study(child, study))
 
+    def test_get_child_eligibilty_multiple_studies_must_have_participated(self):
+        G(StudyType, name=StudyTypeEnum.ember_frame_player.value)
+        other_study_1 = G(Study, max_age_years=2, criteria_expression="")
+        other_study_2 = G(Study, max_age_years=2, criteria_expression="")
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_have_participated=[other_study_1, other_study_2],
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # Add response to one of the required studies
+        G(Response, child=child, study=other_study_1)
+
+        # Should not be eligible with a response to only one of the two required studies
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+        # Should be eligible with responses to all of the required studies
+        G(Response, child=child, study=other_study_2)
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+    def test_get_child_eligibilty_multiple_studies_must_not_have_participated(self):
+        G(StudyType, name=StudyTypeEnum.ember_frame_player.value)
+        other_study_1 = G(Study, max_age_years=2, criteria_expression="")
+        other_study_2 = G(Study, max_age_years=2, criteria_expression="")
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_not_have_participated=[other_study_1, other_study_2],
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # Should be eligible with no responses to either of the required studies
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+        # Add response to one of the disallowed studies
+        G(Response, child=child, study=other_study_1)
+
+        # Should not be eligible with a response to one or both of the two disallowed studies
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+        G(Response, child=child, study=other_study_2)
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+    def test_get_child_eligibilty_multiple_participation_criteria(self):
+        G(StudyType, name=StudyTypeEnum.ember_frame_player.value)
+        other_study_1 = G(Study, max_age_years=2, criteria_expression="")
+        other_study_2 = G(Study, max_age_years=2, criteria_expression="")
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_have_participated=[other_study_1],
+            must_not_have_participated=[other_study_2],
+        )
+
+        # Child is not eligible if they meet the required study criteria but not the disallowed study criteria
+        child_1 = G(Child, birthday=datetime.date.today())
+        G(Response, child=child_1, study=other_study_1)
+        G(Response, child=child_1, study=other_study_2)
+        self.assertFalse(get_child_participation_eligibility(child_1, study))
+        self.assertFalse(get_child_eligibility_for_study(child_1, study))
+
+        # Child is not eligible if they meet the disallowed study criteria but not the required study criteria
+        child_2 = G(Child, birthday=datetime.date.today())
+        self.assertFalse(get_child_participation_eligibility(child_2, study))
+        self.assertFalse(get_child_eligibility_for_study(child_2, study))
+
+        # Child is eligible if they meet both the required and disallowed study criteria
+        G(Response, child=child_2, study=other_study_1)
+        self.assertTrue(get_child_participation_eligibility(child_2, study))
+        self.assertTrue(get_child_eligibility_for_study(child_2, study))
+
 
 class Force2FAClient(Client):
     """For convenience when testing researcher views, let's just pretend everyone is two-factor auth'd."""
