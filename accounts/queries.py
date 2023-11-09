@@ -118,14 +118,24 @@ def get_child_participation_eligibility(child, study) -> bool:
     must_not_have_participated = True
 
     if study.must_have_participated.exists():
-        must_have_participated = child.responses.filter(
-            study__in=study.must_have_participated.all()
-        ).exists()
+        must_have_participated_all = [
+            i
+            for i in study.must_have_participated.all()
+            if child.responses.filter(study__exact=i).exists()
+        ]
+        # only true if response exists for each of the studies in the list
+        must_have_participated = set(must_have_participated_all) == set(
+            study.must_have_participated.all()
+        )
 
     if study.must_not_have_participated.exists():
-        must_not_have_participated = not child.responses.filter(
-            study__in=study.must_not_have_participated.all()
-        ).exists()
+        must_not_have_participated_all = [
+            i
+            for i in study.must_not_have_participated.all()
+            if child.responses.filter(study__exact=i).exists()
+        ]
+        # only true if response does NOT exist for any of the studies in the list
+        must_not_have_participated = len(must_not_have_participated_all) == 0
 
     return must_have_participated and must_not_have_participated
 
