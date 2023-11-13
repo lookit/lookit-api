@@ -95,7 +95,9 @@ def get_responses_with_current_rulings_and_videos(study_id, preview_only):
         responses_for_study = responses_for_study.filter(is_preview=True)
 
     responses_for_study = (
-        responses_for_study.select_related("child", "child__user","demographic_snapshot")
+        responses_for_study.select_related(
+            "child", "child__user", "demographic_snapshot"
+        )
         .order_by("-date_created")
         .values(
             "id",
@@ -124,7 +126,7 @@ def get_responses_with_current_rulings_and_videos(study_id, preview_only):
             "child__user__nickname",
             "demographic_snapshot_id",
             "demographic_snapshot__country",
-            "demographic_snapshot__state"
+            "demographic_snapshot__state",
         )
     )
 
@@ -148,7 +150,7 @@ def get_responses_with_current_rulings_and_videos(study_id, preview_only):
         )
 
     for response in responses_for_study:
-        
+
         response["videos"] = videos_per_response.get(response["id"], [])
 
     return responses_for_study

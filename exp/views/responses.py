@@ -795,8 +795,7 @@ class StudyResponsesConsentManager(
                         "uuid": str(response.pop("child__user__uuid")),
                         "nickname": response.pop("child__user__nickname"),
                         "country": response.pop("demographic_snapshot__country"),
-                        "state": response.pop("demographic_snapshot__state")
-
+                        "state": response.pop("demographic_snapshot__state"),
                     },
                     "child": {
                         "hashed_id": hash_child_id(response),
