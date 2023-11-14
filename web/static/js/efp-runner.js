@@ -67,7 +67,8 @@ function updateCommitDescription() {
     }
 }
 
-function updateCommitUpdateInfo() {
+function updateCommitUpdateInfo(event) {
+    event.preventDefault();
     const httpRequest = new XMLHttpRequest();
     httpRequest.onreadystatechange = () => {
         if (httpRequest.readyState === XMLHttpRequest.DONE) {
@@ -136,6 +137,49 @@ function updateLastPlayerSha() {
     }
 }
 
+function validateGenerator(event) {
+    const jshint_config = { "esversion": 6 }
+    const generator = document.querySelector('#id_generator');
+    const use_generator = document.querySelector('#id_use_generator');
+
+    if (use_generator.checked) {
+        if (JSHINT(generator.value, jshint_config)) {
+            console.log('all good here....')
+            this.submit();
+        } else {
+            const breadcrumb = document.querySelector('nav.breadcrumb');
+            const errorsList = document.createElement('ul')
+            const errorsMsg = document.createElement('div');
+
+            // Don't submit the form and scroll to top of page.
+            event.preventDefault();
+            window.scrollTo(0, 0);
+
+            // Errors are red
+            errorsList.classList.add('text-danger');
+
+            // Error message is bold
+            errorsMsg.classList.add('my-3');
+
+            // Add error message
+            errorsMsg.appendChild(document.createTextNode('Generator javascript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost.'))
+            errorsList.appendChild(errorsMsg);
+            // errorsHeader = 'Generator javascript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost.';
+            // errorsBlock.appendChild(errorsHeader);
+            // errorsBlock.appendChild(errorsList);
+
+            JSHINT.errors.map(({ line, reason }) => {
+                const errorEl = document.createElement('ol');
+                errorEl.innerHTML = `${line}: ${reason}`;
+                errorsList.appendChild(errorEl);
+            })
+
+            breadcrumb.after(errorsList);
+        }
+    }
+}
+
+
 /**
  * Page load
  */
@@ -147,8 +191,6 @@ updateLastPlayerSha();
  * Event Listeners
  */
 document.querySelector('#id_use_generator').addEventListener("click", updateProtocolDisplay);
-document.querySelector('#update-button').addEventListener("click", (event) => {
-    event.preventDefault();
-    updateCommitUpdateInfo();
-})
+document.querySelector('#update-button').addEventListener("click", updateCommitUpdateInfo);
 document.querySelector('#id_last_known_player_sha').addEventListener('keyup', updateCommitDescription);
+document.querySelector('form').addEventListener('submit', validateGenerator);
