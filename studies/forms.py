@@ -1,7 +1,6 @@
 import json
 from enum import Enum
 
-import js2py
 import requests
 from ace_overlay.widgets import AceOverlayWidget
 from django import forms
@@ -455,24 +454,12 @@ class EFPForm(ModelForm):
             )
 
     def clean_generator(self):
-        try:
-            generator = self.cleaned_data["generator"]
+        generator = self.cleaned_data["generator"]
 
-            if not generator.strip():
-                generator = DEFAULT_GENERATOR
+        if not generator.strip():
+            generator = DEFAULT_GENERATOR
 
-            # Validate generator only if using generator
-            if self.cleaned_data["use_generator"]:
-                js2py.eval_js(generator)
-
-            return generator
-        except js2py.internals.simplex.JsException as err:
-            raise forms.ValidationError(
-                [
-                    "Generator javascript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost.",
-                    err,
-                ]
-            )
+        return generator
 
     def clean_player_repo_url(self):
         player_repo_url = self.cleaned_data["player_repo_url"]
