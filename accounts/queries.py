@@ -127,9 +127,7 @@ def get_child_participation_eligibility(child, study) -> bool:
             i
             for i in study.must_have_participated.all()
             if child.responses.filter(study=i)
-            .exclude(
-                study__study_type_id=StudyType.get_ember_frame_player().id, sequence=[]
-            )
+            .exclude(study__study_type=StudyType.get_ember_frame_player(), sequence=[])
             .exists()
         ]
 
@@ -143,9 +141,7 @@ def get_child_participation_eligibility(child, study) -> bool:
             i
             for i in study.must_not_have_participated.all()
             if child.responses.filter(study=i)
-            .exclude(
-                study__study_type_id=StudyType.get_ember_frame_player().id, sequence=[]
-            )
+            .exclude(study__study_type=StudyType.get_ember_frame_player(), sequence=[])
             .exists()
         ]
         # only true if response does NOT exist for any one (or more) of the studies in the list
