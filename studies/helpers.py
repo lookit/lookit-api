@@ -111,7 +111,7 @@ def get_eligibility_for_response(child_obj, study_obj):
         The set can contain one or more 'ineligible' values, but if the child is eligible then that should be the only value in the set.
     """
     resp_elig = ResponseEligibility
-    eligibility_set = {resp_elig.ELIGIBLE}
+    eligibility_set = {resp_elig.ELIGIBLE.value}
 
     age_range_diff = child_in_age_range_for_study_days_difference(child_obj, study_obj)
     ineligible_participation = not get_child_participation_eligibility(
@@ -126,17 +126,17 @@ def get_eligibility_for_response(child_obj, study_obj):
         eligibility_set = set()
 
         if age_range_diff > 0:
-            eligibility_set.add(resp_elig.INELIGIBLE_OLD)
+            eligibility_set.add(resp_elig.INELIGIBLE_OLD.value)
         elif age_range_diff < 0:
-            eligibility_set.add(resp_elig.INELIGIBLE_YOUNG)
+            eligibility_set.add(resp_elig.INELIGIBLE_YOUNG.value)
 
         if ineligible_participation:
-            eligibility_set.add(resp_elig.INELIGIBLE_PARTICIPATION)
+            eligibility_set.add(resp_elig.INELIGIBLE_PARTICIPATION.value)
 
         if ineligible_criteria:
-            eligibility_set.add(resp_elig.INELIGIBLE_CRITERIA)
+            eligibility_set.add(resp_elig.INELIGIBLE_CRITERIA.value)
 
-    return list(eligibility_set)
+    return sorted(list(eligibility_set))
 
 
 class ResponseEligibility(models.TextChoices):
