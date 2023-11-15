@@ -1,3 +1,4 @@
+import json
 from datetime import date, datetime, timedelta, timezone
 
 from django.conf import settings
@@ -1102,10 +1103,6 @@ class ResponseEligibilityTestCase(TestCase):
             "Response Eligibility array is ELIGIBLE when the child meets the participation requirements.",
         )
 
-        # response_eligible.completed_consent_frame = True
-        # response_eligible.save()
-        # self.assertTrue( , "Response Eligibility array value is not set again when an existing response object is updated.")
-
     def test_response_eligibility_old(self):
         response_old = G(
             Response,
@@ -1317,4 +1314,90 @@ class ResponseEligibilityTestCase(TestCase):
             response_multiple_participation_ineligibility.eligibility,
             [ResponseEligibility.INELIGIBLE_PARTICIPATION],
             "Response Eligibility array contains INELIGIBLE_PARTICIPATION category only once, even if the child is ineligible based on both the 'must have' and 'must not have' participation requirements.",
+        )
+
+    def test_response_eligibility_set_value_only_on_creation(self):
+        # create a response where the participant is eligible when they begin the study
+        response_eligible = G(
+            Response,
+            child=self.child_in_age_range,
+            study=self.study_not_participated,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_eligible.eligibility,
+            [ResponseEligibility.ELIGIBLE.value],
+            "Response Eligibility is eligible when the response object is first created.",
+        )
+        # create a new response that changes the participant eligibility to ineligible (due to starting a blacklisted study)
+        G(
+            Response,
+            child=self.child_in_age_range,
+            study=self.other_study_1,
+            sequence=["0-video-config"],
+        )
+        # update the original response object - the eligibility field should not change
+        response_eligible.sequence = ["0-video-config", "1-instructions"]
+        # we need an exp_data field that corresponds to the frame sequence to prevent errors in the Response post-save receiver
+        response_eligible.exp_data = json.loads(
+            '{"0-video-config": {"frameType": "DEFAULT"}, "1-instructions": {"frameType": "DEFAULT"}}'
+        )
+        response_eligible.save()
+        self.assertEqual(
+            response_eligible.eligibility,
+            [ResponseEligibility.ELIGIBLE.value],
+            "Eligibility for an existing response does not change when it is modified.",
+        )
+        # new response is ineligible due to participation in blacklist study
+        response_ineligible = G(
+            Response,
+            child=self.child_in_age_range,
+            study=self.study_not_participated,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_ineligible.eligibility,
+            [ResponseEligibility.INELIGIBLE_PARTICIPATION.value],
+            "When a new response is created, participation is ineligible due to participation in blacklist study.",
+        )
+
+    def test_response_eligibility_study_blacklists_itself(self):
+        study_blacklists_itself = G(
+            Study,
+            name="Prior participation in this study is not allowed",
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            lab=self.fake_lab,
+            min_age_years=2,
+            min_age_months=0,
+            min_age_days=0,
+            max_age_years=4,
+            max_age_months=0,
+            max_age_days=0,
+        )
+        study_blacklists_itself.must_not_have_participated.add(study_blacklists_itself)
+        study_blacklists_itself.save()
+        response_eligible = G(
+            Response,
+            child=self.child_in_age_range,
+            study=study_blacklists_itself,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_eligible.eligibility,
+            [ResponseEligibility.ELIGIBLE.value],
+            "The child's first response is eligible for a study that blacklists itself.",
+        )
+        response_ineligible = G(
+            Response,
+            child=self.child_in_age_range,
+            study=study_blacklists_itself,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_ineligible.eligibility,
+            [ResponseEligibility.INELIGIBLE_PARTICIPATION.value],
+            "If the child makes additional responses to a study that blacklists itself, those responses are ineligible due to participation criteria.",
         )
