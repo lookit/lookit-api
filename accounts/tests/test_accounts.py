@@ -15,6 +15,7 @@ from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, DemographicData, GoogleAuthenticatorTOTP, User
 from accounts.queries import (
     age_range_eligibility_for_study,
+    child_in_age_range_for_study_days_difference,
     get_child_eligibility,
     get_child_eligibility_for_study,
     get_child_participation_eligibility,
@@ -891,6 +892,66 @@ class EligibilityTestCase(TestCase):
                 ),
                 "Child just above upper age bound is eligible",
             )
+
+    def test_age_range_days_difference(self):
+        lower_bound = float(
+            self.almost_one_study.min_age_years * 365
+            + self.almost_one_study.min_age_months * 30
+            + self.almost_one_study.min_age_days
+        )
+        upper_bound = float(
+            self.almost_one_study.max_age_years * 365
+            + self.almost_one_study.max_age_months * 30
+            + self.almost_one_study.max_age_days
+        )
+        self.assertEqual(
+            child_in_age_range_for_study_days_difference(
+                G(
+                    Child,
+                    birthday=datetime.date.today()
+                    - datetime.timedelta(days=lower_bound + 1),
+                ),
+                self.almost_one_study,
+            ),
+            0,
+            "Child just inside the Study's lower bound has a day difference of 0.",
+        )
+        self.assertEqual(
+            child_in_age_range_for_study_days_difference(
+                G(
+                    Child,
+                    birthday=datetime.date.today()
+                    - datetime.timedelta(days=upper_bound - 1),
+                ),
+                self.almost_one_study,
+            ),
+            0,
+            "Child just inside the Study's upper bound has a day difference of 0.",
+        )
+        self.assertEqual(
+            child_in_age_range_for_study_days_difference(
+                G(
+                    Child,
+                    birthday=datetime.date.today()
+                    - datetime.timedelta(days=lower_bound - 1),
+                ),
+                self.almost_one_study,
+            ),
+            -1,
+            "Child one day younger than Study's lower bound has a day difference of -1.",
+        )
+        self.assertEqual(
+            child_in_age_range_for_study_days_difference(
+                G(
+                    Child,
+                    birthday=datetime.date.today()
+                    - datetime.timedelta(days=upper_bound + 1),
+                ),
+                self.almost_one_study,
+            ),
+            1,
+            "Child one day older than Study's upper bound has a day difference of 1.",
+        )
 
     @parameterized.expand(
         [
