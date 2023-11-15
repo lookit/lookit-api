@@ -289,7 +289,7 @@ class BreadcrumbNode(template.Node):
         last_node = self.nodelist.pop()
 
         result = [
-            '<nav aria-label="breadcrumb" class="my-2">',
+            '<nav aria-label="breadcrumb" class="my-2 breadcrumb">',
             '<ol class="breadcrumb">',
         ]
 
