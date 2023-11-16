@@ -1236,10 +1236,7 @@ class JSPsychEditView(ExperimentRunnerEditView):
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         study = self.object
-        metadata = {
-            "experiment": form.cleaned_data["experiment"],
-            "player_sha": form.cleaned_data["player_sha"],
-        }
+        metadata = {"experiment": form.cleaned_data["experiment"]}
 
         if metadata != study.metadata:
             study.built = False

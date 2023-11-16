@@ -146,7 +146,7 @@ function validateGenerator(event) {
     const use_generator = document.querySelector('#id_use_generator');
 
     // Remove existing errors
-    document.querySelectorAll('.js-validation ol').forEach(el=>el.remove());
+    document.querySelectorAll('.js-validation ol').forEach(el => el.remove());
 
     if (use_generator.checked) {
         // if jshint comes back with errors (false)

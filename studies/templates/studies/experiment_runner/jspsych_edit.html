@@ -6,6 +6,8 @@
     {{ block.super }}
     {% comment %} ace editor fix cannot be defered {% endcomment %}
     <script src="{% static 'js/ace-editor.js' %}"></script>
+    <script src="{% static 'js/js-validation.js'%}" defer></script>
+    <script src="{% static 'js/jspysch-runner.js'%}" defer></script>
     {{ form.media }}
 {% endblock head %}
 {% block form %}
