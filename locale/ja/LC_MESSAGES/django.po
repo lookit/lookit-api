@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-23 03:44-0400\n"
+"POT-Creation-Date: 2023-11-16 13:57-0500\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -35,7 +35,6 @@ msgid "Email address"
 msgstr "メールアドレス"
 
 #: accounts/forms.py:222
-#, fuzzy
 msgid "Nickname"
 msgstr "ユーザー名"
 
@@ -1467,6 +1466,50 @@ msgstr "更新"
 #: web/templates/web/children-list.html:9
 msgid "Update child"
 msgstr "子どもの情報を更新する"
+
+#: web/templates/web/children-list.html:19
+msgid "Click the 'Add Child' button to add a child to your account."
+msgstr ""
+
+#: web/templates/web/children-list.html:22
+msgid ""
+"You can edit information about the children listed in your account, or add "
+"another by clicking the 'Add Child' button. Click the 'Find a Study' button "
+"to view the studies available for your children."
+msgstr ""
+
+#: web/templates/web/children-list.html:26
+msgid ""
+"When you are ready, click the 'Continue to Study' button to go on to your "
+"study, '{{ request.session.study_name }}'."
+msgstr ""
+
+#: web/templates/web/children-list.html:30
+msgid ""
+"You can edit information about the children listed in your account, or add "
+"another by clicking the 'Add Child' button."
+msgstr ""
+
+#: web/templates/web/children-list.html:33
+msgid ""
+"If the 'Continue to Study' button still isn't lighting up, the study may "
+"have become full or be recruiting a slightly different set of kids right "
+"now. You might also be missing a piece of information about your family, "
+"such as the languages you speak at home."
+msgstr ""
+
+#: web/templates/web/children-list.html:36
+msgid ""
+"You can click the 'Demographic Survey' button to add more information about "
+"your family, 'Find Another Study' to explore more studies for your family, "
+"or "
+msgstr ""
+
+#: web/templates/web/children-list.html:36
+msgid ""
+"click here</a> to review the requirements for '{{ request.session."
+"study_name }}'."
+msgstr ""
 
 #: web/templates/web/children-list.html:44
 msgid "Name"

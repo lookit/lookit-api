@@ -22,8 +22,8 @@ RUN apt-get update \
 
 COPY pyproject.toml poetry.lock .
 
-RUN poetry install \
-    && apt-get update \
+RUN poetry install 
+RUN apt-get update \
     && apt-get install -y --no-install-recommends gosu=1.10-1+b23 gettext=0.19.8.1-9 \
     && gosu nobody true \
     && update-ca-certificates 

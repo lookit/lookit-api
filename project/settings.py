@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     "rest_framework_json_api",
     "storages",
     "django_celery_beat",
+    "django_countries",
     # our stuff
     "api",
     "web",
