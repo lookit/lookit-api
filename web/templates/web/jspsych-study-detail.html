@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -20,6 +21,7 @@
               href="https://unpkg.com/jspsych@7.3.3/css/jspsych.css"
               integrity="sha384-V/UDJ5gQqHFzUZFNp/XZxaqNCEGfcX0ExsYH3gH8dFRe6piMutG6hSKyCYJsql96"
               crossorigin="anonymous">
+        <script src="{% static 'js/lookit-jspysch.js' %}"></script>
         <script>{% autoescape off %}{{study.metadata.experiment}}{% endautoescape %}</script>
     </head>
 </html>
