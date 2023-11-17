@@ -143,7 +143,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         models.CharField(max_length=255), blank=True, default=list
     )
     username = models.EmailField(
-        unique=True, verbose_name="Email address", db_index=True
+        unique=True, verbose_name=_("Email address"), db_index=True
     )
     given_name = models.CharField(max_length=255, blank=True)
     middle_name = models.CharField(max_length=255, blank=True)
