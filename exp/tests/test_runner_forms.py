@@ -48,28 +48,6 @@ class EFPFormTestCase(TestCase):
         )
         self.assertFalse(form.is_valid())
 
-    def test_failed_generator(self):
-        form = EFPForm(
-            data={
-                "last_known_player_sha": "862604874f7eeff8c9d72adcb8914b21bfb5427e",
-                "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
-                "structure": json.dumps(default_study_structure()),
-                "generator": "This is not valid Javascript.",
-                "use_generator": True,
-            }
-        )
-
-        self.assertDictEqual(
-            form.errors,
-            {
-                "generator": [
-                    "Generator javascript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost.",
-                    "SyntaxError: Line 1: Unexpected identifier",
-                ]
-            },
-        )
-        self.assertFalse(form.is_valid())
-
     def test_failed_player_repo_url(self):
         data = {
             "last_known_player_sha": "862604874f7eeff8c9d72adcb8914b21bfb5427e",

@@ -113,21 +113,24 @@
                                 onchange="childSelected(this)">
                             <option value=none>{% trans "None Selected" %}</option>
                             {% for child in children %}
-                                {% child_is_valid_for_study_criteria_expression child object as child_is_eligible %}
+                                {% child_is_valid_for_study_criteria child object as child_is_eligible %}
                                 <option onemptied=""
                                         value="{{ child.uuid }}"
                                         data-birthdate="{{ child.birthday|date:'c' }}"
-                                        data-eligible="{{ child_is_eligible }}">{{ child.given_name }}</option>
+                                        data-eligible-participation="{{ child_is_eligible.participation_eligibility }}"
+                                        data-eligible-criteria="{{ child_is_eligible.criteria_expression_eligibility }}">
+                                    {{ child.given_name }}
+                                </option>
                             {% endfor %}
                         </select>
                         <p class="text-danger mb-0 mt-3 d-none" id="too-young">
-                            {% trans "Your child is still younger than the recommended age range for this study. If you can wait until he or she is old enough, we'll be able to use the collected data in our research!" %}
+                            {% trans "Your child is still younger than the recommended age range for this study. If you can wait until he or she is old enough, the researchers will be able to compensate you and use the collected data in their research!" %}
                         </p>
                         <p class="text-danger mb-0 mt-3 d-none" id="too-old">
-                            {% trans "Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research." %}
+                            {% trans "Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but researchers may not be able to compensate you or use the collected data in their research." %}
                         </p>
                         <p class="text-danger mb-0 mt-3 d-none" id="criteria-not-met">
-                            {% blocktranslate with contact=study.contact_info %} Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers {{ contact }} if you feel this is in error. {% endblocktranslate %}
+                            {% blocktranslate with contact=study.contact_info %} Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but researchers may not be able to compensate you or use your data. Please review the “Who can participate” information for this study and contact the study researchers ({{ contact }}) if you feel this is in error. {% endblocktranslate %}
                         </p>
                         {% if preview_mode and object.needs_to_be_built %}
                             {% bootstrap_button build_runner href=build_runner_url button_class=btn_secondary_classes id="participate-button" %}
