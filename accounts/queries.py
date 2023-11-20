@@ -155,6 +155,30 @@ def _child_in_age_range_for_study(child, study):
     if not child.birthday:
         return False
 
+    age_in_days_outside_of_range = child_in_age_range_for_study_days_difference(
+        child, study
+    )
+    return age_in_days_outside_of_range == 0
+
+
+def child_in_age_range_for_study_days_difference(child, study):
+    """Check if child in age range for study, using same age calculations as in study detail and response data.
+
+    Args:
+        child (Child): Child model object
+        study (Study): Study model object
+
+    Returns:
+        int: the difference (in days) between the child's age and and the study's min or max age (in days).
+        0 if the child's age is within the study's age range.
+        Negative int if the child is too young (days below the minimum)
+        Positive int if the child is too old (days above the maximum)
+    """
+    if not child.birthday:
+        return None
+
+    # Similar to _child_in_age_range_for_study, but we want to know whether the child is too young/old, rather than just a boolean.
+
     # Age ranges are defined in DAYS, using shorthand of year = 365 days, month = 30 days,
     # to provide a reliable actual unit of time rather than calendar "months" and "years" which vary in duration.
     # See logic used in web/studies/study-detail.html to display eligibility to participant,
@@ -164,7 +188,12 @@ def _child_in_age_range_for_study(child, study):
 
     min_age_in_days_estimate, max_age_in_days_estimate = study_age_range(study)
     age_in_days = (date.today() - child.birthday).days
-    return min_age_in_days_estimate <= age_in_days <= max_age_in_days_estimate
+    if age_in_days <= min_age_in_days_estimate:
+        return age_in_days - min_age_in_days_estimate
+    elif age_in_days >= max_age_in_days_estimate:
+        return age_in_days - max_age_in_days_estimate
+    else:
+        return 0
 
 
 def study_age_range(study):

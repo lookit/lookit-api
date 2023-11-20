@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import MagicMock, PropertyMock, patch
 from urllib.parse import parse_qs, urlparse
 
@@ -179,7 +180,9 @@ class ExternalStudiesViewTestCase(ExternalTestCase):
         user = User.objects.create()
 
         # Create child
-        child = Child.objects.create(user=user)
+        child = Child.objects.create(
+            user=user, birthday=datetime.date.today() - datetime.timedelta(days=365)
+        )
 
         study_type = StudyType.get_external()
 
@@ -270,7 +273,9 @@ class StudiesHistoryViewTestCase(ExternalTestCase):
         type(mock_request).user = PropertyMock(return_value=user)
 
         # Create child
-        child = Child.objects.create(user=user)
+        child = Child.objects.create(
+            user=user, birthday=datetime.date.today() - datetime.timedelta(days=365)
+        )
 
         # Create response for this child/study
         Response.objects.create(
