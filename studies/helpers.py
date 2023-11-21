@@ -5,8 +5,14 @@ import re
 from email.mime.image import MIMEImage
 
 from django.core.mail.message import EmailMultiAlternatives
+from django.db import models
 from django.template.loader import get_template
 
+from accounts.queries import (
+    child_in_age_range_for_study_days_difference,
+    get_child_eligibility,
+    get_child_participation_eligibility,
+)
 from project.celery import app
 from project.settings import BASE_URL, EMAIL_FROM_ADDRESS
 
@@ -92,6 +98,56 @@ def send_mail(
     email.attach_alternative(html_content, "text/html")
     email.send()
     return email
+
+
+def get_eligibility_for_response(child_obj, study_obj):
+    """Get current eligibility for a child and study at the time that the Response object is created.
+    Args:
+        child (Child): Child model object
+        study (Study): Study model object
+
+    Returns:
+        Set: one or more possible string eligibility values (defined in the ResponseEligibility class).
+        The set can contain one or more 'ineligible' values, but if the child is eligible then that should be the only value in the set.
+    """
+    resp_elig = ResponseEligibility
+    eligibility_set = {resp_elig.ELIGIBLE.value}
+
+    age_range_diff = child_in_age_range_for_study_days_difference(child_obj, study_obj)
+    ineligible_participation = not get_child_participation_eligibility(
+        child_obj, study_obj
+    )
+    ineligible_criteria = not get_child_eligibility(
+        child_obj, study_obj.criteria_expression
+    )
+
+    if age_range_diff != 0 or ineligible_participation or ineligible_criteria:
+
+        eligibility_set = set()
+
+        if age_range_diff > 0:
+            eligibility_set.add(resp_elig.INELIGIBLE_OLD.value)
+        elif age_range_diff < 0:
+            eligibility_set.add(resp_elig.INELIGIBLE_YOUNG.value)
+
+        if ineligible_participation:
+            eligibility_set.add(resp_elig.INELIGIBLE_PARTICIPATION.value)
+
+        if ineligible_criteria:
+            eligibility_set.add(resp_elig.INELIGIBLE_CRITERIA.value)
+
+    return sorted(list(eligibility_set))
+
+
+class ResponseEligibility(models.TextChoices):
+    """Participant eligibility categories for Response model"""
+
+    # This must be determined at the point of the study participation/response, because child eligibility can change over time for a given study
+    ELIGIBLE = "Eligible"
+    INELIGIBLE_YOUNG = "Ineligible_TooYoung"
+    INELIGIBLE_OLD = "Ineligible_TooOld"
+    INELIGIBLE_CRITERIA = "Ineligible_CriteriaExpression"
+    INELIGIBLE_PARTICIPATION = "Ineligible_Participation"
 
 
 class FrameActionDispatcher(object):

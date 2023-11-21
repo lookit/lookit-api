@@ -592,7 +592,9 @@ class StudiesListViewTestCase(TestCase):
         user = User.objects.create()
 
         # Create child
-        child = Child.objects.create(user=user)
+        child = Child.objects.create(
+            user=user, birthday=datetime.date.today() - datetime.timedelta(days=365)
+        )
 
         study_type = StudyType.get_ember_frame_player()
 

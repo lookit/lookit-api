@@ -1,15 +1,16 @@
+import json
 from datetime import date, datetime, timedelta, timezone
 
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.utils.safestring import mark_safe
-from django_dynamic_fixture import G
+from django_dynamic_fixture import G, N
 from guardian.shortcuts import assign_perm
 from more_itertools import quantify
 
 from accounts.models import Child, Message, User
-from studies.helpers import send_mail
+from studies.helpers import ResponseEligibility, send_mail
 from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum, Video
 from studies.permissions import StudyPermission
 from studies.tasks import (
@@ -324,7 +325,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
         user = User(is_active=True)
         user.save()
 
-        child = Child(user=user)
+        child = Child(user=user, birthday=date.today() - timedelta(days=365))
         child.save()
 
         self.assertTrue(
@@ -687,7 +688,7 @@ class StudyModelTestCase(TestCase):
             study_type=StudyType.get_external(),
         )
         user = User.objects.create(is_active=True, is_researcher=True)
-        child = Child.objects.create(user=user)
+        child = Child.objects.create(user=user, birthday=date.today())
         response = Response.objects.create(
             study=study,
             child=child,
@@ -884,3 +885,519 @@ class VideoModelTestCase(TestCase):
         self.assertFalse(self.videos[1].recording_method_is_recordrtc)
         self.assertFalse(self.videos[2].recording_method_is_recordrtc)
         self.assertFalse(self.videos[6].recording_method_is_recordrtc)
+
+
+class ResponseEligibilityTestCase(TestCase):
+    def setUp(self):
+        self.fake_lab = G(
+            Lab, name="ECCL", institution="MIT", contact_email="faker@fakelab.com"
+        )
+        # Age range 2 years (730 days, 2y / 0m / 0d) to 3 years (1460 days, 4y / 0m / 0d)
+        self.study = G(
+            Study,
+            name="Study with 2-3 year age range",
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            lab=self.fake_lab,
+            min_age_years=2,
+            min_age_months=0,
+            min_age_days=0,
+            max_age_years=4,
+            max_age_months=0,
+            max_age_days=0,
+        )
+
+        self.study_criteria = G(
+            Study,
+            name="Study with a criteria expression",
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            lab=self.fake_lab,
+            min_age_years=2,
+            min_age_months=0,
+            min_age_days=0,
+            max_age_years=4,
+            max_age_months=0,
+            max_age_days=0,
+            criteria_expression="hearing_impairment",
+        )
+
+        self.other_study_1 = G(Study)
+        self.study_participated = G(
+            Study,
+            name="Study with must have participated criteria",
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            lab=self.fake_lab,
+            min_age_years=2,
+            min_age_months=0,
+            min_age_days=0,
+            max_age_years=4,
+            max_age_months=0,
+            max_age_days=0,
+            must_have_participated=[self.other_study_1],
+        )
+
+        self.study_participated_criteria = G(
+            Study,
+            name="Study with must have participated criteria",
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            lab=self.fake_lab,
+            min_age_years=2,
+            min_age_months=0,
+            min_age_days=0,
+            max_age_years=4,
+            max_age_months=0,
+            max_age_days=0,
+            criteria_expression="hearing_impairment",
+            must_have_participated=[self.other_study_1],
+        )
+
+        self.study_not_participated = G(
+            Study,
+            name="Study with must not have particpated criteria",
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            lab=self.fake_lab,
+            min_age_years=2,
+            min_age_months=0,
+            min_age_days=0,
+            max_age_years=4,
+            max_age_months=0,
+            max_age_days=0,
+            must_not_have_participated=[self.other_study_1],
+        )
+
+        self.study_not_participated_criteria = G(
+            Study,
+            name="Test study",
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            lab=self.fake_lab,
+            min_age_years=2,
+            min_age_months=0,
+            min_age_days=0,
+            max_age_years=4,
+            max_age_months=0,
+            max_age_days=0,
+            criteria_expression="hearing_impairment",
+            must_not_have_participated=[self.other_study_1],
+        )
+
+        self.other_study_2 = G(Study)
+        self.other_study_3 = G(Study)
+        self.study_participation_multiple = G(
+            Study,
+            name="Test study",
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            lab=self.fake_lab,
+            min_age_years=2,
+            min_age_months=0,
+            min_age_days=0,
+            max_age_years=4,
+            max_age_months=0,
+            max_age_days=0,
+            must_have_participated=[self.other_study_2],
+            must_not_have_participated=[self.other_study_3],
+        )
+
+        self.participant = G(User, is_active=True)
+        one_year_ago = date.today() - timedelta(days=365)
+        two_years_ago = date.today() - timedelta(days=2 * 365)
+        five_years_ago = date.today() - timedelta(days=5 * 365)
+        self.child_in_age_range = G(
+            Child, given_name="Child1", user=self.participant, birthday=two_years_ago
+        )
+        self.child_young = G(
+            Child, given_name="Child2", user=self.participant, birthday=one_year_ago
+        )
+        self.child_old = G(
+            Child, given_name="Child3", user=self.participant, birthday=five_years_ago
+        )
+        self.child_meets_criteria_exp = G(
+            Child,
+            given_name="Child4",
+            user=self.participant,
+            birthday=two_years_ago,
+            existing_conditions=Child.existing_conditions.hearing_impairment,
+        )
+        self.child_young_meets_criteria_exp = G(
+            Child,
+            given_name="Child5",
+            user=self.participant,
+            birthday=one_year_ago,
+            existing_conditions=Child.existing_conditions.hearing_impairment,
+        )
+        self.child_old_meets_criteria_exp = G(
+            Child,
+            given_name="Child6",
+            user=self.participant,
+            birthday=five_years_ago,
+            existing_conditions=Child.existing_conditions.hearing_impairment,
+        )
+
+    def test_response_eligibility_eligible(self):
+        # note the use of N instead of G here - this creates the instance but doesn't save it
+        response_unsaved = N(
+            Response,
+            child=self.child_in_age_range,
+            study=self.study,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_unsaved.eligibility,
+            [],
+            "Response Eligibility array value is empty before the response object is saved.",
+        )
+
+        # G creates and saves the instance, and eligibility values are calculated when the Response object is saved
+        response_eligible = G(
+            Response,
+            child=self.child_in_age_range,
+            study=self.study,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_eligible.eligibility,
+            [ResponseEligibility.ELIGIBLE.value],
+            "Response Eligibility array only contains the ELIGIBLE category for eligible response sessions.",
+        )
+
+        response_eligible_criteria = G(
+            Response,
+            child=self.child_meets_criteria_exp,
+            study=self.study_criteria,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_eligible_criteria.eligibility,
+            [ResponseEligibility.ELIGIBLE.value],
+            "Response Eligibility array is ELIGIBLE when the child meets the criteria expression requirements.",
+        )
+
+        response_eligible_participation = G(
+            Response,
+            child=self.child_in_age_range,
+            study=self.study_not_participated,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_eligible_participation.eligibility,
+            [ResponseEligibility.ELIGIBLE.value],
+            "Response Eligibility array is ELIGIBLE when the child meets the participation requirements.",
+        )
+
+    def test_response_eligibility_old(self):
+        response_old = G(
+            Response,
+            child=self.child_old,
+            study=self.study,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_old.eligibility,
+            [ResponseEligibility.INELIGIBLE_OLD],
+            "Response Eligibility array only contains the INELIGIBLE_OLD category for children who are too old.",
+        )
+
+    def test_response_eligibility_young(self):
+        response_young = G(
+            Response,
+            child=self.child_young,
+            study=self.study,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_young.eligibility,
+            [ResponseEligibility.INELIGIBLE_YOUNG],
+            "Response Eligibility array only contains the INELIGIBLE_YOUNG category for children who are too young.",
+        )
+
+    def test_response_eligibility_criteria(self):
+        response_criteria = G(
+            Response,
+            child=self.child_in_age_range,
+            study=self.study_criteria,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_criteria.eligibility,
+            [ResponseEligibility.INELIGIBLE_CRITERIA],
+            "Response Eligibility array only contains the INELIGIBLE_CRITERIA category for children who do not meet the criteria expression.",
+        )
+
+    def test_response_eligibility_age_criteria_combinations(self):
+        response_young_criteria = G(
+            Response,
+            child=self.child_young,
+            study=self.study_criteria,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_young_criteria.eligibility,
+            sorted(
+                [
+                    ResponseEligibility.INELIGIBLE_YOUNG.value,
+                    ResponseEligibility.INELIGIBLE_CRITERIA.value,
+                ]
+            ),
+            "Response Eligibility array contains the INELIGIBLE_YOUNG and INELIGIBLE_CRITERIA categories for children who are too young and do not meet criteria expression.",
+        )
+
+        response_old_criteria = G(
+            Response,
+            child=self.child_old,
+            study=self.study_criteria,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_old_criteria.eligibility,
+            sorted(
+                [
+                    ResponseEligibility.INELIGIBLE_CRITERIA.value,
+                    ResponseEligibility.INELIGIBLE_OLD.value,
+                ]
+            ),
+            "Response Eligibility array contains the INELIGIBLE_OLD and INELIGIBLE_CRITERIA categories for children who are too old and do not meet criteria expression.",
+        )
+
+    def test_response_eligibility_participation(self):
+        response_participation_1 = G(
+            Response,
+            child=self.child_in_age_range,
+            study=self.study_participated,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_participation_1.eligibility,
+            [ResponseEligibility.INELIGIBLE_PARTICIPATION.value],
+            "Response Eligibility array only contains the INELIGIBLE_PARTICIPATION category for children have not done the required studies.",
+        )
+
+        G(
+            Response,
+            child=self.child_in_age_range,
+            study=self.other_study_1,
+            sequence=["0-video-config"],
+        )
+        response_participation_2 = G(
+            Response,
+            child=self.child_in_age_range,
+            study=self.study_not_participated,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_participation_2.eligibility,
+            [ResponseEligibility.INELIGIBLE_PARTICIPATION.value],
+            "Response Eligibility array only contains the INELIGIBLE_PARTICIPATION category for children who have done the disallowed studies.",
+        )
+
+    def test_response_eligibility_participation_combinations(self):
+        response_young_participation = G(
+            Response,
+            child=self.child_young,
+            study=self.study_participated,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_young_participation.eligibility,
+            sorted(
+                [
+                    ResponseEligibility.INELIGIBLE_YOUNG,
+                    ResponseEligibility.INELIGIBLE_PARTICIPATION,
+                ]
+            ),
+            "Response Eligibility array contains the INELIGIBLE_YOUNG and INELIGIBLE_PARTICIPATION categories for children who are too young and do not meet participation requirements.",
+        )
+
+        response_old_participation = G(
+            Response,
+            child=self.child_old,
+            study=self.study_participated,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_old_participation.eligibility,
+            sorted(
+                [
+                    ResponseEligibility.INELIGIBLE_OLD,
+                    ResponseEligibility.INELIGIBLE_PARTICIPATION,
+                ]
+            ),
+            "Response Eligibility array contains the INELIGIBLE_OLD and INELIGIBLE_PARTICIPATION categories for children who are too old and do not meet participation requirements.",
+        )
+
+        response_criteria_participation = G(
+            Response,
+            child=self.child_in_age_range,
+            study=self.study_participated_criteria,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_criteria_participation.eligibility,
+            sorted(
+                [
+                    ResponseEligibility.INELIGIBLE_CRITERIA,
+                    ResponseEligibility.INELIGIBLE_PARTICIPATION,
+                ]
+            ),
+            "Response Eligibility array contains the INELIGIBLE_CRITERIA and INELIGIBLE_PARTICIPATION categories for children who do not meet criteria expression or participation requirements.",
+        )
+
+        response_young_criteria_participation = G(
+            Response,
+            child=self.child_young,
+            study=self.study_participated_criteria,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_young_criteria_participation.eligibility,
+            sorted(
+                [
+                    ResponseEligibility.INELIGIBLE_YOUNG,
+                    ResponseEligibility.INELIGIBLE_CRITERIA,
+                    ResponseEligibility.INELIGIBLE_PARTICIPATION,
+                ]
+            ),
+            "Response Eligibility array contains the INELIGIBLE_YOUNG, INELIGIBLE_CRITERIA and INELIGIBLE_PARTICIPATION categories for children who are too young and do not meet criteria expression or participation requirements.",
+        )
+
+        response_old_criteria_participation = G(
+            Response,
+            child=self.child_old,
+            study=self.study_participated_criteria,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_old_criteria_participation.eligibility,
+            sorted(
+                [
+                    ResponseEligibility.INELIGIBLE_OLD,
+                    ResponseEligibility.INELIGIBLE_CRITERIA,
+                    ResponseEligibility.INELIGIBLE_PARTICIPATION,
+                ]
+            ),
+            "Response Eligibility array contains the INELIGIBLE_OLD, INELIGIBLE_CRITERIA and INELIGIBLE_PARTICIPATION categories for children who are too old and do not meet criteria expression or participation requirements.",
+        )
+
+    def test_response_eligibility_participation_flag_only_added_once(self):
+
+        G(
+            Response,
+            child=self.child_in_age_range,
+            study=self.other_study_3,
+            sequence=["0-video-config"],
+        )
+        response_multiple_participation_ineligibility = G(
+            Response,
+            child=self.child_in_age_range,
+            study=self.study_participation_multiple,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_multiple_participation_ineligibility.eligibility,
+            [ResponseEligibility.INELIGIBLE_PARTICIPATION],
+            "Response Eligibility array contains INELIGIBLE_PARTICIPATION category only once, even if the child is ineligible based on both the 'must have' and 'must not have' participation requirements.",
+        )
+
+    def test_response_eligibility_set_value_only_on_creation(self):
+        # create a response where the participant is eligible when they begin the study
+        response_eligible = G(
+            Response,
+            child=self.child_in_age_range,
+            study=self.study_not_participated,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_eligible.eligibility,
+            [ResponseEligibility.ELIGIBLE.value],
+            "Response Eligibility is eligible when the response object is first created.",
+        )
+        # create a new response that changes the participant eligibility to ineligible (due to starting a blacklisted study)
+        G(
+            Response,
+            child=self.child_in_age_range,
+            study=self.other_study_1,
+            sequence=["0-video-config"],
+        )
+        # update the original response object - the eligibility field should not change
+        response_eligible.sequence = ["0-video-config", "1-instructions"]
+        # we need an exp_data field that corresponds to the frame sequence to prevent errors in the Response post-save receiver
+        response_eligible.exp_data = json.loads(
+            '{"0-video-config": {"frameType": "DEFAULT"}, "1-instructions": {"frameType": "DEFAULT"}}'
+        )
+        response_eligible.save()
+        self.assertEqual(
+            response_eligible.eligibility,
+            [ResponseEligibility.ELIGIBLE.value],
+            "Eligibility for an existing response does not change when it is modified.",
+        )
+        # new response is ineligible due to participation in blacklist study
+        response_ineligible = G(
+            Response,
+            child=self.child_in_age_range,
+            study=self.study_not_participated,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_ineligible.eligibility,
+            [ResponseEligibility.INELIGIBLE_PARTICIPATION.value],
+            "When a new response is created, participation is ineligible due to participation in blacklist study.",
+        )
+
+    def test_response_eligibility_study_blacklists_itself(self):
+        study_blacklists_itself = G(
+            Study,
+            name="Prior participation in this study is not allowed",
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            lab=self.fake_lab,
+            min_age_years=2,
+            min_age_months=0,
+            min_age_days=0,
+            max_age_years=4,
+            max_age_months=0,
+            max_age_days=0,
+        )
+        study_blacklists_itself.must_not_have_participated.add(study_blacklists_itself)
+        study_blacklists_itself.save()
+        response_eligible = G(
+            Response,
+            child=self.child_in_age_range,
+            study=study_blacklists_itself,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_eligible.eligibility,
+            [ResponseEligibility.ELIGIBLE.value],
+            "The child's first response is eligible for a study that blacklists itself.",
+        )
+        response_ineligible = G(
+            Response,
+            child=self.child_in_age_range,
+            study=study_blacklists_itself,
+            sequence=["0-video-config"],
+        )
+        self.assertEqual(
+            response_ineligible.eligibility,
+            [ResponseEligibility.INELIGIBLE_PARTICIPATION.value],
+            "If the child makes additional responses to a study that blacklists itself, those responses are ineligible due to participation criteria.",
+        )

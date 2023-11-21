@@ -15,20 +15,13 @@ from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, DemographicData, GoogleAuthenticatorTOTP, User
 from accounts.queries import (
     age_range_eligibility_for_study,
+    child_in_age_range_for_study_days_difference,
     get_child_eligibility,
     get_child_eligibility_for_study,
     get_child_participation_eligibility,
 )
 from studies.fields import GESTATIONAL_AGE_CHOICES
-from studies.models import (
-    ConsentRuling,
-    Lab,
-    Response,
-    Study,
-    StudyType,
-    StudyTypeEnum,
-    Video,
-)
+from studies.models import ConsentRuling, Lab, Response, Study, StudyType, Video
 
 
 class AuthenticationTestCase(TestCase):
@@ -900,6 +893,66 @@ class EligibilityTestCase(TestCase):
                 "Child just above upper age bound is eligible",
             )
 
+    def test_age_range_days_difference(self):
+        lower_bound = float(
+            self.almost_one_study.min_age_years * 365
+            + self.almost_one_study.min_age_months * 30
+            + self.almost_one_study.min_age_days
+        )
+        upper_bound = float(
+            self.almost_one_study.max_age_years * 365
+            + self.almost_one_study.max_age_months * 30
+            + self.almost_one_study.max_age_days
+        )
+        self.assertEqual(
+            child_in_age_range_for_study_days_difference(
+                G(
+                    Child,
+                    birthday=datetime.date.today()
+                    - datetime.timedelta(days=lower_bound + 1),
+                ),
+                self.almost_one_study,
+            ),
+            0,
+            "Child just inside the Study's lower bound has a day difference of 0.",
+        )
+        self.assertEqual(
+            child_in_age_range_for_study_days_difference(
+                G(
+                    Child,
+                    birthday=datetime.date.today()
+                    - datetime.timedelta(days=upper_bound - 1),
+                ),
+                self.almost_one_study,
+            ),
+            0,
+            "Child just inside the Study's upper bound has a day difference of 0.",
+        )
+        self.assertEqual(
+            child_in_age_range_for_study_days_difference(
+                G(
+                    Child,
+                    birthday=datetime.date.today()
+                    - datetime.timedelta(days=lower_bound - 1),
+                ),
+                self.almost_one_study,
+            ),
+            -1,
+            "Child one day younger than Study's lower bound has a day difference of -1.",
+        )
+        self.assertEqual(
+            child_in_age_range_for_study_days_difference(
+                G(
+                    Child,
+                    birthday=datetime.date.today()
+                    - datetime.timedelta(days=upper_bound + 1),
+                ),
+                self.almost_one_study,
+            ),
+            1,
+            "Child one day older than Study's upper bound has a day difference of 1.",
+        )
+
     @parameterized.expand(
         [
             # Study 0-5 yrs, Child is 0-1 yrs
@@ -971,8 +1024,12 @@ class EligibilityTestCase(TestCase):
         self.assertTrue(get_child_eligibility_for_study(child, study))
 
     def test_get_child_eligibilty_prior_studies_must_have_participated(self):
-        G(StudyType, name=StudyTypeEnum.ember_frame_player.value)
-        other_study = G(Study, max_age_years=2, criteria_expression="")
+        other_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_ember_frame_player(),
+        )
         study = G(
             Study,
             max_age_years=2,
@@ -985,16 +1042,60 @@ class EligibilityTestCase(TestCase):
         self.assertFalse(get_child_participation_eligibility(child, study))
         self.assertFalse(get_child_eligibility_for_study(child, study))
 
-        # Add response
-        G(Response, child=child, study=other_study)
+        # Add invalid (empty) response
+        G(Response, child=child, study=other_study, sequence=[])
+
+        # Check with invalid response
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+        # Add valid response
+        G(Response, child=child, study=other_study, sequence=["0-video-config"])
 
         # Check with response
         self.assertTrue(get_child_participation_eligibility(child, study))
         self.assertTrue(get_child_eligibility_for_study(child, study))
 
+    def test_get_child_eligibilty_must_have_participated_external(self):
+        external_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_external(),
+        )
+        study = G(
+            Study,
+            name="study",
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_ember_frame_player(),
+            must_have_participated=[external_study],
+        )
+        child_1 = G(Child, birthday=datetime.date.today())
+        child_2 = G(Child, birthday=datetime.date.today())
+
+        # Check without response
+        self.assertFalse(get_child_participation_eligibility(child_1, study))
+        self.assertFalse(get_child_eligibility_for_study(child_1, study))
+        self.assertFalse(get_child_participation_eligibility(child_2, study))
+        self.assertFalse(get_child_eligibility_for_study(child_2, study))
+
+        # For external studies, an empty response still counts as 'participated'
+        G(Response, child=child_1, study=external_study)
+        G(Response, child=child_2, study=external_study, sequence=[])
+
+        self.assertTrue(get_child_participation_eligibility(child_1, study))
+        self.assertTrue(get_child_eligibility_for_study(child_1, study))
+        self.assertTrue(get_child_participation_eligibility(child_2, study))
+        self.assertTrue(get_child_eligibility_for_study(child_2, study))
+
     def test_get_child_eligibilty_prior_studies_must_not_have_participated(self):
-        G(StudyType, name=StudyTypeEnum.ember_frame_player.value)
-        other_study = G(Study, max_age_years=2, criteria_expression="")
+        other_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_ember_frame_player(),
+        )
         study = G(
             Study,
             max_age_years=2,
@@ -1008,11 +1109,137 @@ class EligibilityTestCase(TestCase):
         self.assertTrue(get_child_eligibility_for_study(child, study))
 
         # Add response
-        G(Response, child=child, study=other_study)
+        G(Response, child=child, study=other_study, sequence=["0-video-config"])
 
         # Check again with response
         self.assertFalse(get_child_participation_eligibility(child, study))
         self.assertFalse(get_child_eligibility_for_study(child, study))
+
+    def test_get_child_eligibilty_must_not_have_participated_external(self):
+        other_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_external(),
+        )
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_not_have_participated=[other_study],
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # Check without response
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+        # Add response (empty sequence still counts for external study participation)
+        G(Response, child=child, study=other_study, sequence=[])
+
+        # Check again with response
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+    def test_get_child_eligibilty_multiple_studies_must_have_participated(self):
+        required_study_1 = G(
+            Study, max_age_years=2, study_type=StudyType.get_ember_frame_player()
+        )
+        required_study_2 = G(
+            Study, max_age_years=2, study_type=StudyType.get_ember_frame_player()
+        )
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_have_participated=[required_study_1, required_study_2],
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # Add response to one of the required studies
+        G(Response, child=child, study=required_study_1, sequence=["0-video-config"])
+
+        # Should not be eligible with a valid response to only one of the two required studies
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+        # Should be eligible with valid responses to all of the required studies
+        G(Response, child=child, study=required_study_2, sequence=["0-video-config"])
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+    def test_get_child_eligibilty_multiple_studies_must_not_have_participated(self):
+        disallowed_study_1 = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        disallowed_study_2 = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_not_have_participated=[disallowed_study_1, disallowed_study_2],
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # Should be eligible with no responses to either of the required studies
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+        # Add response to one of the disallowed studies
+        G(Response, child=child, study=disallowed_study_1, sequence=["0-video-config"])
+
+        # Should not be eligible with a response to one or both of the two disallowed studies
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+        G(Response, child=child, study=disallowed_study_2, sequence=["0-video-config"])
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+    def test_get_child_eligibilty_multiple_participation_criteria(self):
+        required_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        disallowed_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_have_participated=[required_study],
+            must_not_have_participated=[disallowed_study],
+        )
+
+        # Child is not eligible if they meet the required study criteria but not the disallowed study criteria
+        child_1 = G(Child, birthday=datetime.date.today())
+        G(Response, child=child_1, study=required_study, sequence=["0-video-config"])
+        G(Response, child=child_1, study=disallowed_study, sequence=["0-video-config"])
+        self.assertFalse(get_child_participation_eligibility(child_1, study))
+        self.assertFalse(get_child_eligibility_for_study(child_1, study))
+
+        # Child is not eligible if they meet the disallowed study criteria but not the required study criteria
+        child_2 = G(Child, birthday=datetime.date.today())
+        self.assertFalse(get_child_participation_eligibility(child_2, study))
+        self.assertFalse(get_child_eligibility_for_study(child_2, study))
+
+        # Child is eligible if they meet both the required and disallowed study criteria
+        G(Response, child=child_2, study=required_study, sequence=["0-video-config"])
+        self.assertTrue(get_child_participation_eligibility(child_2, study))
+        self.assertTrue(get_child_eligibility_for_study(child_2, study))
 
 
 class Force2FAClient(Client):

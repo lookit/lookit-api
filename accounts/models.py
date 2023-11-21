@@ -342,7 +342,7 @@ class Child(models.Model):
         verbose_name="identifier", default=uuid.uuid4, unique=True, db_index=True
     )
     given_name = models.CharField(max_length=255)
-    birthday = models.DateField(blank=True, null=True)
+    birthday = models.DateField(blank=False, null=False)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
     gender_self_describe = models.TextField(blank=True)
     gestational_age_at_birth = models.PositiveSmallIntegerField(

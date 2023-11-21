@@ -114,18 +114,38 @@ def get_child_participation_eligibility(child, study) -> bool:
     Returns:
         bool: Return true if child is eligible based on their prior study participation
     """
+    # Need to import StudyType here due to circular import problems
+    from studies.models import StudyType
+
     must_have_participated = True
     must_not_have_participated = True
 
+    # for both must have and must not have participated, ignore responses from internal studies that are empty
     if study.must_have_participated.exists():
-        must_have_participated = child.responses.filter(
-            study__in=study.must_have_participated.all()
-        ).exists()
+
+        must_have_participated_all = [
+            i
+            for i in study.must_have_participated.all()
+            if child.responses.filter(study=i)
+            .exclude(study__study_type=StudyType.get_ember_frame_player(), sequence=[])
+            .exists()
+        ]
+
+        # only true if response exists for each of the studies in the list
+        must_have_participated = set(must_have_participated_all) == set(
+            study.must_have_participated.all()
+        )
 
     if study.must_not_have_participated.exists():
-        must_not_have_participated = not child.responses.filter(
-            study__in=study.must_not_have_participated.all()
-        ).exists()
+        must_not_have_participated_all = [
+            i
+            for i in study.must_not_have_participated.all()
+            if child.responses.filter(study=i)
+            .exclude(study__study_type=StudyType.get_ember_frame_player(), sequence=[])
+            .exists()
+        ]
+        # only true if response does NOT exist for any one (or more) of the studies in the list
+        must_not_have_participated = len(must_not_have_participated_all) == 0
 
     return must_have_participated and must_not_have_participated
 
@@ -134,6 +154,30 @@ def _child_in_age_range_for_study(child, study):
     """Check if child in age range for study, using same age calculations as in study detail and response data."""
     if not child.birthday:
         return False
+
+    age_in_days_outside_of_range = child_in_age_range_for_study_days_difference(
+        child, study
+    )
+    return age_in_days_outside_of_range == 0
+
+
+def child_in_age_range_for_study_days_difference(child, study):
+    """Check if child in age range for study, using same age calculations as in study detail and response data.
+
+    Args:
+        child (Child): Child model object
+        study (Study): Study model object
+
+    Returns:
+        int: the difference (in days) between the child's age and and the study's min or max age (in days).
+        0 if the child's age is within the study's age range.
+        Negative int if the child is too young (days below the minimum)
+        Positive int if the child is too old (days above the maximum)
+    """
+    if not child.birthday:
+        return None
+
+    # Similar to _child_in_age_range_for_study, but we want to know whether the child is too young/old, rather than just a boolean.
 
     # Age ranges are defined in DAYS, using shorthand of year = 365 days, month = 30 days,
     # to provide a reliable actual unit of time rather than calendar "months" and "years" which vary in duration.
@@ -144,7 +188,12 @@ def _child_in_age_range_for_study(child, study):
 
     min_age_in_days_estimate, max_age_in_days_estimate = study_age_range(study)
     age_in_days = (date.today() - child.birthday).days
-    return min_age_in_days_estimate <= age_in_days <= max_age_in_days_estimate
+    if age_in_days <= min_age_in_days_estimate:
+        return age_in_days - min_age_in_days_estimate
+    elif age_in_days >= max_age_in_days_estimate:
+        return age_in_days - max_age_in_days_estimate
+    else:
+        return 0
 
 
 def study_age_range(study):
