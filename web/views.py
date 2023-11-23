@@ -759,18 +759,30 @@ class JsPsychExperimentView(
 
     def user_can_participate(self):
         try:
-            request = self.request
-            kwargs = self.kwargs
-            user = request.user
+            child_id = self.kwargs.get("child_id")
+            study_id = self.kwargs.get("pk")
 
-            child = Child.objects.get(id=kwargs.get("child_id"))
-            study_exists = Study.objects.filter(id=kwargs.get("pk")).exists()
+            child = Child.objects.get(id=child_id)
+            study_exists = Study.objects.filter(id=study_id).exists()
 
-            return study_exists and child.user == user
+            return study_exists and child.user == self.request.user
         except Child.DoesNotExist:
             return False
 
     test_func = user_can_participate
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        study = context["study"]
+        child = Child.objects.get(id=context["view"].kwargs["child_id"])
+        demo = DemographicData.objects.filter(user=child.user).first()
+        response = Response.objects.create(
+            study=study, child=child, demographic_snapshot=demo, exp_data=[]
+        )
+
+        context.update(response=response)
+
+        return context
 
 
 class ScientistsView(generic.TemplateView):
