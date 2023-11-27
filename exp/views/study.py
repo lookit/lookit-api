@@ -1081,10 +1081,10 @@ class ExperimentRunnerRedirect(
         if study_type.is_ember_frame_player:
             view_name = "exp:efp-study-details"
 
-        if study_type.is_external:
+        elif study_type.is_external:
             view_name = "exp:external-study-details"
 
-        if study_type.is_jspsych:
+        elif study_type.is_jspsych:
             view_name = "exp:jspsych-study-details"
 
         return redirect(reverse(view_name, kwargs={"pk": study.id}))
