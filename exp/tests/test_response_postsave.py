@@ -17,7 +17,12 @@ class ResponseSaveHandlingTestCase(TestCase):
         self.participant.save()
         self.child = G(Child, user=self.participant, given_name="Sally")
         self.lab = G(Lab, name="MIT")
-        self.study = G(Study, creator=self.researcher, lab=self.lab)
+        self.study = G(
+            Study,
+            creator=self.researcher,
+            lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
+        )
         self.response_after_consent_frame = G(
             Response,
             child=self.child,
