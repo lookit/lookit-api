@@ -99,7 +99,7 @@ function on_finish(responseApiUrl, id, exitUrl, userFunc) {
     };
 }
 
-export default function (responseApiUrl, responseUuid, exitUrl) {
+function lookitInitJsPsych(responseApiUrl, responseUuid, exitUrl) {
     /**
      * Function that returns a function to replace jsPysch's initJsPsych.
      */
