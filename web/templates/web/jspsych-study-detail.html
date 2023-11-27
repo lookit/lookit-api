@@ -22,12 +22,13 @@
               integrity="sha384-V/UDJ5gQqHFzUZFNp/XZxaqNCEGfcX0ExsYH3gH8dFRe6piMutG6hSKyCYJsql96"
               crossorigin="anonymous">
         <script type="module">
-                import lookitInitJsPsych from "{% static 'js/lookit-jspysch.js' %}";
+                import lookitInitJsPsych from "{% static 'js/lookit-jspsych.js' %}";
 
-                const url="{% url 'api:response-detail' version='v2' uuid=response.uuid %}";
+                const responseUrl="{% url 'api:response-detail' version='v2' uuid=response.uuid %}";
                 const responseUuid="{{ response.uuid }}";
+                const exitUrl="{{ response.study.exit_url }}"
 
-                initJsPsych = lookitInitJsPsych(url, responseUuid);
+                initJsPsych = lookitInitJsPsych(responseApiUrl, responseUuid, exitUrl);
 
                 {% autoescape off %}{{study.metadata.experiment}}{% endautoescape %}
         </script>
