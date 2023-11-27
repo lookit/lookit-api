@@ -13,7 +13,7 @@ def remove_jspych(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("studies", "0093_remove_studytype_configuration"),
+        ("studies", "0094_add_response_eligibility_default_criteria_expression"),
     ]
 
     operations = [migrations.RunPython(add_jspysch, reverse_code=remove_jspych)]
