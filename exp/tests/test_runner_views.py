@@ -9,7 +9,7 @@ from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import User
 from project import settings
 from studies.forms import ScheduledChoice
-from studies.models import Lab, Study
+from studies.models import Lab, Study, StudyType
 from studies.permissions import StudyPermission
 
 
@@ -81,18 +81,18 @@ class RunnerDetailsViewsTestCase(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(Study.objects.get(id=study.id).metadata, metadata)
 
-    def test_study_details_redirect(self):
+    def test_study_details_redirect_efp(self):
         user = G(User, is_active=True, is_researcher=True)
         lab = G(Lab)
-        efp = G(Study, creator=user, lab=lab, study_type=1)
-        external = G(Study, creator=user, lab=lab, study_type=2)
+        efp = G(
+            Study, creator=user, lab=lab, study_type=StudyType.get_ember_frame_player()
+        )
 
         assign_perm(StudyPermission.WRITE_STUDY_DETAILS.codename, user, efp)
         assign_perm(StudyPermission.READ_STUDY_DETAILS.codename, user, efp)
-        assign_perm(StudyPermission.WRITE_STUDY_DETAILS.codename, user, external)
-        assign_perm(StudyPermission.READ_STUDY_DETAILS.codename, user, external)
 
         self.client.force_login(user)
+
         response = self.client.get(
             reverse("exp:study-details", kwargs={"pk": efp.id}), follow=True
         )
@@ -106,6 +106,16 @@ class RunnerDetailsViewsTestCase(TestCase):
             ],
         )
 
+    def test_study_details_redirect_external(self):
+        user = G(User, is_active=True, is_researcher=True)
+        lab = G(Lab)
+        external = G(Study, creator=user, lab=lab, study_type=StudyType.get_external())
+
+        assign_perm(StudyPermission.WRITE_STUDY_DETAILS.codename, user, external)
+        assign_perm(StudyPermission.READ_STUDY_DETAILS.codename, user, external)
+
+        self.client.force_login(user)
+
         response = self.client.get(
             reverse("exp:study-details", kwargs={"pk": external.id}), follow=True
         )
@@ -114,6 +124,28 @@ class RunnerDetailsViewsTestCase(TestCase):
             [
                 (
                     reverse("exp:external-study-details", kwargs={"pk": external.id}),
+                    HTTPStatus.FOUND,
+                )
+            ],
+        )
+
+    def test_study_details_redirect_jspsych(self):
+        user = G(User, is_active=True, is_researcher=True)
+        lab = G(Lab)
+        jspsych = G(Study, creator=user, lab=lab, study_type=StudyType.get_jspsych())
+
+        assign_perm(StudyPermission.WRITE_STUDY_DETAILS.codename, user, jspsych)
+        assign_perm(StudyPermission.READ_STUDY_DETAILS.codename, user, jspsych)
+
+        self.client.force_login(user)
+        response = self.client.get(
+            reverse("exp:study-details", kwargs={"pk": jspsych.id}), follow=True
+        )
+        self.assertEqual(
+            response.redirect_chain,
+            [
+                (
+                    reverse("exp:jspsych-study-details", kwargs={"pk": jspsych.id}),
                     HTTPStatus.FOUND,
                 )
             ],

@@ -272,6 +272,10 @@ class StudyType(models.Model):
     def get_external(cls):
         return cls.objects.get(id=2)
 
+    @classmethod
+    def get_jspsych(cls):
+        return cls.objects.get(id=3)
+
 
 def default_study_structure():
     return {"frames": {}, "sequence": []}

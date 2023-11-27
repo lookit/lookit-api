@@ -2,7 +2,7 @@ import json
 
 from django.test import TestCase
 
-from studies.forms import EFPForm, ExternalForm, ScheduledChoice
+from studies.forms import EFPForm, ExternalForm, JSPsychForm, ScheduledChoice
 from studies.models import default_study_structure
 
 
@@ -104,6 +104,18 @@ class ExternalFormTestCase(TestCase):
             data={
                 "scheduled": ScheduledChoice.scheduled.value,
                 "url": "https://google.com",
+            }
+        )
+        self.assertDictEqual(form.errors, {})
+        self.assertTrue(form.is_valid())
+
+
+class JsPsychFormTestCase(TestCase):
+    def test_successful(self):
+        # JavaScript is validated client side
+        form = JSPsychForm(
+            data={
+                "experiment": "function thisIsValidJavaScript(){}",
             }
         )
         self.assertDictEqual(form.errors, {})
