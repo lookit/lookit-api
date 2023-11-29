@@ -24,6 +24,8 @@ class Force2FAClient(Client):
 class RunnerDetailsViewsTestCase(TestCase):
     def setUp(self):
         self.client = Force2FAClient()
+        self.efp_study_details = "exp:efp-study-details"
+        self.study_details = "exp:study-details"
 
     def test_external_details_view(self):
         user = G(User, is_active=True, is_researcher=True)
@@ -67,7 +69,7 @@ class RunnerDetailsViewsTestCase(TestCase):
 
         self.client.force_login(user)
         response = self.client.post(
-            reverse("exp:efp-study-details", kwargs={"pk": study.id}),
+            reverse(self.efp_study_details, kwargs={"pk": study.id}),
             {
                 "structure": "{}",
                 "player_repo_url": metadata["player_repo_url"],
@@ -94,13 +96,13 @@ class RunnerDetailsViewsTestCase(TestCase):
         self.client.force_login(user)
 
         response = self.client.get(
-            reverse("exp:study-details", kwargs={"pk": efp.id}), follow=True
+            reverse(self.study_details, kwargs={"pk": efp.id}), follow=True
         )
         self.assertEqual(
             response.redirect_chain,
             [
                 (
-                    reverse("exp:efp-study-details", kwargs={"pk": efp.id}),
+                    reverse(self.efp_study_details, kwargs={"pk": efp.id}),
                     HTTPStatus.FOUND,
                 )
             ],
@@ -117,7 +119,7 @@ class RunnerDetailsViewsTestCase(TestCase):
         self.client.force_login(user)
 
         response = self.client.get(
-            reverse("exp:study-details", kwargs={"pk": external.id}), follow=True
+            reverse(self.study_details, kwargs={"pk": external.id}), follow=True
         )
         self.assertEqual(
             response.redirect_chain,
@@ -139,7 +141,7 @@ class RunnerDetailsViewsTestCase(TestCase):
 
         self.client.force_login(user)
         response = self.client.get(
-            reverse("exp:study-details", kwargs={"pk": jspsych.id}), follow=True
+            reverse(self.study_details, kwargs={"pk": jspsych.id}), follow=True
         )
         self.assertEqual(
             response.redirect_chain,
@@ -166,7 +168,7 @@ class RunnerDetailsViewsTestCase(TestCase):
 
         self.client.force_login(user)
         response = self.client.post(
-            reverse("exp:efp-study-details", kwargs={"pk": study.id}),
+            reverse(self.efp_study_details, kwargs={"pk": study.id}),
             {
                 "structure": "{}",
                 "last_known_player_sha": "862604874f7eeff8c9d72adcb8914b21bfb5427e",
