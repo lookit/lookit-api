@@ -360,6 +360,11 @@ class StudyCreateForm(StudyForm):
                 user, LabPermission.CREATE_LAB_ASSOCIATED_STUDY.prefixed_codename
             ).only("id")
         )
+        # This will remove jsPysch from study create form. Should be removed
+        # when jsPsych is deployed to production.
+        if not user.is_superuser:
+            study_type = self.fields["study_type"]
+            study_type.queryset = study_type.queryset.exclude(id=3)
 
 
 class EmailRecipientSelectMultiple(forms.SelectMultiple):
