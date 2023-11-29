@@ -1,10 +1,13 @@
 // Get global variables from html
-const DATA = document.currentScript.dataset
+const DATA = document.currentScript.dataset;
 
 // Show the generator function field only if use_generator is checked.
 function updateProtocolDisplay() {
     const generator = document.querySelector('[for=id_generator]').parentNode;
     const structure = document.querySelector('[for=id_structure]').parentNode;
+
+    // hide js validation error list
+    document.querySelector('.js-validation').classList.add('d-none');
 
     if (document.querySelector('#id_use_generator:checked')) {
         generator.classList.remove('d-none');
@@ -45,12 +48,12 @@ function updateCommitDescription() {
                 // Wrap each line of the message in a paragraph element
                 message.innerHTML = response.commit.message
                     .split('\n').map(e => `<p>${e}</p>`)
-                    .join('')
+                    .join('');
 
                 // Wrap each file name in a div element and add the file url
                 files.innerHTML = response.files
                     .map(e => `<div>${e.status}: <a href = "${e.blob_url}"> ${e.filename}</a></div>`)
-                    .join('')
+                    .join('');
 
                 // show commit description card
                 commitDescription.classList.remove('d-none');
@@ -61,7 +64,7 @@ function updateCommitDescription() {
     const playerSha = document.querySelector('#id_last_known_player_sha').value.trim();
     const playerRepoUrl = document.querySelector('#id_player_repo_url').value.trim();
     if (playerSha && playerRepoUrl) {
-        const githubApiUrl = `${playerRepoUrl}/commits/${playerSha}`.replace('github.com', 'api.github.com/repos')
+        const githubApiUrl = `${playerRepoUrl}/commits/${playerSha}`.replace('github.com', 'api.github.com/repos');
         httpRequest.open("GET", githubApiUrl, true);
         httpRequest.send();
     }
@@ -79,7 +82,7 @@ function updateCommitUpdateInfo(event) {
 
                 // Clear elements from list
                 while (infoRows.childNodes.length > 2) {
-                    infoRows.removeChild(infoRows.lastChild)
+                    infoRows.removeChild(infoRows.lastChild);
                 }
 
                 response.map(e => {
@@ -99,18 +102,18 @@ function updateCommitUpdateInfo(event) {
                     row.append(date);
                     row.append(message);
                     row.append(sha);
-                    infoRows.append(row)
-                })
-                commitUpdateInfo.classList.remove('d-none')
+                    infoRows.append(row);
+                });
+                commitUpdateInfo.classList.remove('d-none');
             }
         }
-    }
+    };
 
 
     const currentCommitDate = document.querySelector('#commit-description .date').innerHTML;
     const playerRepoUrl = document.querySelector('#id_player_repo_url').value;
     if (playerRepoUrl && currentCommitDate) {
-        const githubApiUrl = `${playerRepoUrl}/commits?since=${currentCommitDate}&sha=${DATA.branch}`.replace('github.com', 'api.github.com/repos')
+        const githubApiUrl = `${playerRepoUrl}/commits?since=${currentCommitDate}&sha=${DATA.branch}`.replace('github.com', 'api.github.com/repos');
         httpRequest.open("GET", githubApiUrl, true);
         httpRequest.send();
     }
@@ -121,7 +124,7 @@ function updateLastPlayerSha() {
 
     if (!form.last_known_player_sha.value) {
         const playerRepoUrl = document.querySelector('#id_player_repo_url').value;
-        const githubApiUrl = `${playerRepoUrl}/commits?sha=${DATA.branch}`.replace('github.com', 'api.github.com/repos')
+        const githubApiUrl = `${playerRepoUrl}/commits?sha=${DATA.branch}`.replace('github.com', 'api.github.com/repos');
         const httpRequest = new XMLHttpRequest();
         httpRequest.onreadystatechange = () => {
             if (httpRequest.readyState === XMLHttpRequest.DONE) {
@@ -131,54 +134,39 @@ function updateLastPlayerSha() {
                     updateCommitDescription();
                 }
             }
-        }
+        };
         httpRequest.open("GET", githubApiUrl, true);
         httpRequest.send();
     }
 }
 
 function validateGenerator(event) {
-    const jshint_config = { "esversion": 6 }
+    const jshint_config = { "esversion": 6 };
     const generator = document.querySelector('#id_generator');
     const use_generator = document.querySelector('#id_use_generator');
 
-    // Remove existing error list
-    document.querySelector('.js-validation')?.remove();
+    // Remove existing errors
+    document.querySelectorAll('.js-validation ol').forEach(el=>el.remove());
 
     if (use_generator.checked) {
         // if jshint comes back with errors (false)
         if (!JSHINT(generator.value, jshint_config)) {
-            const breadcrumb = document.querySelector('nav.breadcrumb');
-            const errorsList = document.createElement('ul')
-            const errorsMsg = document.createElement('div');
+            const jsValidation = document.querySelector('.js-validation');
 
             // Don't submit the form and scroll to top of page.
             event.preventDefault();
+            jsValidation.classList.remove('d-none');
             window.scrollTo(0, 0);
-
-            // Errors are red
-            errorsList.classList.add('text-danger', 'js-validation');
-
-            // Error message has some space around it
-            errorsMsg.classList.add('my-3');
-
-            // Add error message
-            errorsMsg.appendChild(document.createTextNode('Generator javascript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost.'))
-            errorsList.appendChild(errorsMsg);
 
             // Add errors to the list
             JSHINT.errors.map(({ line, reason }) => {
                 const errorEl = document.createElement('ol');
                 errorEl.innerHTML = `${line}: ${reason}`;
-                errorsList.appendChild(errorEl);
-            })
-
-            // Add list to page after breadcrumb
-            breadcrumb.after(errorsList);
+                jsValidation.appendChild(errorEl);
+            });
         }
     }
 }
-
 
 /**
  * Page load
