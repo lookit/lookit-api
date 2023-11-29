@@ -5,10 +5,14 @@
     {{ lab.name }}
 {% endblock title %}
 {% block breadcrumb %}
-    {% breadcrumb %}
-    {% url 'exp:lab-list' %}Labs
-    {{ lab.name }}
-{% endbreadcrumb %}
+    <nav aria-label="breadcrumb" class="my-2">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:lab-list' %}">Labs</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">{{ lab.name }}</li>
+        </ol>
+    </nav>
 {% endblock breadcrumb %}
 {% block content %}
     {% url 'exp:lab-edit' pk=lab.id as url_lab_edit %}

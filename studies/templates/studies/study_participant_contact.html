@@ -14,11 +14,17 @@
     Contact Participants
 {% endblock title %}
 {% block breadcrumb %}
-    {% breadcrumb %}
-    {% url 'exp:study-list' %} Manage Studies
-    {% url 'exp:study' pk=study.id %} {{ study.name }}
-    Contact Participants
-{% endbreadcrumb %}
+    <nav aria-label="breadcrumb" class="my-2">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:study-list' %}">Manage Studies</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:study' pk=study.id %}">{{ study.name }}</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Contact Participants</li>
+        </ol>
+    </nav>
 {% endblock breadcrumb %}
 {% block content %}
     <div class="row">
