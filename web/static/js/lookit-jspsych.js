@@ -101,7 +101,7 @@ function on_finish(responseApiUrl, id, exitUrl, userFunc) {
 
 function lookitInitJsPsych(responseApiUrl, responseUuid, exitUrl) {
     /**
-     * Function that returns a function to replace jsPysch's initJsPsych.
+     * Function that returns a function to replace jsPsych's initJsPsych.
      */
     return function (opts) {
         const jsPsych = origInitJsPsych({

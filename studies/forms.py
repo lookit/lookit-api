@@ -360,7 +360,7 @@ class StudyCreateForm(StudyForm):
                 user, LabPermission.CREATE_LAB_ASSOCIATED_STUDY.prefixed_codename
             ).only("id")
         )
-        # This will remove jsPysch from study create form. Should be removed
+        # This will remove jsPsych from study create form. Should be removed
         # when jsPsych is deployed to production.
         if not user.is_superuser:
             study_type = self.fields["study_type"]
@@ -557,7 +557,7 @@ class JSPsychForm(ModelForm):
             height="100%",
             showprintmargin=False,
         ),
-        help_text="Please enter jsPysch experiment code.",
+        help_text="Please enter jsPsych experiment code.",
     )
 
     class Meta:

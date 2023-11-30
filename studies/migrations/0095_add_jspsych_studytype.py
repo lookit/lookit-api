@@ -3,11 +3,11 @@
 from django.db import migrations
 
 
-def add_jspysch(apps, schema_editor):
+def add_jspsych(apps, schema_editor):
     apps.get_model("studies", "StudyType")(id=3, name="jsPsych").save()
 
 
-def remove_jspych(apps, schema_editor):
+def remove_jspsych(apps, schema_editor):
     apps.get_model("studies", "StudyType").objects.get(id=3).delete()
 
 
@@ -16,4 +16,4 @@ class Migration(migrations.Migration):
         ("studies", "0094_add_response_eligibility_default_criteria_expression"),
     ]
 
-    operations = [migrations.RunPython(add_jspysch, reverse_code=remove_jspych)]
+    operations = [migrations.RunPython(add_jspsych, reverse_code=remove_jspsych)]
