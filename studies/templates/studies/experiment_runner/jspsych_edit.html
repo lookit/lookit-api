@@ -10,6 +10,13 @@
     <script src="{% static 'js/jspsych-runner.js'%}" defer></script>
     {{ form.media }}
 {% endblock head %}
+{% block js_error %}
+    <ul class="text-danger js-validation d-none">
+        <div class="my-3">
+            JsPsych JavaScript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost.
+        </div>
+    </ul>
+{% endblock js_error %}
 {% block form %}
     {% bootstrap_form form label_class="fw-bold" %}
 {% endblock form %}
