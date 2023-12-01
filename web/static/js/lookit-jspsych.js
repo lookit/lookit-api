@@ -1,4 +1,5 @@
 const origInitJsPsych = initJsPsych;
+const controller = new AbortController();
 
 function csrfToken() {
     /**
@@ -23,11 +24,13 @@ async function get(url) {
     );
 
     const response = await fetch(request);
-    return await response.json();
+    if (response.ok) {
+        return response.json();
+    }
 }
 
 
-async function patch(url, data) {
+async function patch(url, use_signal, data) {
     /**
      * Function for REST patch.  
      */
@@ -40,12 +43,18 @@ async function patch(url, data) {
                 'Content-Type': 'application/vnd.api+json'
             },
             mode: 'same-origin', // Do not send CSRF token to another domain.
+            signal: use_signal ? controller.signal : undefined,
             body: JSON.stringify({ data })
         }
     );
 
+
     const response = await fetch(request);
-    return await response.json();
+    if (response.ok) {
+        return response.json();
+    }
+
+
 }
 
 function on_data_update(responseApiUrl, id, userFunc) {
@@ -59,7 +68,7 @@ function on_data_update(responseApiUrl, id, userFunc) {
     return async function (data) {
         const { data: { attributes: { exp_data } } } = await get(responseApiUrl);
 
-        await patch(responseApiUrl, {
+        await patch(responseApiUrl, true, {
             id, type: "responses", attributes: {
                 exp_data: [...exp_data, data]
             }
@@ -83,7 +92,15 @@ function on_finish(responseApiUrl, id, exitUrl, userFunc) {
      * ran, this will redirect to the study's exit url.
      */
     return async function (data) {
-        await patch(responseApiUrl, {
+        /**
+         * The on_data_update and on_finish functions aren't called as async 
+         * functions.  This means that each function isn't completed before the 
+         * next is ran. To handle this, we're going to abort the patch function 
+         * in on_data_update.  This will cause a reliable error, 
+         */
+        controller.abort("Writing final response data.");
+
+        await patch(responseApiUrl, false, {
             id, type: "responses", attributes: {
                 exp_data: data.trials,
                 completed: true
@@ -106,8 +123,8 @@ function lookitInitJsPsych(responseApiUrl, responseUuid, exitUrl) {
     return function (opts) {
         const jsPsych = origInitJsPsych({
             ...opts,
-            on_data_update: on_data_update(responseApiUrl, responseUuid, opts.on_data_update),
-            on_finish: on_finish(responseApiUrl, responseUuid, exitUrl, opts.on_finish)
+            on_data_update: on_data_update(responseApiUrl, responseUuid, opts?.on_data_update),
+            on_finish: on_finish(responseApiUrl, responseUuid, exitUrl, opts?.on_finish)
         });
         const origJsPsychRun = jsPsych.run;
 
