@@ -6,11 +6,17 @@
     Lab members
 {% endblock title %}
 {% block breadcrumb %}
-    {% breadcrumb %}
-    {% url 'exp:lab-list' %} Labs
-    {% url 'exp:lab-detail' pk=lab.id %} {{ lab.name }}
-    Lab members
-{% endbreadcrumb %}
+    <nav aria-label="breadcrumb" class="my-2">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:lab-list' %}">Labs</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:lab-detail' pk=lab.id %}">{{ lab.name }}</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Lab members</li>
+        </ol>
+    </nav>
 {% endblock breadcrumb %}
 {% block content %}
     <form method="get" class="search-bar my-5">

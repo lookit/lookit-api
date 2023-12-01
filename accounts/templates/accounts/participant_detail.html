@@ -7,10 +7,14 @@
     {{ user.nickname |default:"Participant Detail" }}
 {% endblock title %}
 {% block breadcrumb %}
-    {% breadcrumb %}
-    {% url 'exp:participant-list' %} {% trans "All Participants" %}
-    {{ user.nickname |default:"Participant Detail" }}
-{% endbreadcrumb %}
+    <nav aria-label="breadcrumb" class="my-2">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:participant-list' %}">{% trans "All Participants" %}</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">{{ user.nickname |default:"Participant Detail" }}</li>
+        </ol>
+    </nav>
 {% endblock breadcrumb %}
 {% block content %}
     {% if user.nickname %}

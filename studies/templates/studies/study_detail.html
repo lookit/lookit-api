@@ -17,10 +17,14 @@
     </script>
 {% endblock head %}
 {% block breadcrumb %}
-    {% breadcrumb %}
-    {% url 'exp:study-list' %} Manage Studies
-    {{ study.name }}
-{% endbreadcrumb %}
+    <nav aria-label="breadcrumb" class="my-2">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:study-list' %}">Manage Studies</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">{{ study.name }}</li>
+        </ol>
+    </nav>
 {% endblock breadcrumb %}
 {% block content %}
     {% button_primary_classes "btn-sm editable-submit" as btn_primary_classes %}
