@@ -7,13 +7,21 @@
     Edit | {{ study.name }}
 {% endblock title %}
 {% block breadcrumb %}
-    {% breadcrumb %}
-    {% url 'exp:study-list' %} Manage Studies
-    {% url 'exp:study' pk=study.id %} {{ study.name }}
-    Edit
-{% endbreadcrumb %}
+    <nav aria-label="breadcrumb" class="my-2">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:study-list' %}">Manage Studies</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:study' pk=study.id %}">{{ study.name }}</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Edit</li>
+        </ol>
+    </nav>
 {% endblock breadcrumb %}
 {% block content %}
+    {% block js_error %}
+    {% endblock js_error %}
     {% url 'exp:study' pk=study.pk as url_study_detail %}
     {% button_secondary_classes as btn_secondary_classes %}
     {% button_primary_classes as btn_primary_classes %}

@@ -18,11 +18,17 @@
     <script src="{% static 'js/study-responses-consent-ruling.js' %}" defer></script>
 {% endblock head %}
 {% block breadcrumb %}
-    {% breadcrumb %}
-    {% url 'exp:study-list' %} Manage Studies
-    {% url 'exp:study' pk=study.id %} {{ study.name }}
-    Consent Manager
-{% endbreadcrumb %}
+    <nav aria-label="breadcrumb" class="my-2">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:study-list' %}">Manage Studies</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:study' pk=study.id %}">{{ study.name }}</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Consent Manager</li>
+        </ol>
+    </nav>
 {% endblock breadcrumb %}
 {% block content %}
     {% page_title "Consent Manager" %}

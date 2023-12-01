@@ -260,51 +260,6 @@ def page_title(title, right_side_elements=None):
     return mark_safe(html)
 
 
-@register.tag(name="breadcrumb")
-def breadcrumb(parser, token):
-    nodelist = parser.parse(("endbreadcrumb",))
-    parser.delete_first_token()
-    return BreadcrumbNode(nodelist)
-
-
-class BreadcrumbNode(template.Node):
-    def __init__(self, nodelist):
-        self.nodelist = nodelist
-
-    def pairwise(self, iterable):
-        "s -> (s0, s1), (s2, s3), (s4, s5), ..."
-        a = iter(iterable)
-        return zip(a, a)
-
-    def render(self, context):
-        if not self.nodelist:
-            return ""
-
-        # remove empty nodes
-        for node in self.nodelist:
-            if not node.render(context).strip():
-                self.nodelist.remove(node)
-
-        # get last node from list
-        last_node = self.nodelist.pop()
-
-        result = [
-            '<nav aria-label="breadcrumb" class="my-2 breadcrumb">',
-            '<ol class="breadcrumb">',
-        ]
-
-        for a, b in self.pairwise(self.nodelist):
-            result.append('<li class="breadcrumb-item">')
-            result.append(f'<a href="{a.render(context)}">{b.render(context)}</a>')
-            result.append("</li>")
-
-        result.append(
-            f'<li class="breadcrumb-item active" aria-current="page">{last_node.render(context)}</li>'
-        )
-        result.append("</ol></nav>")
-        return "".join(result)
-
-
 @register.tag(name="form_buttons")
 def form_buttons(parser, token):
     nodelist = parser.parse(("endform_buttons",))

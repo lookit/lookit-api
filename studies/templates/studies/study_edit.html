@@ -13,11 +13,17 @@
     Edit | {{ study.name }}
 {% endblock title %}
 {% block breadcrumb %}
-    {% breadcrumb %}
-    {% url 'exp:study-list' %} Manage Studies
-    {% url 'exp:study' pk=study.id %} {{ study.name }}
-    Edit
-{% endbreadcrumb %}
+    <nav aria-label="breadcrumb" class="my-2">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:study-list' %}">Manage Studies</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:study' pk=study.id %}">{{ study.name }}</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Edit</li>
+        </ol>
+    </nav>
 {% endblock breadcrumb %}
 {% block content %}
     {% bs_icon "play-circle" as bs_icon_play_circle %}

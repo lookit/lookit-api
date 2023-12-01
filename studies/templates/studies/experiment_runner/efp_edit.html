@@ -15,6 +15,13 @@
         please <a href="{% url "exp:study-create" %}">create a new study</a> instead.
     </p>
 {% endblock header %}
+{% block js_error %}
+    <ul class="text-danger js-validation d-none">
+        <div class="my-3">
+            Generator javascript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost.
+        </div>
+    </ul>
+{% endblock js_error %}
 {% block form %}
     {% bootstrap_form form label_class="fw-bold" %}
     <div id="commit-description" class="card bg-light my-4">
