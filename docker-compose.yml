@@ -3,6 +3,7 @@ services:
   db:
     image: postgres:9.6
     container_name: lookit-api-db
+    restart: unless-stopped
     command: postgres -c stats_temp_directory=/tmp
     volumes:
       - ./data:/var/lib/postgresql/data
@@ -41,7 +42,7 @@ services:
     build:
       dockerfile: Dockerfile.web-international
     container_name: lookit-api-web-international
-    restart: on-failure
+    restart: unless-stopped
     command: poetry run python ./manage.py runsslserver --certificate ./certs/combined.pem --key ./certs/mbah.key 0.0.0.0:443
     volumes:
       - .:/code
