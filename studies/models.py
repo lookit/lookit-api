@@ -597,6 +597,10 @@ class Study(models.Model):
         return self.study_type.is_external and self.metadata["scheduled"]
 
     @property
+    def show_study_link(self):
+        return not self.study_type.is_ember_frame_player or self.built
+
+    @property
     def days_submitted(self):
         if self.status_change_date:
             return (timezone.now() - self.status_change_date).days
