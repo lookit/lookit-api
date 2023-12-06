@@ -557,7 +557,7 @@ class JSPsychForm(ModelForm):
             height="100%",
             showprintmargin=False,
         ),
-        help_text="Please enter jsPsych experiment code.",
+        help_text="Please enter jsPsych experiment code. This is the JavaScript code used to generate a jsPsych study, not the surrounding HTML.",
     )
 
     class Meta:
