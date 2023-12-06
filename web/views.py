@@ -651,7 +651,7 @@ class StudyDetailView(generic.DetailView):
                 elif study.study_type.is_ember_frame_player:
                     return redirect("web:experiment-proxy", study.uuid, child.uuid)
                 else:
-                    return redirect("web:jspsych-experiment", study.id, child.id)
+                    return redirect("web:jspsych-experiment", study.uuid, child.uuid)
             return super().dispatch(request)
         else:
             response_text = _(
@@ -756,14 +756,16 @@ class JsPsychExperimentView(
 ):
     template_name = "web/jspsych-study-detail.html"
     model = Study
+    slug_url_kwarg = "uuid"
+    slug_field = "uuid"
 
     def user_can_participate(self):
         try:
-            child_id = self.kwargs.get("child_id")
-            study_id = self.kwargs.get("pk")
+            child_uuid = self.kwargs.get("child_id")
+            study_uuid = self.kwargs.get("uuid")
 
-            child = Child.objects.get(id=child_id)
-            study_exists = Study.objects.filter(id=study_id).exists()
+            child = Child.objects.get(uuid=child_uuid)
+            study_exists = Study.objects.filter(uuid=study_uuid).exists()
 
             return study_exists and child.user == self.request.user
         except Child.DoesNotExist:
@@ -774,7 +776,8 @@ class JsPsychExperimentView(
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         study = context["study"]
-        child = Child.objects.get(id=context["view"].kwargs["child_id"])
+        child_uuid = context["view"].kwargs["child_id"]
+        child = Child.objects.get(uuid=child_uuid)
         demo = DemographicData.objects.filter(user=child.user).first()
         response = Response.objects.create(
             study=study, child=child, demographic_snapshot=demo, exp_data=[]

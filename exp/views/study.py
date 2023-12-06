@@ -879,17 +879,15 @@ class StudyPreviewDetailView(
         """
         study: Study = self.get_object()
         child: Child = Child.objects.get(uuid=self.request.POST.get("child_id"))
+        kwargs["child_id"] = child.uuid
 
         if study.study_type.is_ember_frame_player:
-            # EFP confuses "id" and "uuid"
-            kwargs["child_id"] = child.uuid
-            return HttpResponseRedirect(reverse("exp:preview-proxy", kwargs=kwargs))
-        else:
-            return redirect(
-                reverse(
-                    "exp:preview-jspsych", kwargs={"pk": study.id, "child_id": child.id}
-                )
-            )
+            return redirect(reverse("exp:preview-proxy", kwargs=kwargs))
+        elif study.study_type.is_external:
+            response = create_external_response(study, child.uuid, preview=True)
+            return redirect(get_external_url(study, response))
+        elif study.study_type.is_jspsych:
+            return redirect(reverse("exp:preview-jspsych", kwargs=kwargs))
 
 
 class JsPsychPreviewView(
@@ -900,6 +898,8 @@ class JsPsychPreviewView(
 ):
     template_name = "../../web/templates/web/jspsych-study-detail.html"
     model = Study
+    slug_url_kwarg = "uuid"
+    slug_field = "uuid"
 
     def can_preview(self):
         user = self.request.user
@@ -917,8 +917,8 @@ class JsPsychPreviewView(
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         study = self.object
-        child_id = context["view"].kwargs["child_id"]
-        child = Child.objects.get(id=child_id)
+        child_uuid = context["view"].kwargs["child_id"]
+        child = Child.objects.get(uuid=child_uuid)
         demo = DemographicData.objects.filter(user=child.user).first()
         response = Response.objects.create(
             study=study,
@@ -987,11 +987,6 @@ class PreviewProxyView(
 
         study_uuid = kwargs.get("uuid", None)
         child_uuid = kwargs.get("child_id", None)
-        study = Study.objects.get(uuid=study_uuid)
-
-        if study.study_type.is_external:
-            response = create_external_response(study, child_uuid, preview=True)
-            return HttpResponseRedirect(get_external_url(study, response))
 
         # Check if locale (language code) is present in the URL.
         # If so, we need to re-write the request path without the locale

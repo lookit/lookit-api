@@ -256,7 +256,7 @@ urlpatterns = [
         name="preview-proxy",
     ),
     path(
-        "studies/preview/<int:pk>/<int:child_id>/jspsych/",
+        "studies/jspsych/<uuid:uuid>/<uuid:child_id>/preview/",
         JsPsychPreviewView.as_view(),
         name="preview-jspsych",
     ),
