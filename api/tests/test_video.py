@@ -14,7 +14,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
-from studies.models import Lab, Response, Study, Video
+from studies.models import Lab, Response, Study, StudyType, Video
 
 
 @override_settings(
@@ -56,7 +56,12 @@ class VideoTestCase(APITestCase):
         cls.researcher = G(
             User, is_active=True, is_researcher=True, given_name="Researcher 1"
         )
-        cls.study = G(Study, creator=cls.researcher, lab=cls.lab)
+        cls.study = G(
+            Study,
+            creator=cls.researcher,
+            lab=cls.lab,
+            study_type=StudyType.get_ember_frame_player(),
+        )
         cls.response = G(Response, child=cls.child, study=cls.study, completed=False)
 
     def setUp(self):

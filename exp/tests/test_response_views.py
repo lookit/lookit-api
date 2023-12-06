@@ -65,6 +65,7 @@ class ResponseViewsTestCase(TestCase):
             shared_preview=True,
             name="Test Study",
             lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
         )
 
         self.study.admin_group.user_set.add(self.study_admin)

@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="description" content="">
+        <meta name="keywords" content="">
+        <title>My experiment</title>
+        <script src="https://unpkg.com/jspsych@7.3.3"
+                integrity="sha384-YfngsIDAxx7VemaPcvC24KXIoOrW/+mNwlAM9mUWhaKAPHhZvQLTgugAYgQiDT+e"
+                crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.2"
+                integrity="sha384-OkLOx/zqNc6it80uNeB4A6sI89Aa45ZwwYFOaCkDrFxluA24m2qKUZCTyjTDVkwf"
+                crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@1.1.2"
+                integrity="sha384-n5lRhMXasLPtKtknOygWdXDGA2kzOIpkNO+S2G+CJrcM4nZZ3lUExDJ2SwFRz0xa"
+                crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.2"
+                integrity="sha384-ieDTpJ57nlVDQBu9ti3FiIIqRDAYQWLVyNSvkkA241eFPk+63fwBqc0Rn+ePnSZt"
+                crossorigin="anonymous"></script>
+        <link rel="stylesheet"
+              href="https://unpkg.com/jspsych@7.3.3/css/jspsych.css"
+              integrity="sha384-V/UDJ5gQqHFzUZFNp/XZxaqNCEGfcX0ExsYH3gH8dFRe6piMutG6hSKyCYJsql96"
+              crossorigin="anonymous">
+        <script src="{% static 'js/lookit-jspsych.js' %}"></script>
+        <script>
+                const responseApiUrl="{% url 'api:response-detail' version='v2' uuid=response.uuid %}";
+                const responseUuid="{{ response.uuid }}";
+                const exitUrl="{{ response.study.exit_url }}"
+
+                initJsPsych = lookitInitJsPsych(responseApiUrl, responseUuid, exitUrl);
+
+                {% autoescape off %}{{study.metadata.experiment}}{% endautoescape %}
+        </script>
+    </head>
+</html>

@@ -1,0 +1,22 @@
+{% extends "studies/experiment_runner/base.html" %}
+{% load django_bootstrap5 %}
+{% load static %}
+{% load web_extras %}
+{% block head %}
+    {{ block.super }}
+    {% comment %} ace editor fix cannot be defered {% endcomment %}
+    <script src="{% static 'js/ace-editor.js' %}"></script>
+    <script src="{% static 'js/js-validation.js'%}" defer></script>
+    <script src="{% static 'js/jspsych-runner.js'%}" defer></script>
+    {{ form.media }}
+{% endblock head %}
+{% block js_error %}
+    <ul class="text-danger js-validation d-none">
+        <div class="my-3">
+            JsPsych JavaScript seems to be invalid.  Please edit and save again. If you reload this page, all changes will be lost.
+        </div>
+    </ul>
+{% endblock js_error %}
+{% block form %}
+    {% bootstrap_form form label_class="fw-bold" %}
+{% endblock form %}

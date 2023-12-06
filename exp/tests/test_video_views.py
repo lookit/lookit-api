@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
-from studies.models import Lab, Response, Study, Video
+from studies.models import Lab, Response, Study, StudyType, Video
 
 
 class RenameVideoTestCase(APITestCase):
@@ -18,7 +18,12 @@ class RenameVideoTestCase(APITestCase):
         self.participant = G(User, is_active=True)
         self.child = G(Child, user=self.participant, given_name="Sally")
         self.lab = G(Lab, name="MIT")
-        self.study = G(Study, creator=self.researcher, lab=self.lab)
+        self.study = G(
+            Study,
+            creator=self.researcher,
+            lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
+        )
         self.url = reverse("exp:rename-video")
         self.client = APIClient()
         self.payload = {
@@ -65,6 +70,7 @@ class CheckPipeProcessingTestCase(TestCase):
             shared_preview=False,
             name="Test Study",
             lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
         )
         self.participant = G(User, is_active=True, given_name="Mom")
         self.child = G(Child, user=self.participant, given_name="Molly")

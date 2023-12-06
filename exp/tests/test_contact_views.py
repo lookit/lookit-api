@@ -9,7 +9,7 @@ from guardian.shortcuts import assign_perm
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, Message, User
-from studies.models import Lab, Response, Study
+from studies.models import Lab, Response, Study, StudyType
 from studies.permissions import StudyPermission
 
 
@@ -42,6 +42,7 @@ class ContactViewTestCase(TestCase):
             creator=self.researcher_without_perm,
             name="Main Study",
             lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
         )
 
         # Create one other study to ensure participants in this study aren't also included for contact
@@ -50,6 +51,7 @@ class ContactViewTestCase(TestCase):
             creator=self.researcher_without_perm,
             name="Other Study",
             lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
         )
 
         # Assign permissions

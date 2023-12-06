@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, DemographicData, User
-from studies.models import ConsentRuling, Lab, Response, Study
+from studies.models import ConsentRuling, Lab, Response, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 
 
@@ -40,7 +40,12 @@ class DemographicsTestCase(APITestCase):
         self.lab = G(Lab, name="MIT")
         self.lab.researchers.add(self.researcher)
         self.lab.save()
-        self.study = G(Study, creator=self.researcher, lab=self.lab)
+        self.study = G(
+            Study,
+            creator=self.researcher,
+            lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
+        )
         self.response_with_consent = G(
             Response,
             child=self.child_with_consent,

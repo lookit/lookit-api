@@ -10,7 +10,7 @@ from django.urls import reverse
 from django_dynamic_fixture import G
 
 from accounts.models import Child, DemographicData, User
-from studies.models import Study
+from studies.models import Study, StudyType
 
 
 class NewUserAccountTestCase(TestCase):
@@ -48,6 +48,7 @@ class NewUserAccountTestCase(TestCase):
             min_age_days=6 * 30,
             max_age_days=12 * 30,
             criteria_expression="",
+            study_type=StudyType.get_ember_frame_player(),
         )
         study.state = "active"
         study.save()

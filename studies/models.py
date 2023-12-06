@@ -232,6 +232,7 @@ def notify_lab_of_approval(sender, instance, **kwargs):
 class StudyTypeEnum(Enum):
     external = "External Study (Choose this if you are posting a study link rather using an experiment builder)"
     ember_frame_player = "Lookit/Ember Frame Player (Default experiment builder)"
+    jspsych = "jsPsych"
 
 
 class StudyType(models.Model):
@@ -246,11 +247,15 @@ class StudyType(models.Model):
 
     @property
     def is_ember_frame_player(self):
-        return self.name == StudyTypeEnum.ember_frame_player.value
+        return self.id == 1
 
     @property
     def is_external(self):
-        return self.name == StudyTypeEnum.external.value
+        return self.id == 2
+
+    @property
+    def is_jspsych(self):
+        return self.id == 3
 
     @property
     def display_name(self):
@@ -267,13 +272,16 @@ class StudyType(models.Model):
     def get_external(cls):
         return cls.objects.get(id=2)
 
+    @classmethod
+    def get_jspsych(cls):
+        return cls.objects.get(id=3)
+
 
 def default_study_structure():
     return {"frames": {}, "sequence": []}
 
 
 class Study(models.Model):
-
     MONITORING_FIELDS = [
         "structure",
         "generator",
@@ -420,7 +428,6 @@ class Study(models.Model):
         return None
 
     def __init__(self, *args, **kwargs):
-
         super(Study, self).__init__(*args, **kwargs)
         self.machine = Machine(
             self,
@@ -590,6 +597,10 @@ class Study(models.Model):
         return self.study_type.is_external and self.metadata["scheduled"]
 
     @property
+    def show_study_link(self):
+        return not self.study_type.is_ember_frame_player or self.built
+
+    @property
     def days_submitted(self):
         if self.status_change_date:
             return (timezone.now() - self.status_change_date).days
@@ -653,7 +664,6 @@ class Study(models.Model):
         )
 
     def notify_submitter_of_approval(self, ev):
-
         context = {
             "study_name": self.name,
             "study_id": self.pk,

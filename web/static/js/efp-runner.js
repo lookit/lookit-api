@@ -141,30 +141,11 @@ function updateLastPlayerSha() {
 }
 
 function validateGenerator(event) {
-    const jshint_config = { "esversion": 6 };
     const generator = document.querySelector('#id_generator');
     const use_generator = document.querySelector('#id_use_generator');
 
-    // Remove existing errors
-    document.querySelectorAll('.js-validation ol').forEach(el=>el.remove());
-
     if (use_generator.checked) {
-        // if jshint comes back with errors (false)
-        if (!JSHINT(generator.value, jshint_config)) {
-            const jsValidation = document.querySelector('.js-validation');
-
-            // Don't submit the form and scroll to top of page.
-            event.preventDefault();
-            jsValidation.classList.remove('d-none');
-            window.scrollTo(0, 0);
-
-            // Add errors to the list
-            JSHINT.errors.map(({ line, reason }) => {
-                const errorEl = document.createElement('ol');
-                errorEl.innerHTML = `${line}: ${reason}`;
-                jsValidation.appendChild(errorEl);
-            });
-        }
+        jsValidation(event, generator);
     }
 }
 
