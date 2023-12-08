@@ -73,6 +73,7 @@
                                         <strong>[Preview]</strong>
                                     </p>
                                 {% endif %}
+                                {% if response.survey_consent %}<span id="survey-consent-msg"><strong>[Survey consent]</strong></span>{% endif %}
                                 <p>
                                     <em class="small">{{ response.ruling_comments }}</em>
                                 </p>
@@ -140,6 +141,9 @@
         <div class="col">
             <div class="card">
                 <div class="card-body">
+                    <div id="current-survey-consent-information" class="mb-3 d-none">
+                        This response contains a survey consent response. You can accept the consent for this session to check the data for the consent response. You can also check the frame sequence below.
+                    </div>
                     {# Basic video information/warnings go in below div #}
                     <div id="current-video-information"></div>
                 </div>

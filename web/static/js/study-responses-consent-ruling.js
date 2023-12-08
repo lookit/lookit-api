@@ -16,6 +16,7 @@ $(document).ready(function () {
         $videoPreviousButton = $videoManager.find("#nav-video-previous"),
         $videoNextButton = $videoManager.find("#nav-video-next"),
         $currentVideoInfo = $("#current-video-information"),
+        $currentSurveyConsentInfo = $("#current-survey-consent-information"),
         $responseComments = $("#response-commentary"),
         $responseStatusFilter = $("#response-status-filters"),
         $listOfResponses = $("#list-of-responses"),
@@ -137,6 +138,7 @@ $(document).ready(function () {
     function updateVideoContainer(responseData) {
         // 1) Clear the current container
         $videoPreviousButton.nextUntil($videoNextButton).remove();
+        $currentSurveyConsentInfo.parent().removeClass("bg-warning");
 
         currentlyConsideredVideos = responseData["videos"];
         currentVideoListIndex = 0;
@@ -180,6 +182,18 @@ $(document).ready(function () {
         $childRow.append(Array.from(Object.values(details["child"]), val => $(`<td>${val}</td>`)));
     }
 
+    function updateSurveyConsentFlag(responseElement) {
+
+        // Show a survey-consent message if this response has a survey-consent frame
+        if (responseElement.find('#survey-consent-msg').length > 0) {
+            $currentSurveyConsentInfo.parent().addClass("bg-warning");
+            $currentSurveyConsentInfo.removeClass("d-none");
+        } else {
+            // Hide the survey-consent message
+            $currentSurveyConsentInfo.addClass("d-none");
+        }
+    }
+
     /*
      EVENT LISTENERS.
      XXX: Lots of manual event delegation, to account for constantly-updating elements.
@@ -214,6 +228,7 @@ $(document).ready(function () {
             let responseObjects = RESPONSE_KEY_VALUE_STORE[responseData["id"]];
             updateVideoContainer(responseObjects);
             updateResponseDataSection(responseObjects);
+            updateSurveyConsentFlag($currentlySelectedResponse);
         }
     });
 
