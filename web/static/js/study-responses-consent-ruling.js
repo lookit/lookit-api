@@ -78,7 +78,7 @@ $(document).ready(function () {
         $currentVideoInfo.text("Please select a response from the list on the left.");
         $currentVideoInfo.removeClass("bg-danger bg-warning");
         $videoElement.css("visibility", "hidden");
-        $responseComments.css("visibility", "hidden");
+        $responseComments.addClass("d-none");
     }
 
     function handleRulingActions($button, $responseListItem, responseData) {
@@ -214,7 +214,7 @@ $(document).ready(function () {
         saveComments();
         $currentlySelectedResponse = $(this);
         retrieveComments();
-        $responseComments.css("visibility", "visible");
+        $responseComments.removeClass("d-none");
 
         $currentlySelectedResponse.addClass("active");
 
