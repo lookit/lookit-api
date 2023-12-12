@@ -140,38 +140,46 @@
         </div>
         <div class="col">
             <div class="card">
+                <div class="card-header">Videos</div>
                 <div class="card-body">
-                    <div id="current-survey-consent-information" class="mb-3 d-none">
-                        This response contains a survey consent response. You can accept the consent for this session to check the data for the consent response. You can also check the frame sequence below.
-                    </div>
-                    {# Basic video information/warnings go in below div #}
-                    <div id="current-video-information"></div>
-                </div>
-            </div>
-            <video controls id="video-under-consideration" height="270" width="360">
-                <source src="" type="video/mp4" />
-            </video>
-            <textarea id="response-commentary"
-                      class="form-control"
-                      rows="4"
-                      placeholder="Leave any internal comments here, e.g. why a ruling was made. These comments can only be seen by researchers, and are saved when rulings are submitted."></textarea>
-            <div class="btn-toolbar d-flex justify-content-center m-2"
-                 id="video-manager">
-                <nav aria-label="Video navigation">
-                    <ul class="pagination">
-                        <li id="nav-video-previous">
-                            <a aria-label="Previous" class="page-link">
-                                <span aria-hidden="true">{% bs_icon "chevron-double-left" %}</span>
-                            </a>
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item">
+                            <div id="current-survey-consent-information" class="mb-3 d-none">
+                                This response contains a survey consent response. You can accept the consent for this session to check the data for the consent response. You can also check the frame sequence below.
+                            </div>
+                            {# Basic video information/warnings go in below div #}
+                            <div id="current-video-information"></div>
                         </li>
-                        {# list items go here#}
-                        <li id="nav-video-next">
-                            <a aria-label="Next" class="page-link">
-                                <span aria-hidden="true">{% bs_icon "chevron-double-right" %}</span>
-                            </a>
+                        <li class="list-group-item align-items-center align-middle bg-light text-center">
+                            <video controls id="video-under-consideration" height="270" width="360">
+                                <source src="" type="video/mp4" />
+                            </video>
+                        </li>
+                        <li class="list-group-item align-items-center align-middle text-center">
+                            Comments
+                            <textarea id="response-commentary" class="form-control" rows="4" placeholder="Leave any internal comments here, e.g. why a ruling was made. These comments can only be seen by researchers, and are saved when rulings are submitted.">
+                            </textarea>
                         </li>
                     </ul>
-                </nav>
+                    <div class="btn-toolbar d-flex justify-content-center m-2"
+                         id="video-manager">
+                        <nav aria-label="Video navigation">
+                            <ul class="pagination">
+                                <li id="nav-video-previous">
+                                    <a aria-label="Previous" class="page-link">
+                                        <span aria-hidden="true">{% bs_icon "chevron-double-left" %}</span>
+                                    </a>
+                                </li>
+                                {# list items go here#}
+                                <li id="nav-video-next">
+                                    <a aria-label="Next" class="page-link">
+                                        <span aria-hidden="true">{% bs_icon "chevron-double-right" %}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col">
