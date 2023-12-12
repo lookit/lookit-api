@@ -57,7 +57,7 @@ $(document).ready(function () {
 
     function saveComments() {
         let currentText = $responseComments.val();
-        if (currentText) {
+        if (currentText && $currentlySelectedResponse) {
             COMMENTS_CACHE[$currentlySelectedResponse.data("id")] = $responseComments.val();
         }
     }
