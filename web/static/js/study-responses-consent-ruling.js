@@ -76,7 +76,7 @@ $(document).ready(function () {
 
         // Start out with no response selected
         $currentVideoInfo.text("Please select a response from the list on the left.");
-        $currentVideoInfo.removeClass("bg-danger bg-warning");
+        $currentVideoInfo.parent().removeClass("bg-danger bg-warning");
         $videoElement.css("visibility", "hidden");
         $responseComments.addClass("d-none");
     }
@@ -163,7 +163,8 @@ $(document).ready(function () {
             $videoElement.trigger("load").trigger("play");
         } else {
             $videoElement.css("visibility", "hidden");
-            $currentVideoInfo.addClass("bg-warning").text("No video found for this response.")
+            $currentVideoInfo.text("No video found for this response.");
+            $currentVideoInfo.parent().addClass("bg-warning");
         }
     }
 
@@ -282,7 +283,8 @@ $(document).ready(function () {
 
     $videoSource.on("error", function (event) {
         if ($videoSource.attr("src").length) {
-            $currentVideoInfo.addClass("bg-danger").text("The video is not loading; the link probably timed out. Try refreshing this page.");
+            $currentVideoInfo.text("The video is not loading; the link probably timed out. Try refreshing this page.");
+            $currentVideoInfo.parent().addClass("bg-danger")
         } else {
             $currentVideoInfo.text("Please select a response from the list on the left.");
         }
@@ -291,6 +293,11 @@ $(document).ready(function () {
     $videoElement.on("canplay", function () {
         let currentVideo = currentlyConsideredVideos[currentVideoListIndex],
             timeString = new Date(parseInt(currentVideo["filename"].split("_")[4])).toLocaleString();
-        $currentVideoInfo.removeClass("bg-danger bg-warning").text("Processed: " + timeString);
+        $currentVideoInfo.text("Processed: " + timeString);
+        // Remove the danger/warning class on the parent div, unless this response has a survey-consent frame warning
+        let responseElement = $('.response-option.active');
+        if (responseElement && responseElement.find('#survey-consent-msg').length == 0) {
+            $currentVideoInfo.parent().removeClass("bg-danger bg-warning");
+        }
     });
 });
