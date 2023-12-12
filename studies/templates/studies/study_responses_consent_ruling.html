@@ -66,18 +66,19 @@
                             class="border-start-0 border-end-0 response-option list-group-item {{ response.current_ruling }} {% if response.is_preview %}preview-row{% endif %}"
                             data-id="{{ response.uuid }}"
                             data-original-status="{{ response.current_ruling }}">
-                            <span>
+                            <p>
                                 <strong>{{ response.date_created | date:"D M d, P e" }}</strong>
                                 {% if response.is_preview %}
-                                    <p>
-                                        <strong>[Preview]</strong>
-                                    </p>
+                                    <br>
+                                    <strong>[Preview]</strong>
                                 {% endif %}
-                                {% if response.survey_consent %}<span id="survey-consent-msg"><strong>[Survey consent]</strong></span>{% endif %}
-                                <p>
-                                    <em class="small">{{ response.ruling_comments }}</em>
-                                </p>
-                            </span>
+                                {% if response.survey_consent %}
+                                    <br>
+                                    <span id="survey-consent-msg"><strong>[Survey consent]</strong></span>
+                                {% endif %}
+                                <br>
+                                <em class="small">{{ response.ruling_comments }}</em>
+                            </p>
                             <div class="dropdown">
                                 <button class="{% button_secondary_classes %} dropdown-toggle"
                                         type="button"
