@@ -76,8 +76,10 @@
                                     <br>
                                     <span id="survey-consent-msg"><strong>[Survey consent]</strong></span>
                                 {% endif %}
-                                <br>
-                                <em class="small">{{ response.ruling_comments }}</em>
+                                {% if response.ruling_comments != "N/A" %}
+                                    <br>
+                                    <em class="small">{{ response.ruling_comments }}</em>
+                                {% endif %}
                             </p>
                             <div class="dropdown">
                                 <button class="{% button_secondary_classes %} dropdown-toggle"
