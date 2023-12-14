@@ -166,7 +166,7 @@ def nav_login(request, text="Login", button=False):
 
 
 @register.simple_tag
-def nav_signup(request, text="Sign up", button=False):
+def nav_signup(request, text=_("Sign up"), button=False):
     """Navigation sign up button
 
     Args:
