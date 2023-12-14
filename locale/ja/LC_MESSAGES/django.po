@@ -2717,4 +2717,3 @@ msgstr "あなたのお子さんの年齢は、この研究に推奨されてい
 #: web/templates/web/study-detail.html:133
 msgid " Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but researchers may not be able to compensate you or use your data. Please review the “Who can participate” information for this study and contact the study researchers (%(contact)s) if you feel this is in error. "
 msgstr "␣あなたのお子さんは、この研究に記載されている参加資格を満たしていません。この研究に参加することは歓迎ですが、研究者はあなたに補償したり、あなたのデータを使用することができないかもしれません。この研究の「研究・調査への参加資格 」情報を確認し、これが誤りであると思われる場合は、研究者(%(contact)s)に連絡してください。␣"
-
