@@ -79,6 +79,7 @@ $(document).ready(function () {
         $currentVideoInfo.parent().removeClass("bg-danger bg-warning");
         $videoElement.css("visibility", "hidden");
         $responseComments.addClass("d-none");
+        $currentSurveyConsentInfo.addClass("d-none");
     }
 
     function handleRulingActions($button, $responseListItem, responseData) {
