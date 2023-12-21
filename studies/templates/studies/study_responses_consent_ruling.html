@@ -58,7 +58,7 @@
                     </div>
                 </div>
                 <ul id="list-of-responses"
-                    class="list-group rounded-0"
+                    class="list-group rounded-0 list-group-hover"
                     style="max-height:300px;
                            overflow-y: scroll">
                     {% for response in loaded_responses %}
@@ -66,17 +66,21 @@
                             class="border-start-0 border-end-0 response-option list-group-item {{ response.current_ruling }} {% if response.is_preview %}preview-row{% endif %}"
                             data-id="{{ response.uuid }}"
                             data-original-status="{{ response.current_ruling }}">
-                            <span>
+                            <p>
                                 <strong>{{ response.date_created | date:"D M d, P e" }}</strong>
                                 {% if response.is_preview %}
-                                    <p>
-                                        <strong>[Preview]</strong>
-                                    </p>
+                                    <br>
+                                    <strong>[Preview]</strong>
                                 {% endif %}
-                                <p>
+                                {% if response.survey_consent %}
+                                    <br>
+                                    <span id="survey-consent-msg"><strong>[Survey consent]</strong></span>
+                                {% endif %}
+                                {% if response.ruling_comments != "N/A" %}
+                                    <br>
                                     <em class="small">{{ response.ruling_comments }}</em>
-                                </p>
-                            </span>
+                                {% endif %}
+                            </p>
                             <div class="dropdown">
                                 <button class="{% button_secondary_classes %} dropdown-toggle"
                                         type="button"
@@ -139,35 +143,46 @@
         </div>
         <div class="col">
             <div class="card">
+                <div class="card-header">Videos</div>
                 <div class="card-body">
-                    {# Basic video information/warnings go in below div #}
-                    <div id="current-video-information"></div>
-                </div>
-            </div>
-            <video controls id="video-under-consideration" height="270" width="360">
-                <source src="" type="video/mp4" />
-            </video>
-            <textarea id="response-commentary"
-                      class="form-control"
-                      rows="4"
-                      placeholder="Leave any internal comments here, e.g. why a ruling was made. These comments can only be seen by researchers, and are saved when rulings are submitted."></textarea>
-            <div class="btn-toolbar d-flex justify-content-center m-2"
-                 id="video-manager">
-                <nav aria-label="Video navigation">
-                    <ul class="pagination">
-                        <li id="nav-video-previous">
-                            <a aria-label="Previous" class="page-link">
-                                <span aria-hidden="true">{% bs_icon "chevron-double-left" %}</span>
-                            </a>
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item">
+                            <div id="current-survey-consent-information" class="mb-3 d-none">
+                                This response contains a survey consent frame. To review whether consent is valid, (1) check the frame sequence below (if you set up frame logic for consenting vs. non consenting participants), or (2) mark the response as 'accepted' here, then go to the Study Responses page to review survey answers on your own.
+                            </div>
+                            {# Basic video information/warnings go in below div #}
+                            <div id="current-video-information"></div>
                         </li>
-                        {# list items go here#}
-                        <li id="nav-video-next">
-                            <a aria-label="Next" class="page-link">
-                                <span aria-hidden="true">{% bs_icon "chevron-double-right" %}</span>
-                            </a>
+                        <li class="list-group-item align-items-center align-middle bg-light text-center">
+                            <video controls id="video-under-consideration" height="270" width="360">
+                                <source src="" type="video/mp4" />
+                            </video>
+                        </li>
+                        <li class="list-group-item align-items-center align-middle text-center">
+                            Comments
+                            <textarea id="response-commentary" class="form-control d-none" rows="4" placeholder="Leave any internal comments here, e.g. why a ruling was made. These comments can only be seen by researchers, and are saved when rulings are submitted.">
+                            </textarea>
                         </li>
                     </ul>
-                </nav>
+                    <div class="btn-toolbar d-flex justify-content-center m-2"
+                         id="video-manager">
+                        <nav aria-label="Video navigation">
+                            <ul class="pagination">
+                                <li id="nav-video-previous">
+                                    <a aria-label="Previous" class="page-link">
+                                        <span aria-hidden="true">{% bs_icon "chevron-double-left" %}</span>
+                                    </a>
+                                </li>
+                                {# list items go here#}
+                                <li id="nav-video-next">
+                                    <a aria-label="Next" class="page-link">
+                                        <span aria-hidden="true">{% bs_icon "chevron-double-right" %}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col">

@@ -53,6 +53,7 @@ class AuthenticationTestCase(TestCase):
             name="Fake Study",
             lab=self.lab,
             shared_preview=True,
+            study_type=StudyType.get_ember_frame_player(),
         )
 
         # Participant Setup
@@ -423,7 +424,13 @@ class UserModelTestCase(TestCase):
         self.bad_email_user.save()
 
         self.lab = G(Lab, name="MIT", approved_to_test=True)
-        self.study = G(Study, name="Test Study", lab=self.lab, built=True)
+        self.study = G(
+            Study,
+            name="Test Study",
+            lab=self.lab,
+            built=True,
+            study_type=StudyType.get_ember_frame_player(),
+        )
 
         self.study.researcher_group.user_set.add(self.unaffiliated_researcher)
 
@@ -1017,7 +1024,12 @@ class EligibilityTestCase(TestCase):
         )
 
     def test_get_child_eligibilty_prior_studies_success(self):
-        study = G(Study, max_age_years=2, criteria_expression="")
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_ember_frame_player(),
+        )
         child = G(Child, birthday=datetime.date.today())
 
         self.assertTrue(get_child_participation_eligibility(child, study))
@@ -1035,6 +1047,7 @@ class EligibilityTestCase(TestCase):
             max_age_years=2,
             criteria_expression="",
             must_have_participated=[other_study],
+            study_type=StudyType.get_ember_frame_player(),
         )
         child = G(Child, birthday=datetime.date.today())
 
@@ -1101,6 +1114,7 @@ class EligibilityTestCase(TestCase):
             max_age_years=2,
             criteria_expression="",
             must_not_have_participated=[other_study],
+            study_type=StudyType.get_ember_frame_player(),
         )
         child = G(Child, birthday=datetime.date.today())
 
@@ -1127,6 +1141,7 @@ class EligibilityTestCase(TestCase):
             max_age_years=2,
             criteria_expression="",
             must_not_have_participated=[other_study],
+            study_type=StudyType.get_ember_frame_player(),
         )
         child = G(Child, birthday=datetime.date.today())
 
@@ -1153,6 +1168,7 @@ class EligibilityTestCase(TestCase):
             max_age_years=2,
             criteria_expression="",
             must_have_participated=[required_study_1, required_study_2],
+            study_type=StudyType.get_ember_frame_player(),
         )
         child = G(Child, birthday=datetime.date.today())
 
@@ -1186,6 +1202,7 @@ class EligibilityTestCase(TestCase):
             max_age_years=2,
             criteria_expression="",
             must_not_have_participated=[disallowed_study_1, disallowed_study_2],
+            study_type=StudyType.get_ember_frame_player(),
         )
         child = G(Child, birthday=datetime.date.today())
 
@@ -1222,6 +1239,7 @@ class EligibilityTestCase(TestCase):
             criteria_expression="",
             must_have_participated=[required_study],
             must_not_have_participated=[disallowed_study],
+            study_type=StudyType.get_ember_frame_player(),
         )
 
         # Child is not eligible if they meet the required study criteria but not the disallowed study criteria
@@ -1298,6 +1316,7 @@ class ParticipantViewsTestCase(TestCase):
                 "last_known_player_sha": "fakecommitsha",
             },
             built=True,
+            study_type=StudyType.get_ember_frame_player(),
         )
         self.study.admin_group.user_set.add(self.study_admin)
         self.study.design_group.user_set.add(self.study_designer)

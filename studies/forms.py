@@ -360,6 +360,11 @@ class StudyCreateForm(StudyForm):
                 user, LabPermission.CREATE_LAB_ASSOCIATED_STUDY.prefixed_codename
             ).only("id")
         )
+        # This will remove jsPsych from study create form. Should be removed
+        # when jsPsych is deployed to production.
+        if not user.is_superuser:
+            study_type = self.fields["study_type"]
+            study_type.queryset = study_type.queryset.exclude(id=3)
 
 
 class EmailRecipientSelectMultiple(forms.SelectMultiple):
@@ -398,7 +403,7 @@ class EFPForm(ModelForm):
         required=False,
         help_text=(
             "Configure frames to use in your study and specify their order. For information on how to "
-            "set up your protocol, please <a href={PROTOCOL_CONFIG_HELP_LINK}>see the documentation</a>."
+            f"set up your protocol, please <a href={PROTOCOL_CONFIG_HELP_LINK}>see the documentation</a>."
         ),
     )
     generator = forms.CharField(
@@ -535,6 +540,25 @@ class ExternalForm(ModelForm):
         help_text="What software or website will you use to present & collect data for your study?",
     )
     other_study_platform = forms.CharField(label="", required=False)
+
+    class Meta:
+        model = Study
+        fields = ()
+
+
+class JSPsychForm(ModelForm):
+    experiment = forms.CharField(
+        label="jsPsych Experiment Code",
+        widget=AceOverlayWidget(
+            mode="javascript",
+            wordwrap=True,
+            theme="textmate",
+            width="100%",
+            height="100%",
+            showprintmargin=False,
+        ),
+        help_text="Please enter jsPsych experiment code. This is the JavaScript code used to generate a jsPsych study, not the surrounding HTML.",
+    )
 
     class Meta:
         model = Study

@@ -642,13 +642,16 @@ class StudyDetailView(generic.DetailView):
         if study.state == "active":
             if request.method == "POST":
                 self.clear_study()
-                child_uuid = request.POST["child_id"]
+                child: Child = Child.objects.get(uuid=request.POST["child_id"])
+
                 if study.study_type.is_external:
-                    response = create_external_response(study, child_uuid)
+                    response = create_external_response(study, child.uuid)
                     external_url = get_external_url(study, response)
                     return HttpResponseRedirect(external_url)
+                elif study.study_type.is_ember_frame_player:
+                    return redirect("web:experiment-proxy", study.uuid, child.uuid)
                 else:
-                    return redirect("web:experiment-proxy", study.uuid, child_uuid)
+                    return redirect("web:jspsych-experiment", study.uuid, child.uuid)
             return super().dispatch(request)
         else:
             response_text = _(
@@ -743,6 +746,46 @@ class ExperimentProxyView(
 
         path = f"{study_uuid}/index.html"
         return super().dispatch(request, path)
+
+
+class JsPsychExperimentView(
+    AuthenticatedRedirectMixin,
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    generic.DetailView,
+):
+    template_name = "web/jspsych-study-detail.html"
+    model = Study
+    slug_url_kwarg = "uuid"
+    slug_field = "uuid"
+
+    def user_can_participate(self):
+        try:
+            child_uuid = self.kwargs.get("child_id")
+            study_uuid = self.kwargs.get("uuid")
+
+            child = Child.objects.get(uuid=child_uuid)
+            study_exists = Study.objects.filter(uuid=study_uuid).exists()
+
+            return study_exists and child.user == self.request.user
+        except Child.DoesNotExist:
+            return False
+
+    test_func = user_can_participate
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        study = context["study"]
+        child_uuid = context["view"].kwargs["child_id"]
+        child = Child.objects.get(uuid=child_uuid)
+        demo = DemographicData.objects.filter(user=child.user).first()
+        response = Response.objects.create(
+            study=study, child=child, demographic_snapshot=demo, exp_data=[]
+        )
+
+        context.update(response=response)
+
+        return context
 
 
 class ScientistsView(generic.TemplateView):

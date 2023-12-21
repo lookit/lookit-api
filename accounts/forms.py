@@ -341,6 +341,7 @@ class DemographicDataForm(forms.ModelForm):
             ),
             "age": _("What is your age?"),
             "gender": _("What is your gender?"),
+            "gender_self_describe": _("Describe your gender"),
             "education_level": _(
                 "What is the highest level of education you've completed?"
             ),

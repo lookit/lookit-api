@@ -60,6 +60,11 @@ urlpatterns = [
         views.ExperimentProxyView.as_view(),
         name="experiment-proxy",
     ),
+    path(
+        "studies/jspsych/<uuid:uuid>/<uuid:child_id>/",
+        views.JsPsychExperimentView.as_view(),
+        name="jspsych-experiment",
+    ),
     re_path(
         r"^studies/"
         r"(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/"

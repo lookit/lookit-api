@@ -107,6 +107,7 @@ def get_responses_with_current_rulings_and_videos(study_id, preview_only):
             "current_ruling",
             "ruling_comments",
             "completed",
+            "survey_consent",
             "date_created",
             "is_preview",
             "child_id",

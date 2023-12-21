@@ -5,7 +5,7 @@ from django_dynamic_fixture import G
 
 from accounts.models import Child
 from accounts.utils import hash_child_id, hash_child_id_from_model, hash_id
-from studies.models import Response, Study
+from studies.models import Response, Study, StudyType
 
 
 class AuthenticationTestCase(TestCase):
@@ -29,7 +29,13 @@ class AuthenticationTestCase(TestCase):
         }
 
         child_model = G(Child, uuid=self.id1)
-        study_model = G(Study, uuid=self.id2, salt=self.salt, hash_digits=self.length)
+        study_model = G(
+            Study,
+            uuid=self.id2,
+            salt=self.salt,
+            hash_digits=self.length,
+            study_type=StudyType.get_ember_frame_player(),
+        )
         resp_model = G(Response, child=child_model, study=study_model)
 
         self.assertEqual(hash_child_id(resp_dict), hash_child_id_from_model(resp_model))

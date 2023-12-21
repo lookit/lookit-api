@@ -62,8 +62,10 @@ from exp.views.study import (
     ChangeStudyStatusView,
     CloneStudyView,
     EFPEditView,
-    ExperimentRunnerEditRedirect,
+    ExperimentRunnerRedirect,
     ExternalEditView,
+    JSPsychEditView,
+    JsPsychPreviewView,
     ManageResearcherPermissionsView,
     StudyListViewActive,
     StudyListViewApproved,
@@ -253,10 +255,15 @@ urlpatterns = [
         PreviewProxyView.as_view(),
         name="preview-proxy",
     ),
+    path(
+        "studies/jspsych/<uuid:uuid>/<uuid:child_id>/preview/",
+        JsPsychPreviewView.as_view(),
+        name="preview-jspsych",
+    ),
     path("support/", SupportView.as_view(), name="support"),
     path(
         "studies/<int:pk>/study-details/",
-        ExperimentRunnerEditRedirect.as_view(),
+        ExperimentRunnerRedirect.as_view(),
         name="study-details",
     ),
     path(
@@ -268,5 +275,10 @@ urlpatterns = [
         "studies/<int:pk>/study-details/external/",
         ExternalEditView.as_view(),
         name="external-study-details",
+    ),
+    path(
+        "studies/<int:pk>/study-details/jspsych/",
+        JSPsychEditView.as_view(),
+        name="jspsych-study-details",
     ),
 ]

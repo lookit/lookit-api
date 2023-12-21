@@ -106,7 +106,7 @@
                 {{ discoverability_text | safe }}
             </p>
             <p>
-                {% if study.built or study.study_type.is_external %}
+                {% if study.show_study_link %}
                     <span class="fw-bold">Study link:</span>
                     <div class="input-group">
                         <input type="text"

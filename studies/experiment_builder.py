@@ -4,7 +4,7 @@ import os
 import re
 import zipfile
 from io import BytesIO
-from operator import attrgetter, itemgetter
+from operator import attrgetter
 from typing import NamedTuple, Sequence
 
 import docker
@@ -36,7 +36,7 @@ class BuildError(Exception):
     """Base error for module"""
 
 
-class ExperimentBuilder(object):
+class ExperimentBuilder:
     """A robust class that helps us build arbitrary experiments."""
 
     DEFAULT_CONTEXT: dict
@@ -98,14 +98,12 @@ class ExperimentBuilder(object):
         args = args[1:]  # Get rid of "self"
         try:
             if args:
-                build_args = itemgetter(*args)(self.build_context)
+                build_args = tuple(self.build_context[arg] for arg in args)
             else:
-                build_args = tuple([])
+                build_args = tuple()
         except KeyError as e:
             raise BuildError(f"Missing build context: {e}")
 
-        if not isinstance(build_args, tuple):
-            build_args = tuple([build_args])
         # Run function with build args, append to build log.
         try:
             stage_data = stage_fn(*build_args)
@@ -192,7 +190,7 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
             self.build_context["update_fields"] += ["metadata"]
 
     def build_docker_image(self):
-        image, image_log_gen = DOCKER_CLIENT.images.build(
+        image, _image_log_gen = DOCKER_CLIENT.images.build(
             path=settings.EMBER_BUILD_ROOT_PATH,
             pull=True,
             tag="ember_build",
@@ -347,12 +345,9 @@ def download_repos(player_repo_url, player_sha=None):
         "./ember_build/checkouts/", repo_destination_folder
     )
 
-    if os.path.isdir(local_repo_destination_folder):
-        return repo_destination_folder, player_sha
-
-    player_zip_path = f"{player_repo_url}/archive/{player_sha}.zip"
-
-    unzip_file(requests.get(player_zip_path).content, local_repo_destination_folder)
+    if not os.path.isdir(local_repo_destination_folder):
+        player_zip_path = f"{player_repo_url}/archive/{player_sha}.zip"
+        unzip_file(requests.get(player_zip_path).content, local_repo_destination_folder)
 
     return repo_destination_folder, player_sha
 
@@ -379,12 +374,12 @@ def notify_involved_parties_of_build_status(study, failure_stage=None, log_outpu
             bcc=list(study.admin_group.user_set.values_list("username", flat=True)),
             **email_context,
         )
-        subject_line = f"Experiment runner built"
+        subject_line = "Experiment runner built"
         researcher_notification_template = "notify_researchers_of_deployment"
     else:
         email_context["failure_stage"] = failure_stage
         email_context["log_output"] = log_output
-        subject_line = f"Experiment runner failed to build."
+        subject_line = "Experiment runner failed to build."
         researcher_notification_template = "notify_researchers_of_build_failure"
 
     send_mail.delay(

@@ -9,7 +9,7 @@ from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import User
 from project import settings
 from studies.forms import ScheduledChoice
-from studies.models import Lab, Study
+from studies.models import Lab, Study, StudyType
 from studies.permissions import StudyPermission
 
 
@@ -24,6 +24,8 @@ class Force2FAClient(Client):
 class RunnerDetailsViewsTestCase(TestCase):
     def setUp(self):
         self.client = Force2FAClient()
+        self.efp_study_details = "exp:efp-study-details"
+        self.study_details = "exp:study-details"
 
     def test_external_details_view(self):
         user = G(User, is_active=True, is_researcher=True)
@@ -67,7 +69,7 @@ class RunnerDetailsViewsTestCase(TestCase):
 
         self.client.force_login(user)
         response = self.client.post(
-            reverse("exp:efp-study-details", kwargs={"pk": study.id}),
+            reverse(self.efp_study_details, kwargs={"pk": study.id}),
             {
                 "structure": "{}",
                 "player_repo_url": metadata["player_repo_url"],
@@ -81,39 +83,71 @@ class RunnerDetailsViewsTestCase(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(Study.objects.get(id=study.id).metadata, metadata)
 
-    def test_study_details_redirect(self):
+    def test_study_details_redirect_efp(self):
         user = G(User, is_active=True, is_researcher=True)
         lab = G(Lab)
-        efp = G(Study, creator=user, lab=lab, study_type=1)
-        external = G(Study, creator=user, lab=lab, study_type=2)
+        efp = G(
+            Study, creator=user, lab=lab, study_type=StudyType.get_ember_frame_player()
+        )
 
         assign_perm(StudyPermission.WRITE_STUDY_DETAILS.codename, user, efp)
         assign_perm(StudyPermission.READ_STUDY_DETAILS.codename, user, efp)
-        assign_perm(StudyPermission.WRITE_STUDY_DETAILS.codename, user, external)
-        assign_perm(StudyPermission.READ_STUDY_DETAILS.codename, user, external)
 
         self.client.force_login(user)
+
         response = self.client.get(
-            reverse("exp:study-details", kwargs={"pk": efp.id}), follow=True
+            reverse(self.study_details, kwargs={"pk": efp.id}), follow=True
         )
         self.assertEqual(
             response.redirect_chain,
             [
                 (
-                    reverse("exp:efp-study-details", kwargs={"pk": efp.id}),
+                    reverse(self.efp_study_details, kwargs={"pk": efp.id}),
                     HTTPStatus.FOUND,
                 )
             ],
         )
 
+    def test_study_details_redirect_external(self):
+        user = G(User, is_active=True, is_researcher=True)
+        lab = G(Lab)
+        external = G(Study, creator=user, lab=lab, study_type=StudyType.get_external())
+
+        assign_perm(StudyPermission.WRITE_STUDY_DETAILS.codename, user, external)
+        assign_perm(StudyPermission.READ_STUDY_DETAILS.codename, user, external)
+
+        self.client.force_login(user)
+
         response = self.client.get(
-            reverse("exp:study-details", kwargs={"pk": external.id}), follow=True
+            reverse(self.study_details, kwargs={"pk": external.id}), follow=True
         )
         self.assertEqual(
             response.redirect_chain,
             [
                 (
                     reverse("exp:external-study-details", kwargs={"pk": external.id}),
+                    HTTPStatus.FOUND,
+                )
+            ],
+        )
+
+    def test_study_details_redirect_jspsych(self):
+        user = G(User, is_active=True, is_researcher=True)
+        lab = G(Lab)
+        jspsych = G(Study, creator=user, lab=lab, study_type=StudyType.get_jspsych())
+
+        assign_perm(StudyPermission.WRITE_STUDY_DETAILS.codename, user, jspsych)
+        assign_perm(StudyPermission.READ_STUDY_DETAILS.codename, user, jspsych)
+
+        self.client.force_login(user)
+        response = self.client.get(
+            reverse(self.study_details, kwargs={"pk": jspsych.id}), follow=True
+        )
+        self.assertEqual(
+            response.redirect_chain,
+            [
+                (
+                    reverse("exp:jspsych-study-details", kwargs={"pk": jspsych.id}),
                     HTTPStatus.FOUND,
                 )
             ],
@@ -134,7 +168,7 @@ class RunnerDetailsViewsTestCase(TestCase):
 
         self.client.force_login(user)
         response = self.client.post(
-            reverse("exp:efp-study-details", kwargs={"pk": study.id}),
+            reverse(self.efp_study_details, kwargs={"pk": study.id}),
             {
                 "structure": "{}",
                 "last_known_player_sha": "862604874f7eeff8c9d72adcb8914b21bfb5427e",

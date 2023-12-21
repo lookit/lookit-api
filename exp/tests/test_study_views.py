@@ -121,6 +121,7 @@ class StudyViewsTestCase(TestCase):
             image=SimpleUploadedFile(
                 name="small.gif", content=small_gif, content_type="image/gif"
             ),
+            study_type=StudyType.get_ember_frame_player(),
         )
 
         self.study.admin_group.user_set.add(self.study_admin)
@@ -1236,8 +1237,12 @@ class StudyParticipatedViewTestCase(TestCase):
     def test_must_have_participated(self):
         user = G(User, is_active=True, is_researcher=True)
         lab = G(Lab)
-        study = G(Study, creator=user, lab=lab, study_type=1)
-        another_study = G(Study, creator=user, lab=lab, study_type=1)
+        study = G(
+            Study, creator=user, lab=lab, study_type=StudyType.get_ember_frame_player()
+        )
+        another_study = G(
+            Study, creator=user, lab=lab, study_type=StudyType.get_ember_frame_player()
+        )
 
         # login
         self.client.force_login(user)
@@ -1275,8 +1280,12 @@ class StudyParticipatedViewTestCase(TestCase):
     def test_must_not_have_participated(self):
         user = G(User, is_active=True, is_researcher=True)
         lab = G(Lab)
-        study = G(Study, creator=user, lab=lab, study_type=1)
-        another_study = G(Study, creator=user, lab=lab, study_type=1)
+        study = G(
+            Study, creator=user, lab=lab, study_type=StudyType.get_ember_frame_player()
+        )
+        another_study = G(
+            Study, creator=user, lab=lab, study_type=StudyType.get_ember_frame_player()
+        )
 
         # login
         self.client.force_login(user)

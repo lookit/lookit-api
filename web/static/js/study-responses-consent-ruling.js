@@ -16,6 +16,7 @@ $(document).ready(function () {
         $videoPreviousButton = $videoManager.find("#nav-video-previous"),
         $videoNextButton = $videoManager.find("#nav-video-next"),
         $currentVideoInfo = $("#current-video-information"),
+        $currentSurveyConsentInfo = $("#current-survey-consent-information"),
         $responseComments = $("#response-commentary"),
         $responseStatusFilter = $("#response-status-filters"),
         $listOfResponses = $("#list-of-responses"),
@@ -56,7 +57,7 @@ $(document).ready(function () {
 
     function saveComments() {
         let currentText = $responseComments.val();
-        if (currentText) {
+        if (currentText && $currentlySelectedResponse) {
             COMMENTS_CACHE[$currentlySelectedResponse.data("id")] = $responseComments.val();
         }
     }
@@ -75,9 +76,10 @@ $(document).ready(function () {
 
         // Start out with no response selected
         $currentVideoInfo.text("Please select a response from the list on the left.");
-        $currentVideoInfo.removeClass("bg-danger bg-warning");
+        $currentVideoInfo.parent().removeClass("bg-danger bg-warning");
         $videoElement.css("visibility", "hidden");
-        $responseComments.css("visibility", "hidden");
+        $responseComments.addClass("d-none");
+        $currentSurveyConsentInfo.addClass("d-none");
     }
 
     function handleRulingActions($button, $responseListItem, responseData) {
@@ -137,6 +139,7 @@ $(document).ready(function () {
     function updateVideoContainer(responseData) {
         // 1) Clear the current container
         $videoPreviousButton.nextUntil($videoNextButton).remove();
+        $currentSurveyConsentInfo.parent().removeClass("bg-warning");
 
         currentlyConsideredVideos = responseData["videos"];
         currentVideoListIndex = 0;
@@ -161,7 +164,8 @@ $(document).ready(function () {
             $videoElement.trigger("load").trigger("play");
         } else {
             $videoElement.css("visibility", "hidden");
-            $currentVideoInfo.addClass("bg-warning").text("No video found for this response.")
+            $currentVideoInfo.text("No video found for this response.");
+            $currentVideoInfo.parent().addClass("bg-warning");
         }
     }
 
@@ -178,6 +182,18 @@ $(document).ready(function () {
 
         $childRow.empty();
         $childRow.append(Array.from(Object.values(details["child"]), val => $(`<td>${val}</td>`)));
+    }
+
+    function updateSurveyConsentFlag(responseElement) {
+
+        // Show a survey-consent message if this response has a survey-consent frame
+        if (responseElement.find('#survey-consent-msg').length > 0) {
+            $currentSurveyConsentInfo.parent().addClass("bg-warning");
+            $currentSurveyConsentInfo.removeClass("d-none");
+        } else {
+            // Hide the survey-consent message
+            $currentSurveyConsentInfo.addClass("d-none");
+        }
     }
 
     /*
@@ -200,7 +216,7 @@ $(document).ready(function () {
         saveComments();
         $currentlySelectedResponse = $(this);
         retrieveComments();
-        $responseComments.css("visibility", "visible");
+        $responseComments.removeClass("d-none");
 
         $currentlySelectedResponse.addClass("active");
 
@@ -214,6 +230,7 @@ $(document).ready(function () {
             let responseObjects = RESPONSE_KEY_VALUE_STORE[responseData["id"]];
             updateVideoContainer(responseObjects);
             updateResponseDataSection(responseObjects);
+            updateSurveyConsentFlag($currentlySelectedResponse);
         }
     });
 
@@ -267,7 +284,8 @@ $(document).ready(function () {
 
     $videoSource.on("error", function (event) {
         if ($videoSource.attr("src").length) {
-            $currentVideoInfo.addClass("bg-danger").text("The video is not loading; the link probably timed out. Try refreshing this page.");
+            $currentVideoInfo.text("The video is not loading; the link probably timed out. Try refreshing this page.");
+            $currentVideoInfo.parent().addClass("bg-danger")
         } else {
             $currentVideoInfo.text("Please select a response from the list on the left.");
         }
@@ -276,6 +294,11 @@ $(document).ready(function () {
     $videoElement.on("canplay", function () {
         let currentVideo = currentlyConsideredVideos[currentVideoListIndex],
             timeString = new Date(parseInt(currentVideo["filename"].split("_")[4])).toLocaleString();
-        $currentVideoInfo.removeClass("bg-danger bg-warning").text("Processed: " + timeString);
+        $currentVideoInfo.text("Processed: " + timeString);
+        // Remove the danger/warning class on the parent div, unless this response has a survey-consent frame warning
+        let responseElement = $('.response-option.active');
+        if (responseElement && responseElement.find('#survey-consent-msg').length == 0) {
+            $currentVideoInfo.parent().removeClass("bg-danger bg-warning");
+        }
     });
 });

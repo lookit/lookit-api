@@ -8,3 +8,4 @@ docker-compose.yml
 celerybeat.pid
 /static/
 cloudbuild.yaml
+data

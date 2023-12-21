@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
-from studies.models import ConsentRuling, Lab, Response, Study
+from studies.models import ConsentRuling, Lab, Response, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 
 
@@ -45,6 +45,7 @@ class StudiesTestCase(APITestCase):
             image="asd",
             shared_preview=False,
             state="created",
+            study_type=StudyType.get_ember_frame_player(),
         )
         self.study.save()
 
@@ -220,7 +221,12 @@ class StudiesTestCase(APITestCase):
 
     def testStudyResponses(self):
         # Accessing study responses restricts queryset to responses of that particular study
-        self.study2 = G(Study, creator=self.researcher, lab=self.lab)
+        self.study2 = G(
+            Study,
+            creator=self.researcher,
+            lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
+        )
         self.response2 = self.response = G(
             Response,
             child=self.child,
@@ -252,7 +258,12 @@ class StudiesTestCase(APITestCase):
 
     def testStudyResponsesAsParticipant(self):
         # Participants can only see the study responses they created
-        self.study2 = G(Study, creator=self.researcher, lab=self.lab)
+        self.study2 = G(
+            Study,
+            creator=self.researcher,
+            lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
+        )
         self.response2 = G(
             Response,
             child=G(Child, user=self.researcher),

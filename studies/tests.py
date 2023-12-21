@@ -75,6 +75,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
             max_age_years=2,
             max_age_months=0,
             max_age_days=0,
+            study_type=StudyType.get_ember_frame_player(),
         )
         self.study_one.state = "active"
         self.study_one.save()
@@ -99,6 +100,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
             short_description="How fast can your child hand-compute integrals?",
             purpose="We are interested in seeing how fast your child can hand-compute integrals.",
             compensation_description="You child will receive exactly $1 for each integral computed.",
+            study_type=StudyType.get_ember_frame_player(),
         )
         self.study_two.state = "active"
         self.study_two.save()
@@ -121,6 +123,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
             max_age_years=2,
             max_age_months=0,
             max_age_days=0,
+            study_type=StudyType.get_ember_frame_player(),
         )
         self.study_three.state = "paused"
         self.study_three.save()
@@ -143,6 +146,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
             max_age_years=2,
             max_age_months=0,
             max_age_days=0,
+            study_type=StudyType.get_ember_frame_player(),
         )
         self.study_four.state = "active"
         self.study_four.save()
@@ -375,6 +379,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
             max_age_years=12,
             max_age_months=0,
             max_age_days=0,
+            study_type=StudyType.get_ember_frame_player(),
         )
         school_age_study.state = "active"
         school_age_study.save()
@@ -524,6 +529,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
             short_description="How fast can your child hand-compute integrals?",
             purpose="We are interested in seeing how fast your child can hand-compute integrals.",
             compensation_description="You child will receive exactly $1 for each integral computed.",
+            study_type=StudyType.get_ember_frame_player(),
         )
         long_name_study.state = "active"
         long_name_study.save()
@@ -723,6 +729,7 @@ class VideoModelTestCase(TestCase):
             max_age_years=2,
             max_age_months=0,
             max_age_days=0,
+            study_type=StudyType.get_ember_frame_player(),
         )
         self.study.state = "active"
         self.study.save()
@@ -926,7 +933,7 @@ class ResponseEligibilityTestCase(TestCase):
             criteria_expression="hearing_impairment",
         )
 
-        self.other_study_1 = G(Study)
+        self.other_study_1 = G(Study, study_type=StudyType.get_ember_frame_player())
         self.study_participated = G(
             Study,
             name="Study with must have participated criteria",
@@ -997,8 +1004,8 @@ class ResponseEligibilityTestCase(TestCase):
             must_not_have_participated=[self.other_study_1],
         )
 
-        self.other_study_2 = G(Study)
-        self.other_study_3 = G(Study)
+        self.other_study_2 = G(Study, study_type=StudyType.get_ember_frame_player())
+        self.other_study_3 = G(Study, study_type=StudyType.get_ember_frame_player())
         self.study_participation_multiple = G(
             Study,
             name="Test study",
