@@ -16,6 +16,10 @@
 span.priority-highest {
   float: right; }
 
+body.superuser {
+  background: url("/static/images/su-mode.svg") repeat transparent;
+  background-size: 400px 400px; }
+
 tr.preview-row {
   background: url("../images/preview.svg") repeat transparent; }
 
@@ -26,10 +30,6 @@ tr.preview-row {
 
 .list-group-hover .list-group-item:hover:not(.active) {
   background-color: #f5f5f5; }
-
-body.superuser {
-  background: url("/static/images/su-mode.svg") repeat transparent;
-  background-size: 400px 400px; }
 
 /*!
    * Bootstrap  v5.2.0 (https://getbootstrap.com/)
