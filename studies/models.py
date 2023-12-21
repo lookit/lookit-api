@@ -996,6 +996,7 @@ class Response(models.Model):
     )  # Integrity constraints will also prevent deleting study that has responses
     completed = models.BooleanField(default=False)
     completed_consent_frame = models.BooleanField(default=False)
+    survey_consent = models.BooleanField(default=False)
     exp_data = models.JSONField(default=dict)
     conditions = models.JSONField(default=dict)
     sequence = ArrayField(models.CharField(max_length=128), blank=True, default=list)

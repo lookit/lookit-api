@@ -2,7 +2,6 @@
 @import "all-json-and-csv-data";
 @import "navigation";
 @import "study-fields";
-@import "study-responses";
 @import "superuser";
 
 // Add imports to adjust default colors and theme maps
@@ -10,6 +9,9 @@
 @import "custom-variables";
 @import "bootstrap-5.2.0/scss/variables";
 @import "custom-maps";
+
+// import study-responses after custom variables because it uses a color variable
+@import "study-responses";
 
 // Add all bootstrap features
 @import "bootstrap-5.2.0/scss/bootstrap";
