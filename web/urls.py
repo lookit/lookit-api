@@ -73,7 +73,11 @@ urlpatterns = [
         name="experiment-assets-proxy",
     ),
     path("", TemplateView.as_view(template_name="web/home.html"), name="home"),
-    path("faq/", TemplateView.as_view(template_name="web/faq.html"), name="faq"),
+    path(
+        "faq/", 
+        views.FaqView.as_view(), 
+        name="faq",
+        ),
     path(
         "privacy/",
         TemplateView.as_view(template_name="web/privacy.html"),

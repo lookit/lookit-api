@@ -192,15 +192,15 @@
                 <p>Some studies ask you (the parent or guardian) to sign an online form after either reading about what the study involves or talking with a researcher. Other studies, especially ones that happen on our own Children Helping Science platform, ask that you read aloud (or sign in ASL) a statement of consent which is recorded using your webcam. This statement holds the same weight as a signed form, but should be less hassle for you. It also lets us verify that you understand written English and that you understand you're being videotaped.</p>
                 <p>Researchers watch these consent videos on a special page of the researcher interface, and record for each one whether the video shows informed consent. They cannot view other video or download data from a session unless they have confirmed that you consented to participate! If they see a consent video that does NOT clearly demonstrate informed consent--for instance, there was a technical problem and there's no audio--they may contact you to check, depending on your email settings.</p>
                 {% endblocktranslate %}
-                    <div class="d-flex justify-content-center">
-                        <video controls preload="metadata">
-                            <source src="{% static 'videos/consent.mp4' %}" type="video/mp4" />
-                            <track label="English"
-                                   kind="captions"
-                                   srclang="en"
-                                   src="{% static 'videos/english/consent.vtt' %}" />
-                        </video>
-                    </div>
+                <div class="d-flex justify-content-center">
+                    <video controls preload="metadata">
+                        <source src="{% static video_consent_mp4 %}" type="video/mp4" />
+                        <track label="{{ captions_label }}" 
+                            kind="captions"
+                            srclang="en"
+                            src="{% static captions_src %}" />
+                    </video>
+                </div>
                 </div>
             </div>
         </div>
