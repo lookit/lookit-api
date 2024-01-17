@@ -471,6 +471,11 @@ class StudyListSearchForm(forms.Form):
         lookit = ("1", _("here on the Lookit platform"))
         external = ("2", _("on other websites"))
 
+    class StudyLanguage(FormChoiceEnum):
+        all = ("*", _("All languages"))
+        english = ("en", _("English"))
+        japanese = ("ja", _("Japanese"))
+
     child = forms.ChoiceField(choices=Children.choices(), required=False)
     search = forms.CharField(required=False)
     hide_studies_we_have_done = forms.BooleanField(
@@ -483,6 +488,7 @@ class StudyListSearchForm(forms.Form):
         required=False,
     )
     study_location = forms.ChoiceField(choices=StudyLocation.choices(), required=False)
+    study_language = forms.ChoiceField(choices=StudyLanguage.choices(), required=False)
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)

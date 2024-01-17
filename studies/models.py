@@ -43,6 +43,7 @@ from studies.permissions import (
     create_groups_for_instance,
 )
 from studies.tasks import delete_video_from_cloud
+from studies.fields import LANGUAGES
 
 logger = logging.getLogger(__name__)
 date_parser = dateutil.parser
@@ -366,6 +367,7 @@ class Study(models.Model):
     must_not_have_participated = models.ManyToManyField(
         "self", blank=True, symmetrical=False, related_name="expected_nonparticipation"
     )
+    language = models.TextField(default="en", choices=LANGUAGES)
 
     # Groups
     # The related_name convention seems silly, but django complains about reverse

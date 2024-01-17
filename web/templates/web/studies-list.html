@@ -15,8 +15,9 @@
           class="row justify-content-center align-items-center g-lg-3">
         {% csrf_token %}
         {{ form.study_list_tabs }}
-        <div class="col-12 col-md-6 col-lg-auto">{% bootstrap_field form.child show_label=False %}</div>
-        <div class="col-12 col-md-6 col-lg-auto">{% bootstrap_field form.study_location show_label=False %}</div>
+        <div class="col-12 col-md-4 col-lg-auto">{% bootstrap_field form.child show_label=False %}</div>
+        <div class="col-12 col-md-4 col-lg-auto">{% bootstrap_field form.study_location show_label=False %}</div>
+        <div class="col-12 col-md-4 col-lg-auto">{% bootstrap_field form.study_language show_label=False %}</div>
         {% if user.is_authenticated %}
             <div class="col-12 col-md-6 col-lg text-wrap">{% bootstrap_field form.hide_studies_we_have_done %}</div>
         {% else %}
