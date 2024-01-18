@@ -30,6 +30,7 @@ class UserAdmin(GuardedModelAdmin):
         "id",
         "uuid",
         "nickname",
+        "username",
         "is_researcher",
         "date_created",
         "last_login",
