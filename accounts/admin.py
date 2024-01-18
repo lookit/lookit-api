@@ -35,7 +35,6 @@ class UserAdmin(GuardedModelAdmin):
         "last_login",
     )
     list_filter = ("is_researcher",)
-    exclude = ("is_superuser", "is_staff")
     search_fields = ("uuid", "username", "nickname")
     # make the interface for adding/removing groups and perms easier to use and
     # harder to screw up
