@@ -72,7 +72,7 @@ urlpatterns = [
         views.ExperimentAssetsProxyView.as_view(),
         name="experiment-assets-proxy",
     ),
-    path("", TemplateView.as_view(template_name="web/home.html"), name="home"),
+    path("", views.HomeView.as_view(), name="home"),
     path("faq/", TemplateView.as_view(template_name="web/faq.html"), name="faq"),
     path(
         "privacy/",

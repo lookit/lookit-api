@@ -13,7 +13,7 @@ from django.db.models.query_utils import Q
 from django.dispatch import receiver
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
 from django_countries import countries
@@ -799,4 +799,13 @@ class ScientistsView(generic.TemplateView):
             for s in InstitutionSection.objects.order_by("order")
         ]
 
+        return context
+
+class HomeView(generic.TemplateView):
+    template_name = "web/home.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Trigger removal of English-specific content, when not in English language
+        context["style_for_english_specific"] = 'display: block;' if get_language()[:2]=='en' else 'display: none;'
         return context
