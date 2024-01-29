@@ -1,0 +1,44 @@
+{% extends "admin/delete_selected_confirmation.html" %}
+{% load bootstrap_icons %}
+{% load l10n admin_urls static %}
+{# Remove "cancel.js" from loading.  Our cancel button needs to work differently then the parent template. #}
+{% block extrahead %}
+    {{ media }}
+{% endblock extrahead %}
+{% block breadcrumbs %}
+    {% bs_icon "chevron-compact-right" size=".6em" as chevron_right %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">Home</a>
+        {{ chevron_right }}<a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+        {{ chevron_right }}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+        {{ chevron_right }}Set as spam
+    </div>
+{% endblock breadcrumbs %}
+{% block content %}
+    <h1>Are you sure? ({{ user_idx|add:"1" }}/{{ queryset|length }})</h1>
+    <p>
+        Are you sure you want to set user <b>{{ username }}</b> as spam?
+    </p>
+    <form method="post">
+        {% csrf_token %}
+        <p>Use the admin comments box below to record information about this user.</p>
+        {{ form.as_p }}
+        <div>
+            {# Here are the "_selected_action" values seen in the action. #}
+            {% for obj in queryset %}
+                <input type="hidden"
+                       name="{{ action_checkbox_name }}"
+                       value="{{ obj.pk|unlocalize }}">
+            {% endfor %}
+            {# This action value is how the view knows which action we're using #}
+            <input type="hidden" name="action" value="set_selected_as_spam">
+            {# This is the post value that the action is looking for. #}
+            <input type="hidden" name="post" value="yes">
+            <input type="hidden" name="user_idx" value="{{ user_idx }}">
+            <input type="hidden" name="username" value="{{ username }}">
+            <input type="submit" value="Yes, I'm sure">
+            <a href="{% url 'admin:accounts_user_changelist' %}"
+               class="button cancel-link">No, take me back</a>
+        </div>
+    </form>
+{% endblock content %}

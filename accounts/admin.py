@@ -3,6 +3,7 @@ from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
 
+from accounts.actions import set_selected_as_spam
 from accounts.models import (
     Child,
     DemographicData,
@@ -40,6 +41,7 @@ class UserAdmin(GuardedModelAdmin):
     # make the interface for adding/removing groups and perms easier to use and
     # harder to screw up
     filter_horizontal = ("groups", "user_permissions")
+    actions = (set_selected_as_spam,)
 
 
 class DemographicDataAdmin(GuardedModelAdmin):
