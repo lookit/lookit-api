@@ -162,6 +162,12 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     email_study_updates = models.BooleanField(default=True)
     email_response_questions = models.BooleanField(default=True)
 
+    admin_comments = models.TextField(blank=True)
+    is_spam = models.BooleanField(
+        default=False,
+        help_text="If account is spam, please set to inactive and all email options to false.",
+    )
+
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __init__(self, *args, **kwargs):
