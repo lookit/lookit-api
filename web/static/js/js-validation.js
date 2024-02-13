@@ -1,5 +1,5 @@
 function jsValidation(event, generator) {
-    const jshint_config = { "esversion": 6, "sub": true, "undef": true };
+    const jshint_config = { "esversion": 6, "sub": true };
     const jsValidation = document.querySelector('.js-validation');
 
     // if jshint comes back with errors (false)
