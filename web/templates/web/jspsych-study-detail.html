@@ -26,11 +26,11 @@
               crossorigin="anonymous">
         <script src="http://localhost:8080/packages/lookit-helpers/dist/index.browser.js"></script>
         <script type="module">
-                const child = await lookitHelpers.child("{{response.child.uuid}}");
-                const pastSessions = await lookitHelpers.pastSessions("{{response.uuid}}");
                 const responseApiUrl="{% url 'api:response-detail' version='v2' uuid=response.uuid %}";
                 const responseUuid="{{ response.uuid }}";
                 const exitUrl="{{ response.study.exit_url }}"
+                const childUuid ="{{response.child.uuid}}"
+                const Helpers = new lookitHelpers(childUuid, responseUuid);
                 initJsPsych = lookitInitJsPsych(responseApiUrl, responseUuid, exitUrl);
                 {% autoescape off %}{{ study.metadata.experiment }}{% endautoescape %}
         </script>
