@@ -13,7 +13,7 @@ router.register(r"labs", api_views.LabViewSet)
 router.register(r"feedback", api_views.FeedbackViewSet)
 router.register(r"video", api_views.VideoViewSet)
 router.register(
-    r"past-sessions", api_views.PassSessionsViewSet, basename="past-sessions"
+    r"past-sessions", api_views.PastSessionsViewSet, basename="past-sessions"
 )
 
 

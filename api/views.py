@@ -471,7 +471,7 @@ class VideoViewSet(ConvertUuidToIdMixin, views.ModelViewSet):
     permission_classes = [VideoFromS3Permissions]
 
 
-class PassSessionsViewSet(mixins.RetrieveModelMixin, GenericViewSet):
+class PastSessionsViewSet(mixins.RetrieveModelMixin, GenericViewSet):
     resource_name = "past_sessions"
     serializer_class = ResponseSerializer
     filter_backends = (filters.DjangoFilterBackend,)
