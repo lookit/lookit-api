@@ -20,7 +20,8 @@ from studies.tasks import (
     potential_message_targets,
 )
 
-TARGET_EMAIL_TEMPLATE = """Dear Charlie,
+TARGET_EMAIL_TEMPLATE = """
+Dear Charlie,
 
 We're writing to invite you and your children Moe and Curly to participate in the study "The Most Fake Study Ever"! This study is run by the ECCL at MIT.
 
@@ -42,6 +43,7 @@ Note: If you have taken part in Lookit studies before, you might notice that the
 
 
 Update your email preferences here: {base_url}/account/email/
+Unsubscribe from all emails: {base_url}/account/email-remove-all/
 """
 
 
@@ -600,7 +602,7 @@ class TestSendMail(TestCase):
         self.assertEqual(email.to, ["lookit-test-email@mit.edu"])
         self.assertTrue(
             email.body.startswith(
-                "line 1[IMAGE]line 2\n\nUpdate your email preferences here"
+                "\nline 1[IMAGE]line 2\n\n\nUpdate your email preferences here"
             ),
             "Email plain text does not have expected substitution of [IMAGE] for image tag",
         )
@@ -613,7 +615,7 @@ class TestSendMail(TestCase):
         self.assertEqual(
             email.alternatives[0],
             (
-                '\n    <p>line 1<br></p><p><img style="width: 24px;" src="cid:image-00001" data-filename="small.jpg"></p><p>line 2<br></p>\n\n<br />\n<a href="https://localhost:8000/account/email/">Update your email preferences</a>\n',
+                '\n    \n        <p>line 1<br></p><p><img style="width: 24px;" src="cid:image-00001" data-filename="small.jpg"></p><p>line 2<br></p>\n    \n\n<br />\n<a href="https://localhost:8000/account/email/">Update your email preferences</a>\n<a href="https://localhost:8000/account/email-remove-all/">Unsubscribe from all emails</a>\n',
                 "text/html",
             ),
         )
