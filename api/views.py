@@ -1,8 +1,11 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
+from rest_framework import mixins
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response as DRFResponse
+from rest_framework.viewsets import GenericViewSet
 from rest_framework_json_api import views
 
 from accounts.models import Child, DemographicData, User
@@ -466,3 +469,26 @@ class VideoViewSet(ConvertUuidToIdMixin, views.ModelViewSet):
     lookup_field = "uuid"
     http_method_names = ["post"]
     permission_classes = [VideoFromS3Permissions]
+
+
+class PastSessionsViewSet(mixins.RetrieveModelMixin, GenericViewSet):
+    resource_name = "past_sessions"
+    serializer_class = ResponseSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ResponsesFilter
+    lookup_field = "uuid"
+    http_method_names = ("get",)
+    permission_classes = [IsAuthenticated, ResponsePermissions]
+
+    def get_queryset(self):
+        child_id, study_id = (
+            Response.objects.values_list("child_id", "study_id")
+            .filter(uuid=self.kwargs["uuid"])
+            .first()
+        )
+        return Response.objects.filter(child_id=child_id, study_id=study_id)
+
+    def retrieve(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return DRFResponse(serializer.data)
