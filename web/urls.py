@@ -50,6 +50,11 @@ urlpatterns = [
         views.ParticipantEmailPreferencesView.as_view(),
         name="email-preferences",
     ),
+    path(
+        "account/email-remove-all/",
+        views.ParticipantEmailPreferencesRemoveAllView.as_view(),
+        name="email-preferences-remove-all",
+    ),
     path("studies/", views.StudiesListView.as_view(), name="studies-list"),
     path(
         "studies/history/", views.StudiesHistoryView.as_view(), name="studies-history"

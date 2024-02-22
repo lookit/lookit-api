@@ -1,0 +1,19 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+{% block title %}
+    {% trans "Email Preferences Remove All" %}
+{% endblock title %}
+{% block content %}
+    <div class="row">
+        <div class="col-4">{% include "accounts/_account-navigation.html" with current_page="email-preferences" %}</div>
+        <div class="col-8">
+            <div class="card">
+                <div class="card-body">
+                    You've been unsubscribed from all emails.  If this was a mistake click
+                    <a href="{% url 'web:email-preferences' %}">here</a>
+                    to update your email preferences.
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

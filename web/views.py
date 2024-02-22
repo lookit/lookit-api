@@ -11,8 +11,13 @@ from django.db.models import Prefetch
 from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
 from django.dispatch import receiver
-from django.http import HttpResponseForbidden, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect, reverse
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseForbidden,
+    HttpResponseRedirect,
+)
+from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
@@ -297,6 +302,19 @@ class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
         context = super().get_context_data(**kwargs)
         context["has_study_child"] = self.request.user.has_study_child(self.request)
         return context
+
+
+class ParticipantEmailPreferencesRemoveAllView(LoginRequiredMixin, generic.View):
+    template_name = "web/participant-email-preferences-remove-all.html"
+
+    def get(self, request: HttpRequest, *args: Text, **kwargs: Any) -> HttpResponse:
+        User.objects.filter(pk=self.request.user.id).update(
+            email_new_studies=False,
+            email_next_session=False,
+            email_study_updates=False,
+            email_response_questions=False,
+        )
+        return render(request, self.template_name)
 
 
 class StudiesListView(generic.ListView, FormView):
