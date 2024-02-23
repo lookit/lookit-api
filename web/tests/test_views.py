@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.views.generic.list import MultipleObjectMixin
 from django_dynamic_fixture import G
 from parameterized import parameterized
+from rest_framework import status
 
 from accounts.models import Child, DemographicData, User
 from studies.models import Lab, Response, Study, StudyType
@@ -794,6 +795,44 @@ class ExperimentProxyViewTestCase(TestCase):
         self.assertNotEqual(self.user, self.other_child.user)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("login"))
+
+
+class OneClickUnsubcribeTestCase(TestCase):
+    def test_unsuscribe_view_removes_email_pref(self):
+        # create user and log in
+        user: User = User.objects.create_user(username="some user name")
+        self.client.force_login(user)
+        self.assertTrue(user.is_authenticated)
+
+        # Check that all email preferences are true
+        self.assertTrue(
+            all(
+                (
+                    user.email_new_studies,
+                    user.email_next_session,
+                    user.email_response_questions,
+                    user.email_study_updates,
+                )
+            )
+        )
+
+        # One click unsubscribe
+        unsubscribe = reverse("web:email-preferences-remove-all")
+        response = self.client.get(unsubscribe)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check that email preferences are now false
+        user = User.objects.get(pk=user.id)
+        self.assertFalse(
+            any(
+                (
+                    user.email_new_studies,
+                    user.email_next_session,
+                    user.email_response_questions,
+                    user.email_study_updates,
+                )
+            )
+        )
 
 
 # TODO: StudyDetailView
