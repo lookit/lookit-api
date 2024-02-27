@@ -11,13 +11,9 @@ from django.db.models import Prefetch
 from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
 from django.dispatch import receiver
-from django.http import (
-    HttpRequest,
-    HttpResponse,
-    HttpResponseForbidden,
-    HttpResponseRedirect,
-)
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
@@ -304,17 +300,33 @@ class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
         return context
 
 
-class ParticipantEmailPreferencesRemoveAllView(LoginRequiredMixin, generic.View):
-    template_name = "web/participant-email-preferences-remove-all.html"
+class ParticipantEmailUnsubscribeView(generic.View):
+    template_name = "web/unsubscribe.html"
 
-    def get(self, request: HttpRequest, *args: Text, **kwargs: Any) -> HttpResponse:
-        User.objects.filter(pk=self.request.user.id).update(
-            email_new_studies=False,
-            email_next_session=False,
-            email_study_updates=False,
-            email_response_questions=False,
-        )
-        return render(request, self.template_name)
+    def get(self, request, username, *args, **kwargs):
+        return render(request, self.template_name, {"username": username})
+
+    def post(self, request, username, token, *args, **kwargs):
+        user = User.objects.get(username=username)
+
+        if user.check_token(token):
+            User.objects.filter(pk=user.id).update(
+                email_new_studies=False,
+                email_next_session=False,
+                email_study_updates=False,
+                email_response_questions=False,
+            )
+            messages.info(request, f"{username} has been unsubscribed.")
+        else:
+            email_pref_url = reverse("web:email-preferences")
+            messages.error(
+                request,
+                mark_safe(
+                    f'{username} could not be unsubscribed. Click <a href="{email_pref_url}">here</a> to update your email preferences.'
+                ),
+            )
+
+        return redirect("web:home")
 
 
 class StudiesListView(generic.ListView, FormView):
