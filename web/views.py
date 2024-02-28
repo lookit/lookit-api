@@ -308,8 +308,19 @@ class ParticipantEmailUnsubscribeView(generic.View):
 
     def post(self, request, username, token, *args, **kwargs):
         user = User.objects.get(username=username)
+        valid_token = user.check_token(token)
+        already_unsubscribed = not any(
+            (
+                user.email_new_studies,
+                user.email_next_session,
+                user.email_study_updates,
+                user.email_response_questions,
+            )
+        )
 
-        if user.check_token(token):
+        if already_unsubscribed and valid_token:
+            messages.info(request, f"{username} has already unsubscribed.")
+        elif valid_token:
             User.objects.filter(pk=user.id).update(
                 email_new_studies=False,
                 email_next_session=False,
