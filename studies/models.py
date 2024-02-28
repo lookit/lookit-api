@@ -281,6 +281,10 @@ def default_study_structure():
     return {"frames": {}, "sequence": []}
 
 
+def default_exit_url():
+    return f"{settings.BASE_URL}/studies/history/"
+
+
 class Study(models.Model):
     MONITORING_FIELDS = [
         "structure",
@@ -324,7 +328,7 @@ class Study(models.Model):
     max_age_months = models.IntegerField(default=0, choices=MONTH_CHOICES)
     max_age_years = models.IntegerField(default=0, choices=YEAR_CHOICES)
     image = models.ImageField(null=True, upload_to="study_images/")
-    exit_url = models.URLField(default="https://lookit.mit.edu/studies/history/")
+    exit_url = models.URLField(default=default_exit_url)
     comments = models.TextField(blank=True, null=True)
     comments_extra = models.JSONField(blank=True, null=True, default=dict)
     study_type = models.ForeignKey(
