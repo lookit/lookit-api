@@ -15,6 +15,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
+from django.shortcuts import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
@@ -282,7 +283,7 @@ def default_study_structure():
 
 
 def default_exit_url():
-    return f"{settings.BASE_URL}/studies/history/"
+    return f"{settings.BASE_URL}{reverse('web:studies-history')}"
 
 
 class Study(models.Model):
