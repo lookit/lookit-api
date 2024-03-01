@@ -65,3 +65,6 @@ lint: poetry
 
 css: poetry 
 	poetry run ./manage.py custom_bootstrap5
+
+makemigrations:
+	poetry run ./manage.py makemigrations
