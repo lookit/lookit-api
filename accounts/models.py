@@ -16,6 +16,7 @@ from django.core.signing import BadSignature, SignatureExpired, TimestampSigner
 from django.db import models
 from django.http import HttpRequest
 from django.template.loader import get_template
+from django.urls import reverse
 from django.utils.html import mark_safe
 from django.utils.text import slugify
 from django.utils.timezone import now
@@ -689,11 +690,25 @@ class Message(models.Model):
                 self.subject,
                 to_email,
                 reply_to=[lab_email],
+                headers=self.email_headers(context),
                 **context,
             )
 
         self.email_sent_timestamp = now()  # will use UTC now (see USE_TZ in settings)
         self.save()
+
+    @classmethod
+    def email_headers(cls, context):
+        token = context.get("token")
+        username = context.get("username")
+        base_url = settings.BASE_URL
+        if token and username:
+            return {
+                "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                "List-Unsubscribe": f"<mailto:lookit-bot@mit.edu>, <{base_url}{reverse('web:email-unsubscribe-link', kwargs={'token':token,'username':username})}>",
+            }
+        else:
+            return None
 
 
 def create_string_listing_children(children):

@@ -27,6 +27,7 @@ def send_mail(
     cc=None,
     bcc=None,
     reply_to=None,
+    headers=None,
     **context,
 ):
     """
@@ -74,6 +75,7 @@ def send_mail(
         cc=cc,
         bcc=bcc,
         reply_to=reply_to,
+        headers=headers,
     )
 
     # For HTML version: Replace inline images with attachments referenced. See
