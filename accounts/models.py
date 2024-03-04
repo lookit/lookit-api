@@ -641,6 +641,8 @@ class Message(models.Model):
             "study": study,
             "children": children,
             "children_string": children_string,
+            "username": user.username,
+            "token": user.generate_token(),
         }
 
         text_content = get_template("emails/study_announcement.txt").render(context)
@@ -658,6 +660,7 @@ class Message(models.Model):
             settings.EMAIL_FROM_ADDRESS,
             [user.username],
             reply_to=[study.lab.contact_email],
+            headers=cls.email_headers(context),
         )
         email.attach_alternative(html_content, "text/html")
         email.send()

@@ -800,7 +800,7 @@ class ExperimentProxyViewTestCase(TestCase):
 class OneClickUnsubcribeTestCase(TestCase):
     def test_unsuscribe_view_removes_email_pref(self):
         # create user and log in
-        user: User = User.objects.create_user(username="some user name")
+        user: User = User.objects.create_user(username="someusername@fakeemail.net")
         self.client.force_login(user)
         self.assertTrue(user.is_authenticated)
 
@@ -817,9 +817,13 @@ class OneClickUnsubcribeTestCase(TestCase):
         )
 
         # One click unsubscribe
-        unsubscribe = reverse("web:email-preferences-remove-all")
-        response = self.client.get(unsubscribe)
+        unsubscribe = reverse(
+            "web:email-unsubscribe-link",
+            kwargs={"username": user.username, "token": user.generate_token()},
+        )
+        response = self.client.post(unsubscribe, follow=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.redirect_chain, [(reverse("web:home"), 302)])
 
         # Check that email preferences are now false
         user = User.objects.get(pk=user.id)

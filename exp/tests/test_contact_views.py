@@ -252,16 +252,12 @@ class ContactViewTestCase(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        # Ensure message sent to participants 0, 1, 2
-        mock_send_mail.assert_called_once()
-        self.assertEqual(
-            mock_send_mail.call_args.args,
-            ("custom_email", "test email", ["lookit.robot@some.domain"]),
-        )
-        self.assertEqual(
-            mock_send_mail.call_args.kwargs["bcc"],
-            [p.username for p in self.participants[0:3]],
-        )
+        # Ensure message sent to participants 0, 1, 2.  We now mail each person
+        # individually to provide an appropriate unsubscribe link.
+        self.assertEqual(mock_send_mail.call_count, 3)
+
+        # checking that we aren't adding any users to bbc.
+        self.assertFalse("bbc" in mock_send_mail.call_args.kwargs)
         self.assertEqual(
             mock_send_mail.call_args.kwargs["reply_to"], [self.study.lab.contact_email]
         )
@@ -290,12 +286,12 @@ class ContactViewTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         # Ensure message sent only to participant 3, not participant 4 (who did not participate in this study)
-        mock_send_mail.assert_called_once()
+        mock_send_mail.assert_called()
         self.assertEqual(
             mock_send_mail.call_args.args,
-            ("custom_email", "test email", [self.participants[3].username]),
+            ("custom_email", "test email", self.participants[3].username),
         )
-        self.assertEqual(mock_send_mail.call_args.kwargs["bcc"], [])
+        self.assertFalse("bbc" in mock_send_mail.call_args.kwargs)
         self.assertEqual(
             mock_send_mail.call_args.kwargs["reply_to"], [self.study.lab.contact_email]
         )
