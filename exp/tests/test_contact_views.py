@@ -265,7 +265,7 @@ class ContactViewTestCase(TestCase):
         self.assertEqual(
             mock_send_mail.call_args.kwargs["reply_to"], [self.study.lab.contact_email]
         )
-        self.assertFalse("from_address" in mock_send_mail.call_args)
+        self.assertFalse("from_email" in mock_send_mail.call_args)
 
         # And that appropriate message object created
         self.assertTrue(Message.objects.filter(subject="test email").exists())
@@ -299,7 +299,7 @@ class ContactViewTestCase(TestCase):
         self.assertEqual(
             mock_send_mail.call_args.kwargs["reply_to"], [self.study.lab.contact_email]
         )
-        self.assertFalse("from_address" in mock_send_mail.call_args)
+        self.assertFalse("from_email" in mock_send_mail.call_args)
 
         # And that appropriate message object created
         self.assertTrue(Message.objects.filter(subject="test email").exists())
