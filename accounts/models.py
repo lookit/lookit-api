@@ -677,7 +677,7 @@ class Message(models.Model):
             self.subject,
             to_email_list,
             bcc=bcc_email_list,
-            from_email=lab_email,
+            reply_to=[lab_email],
             **context,
         )
 

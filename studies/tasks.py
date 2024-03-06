@@ -399,7 +399,6 @@ def build_zipfile_of_videos(
         "download_zip",
         "Your video archive has been created",
         [requesting_user.username],
-        from_email=settings.EMAIL_FROM_ADDRESS,
         **email_context,
     )
 
@@ -474,7 +473,6 @@ def build_framedata_dict(filename, study_uuid, requesting_user_uuid):
         "download_framedata_dict",
         "Your frame data dictionary has been created",
         [requesting_user.username],
-        from_email=settings.EMAIL_FROM_ADDRESS,
         **email_context,
     )
 
