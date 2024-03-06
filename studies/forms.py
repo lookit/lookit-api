@@ -231,6 +231,7 @@ class StudyForm(ModelForm):
             "must_have_participated",
             "must_not_have_participated",
             "study_type",
+            "language",
         ]
         labels = {
             "name": "Study Name",
@@ -246,6 +247,7 @@ class StudyForm(ModelForm):
             "study_type": "Experiment Type",
             "compensation_description": "Compensation",
             "priority": "Lab Page Priority",
+            "language": "Language Used For Study",
         }
         widgets = {
             "preview_summary": Textarea(attrs={"rows": 2}),

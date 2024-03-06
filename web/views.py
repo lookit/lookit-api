@@ -13,7 +13,7 @@ from django.db.models.query_utils import Q
 from django.dispatch import receiver
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
 from django_countries import countries
@@ -351,6 +351,11 @@ class StudiesListView(generic.ListView, FormView):
         hide_studies_we_have_done_value = session.get("hide_studies_we_have_done", "")
         tab_value = session.get("study_list_tabs", "0")
         study_location_value = session.get("study_location", "0")
+        if get_language()=='ja':
+            default_language = 'ja'
+        else:
+            default_language = '*'
+        study_language = session.get("study_language", default_language)
 
         # title search
         if search_value:
@@ -369,6 +374,10 @@ class StudiesListView(generic.ListView, FormView):
         if query:
             studies = studies.filter(query)
             query = None
+
+        # filtering by study language
+        if not study_language == "*":
+            studies = studies.filter(language = study_language)          
 
         # Scheduled or unscheduled studies
         if tab_value == StudyListSearchForm.Tabs.synchronous_studies.value[0]:
