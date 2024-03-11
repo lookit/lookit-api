@@ -685,11 +685,14 @@ class TestSendMail(TestCase):
         # We used to send certain emails with lab emails as the 'from' address - this is no longer allowed by email clients.
         # Need to check that send_mail with ignore attempts to send emails with a different 'from' address.
         different_from_address = "other_from_email@domain.com"
+        user = User.objects.create_user(username=different_from_address)
+        context = {"username": user.username, "token": user.generate_token()}
         email = send_mail(
             template_name="custom_email",
             subject="subject",
             to_addresses="to_addresses",
             from_email=different_from_address,
+            **context,
         )
         self.assertEquals(email.from_email, settings.EMAIL_FROM_ADDRESS)
 
