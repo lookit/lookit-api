@@ -3728,10 +3728,10 @@ msgid "This policy was last updated in June 2018."
 msgstr "以上の声明は2018年6月に最終更新されました。"
 
 #: web/templates/web/resources.html:14
-msgid "<h3 class=\"subheading\">Find a developmental lab near you</h3>"
+msgid "Find a developmental lab near you"
 msgstr ""
-"<h3 class=\"subheading\">この情報は英語圏の方のみ対象となります　Find a "
-"developmental lab near you</h3>"
+"この情報は英語圏の方のみ対象となります　Find a "
+"developmental lab near you"
 
 #: web/templates/web/scientists.html:10
 msgid "Meet the Children Helping Science team"
