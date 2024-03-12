@@ -1,3 +1,1 @@
-This is an email from {{ lab_name }} for "{{ study_name }}". You 
-may reply to this email to message directly with the researchers at {{ lab_name }} or 
-email them at {{ lab_email }} if you have other questions.
+This is an email from {{ lab_name }} for "{{ study_name }}". You may reply to this email to message directly with the researchers at {{ lab_name }} or email them at {{ lab_email }} if you have other questions.
