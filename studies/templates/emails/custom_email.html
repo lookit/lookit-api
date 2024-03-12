@@ -1,5 +1,6 @@
 {% extends "emails/base.html" %}
 {% block content %}
+    {% include "emails/custom_email_header.html" %}
     {% autoescape off %}
         {{ custom_message }}
     {% endautoescape %}

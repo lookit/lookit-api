@@ -1,4 +1,6 @@
 {% extends "emails/base.txt" %}
+
 {% block content %}
+{% include "emails/custom_email_header.txt"  %}
 {{ custom_message|striptags }}
 {% endblock content %}

@@ -143,6 +143,15 @@
                     </div>
                 </div>
             </div>
+            <div class="card bg-light mb-3">
+                <div class="card-header">Email Header</div>
+                <div class="card-body">
+                    <p>All particiapant emails will see the following header when they're contacted from this form:</p>
+                    <i>
+                        {% include "emails/custom_email_header.html" with lab_name=study.lab.name study_name=study.name lab_email=study.lab.contact_email %}
+                    </i>
+                </div>
+            </div>
             <form method="post">
                 {% csrf_token %}
                 {% bootstrap_form form %}
