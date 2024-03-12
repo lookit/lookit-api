@@ -1,0 +1,12 @@
+{% extends "web/base.html" %}
+{% load django_bootstrap5 %}
+{% load i18n %}
+{% block content %}
+    <div class="row">
+        <p class="text-center">Attempting to unsubscribe {{ username }}...</p>
+        <form name="unsubscribe" method="post">
+            {% csrf_token %}
+        </form>
+    </div>
+    <script>document.forms["unsubscribe"].submit();</script>
+{% endblock content %}

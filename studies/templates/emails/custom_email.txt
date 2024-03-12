@@ -1,3 +1,4 @@
+{% extends "emails/base.txt" %}
+{% block content %}
 {{ custom_message|striptags }}
-
-Update your email preferences here: {{base_url}}{% url 'web:email-preferences' %}
+{% endblock content %}
