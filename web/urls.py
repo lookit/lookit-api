@@ -61,7 +61,7 @@ urlpatterns = [
         name="experiment-proxy",
     ),
     path(
-        "studies/jspsych/<uuid:uuid>/<uuid:child_id>/",
+        "studies/j/<uuid:uuid>/<uuid:child_id>/",
         views.JsPsychExperimentView.as_view(),
         name="jspsych-experiment",
     ),
