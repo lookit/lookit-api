@@ -2,3 +2,4 @@
 
 Update your email preferences here: {{ base_url }}{% url 'web:email-preferences' %}
 Unsubscribe from all emails: {{ base_url }}{% url 'web:email-unsubscribe-link' username=username token=token %}
+Questions or feedback for Children Helping Science?: childrenhelpingscience@gmail.com 
