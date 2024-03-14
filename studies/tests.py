@@ -45,6 +45,7 @@ Note: If you have taken part in Lookit studies before, you might notice that the
 
 Update your email preferences here: {base_url}/account/email/
 Unsubscribe from all emails: {base_url}{unsubscribe}
+Questions or feedback for Children Helping Science?: childrenhelpingscience@gmail.com
 """
 
 
@@ -627,7 +628,7 @@ class TestSendMail(TestCase):
         self.assertEqual(
             email.alternatives[0],
             (
-                f'\n    \n        <p>line 1<br></p><p><img style="width: 24px;" src="cid:image-00001" data-filename="small.jpg"></p><p>line 2<br></p>\n    \n\n<br />\n<a href="https://localhost:8000/account/email/">Update your email preferences</a>\n<a href="https://localhost:8000/account/{self.context["username"]}/{self.context["token"]}/">Unsubscribe from all emails</a>\n',
+                f'\n    \n        <p>line 1<br></p><p><img style="width: 24px;" src="cid:image-00001" data-filename="small.jpg"></p><p>line 2<br></p>\n    \n\n<br />\n<a href="https://localhost:8000/account/email/">Update your email preferences</a>\n<a href="https://localhost:8000/account/{self.context["username"]}/{self.context["token"]}/">Unsubscribe from all emails</a>\n<a href="mailto:childrenhelpingscience@gmail.com?subject=CHS Family Feedback or Question">Questions or feedback for Children Helping Science?</a>\n',
                 "text/html",
             ),
         )
