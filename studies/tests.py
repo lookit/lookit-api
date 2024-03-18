@@ -43,7 +43,7 @@ Note: If you have taken part in Lookit studies before, you might notice that the
 -- the Lookit/Children Helping Science team
 
 
-Update your email preferences here: {base_url}/account/email/
+Update your CHS email preferences here: {base_url}/account/email/
 Unsubscribe from all CHS emails: {base_url}{unsubscribe}
 Questions or feedback for Children Helping Science?: childrenhelpingscience@gmail.com
 """
@@ -615,7 +615,7 @@ class TestSendMail(TestCase):
         self.assertEqual(email.to, ["lookit-test-email@mit.edu"])
         self.assertTrue(
             email.body.startswith(
-                "\nline 1[IMAGE]line 2\n\n\nUpdate your email preferences here"
+                "\nline 1[IMAGE]line 2\n\n\nUpdate your CHS email preferences here"
             ),
             "Email plain text does not have expected substitution of [IMAGE] for image tag",
         )
@@ -628,7 +628,7 @@ class TestSendMail(TestCase):
         self.assertEqual(
             email.alternatives[0],
             (
-                f'\n    \n        <p>line 1<br></p><p><img style="width: 24px;" src="cid:image-00001" data-filename="small.jpg"></p><p>line 2<br></p>\n    \n\n<br />\n<a href="https://localhost:8000/account/email/">Update your email preferences</a>\n<a href="https://localhost:8000/account/{self.context["username"]}/{self.context["token"]}/">Unsubscribe from all CHS emails</a>\n<a href="mailto:childrenhelpingscience@gmail.com?subject=CHS Family Feedback or Question">Questions or feedback for Children Helping Science?</a>\n',
+                f'\n    \n        <p>line 1<br></p><p><img style="width: 24px;" src="cid:image-00001" data-filename="small.jpg"></p><p>line 2<br></p>\n    \n\n<br />\n<a href="https://localhost:8000/account/email/">Update your CHS email preferences</a>\n<a href="https://localhost:8000/account/{self.context["username"]}/{self.context["token"]}/">Unsubscribe from all CHS emails</a>\n<a href="mailto:childrenhelpingscience@gmail.com?subject=CHS Family Feedback or Question">Questions or feedback for Children Helping Science?</a>\n',
                 "text/html",
             ),
         )
