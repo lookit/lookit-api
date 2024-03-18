@@ -596,7 +596,13 @@ class TestAnnouncementEmailFunctionality(TestCase):
 
 class TestSendMail(TestCase):
     def setUp(self):
-        self.context = {"token": G(User).generate_token(), "username": "username"}
+        self.context = {
+            "token": G(User).generate_token(),
+            "username": "username",
+            "lab_email": "lab_email",
+            "study_name": "study_name",
+            "lab_name": "lab_name",
+        }
 
     def test_send_email_with_image(self):
         email = send_mail(
@@ -613,9 +619,8 @@ class TestSendMail(TestCase):
         self.assertEqual(email.subject, "Test email")
         self.assertEqual(email.to, ["lookit-test-email@mit.edu"])
         self.assertTrue(
-            email.body.startswith(
-                "\nline 1[IMAGE]line 2\n\n\nUpdate your email preferences here"
-            ),
+            "\nline 1[IMAGE]line 2\n\n\nUpdate your email preferences here"
+            in email.body,
             "Email plain text does not have expected substitution of [IMAGE] for image tag",
         )
         self.assertEqual(
@@ -627,7 +632,7 @@ class TestSendMail(TestCase):
         self.assertEqual(
             email.alternatives[0],
             (
-                f'\n    \n        <p>line 1<br></p><p><img style="width: 24px;" src="cid:image-00001" data-filename="small.jpg"></p><p>line 2<br></p>\n    \n\n<br />\n<a href="https://localhost:8000/account/email/">Update your email preferences</a>\n<a href="https://localhost:8000/account/{self.context["username"]}/{self.context["token"]}/">Unsubscribe from all emails</a>\n',
+                f'\n    <p>This is an email from {self.context["lab_name"]} for "{self.context["study_name"]}". You may reply to this email to message directly with the researchers at {self.context["lab_name"]} or email them at {self.context["lab_email"]} if you have other questions.\n</p>\n\n    \n        <p>line 1<br></p><p><img style="width: 24px;" src="cid:image-00001" data-filename="small.jpg"></p><p>line 2<br></p>\n    \n\n<br />\n<a href="https://localhost:8000/account/email/">Update your email preferences</a>\n<a href="https://localhost:8000/account/{self.context["username"]}/{self.context["token"]}/">Unsubscribe from all emails</a>\n',
                 "text/html",
             ),
         )

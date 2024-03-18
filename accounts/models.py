@@ -673,12 +673,15 @@ class Message(models.Model):
         return announcement_message
 
     def send_as_email(self):
+        lab_email = self.related_study.lab.contact_email
+
         context = {
             "base_url": settings.BASE_URL,
             "custom_message": mark_safe(self.body),
+            "lab_name": self.related_study.lab.name,
+            "lab_email": lab_email,
+            "study_name": self.related_study.name,
         }
-
-        lab_email = self.related_study.lab.contact_email
 
         recipient_email_list = list(self.recipients.values_list("username", flat=True))
 
