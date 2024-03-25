@@ -12,9 +12,11 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
 from django.core.mail.message import EmailMultiAlternatives
+from django.core.signing import BadSignature, SignatureExpired, TimestampSigner
 from django.db import models
 from django.http import HttpRequest
 from django.template.loader import get_template
+from django.urls import reverse
 from django.utils.html import mark_safe
 from django.utils.text import slugify
 from django.utils.timezone import now
@@ -162,6 +164,12 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     email_study_updates = models.BooleanField(default=True)
     email_response_questions = models.BooleanField(default=True)
 
+    admin_comments = models.TextField(blank=True)
+    is_spam = models.BooleanField(
+        default=False,
+        help_text="If account is spam, please set to inactive and all email options to false.",
+    )
+
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __init__(self, *args, **kwargs):
@@ -288,6 +296,17 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     def get_full_name(self):
         return f"{self.given_name} {self.middle_name} {self.family_name}"
 
+    def generate_token(self):
+        return TimestampSigner().sign(self.username).split(":", 1)[1]
+
+    def check_token(self, token):
+        try:
+            key = f"{self.username}:{token}"
+            TimestampSigner().unsign(key, max_age=60 * 60 * 48)  # Valid for 2 days
+        except (BadSignature, SignatureExpired):
+            return False
+        return True
+
     def __str__(self):
         if self.family_name:
             return f"<User: {self.given_name} {self.family_name}, ID {self.id}, {self.uuid}>"
@@ -361,7 +380,7 @@ class Child(models.Model):
         "accounts.User",
         related_name="children",
         related_query_name="children",
-        on_delete=models.CASCADE  # if deleting User, also delete associated Child -
+        on_delete=models.CASCADE,  # if deleting User, also delete associated Child -
         # although may not be possible depending on Responses already associated
     )
 
@@ -623,6 +642,8 @@ class Message(models.Model):
             "study": study,
             "children": children,
             "children_string": children_string,
+            "username": user.username,
+            "token": user.generate_token(),
         }
 
         text_content = get_template("emails/study_announcement.txt").render(context)
@@ -640,6 +661,7 @@ class Message(models.Model):
             settings.EMAIL_FROM_ADDRESS,
             [user.username],
             reply_to=[study.lab.contact_email],
+            headers=cls.email_headers(context),
         )
         email.attach_alternative(html_content, "text/html")
         email.send()
@@ -659,24 +681,34 @@ class Message(models.Model):
         lab_email = self.related_study.lab.contact_email
 
         recipient_email_list = list(self.recipients.values_list("username", flat=True))
-        if len(recipient_email_list) == 1:
-            to_email_list = recipient_email_list
-            bcc_email_list = []
-        else:
-            to_email_list = [settings.EMAIL_FROM_ADDRESS]
-            bcc_email_list = recipient_email_list
 
-        send_mail.delay(
-            "custom_email",
-            self.subject,
-            to_email_list,
-            bcc=bcc_email_list,
-            from_email=lab_email,
-            **context,
-        )
+        for to_email in recipient_email_list:
+            user = User.objects.get(username=to_email)
+            context.update(token=user.generate_token(), username=to_email)
+            send_mail.delay(
+                "custom_email",
+                self.subject,
+                to_email,
+                reply_to=[lab_email],
+                headers=self.email_headers(context),
+                **context,
+            )
 
         self.email_sent_timestamp = now()  # will use UTC now (see USE_TZ in settings)
         self.save()
+
+    @classmethod
+    def email_headers(cls, context):
+        token = context.get("token")
+        username = context.get("username")
+        base_url = settings.BASE_URL
+        if token and username:
+            return {
+                "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                "List-Unsubscribe": f"<mailto:lookit-bot@mit.edu>, <{base_url}{reverse('web:email-unsubscribe-link', kwargs={'token':token,'username':username})}>",
+            }
+        else:
+            return None
 
 
 def create_string_listing_children(children):

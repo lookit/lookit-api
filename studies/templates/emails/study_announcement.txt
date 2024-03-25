@@ -1,3 +1,5 @@
+{% extends "emails/base.txt" %}
+{% block content %}
 Dear {{ user.display_name }},
 
 We're writing to invite you and your child{{ children|length|pluralize:"ren" }} {{ children_string }} to participate in the study "{{ study.name}}"! This study is run by the {{ study.lab.name }} at {{ study.lab.institution }}.
@@ -17,6 +19,4 @@ Compensation: {{ study.compensation_description|default:"This is a volunteer-bas
 Note: If you have taken part in Lookit studies before, you might notice that the page looks a little different than before. Our web address is changing from lookit.mit.edu to childrenhelpingscience.com as we merge together two programs for online studies that our team runs. There have been no changes to who runs the platform or who can see your child's data. Thanks for contributing to the science of how kids learn - we hope to see you soon!
 
 -- the Lookit/Children Helping Science team
-
-
-Update your email preferences here: {{ base_url }}{% url 'web:email-preferences' %}
+{% endblock content %}

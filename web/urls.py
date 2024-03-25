@@ -50,6 +50,11 @@ urlpatterns = [
         views.ParticipantEmailPreferencesView.as_view(),
         name="email-preferences",
     ),
+    re_path(
+        r"^account/(?P<username>[\w.@+-]+)/(?P<token>[\w.:\-_=]+)/$",
+        views.ParticipantEmailUnsubscribeView.as_view(),
+        name="email-unsubscribe-link",
+    ),
     path("studies/", views.StudiesListView.as_view(), name="studies-list"),
     path(
         "studies/history/", views.StudiesHistoryView.as_view(), name="studies-history"
@@ -61,7 +66,7 @@ urlpatterns = [
         name="experiment-proxy",
     ),
     path(
-        "studies/jspsych/<uuid:uuid>/<uuid:child_id>/",
+        "studies/j/<uuid:uuid>/<uuid:child_id>/",
         views.JsPsychExperimentView.as_view(),
         name="jspsych-experiment",
     ),

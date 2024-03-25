@@ -4,6 +4,7 @@ from datetime import date, datetime, timedelta, timezone
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django_dynamic_fixture import G, N
 from guardian.shortcuts import assign_perm
@@ -20,7 +21,8 @@ from studies.tasks import (
     potential_message_targets,
 )
 
-TARGET_EMAIL_TEMPLATE = """Dear Charlie,
+TARGET_EMAIL_TEMPLATE = """
+Dear Charlie,
 
 We're writing to invite you and your children Moe and Curly to participate in the study "The Most Fake Study Ever"! This study is run by the ECCL at MIT.
 
@@ -41,7 +43,9 @@ Note: If you have taken part in Lookit studies before, you might notice that the
 -- the Lookit/Children Helping Science team
 
 
-Update your email preferences here: {base_url}/account/email/
+Update your CHS email preferences here: {base_url}/account/email/
+Unsubscribe from all CHS emails: {base_url}{unsubscribe}
+Questions or feedback for Children Helping Science?: childrenhelpingscience@gmail.com
 """
 
 
@@ -425,8 +429,15 @@ class TestAnnouncementEmailFunctionality(TestCase):
         )
 
     def test_correct_message_structure(self):
+        token = self.participant_two.generate_token()
+        username = self.participant_two.username
         target_email_structure = TARGET_EMAIL_TEMPLATE.format(
-            base_url=settings.BASE_URL, study_uuid=self.study_two.uuid
+            base_url=settings.BASE_URL,
+            study_uuid=self.study_two.uuid,
+            unsubscribe=reverse(
+                "web:email-unsubscribe-link",
+                kwargs={"token": token, "username": username},
+            ),
         )
 
         message_object: Message = Message.send_announcement_email(
@@ -585,23 +596,26 @@ class TestAnnouncementEmailFunctionality(TestCase):
 
 
 class TestSendMail(TestCase):
+    def setUp(self):
+        self.context = {"token": G(User).generate_token(), "username": "username"}
+
     def test_send_email_with_image(self):
         email = send_mail(
             "custom_email",
             "Test email",
             ["lookit-test-email@mit.edu"],
             bcc=[],
-            from_email="lookit-bot@mit.edu",
             base_url="https://lookit-staging.mit.edu/",
             custom_message=mark_safe(
                 '<p>line 1<br></p><p><img style="width: 24px;" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QCURXhpZgAATU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgExAAIAAAAHAAAAWodpAAQAAAABAAAAYgAAAAAAAABIAAAAAQAAAEgAAAABUGljYXNhAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAGKADAAQAAAABAAAAEAAAAAD/7QA4UGhvdG9zaG9wIDMuMAA4QklNBAQAAAAAAAA4QklNBCUAAAAAABDUHYzZjwCyBOmACZjs+EJ+/8AAEQgAEAAYAwERAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/bAEMACAYGCAoKCAgICAkICAkICQgICQkIDQgIBwkdGh8eHRocHCAkLicgIiwjHBwoNyksMDE0NDQfJzk9ODI8LjM0Mv/bAEMBCQkJDQoNFQ0NFTIhECEyMjIyMjIyMjInJzIyJiYnJycmMiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJv/dAAQAA//aAAwDAQACEQMRAD8AyvBEcEer2e6B5QNzK6hmUcHj09+avELTQ5sHZ6vf/gHsN/qejR3tjo7eU93qFs7QKjM2GwSpyOMHa35VnpojsVOTi59EeKeK7e5jv7+WFGeJpFR2iy56DOQPp+laU6kF7r3PPxeGqz96Pws//9Cj4RlJaWG0jjf/AEVRJdzv8iuc8HHIODWE60VNOb0+83hhn7K1Na+el2/8jQX+0ZLe3jh1Ww/tC0tLm2nkE7TeUN3yZOBtYAHjHrVzrUpJuK1/LyN6OFxFHldZe7p/296HC3muXf2nZ9nignKyM08nmzSGXJyQCcEcn25p+zjZSvc5p1pzm4yja2i9Ef/Z" data-filename="small.jpg"></p><p>line 2<br></p>'
             ),
+            **self.context,
         )
         self.assertEqual(email.subject, "Test email")
         self.assertEqual(email.to, ["lookit-test-email@mit.edu"])
         self.assertTrue(
             email.body.startswith(
-                "line 1[IMAGE]line 2\n\nUpdate your email preferences here"
+                "\nline 1[IMAGE]line 2\n\n\nUpdate your CHS email preferences here"
             ),
             "Email plain text does not have expected substitution of [IMAGE] for image tag",
         )
@@ -614,7 +628,7 @@ class TestSendMail(TestCase):
         self.assertEqual(
             email.alternatives[0],
             (
-                '\n    <p>line 1<br></p><p><img style="width: 24px;" src="cid:image-00001" data-filename="small.jpg"></p><p>line 2<br></p>\n\n<br />\n<a href="https://localhost:8000/account/email/">Update your email preferences</a>\n',
+                f'\n    \n        <p>line 1<br></p><p><img style="width: 24px;" src="cid:image-00001" data-filename="small.jpg"></p><p>line 2<br></p>\n    \n\n<br />\n<a href="https://localhost:8000/account/email/">Update your CHS email preferences</a>\n<br />\n<a href="https://localhost:8000/account/{self.context["username"]}/{self.context["token"]}/">Unsubscribe from all CHS emails</a>\n<br />\n<a href="mailto:childrenhelpingscience@gmail.com?subject=CHS Family Feedback or Question">Questions or feedback for Children Helping Science?</a>\n',
                 "text/html",
             ),
         )
@@ -639,7 +653,10 @@ class TestSendMail(TestCase):
     def test_empty_reply_to(self):
         reply_to = []
         email = send_mail(
-            template_name="custom_email", subject="subject", to_addresses="to_addresses"
+            template_name="custom_email",
+            subject="subject",
+            to_addresses="to_addresses",
+            **self.context,
         )
         self.assertEquals(email.reply_to, reply_to)
 
@@ -650,6 +667,7 @@ class TestSendMail(TestCase):
             subject="subject",
             to_addresses="to_addresses",
             reply_to=reply_to,
+            **self.context,
         )
         self.assertEquals(email.reply_to, reply_to)
 
@@ -660,8 +678,24 @@ class TestSendMail(TestCase):
             subject="subject",
             to_addresses="to_addresses",
             reply_to=reply_to,
+            **self.context,
         )
         self.assertEquals(email.reply_to, reply_to)
+
+    def test_no_custom_from_address(self):
+        # We used to send certain emails with lab emails as the 'from' address - this is no longer allowed by email clients.
+        # Need to check that send_mail with ignore attempts to send emails with a different 'from' address.
+        different_from_address = "other_from_email@domain.com"
+        user = User.objects.create_user(username=different_from_address)
+        context = {"username": user.username, "token": user.generate_token()}
+        email = send_mail(
+            template_name="custom_email",
+            subject="subject",
+            to_addresses="to_addresses",
+            from_email=different_from_address,
+            **context,
+        )
+        self.assertEquals(email.from_email, settings.EMAIL_FROM_ADDRESS)
 
 
 class StudyTypeModelTestCase(TestCase):

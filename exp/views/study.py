@@ -545,7 +545,7 @@ class ManageResearcherPermissionsView(
             "notify_researcher_of_study_permissions",
             f"New access granted for study {self.get_object().name}",
             user.username,
-            from_email=study.lab.contact_email,
+            reply_to=[study.lab.contact_email],
             **context,
         )
 
