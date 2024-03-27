@@ -14,6 +14,7 @@ Including another URLconf
     2. Import the include() function: from django.conf.urls import url, include
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
+
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 
@@ -256,7 +257,7 @@ urlpatterns = [
         name="preview-proxy",
     ),
     path(
-        "studies/jspsych/<uuid:uuid>/<uuid:child_id>/preview/",
+        "studies/j/<uuid:uuid>/<uuid:child_id>/preview/",
         JsPsychPreviewView.as_view(),
         name="preview-jspsych",
     ),

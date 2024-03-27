@@ -1,42 +1,43 @@
-<p>Dear {{ user.display_name }},</p>
-<p>
-    We're writing to invite you and your child{{ children|length|pluralize:"ren" }} {{ children_string }} to
-    participate in the study <a href="{{ base_url }}{% url 'web:study-detail' uuid=study.uuid %}">"{{ study.name }}"</a>!
-    This study is run by the {{ study.lab.name }} at {{ study.lab.institution }}.
-</p>
-<p>More details about the study...</p>
-<ul>
-    <li>
-        <strong>Who:</strong> {{ study.criteria }}
-    </li>
-    <li>
-        <strong>What happens:</strong> {{ study.short_description }}
-    </li>
-    <li>
-        <strong>Why:</strong> {{ study.purpose }}
-    </li>
-    <li>
-        <strong>Compensation:</strong> {{ study.compensation_description|default:"This is a volunteer-based study." }}
-    </li>
-</ul>
-<p>
-    {% if study.show_scheduled %}
-        You can schedule a time to participate with your child
-    {% else %}
-        You and your child can participate any time you want
-    {% endif %}
-    by going to
-    <a href="{{ base_url }}{% url 'web:study-detail' uuid=study.uuid %}">"{{ study.name }}"</a>.
-    If you have any questions, please reply to this email to reach the {{ study.lab.name }} at
-    {{ study.lab.contact_email }}.
-</p>
-<p>
-    Note: If you have taken part in Lookit studies before, you might notice that the page looks a
-    little different than before. Our web address is changing from lookit.mit.edu to childrenhelpingscience.com
-    as we merge together two programs for online studies that our team runs. There have been no changes to who
-    runs the platform or who can see your child's data.  Thanks for contributing to the science of how kids
-    learn - we hope to see you soon!
-</p>
--- the Lookit/Children Helping Science team
-<br />
-<a href="{{ base_url }}{% url 'web:email-preferences' %}">Update your email preferences</a>
+{% extends "emails/base.html" %}
+{% block content %}
+    <p>Dear {{ user.display_name }},</p>
+    <p>
+        We're writing to invite you and your child{{ children|length|pluralize:"ren" }} {{ children_string }} to
+        participate in the study <a href="{{ base_url }}{% url 'web:study-detail' uuid=study.uuid %}">"{{ study.name }}"</a>!
+        This study is run by the {{ study.lab.name }} at {{ study.lab.institution }}.
+    </p>
+    <p>More details about the study...</p>
+    <ul>
+        <li>
+            <strong>Who:</strong> {{ study.criteria }}
+        </li>
+        <li>
+            <strong>What happens:</strong> {{ study.short_description }}
+        </li>
+        <li>
+            <strong>Why:</strong> {{ study.purpose }}
+        </li>
+        <li>
+            <strong>Compensation:</strong> {{ study.compensation_description|default:"This is a volunteer-based study." }}
+        </li>
+    </ul>
+    <p>
+        {% if study.show_scheduled %}
+            You can schedule a time to participate with your child
+        {% else %}
+            You and your child can participate any time you want
+        {% endif %}
+        by going to
+        <a href="{{ base_url }}{% url 'web:study-detail' uuid=study.uuid %}">"{{ study.name }}"</a>.
+        If you have any questions, please reply to this email to reach the {{ study.lab.name }} at
+        {{ study.lab.contact_email }}.
+    </p>
+    <p>
+        Note: If you have taken part in Lookit studies before, you might notice that the page looks a
+        little different than before. Our web address is changing from lookit.mit.edu to childrenhelpingscience.com
+        as we merge together two programs for online studies that our team runs. There have been no changes to who
+        runs the platform or who can see your child's data.  Thanks for contributing to the science of how kids
+        learn - we hope to see you soon!
+    </p>
+    -- the Lookit/Children Helping Science team
+{% endblock content %}

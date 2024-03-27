@@ -26,16 +26,18 @@ def send_mail(
     to_addresses,
     cc=None,
     bcc=None,
-    from_email=None,
     reply_to=None,
+    headers=None,
     **context,
 ):
     """
     Helper for sending templated email
 
+    Note: we no longer allow an argument for the 'from' address because new email deliverability requirements say
+    that the 'from' address must match the domain that the email was actually sent from (in our case, mit.edu).
+
     :param str template_name: Name of the template to send. There should exist a txt and html version
     :param str subject: Subject line of the email
-    :param str from_email: From address for email
     :param list to_addresses: List of addresses to email. If str is provided, wrapped in list
     :param list cc: List of addresses to carbon copy
     :param list bcc: List of addresses to blind carbon copy
@@ -63,7 +65,8 @@ def send_mail(
     if not isinstance(to_addresses, list):
         to_addresses = [to_addresses]
 
-    from_address = from_email or EMAIL_FROM_ADDRESS
+    from_address = EMAIL_FROM_ADDRESS
+
     email = EmailMultiAlternatives(
         subject,
         text_content,
@@ -72,6 +75,7 @@ def send_mail(
         cc=cc,
         bcc=bcc,
         reply_to=reply_to,
+        headers=headers,
     )
 
     # For HTML version: Replace inline images with attachments referenced. See
