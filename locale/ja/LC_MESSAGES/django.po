@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-17 03:16-0500\n"
+"POT-Creation-Date: 2024-04-09 19:34-0400\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -30,7 +30,7 @@ msgstr ""
 msgid "This account is inactive."
 msgstr "このアカウントは有効ではありません。"
 
-#: accounts/forms.py:222 accounts/forms.py:238 accounts/models.py:146
+#: accounts/forms.py:222 accounts/forms.py:238 accounts/models.py:148
 msgid "Email address"
 msgstr "メールアドレス"
 
@@ -289,451 +289,451 @@ msgid "External studies"
 msgstr "外部の研究・調査"
 
 #: accounts/migrations/0041_add_existing_conditions.py:12
-#: accounts/models.py:320 studies/fields.py:136
+#: accounts/models.py:339 studies/fields.py:136
 msgid "Not sure or prefer not to answer"
 msgstr "わからない／答えたくない"
 
 #: accounts/migrations/0041_add_existing_conditions.py:13
-#: accounts/models.py:321 studies/fields.py:137
+#: accounts/models.py:340 studies/fields.py:137
 msgid "Under 24 weeks"
 msgstr "24週未満"
 
 #: accounts/migrations/0041_add_existing_conditions.py:14
-#: accounts/models.py:322 studies/fields.py:138
+#: accounts/models.py:341 studies/fields.py:138
 msgid "24 weeks"
 msgstr "24週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:15
-#: accounts/models.py:323 studies/fields.py:139
+#: accounts/models.py:342 studies/fields.py:139
 msgid "25 weeks"
 msgstr "25週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:16
-#: accounts/models.py:324 studies/fields.py:140
+#: accounts/models.py:343 studies/fields.py:140
 msgid "26 weeks"
 msgstr "26週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:17
-#: accounts/models.py:325 studies/fields.py:141
+#: accounts/models.py:344 studies/fields.py:141
 msgid "27 weeks"
 msgstr "27週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:18
-#: accounts/models.py:326 studies/fields.py:142
+#: accounts/models.py:345 studies/fields.py:142
 msgid "28 weeks"
 msgstr "28週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:19
-#: accounts/models.py:327 studies/fields.py:143
+#: accounts/models.py:346 studies/fields.py:143
 msgid "29 weeks"
 msgstr "29週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:20
-#: accounts/models.py:328 studies/fields.py:144
+#: accounts/models.py:347 studies/fields.py:144
 msgid "30 weeks"
 msgstr "30週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:21
-#: accounts/models.py:329 studies/fields.py:145
+#: accounts/models.py:348 studies/fields.py:145
 msgid "31 weeks"
 msgstr "31週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:22
-#: accounts/models.py:330 studies/fields.py:146
+#: accounts/models.py:349 studies/fields.py:146
 msgid "32 weeks"
 msgstr "32週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:23
-#: accounts/models.py:331 studies/fields.py:147
+#: accounts/models.py:350 studies/fields.py:147
 msgid "33 weeks"
 msgstr "33週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:24
-#: accounts/models.py:332 studies/fields.py:148
+#: accounts/models.py:351 studies/fields.py:148
 msgid "34 weeks"
 msgstr "34週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:25
-#: accounts/models.py:333 studies/fields.py:149
+#: accounts/models.py:352 studies/fields.py:149
 msgid "35 weeks"
 msgstr "35週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:26
-#: accounts/models.py:334 studies/fields.py:150
+#: accounts/models.py:353 studies/fields.py:150
 msgid "36 weeks"
 msgstr "36週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:27
-#: accounts/models.py:335 studies/fields.py:151
+#: accounts/models.py:354 studies/fields.py:151
 msgid "37 weeks"
 msgstr "37週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:28
-#: accounts/models.py:336 studies/fields.py:152
+#: accounts/models.py:355 studies/fields.py:152
 msgid "38 weeks"
 msgstr "38週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:29
-#: accounts/models.py:337 studies/fields.py:153
+#: accounts/models.py:356 studies/fields.py:153
 msgid "39 weeks"
 msgstr "39週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:30
-#: accounts/models.py:338 studies/fields.py:154
+#: accounts/models.py:357 studies/fields.py:154
 msgid "40 or more weeks"
 msgstr "40週以上"
 
-#: accounts/models.py:43
+#: accounts/models.py:45
 msgid "male"
 msgstr "男性"
 
-#: accounts/models.py:44
+#: accounts/models.py:46
 msgid "female"
 msgstr "女性"
 
-#: accounts/models.py:45
+#: accounts/models.py:47
 msgid "open response"
 msgstr "自由記述"
 
-#: accounts/models.py:46 accounts/models.py:491
+#: accounts/models.py:48 accounts/models.py:510
 msgid "prefer not to answer"
 msgstr "答えたくありません"
 
-#: accounts/models.py:85
+#: accounts/models.py:87
 #, fuzzy
 msgid "Can View Organization"
 msgstr "所属機関を見ることができる"
 
-#: accounts/models.py:86
+#: accounts/models.py:88
 #, fuzzy
 msgid "Can Edit Organization"
 msgstr "所属機関を編集することができる"
 
-#: accounts/models.py:87
+#: accounts/models.py:89
 #, fuzzy
 msgid "Can Create Organization"
 msgstr "所属機関を作成することができる"
 
-#: accounts/models.py:88
+#: accounts/models.py:90
 #, fuzzy
 msgid "Can Remove Organization"
 msgstr "所属機関を削除することができる"
 
-#: accounts/models.py:89
+#: accounts/models.py:91
 #, fuzzy
 msgid "Can View Experimenter"
 msgstr "研究者を見ることができる"
 
-#: accounts/models.py:90
+#: accounts/models.py:92
 #, fuzzy
 msgid "Can View Analytics"
 msgstr "統計を表示することができる"
 
-#: accounts/models.py:305
+#: accounts/models.py:324
 #, fuzzy
 msgid "Can Create User"
 msgstr "ユーザーを作成できる"
 
-#: accounts/models.py:306
+#: accounts/models.py:325
 #, fuzzy
 msgid "Can View User"
 msgstr "ユーザーを表示できる"
 
-#: accounts/models.py:307
+#: accounts/models.py:326
 #, fuzzy
 msgid "Can Edit User"
 msgstr "ユーザーを編集できる"
 
-#: accounts/models.py:308
+#: accounts/models.py:327
 #, fuzzy
 msgid "Can Remove User"
 msgstr "ユーザーを削除できる"
 
-#: accounts/models.py:309
+#: accounts/models.py:328
 #, fuzzy
 msgid "Can View User Permissions"
 msgstr "ユーザー権限を表示できる"
 
-#: accounts/models.py:310
+#: accounts/models.py:329
 #, fuzzy
 msgid "Can Edit User Permissions"
 msgstr "ユーザー権限を編集できる"
 
-#: accounts/models.py:311
+#: accounts/models.py:330
 #, fuzzy
 msgid "Can Read All User Data"
 msgstr "すべてのユーザーデータを読み取れる"
 
-#: accounts/models.py:312
+#: accounts/models.py:331
 #, fuzzy
 msgid "Can Read User Usernames"
 msgstr "ユーザー名を読み取れる"
 
-#: accounts/models.py:406
+#: accounts/models.py:425
 msgid "White"
 msgstr "白人"
 
-#: accounts/models.py:407
+#: accounts/models.py:426
 msgid "Hispanic, Latino, or Spanish origin"
 msgstr "ヒスパニック系、ラテン系、スペイン系"
 
-#: accounts/models.py:408
+#: accounts/models.py:427
 msgid "Black or African American"
 msgstr "黒人またはアフリカ系アメリカ人"
 
-#: accounts/models.py:409
+#: accounts/models.py:428
 msgid "Asian"
 msgstr "アジア系"
 
-#: accounts/models.py:410
+#: accounts/models.py:429
 msgid "American Indian or Alaska Native"
 msgstr "ネイティブアメリカンまたはアラスカ原住民族"
 
-#: accounts/models.py:411
+#: accounts/models.py:430
 msgid "Middle Eastern or North African"
 msgstr "中近東または北アフリカ"
 
-#: accounts/models.py:412
+#: accounts/models.py:431
 msgid "Native Hawaiian or Other Pacific Islander"
 msgstr "ハワイ先住民族またはその他の太平洋諸島民族"
 
-#: accounts/models.py:413
+#: accounts/models.py:432
 msgid "Another race, ethnicity, or origin"
 msgstr "その他の人種・民族"
 
-#: accounts/models.py:416 accounts/models.py:425
+#: accounts/models.py:435 accounts/models.py:444
 msgid "some or attending high school"
 msgstr "現在高校生または高校中退"
 
-#: accounts/models.py:417 accounts/models.py:426
+#: accounts/models.py:436 accounts/models.py:445
 msgid "high school diploma or GED"
 msgstr "高校卒業または高等学校卒業程度認定（全教科）"
 
-#: accounts/models.py:418 accounts/models.py:427
+#: accounts/models.py:437 accounts/models.py:446
 msgid "some or attending college"
 msgstr "現在大学生または大学中退"
 
-#: accounts/models.py:419 accounts/models.py:428
+#: accounts/models.py:438 accounts/models.py:447
 msgid "2-year college degree"
 msgstr "二年制大学卒業"
 
-#: accounts/models.py:420 accounts/models.py:429
+#: accounts/models.py:439 accounts/models.py:448
 msgid "4-year college degree"
 msgstr "四年制大学卒業"
 
-#: accounts/models.py:421 accounts/models.py:430
+#: accounts/models.py:440 accounts/models.py:449
 msgid "some or attending graduate or professional school"
 msgstr "現在大学院生または大学院中退"
 
-#: accounts/models.py:422 accounts/models.py:431
+#: accounts/models.py:441 accounts/models.py:450
 msgid "graduate or professional degree"
 msgstr "大学院卒業"
 
-#: accounts/models.py:432
+#: accounts/models.py:451
 msgid "not applicable - no spouse or partner"
 msgstr "該当なし - 配偶者やパートナーなし"
 
-#: accounts/models.py:435 accounts/models.py:468
+#: accounts/models.py:454 accounts/models.py:487
 msgid "0"
 msgstr "0"
 
-#: accounts/models.py:436 accounts/models.py:462
+#: accounts/models.py:455 accounts/models.py:481
 msgid "1"
 msgstr "1"
 
-#: accounts/models.py:437 accounts/models.py:463
+#: accounts/models.py:456 accounts/models.py:482
 msgid "2"
 msgstr "2"
 
-#: accounts/models.py:438 accounts/models.py:464
+#: accounts/models.py:457 accounts/models.py:483
 msgid "3"
 msgstr "3"
 
-#: accounts/models.py:439
+#: accounts/models.py:458
 msgid "4"
 msgstr "4"
 
-#: accounts/models.py:440
+#: accounts/models.py:459
 msgid "5"
 msgstr "5"
 
-#: accounts/models.py:441
+#: accounts/models.py:460
 msgid "6"
 msgstr "6"
 
-#: accounts/models.py:442
+#: accounts/models.py:461
 msgid "7"
 msgstr "7"
 
-#: accounts/models.py:443
+#: accounts/models.py:462
 msgid "8"
 msgstr "8"
 
-#: accounts/models.py:444
+#: accounts/models.py:463
 msgid "9"
 msgstr "9"
 
-#: accounts/models.py:445
+#: accounts/models.py:464
 msgid "10"
 msgstr "10"
 
-#: accounts/models.py:446
+#: accounts/models.py:465
 msgid "More than 10"
 msgstr "10以上"
 
-#: accounts/models.py:449
+#: accounts/models.py:468
 msgid "under 18"
 msgstr "18歳未満"
 
-#: accounts/models.py:450
+#: accounts/models.py:469
 msgid "18-21"
 msgstr "18-21"
 
-#: accounts/models.py:451
+#: accounts/models.py:470
 msgid "22-24"
 msgstr "22-24"
 
-#: accounts/models.py:452
+#: accounts/models.py:471
 msgid "25-29"
 msgstr "25-29"
 
-#: accounts/models.py:453
+#: accounts/models.py:472
 msgid "30-34"
 msgstr "30-34"
 
-#: accounts/models.py:454
+#: accounts/models.py:473
 msgid "35-39"
 msgstr "35-39"
 
-#: accounts/models.py:455
+#: accounts/models.py:474
 msgid "40-44"
 msgstr "40-44"
 
-#: accounts/models.py:456
+#: accounts/models.py:475
 msgid "45-49"
 msgstr "45-49"
 
-#: accounts/models.py:457
+#: accounts/models.py:476
 msgid "50-59"
 msgstr "50-59"
 
-#: accounts/models.py:458
+#: accounts/models.py:477
 msgid "60-69"
 msgstr "60-69"
 
-#: accounts/models.py:459
+#: accounts/models.py:478
 msgid "70 or over"
 msgstr "70歳以上"
 
-#: accounts/models.py:465
+#: accounts/models.py:484
 msgid "Another number, or explain below"
 msgstr "他の数字を記載するか、以下で説明を加えてください。"
 
-#: accounts/models.py:469
+#: accounts/models.py:488
 msgid "5000"
 msgstr "5000"
 
-#: accounts/models.py:470
+#: accounts/models.py:489
 msgid "10000"
 msgstr "10000"
 
-#: accounts/models.py:471
+#: accounts/models.py:490
 msgid "15000"
 msgstr "15000"
 
-#: accounts/models.py:472
+#: accounts/models.py:491
 msgid "20000"
 msgstr "20000"
 
-#: accounts/models.py:473
+#: accounts/models.py:492
 msgid "30000"
 msgstr "30000"
 
-#: accounts/models.py:474
+#: accounts/models.py:493
 msgid "40000"
 msgstr "40000"
 
-#: accounts/models.py:475
+#: accounts/models.py:494
 msgid "50000"
 msgstr "50000"
 
-#: accounts/models.py:476
+#: accounts/models.py:495
 msgid "60000"
 msgstr "60000"
 
-#: accounts/models.py:477
+#: accounts/models.py:496
 msgid "70000"
 msgstr "70000"
 
-#: accounts/models.py:478
+#: accounts/models.py:497
 msgid "80000"
 msgstr "80000"
 
-#: accounts/models.py:479
+#: accounts/models.py:498
 msgid "90000"
 msgstr "90000"
 
-#: accounts/models.py:480
+#: accounts/models.py:499
 msgid "100000"
 msgstr "100000"
 
-#: accounts/models.py:481
+#: accounts/models.py:500
 msgid "110000"
 msgstr "110000"
 
-#: accounts/models.py:482
+#: accounts/models.py:501
 msgid "120000"
 msgstr "120000"
 
-#: accounts/models.py:483
+#: accounts/models.py:502
 msgid "130000"
 msgstr "130000"
 
-#: accounts/models.py:484
+#: accounts/models.py:503
 msgid "140000"
 msgstr "140000"
 
-#: accounts/models.py:485
+#: accounts/models.py:504
 msgid "150000"
 msgstr "150000"
 
-#: accounts/models.py:486
+#: accounts/models.py:505
 msgid "160000"
 msgstr "160000"
 
-#: accounts/models.py:487
+#: accounts/models.py:506
 msgid "170000"
 msgstr "170000"
 
-#: accounts/models.py:488
+#: accounts/models.py:507
 msgid "180000"
 msgstr "180000"
 
-#: accounts/models.py:489
+#: accounts/models.py:508
 msgid "190000"
 msgstr "190000"
 
-#: accounts/models.py:490
+#: accounts/models.py:509
 msgid "over 200000"
 msgstr "200000以上"
 
-#: accounts/models.py:494
+#: accounts/models.py:513
 msgid "urban"
 msgstr "都市部"
 
-#: accounts/models.py:494
+#: accounts/models.py:513
 msgid "suburban"
 msgstr "郊外"
 
-#: accounts/models.py:494
+#: accounts/models.py:513
 msgid "rural"
 msgstr "田舎"
 
-#: accounts/models.py:548
+#: accounts/models.py:567
 msgid "Select a State"
 msgstr "都道府県を選択してください"
 
-#: accounts/models.py:685
+#: accounts/models.py:717
 msgid "and"
 msgstr "と"
 
@@ -1193,7 +1193,7 @@ msgstr "男性"
 msgid "Female"
 msgstr "女性"
 
-#: studies/models.py:142
+#: studies/models.py:143
 msgid ""
 "The Users who belong to this Lab. A user in this lab will be able to create "
 "studies associated with this Lab and can be added to this Lab's studies."
@@ -1202,7 +1202,7 @@ msgstr ""
 "連する研究を作成することができ、本研究室の研究・調査に追加することができま"
 "す。"
 
-#: studies/models.py:151
+#: studies/models.py:152
 msgid "The Users who have requested to join this Lab."
 msgstr "本研究室への参加を希望されたユーザー。"
 
@@ -1424,7 +1424,7 @@ msgstr "3歳〜4歳の幼児の調査"
 msgid "studies for school-aged kids & teens (5-17)"
 msgstr "5歳〜17歳の子供の調査"
 
-#: web/templates/web/base.html:16 web/templates/web/home.html:34
+#: web/templates/web/base.html:16 web/templates/web/home.html:35
 msgid "Children Helping Science"
 msgstr "科学を助ける子どもたち"
 
@@ -1848,9 +1848,9 @@ msgid ""
 "(instead of just for one nonprofit or company), then it is possible it would "
 "appear on this website.</p>\n"
 "                <p>If a scientist wants to use this platform, their "
-"institution has to sign a contract with MIT where they agree to the <a href="
-"\"%(termsofuse)s\">Terms of Use</a> and certify that their studies will be "
-"reviewed and approved by an institutional review board. Studies are also "
+"institution has to sign a contract with MIT where they agree to the <a "
+"href=\"%(termsofuse)s\">Terms of Use</a> and certify that their studies will "
+"be reviewed and approved by an institutional review board. Studies are also "
 "subject to review and approval by Children Helping Science. As of April "
 "2023, we have agreements with over 90 universities,  including institutions "
 "in the United States, Canada, the United Kingdom, and European Union.</p>\n"
@@ -1864,11 +1864,12 @@ msgstr ""
 "学雑誌に結果を発表することを意図している場合、このウェブサイトに掲載される可"
 "能性があります。</p>\n"
 "                                <p>科学者がこのプラットフォームを使用したい場"
-"合、その機関はマサチューセッツ工科大学と契約を結び、<a href=\"%(termsofuse)s"
-"\">利用規約</a> に同意し、その研究・調査が機関審査委員会によって審査・承認さ"
-"れることを証明する必要があります。また、研究・調査にはChildren Helping "
-"Scienceによる審査と承認が必要です。2023年4月現在、米国、カナダ、英国、欧州連"
-"合（EU）の研究機関を含む50以上の大学と協定を結んでいます。</p> \n"
+"合、その機関はマサチューセッツ工科大学と契約を結び、<a "
+"href=\"%(termsofuse)s\">利用規約</a> に同意し、その研究・調査が機関審査委員会"
+"によって審査・承認されることを証明する必要があります。また、研究・調査には"
+"Children Helping Scienceによる審査と承認が必要です。2023年4月現在、米国、カナ"
+"ダ、英国、欧州連合（EU）の研究機関を含む50以上の大学と協定を結んでいます。</"
+"p> \n"
 
 #: web/templates/web/faq.html:129
 msgid ""
@@ -2172,9 +2173,9 @@ msgstr ""
 "ることになるでしょう。なお、データブラリーへのアクセスを許可された研究者は、"
 "研究室におけるデータの使用と同等の高い水準の注意を払って、これらのデータを取"
 "り扱うことに同意しなければなりません。データブラリーの詳細については、<a "
-"href=\"https://databrary.org/about.html\">ミッション</a>または<a href="
-"\"https://databrary.org/about/agreement.html\">許可されたユーザーの要件につい"
-"て</a>をご覧ください。</p>\n"
+"href=\"https://databrary.org/about.html\">ミッション</a>または<a "
+"href=\"https://databrary.org/about/agreement.html\">許可されたユーザーの要件"
+"について</a>をご覧ください。</p>\n"
 "        \t\t\t\t\t\t\t\t<p>次に、動画データの利用について、どの範囲での利用を"
 "許可するかをお尋ねします。</p>\n"
 "        \t\t\t\t\t\t\t\t<ul>\n"
@@ -2536,11 +2537,11 @@ msgstr "幼い子どもは、デジタル画面を見る時間を避けるべき
 #: web/templates/web/faq.html:496
 msgid ""
 "\n"
-"                <p>We agree with the American Academy of Pediatrics <a href="
-"\"https://pediatrics.aappublications.org/content/138/5/e20162591\" target="
-"\"_blank\" rel=\"noopener\">advice</a> that children learn best from people, "
-"not screens! However, our studies are not intended to educate children, but "
-"to learn from them.</p>\n"
+"                <p>We agree with the American Academy of Pediatrics <a "
+"href=\"https://pediatrics.aappublications.org/content/138/5/e20162591\" "
+"target=\"_blank\" rel=\"noopener\">advice</a> that children learn best from "
+"people, not screens! However, our studies are not intended to educate "
+"children, but to learn from them.</p>\n"
 "                <p>As part of a child's limited screen time, we hope that "
 "our studies will foster family conversation and engagement with science that "
 "offsets the few minutes spent watching a video instead of playing. And we do "
@@ -2549,12 +2550,12 @@ msgid ""
 "                "
 msgstr ""
 "\n"
-"<p>私たちは、アメリカ小児科学会（American Academy of Pediatrics）<a href="
-"\"https://pediatrics.aappublications.org/content/138/5/e20162591\" target="
-"\"_blank\" rel=\"noopener\">advice</a> の子どもたちはスクリーンを通してではな"
-"く、人から実際に学ぶのが一番だということだと同じ意見を持っています！しかし、"
-"私たちの研究は子どもたちを教育するためのものではなく、子どもたちから学ぶため"
-"のものであります。</p>\n"
+"<p>私たちは、アメリカ小児科学会（American Academy of Pediatrics）<a "
+"href=\"https://pediatrics.aappublications.org/content/138/5/e20162591\" "
+"target=\"_blank\" rel=\"noopener\">advice</a> の子どもたちはスクリーンを通し"
+"てではなく、人から実際に学ぶのが一番だということだと同じ意見を持っています！"
+"しかし、私たちの研究は子どもたちを教育するためのものではなく、子どもたちから"
+"学ぶためのものであります。</p>\n"
 "<p>私たちの研究が家族の会話や科学への関心を育み、遊ぶ時間んの代わりにビデオを"
 "見ている数分を帳消しにしてくれることを願っています。そして、私たち自身でも "
 "\"実践 \"しています。私たちの研究に対して、私たち自身の子どもたちがたくさんの"
@@ -2702,10 +2703,10 @@ msgstr ""
 "差についての疑問や、さまざまな要因が相互作用することが結果にどのように影響す"
 "るかといった事柄が考えられます。</p>\n"
 "                                <p>もしあなたがこの活動を気に入ってくださった"
-"なら、私たちの心からの感謝も含めて、Lookitプラットフォーム (<a href="
-"\"%(url_home)s\">https://www.childrenhelpingscience.com</a>) をぜひお知り合い"
-"の方に共有してください。子どもの発達に関わる研究・調査は、あなたのような保護"
-"者の方の助けがなければ成立しません。</p>"
+"なら、私たちの心からの感謝も含めて、Lookitプラットフォーム (<a "
+"href=\"%(url_home)s\">https://www.childrenhelpingscience.com</a>) をぜひお知"
+"り合いの方に共有してください。子どもの発達に関わる研究・調査は、あなたのよう"
+"な保護者の方の助けがなければ成立しません。</p>"
 
 #: web/templates/web/faq.html:605
 msgid "What is the Parent Researcher Collaborative (PaRC)?"
@@ -2784,8 +2785,8 @@ msgstr ""
 "<p>個別の調査については、「調査の詳細」ページをご参照ください。このページに"
 "は、調査を実施している研究室の連絡先が常に記載されている。</p>\n"
 "                <p>このウェブサイトを運営している研究者と連絡をお取りになる場"
-"合は、以下のメールアドレスまでご連絡ください（英語のみ対応）。<a href="
-"\"mailto:lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
+"合は、以下のメールアドレスまでご連絡ください（英語のみ対応）。<a "
+"href=\"mailto:lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
 "                <p>参加中に技術的な問題が発生した場合は、下記までご連絡くださ"
 "い（英語のみ対応。 <a href=\"mailto:lookit@mit.edu\">lookit@mit.edu</a>.</p>"
 
@@ -2846,8 +2847,8 @@ msgid ""
 "                <p>If you are trying to participate in a study and having "
 "difficulties, please start by contacting the researchers who made that "
 "specific study.  If you still need help, you can also reach the Children "
-"Helping Science team for help at <a href=\"mailto:lookit-tech@mit.edu"
-"\">lookit-tech@mit.edu</a>.</p>\n"
+"Helping Science team for help at <a href=\"mailto:lookit-tech@mit."
+"edu\">lookit-tech@mit.edu</a>.</p>\n"
 "                <p>If you are a researcher working on creating a study, you "
 "can find help in our <a href=\"https://lookit.readthedocs.io/en/develop/"
 "index.html\">documentation</a>, and in our <a href = \"https://docs.google."
@@ -2864,8 +2865,8 @@ msgstr ""
 "                                <p>研究・調査を作成している研究者の方でヘルプ"
 "が必要な場合には、<a href=\"https://lookit.readthedocs.io/en/develop/index."
 "html\">こちらのドキュメント</a>、または<a href = \"https://docs.google.com/"
-"forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform"
-"\">Slackコミュニティ</a>にて解決を図ることができます。</p>"
+"forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/"
+"viewform\">Slackコミュニティ</a>にて解決を図ることができます。</p>"
 
 #: web/templates/web/faq.html:714
 msgid "What security measures do you implement?"
@@ -2891,9 +2892,9 @@ msgstr ""
 "\"https://lookit.readthedocs.io/en/develop/community-irb-and-legal-"
 "information.html#sub-processors-and-information-about-gdpr-compliance-dpas\">"
 "こちらのドキュメント</a>にて概要をお読みいただけます。また、最新のHECVAT (高"
-"等教育クラウド ベンダー評価ツール キット) について確認したい方は、<a href="
-"\"mailto:lookit@mit.edu\">lookit@mit.edu</a>までご連絡ください (英語対応の"
-"み)。</p>"
+"等教育クラウド ベンダー評価ツール キット) について確認したい方は、<a "
+"href=\"mailto:lookit@mit.edu\">lookit@mit.edu</a>までご連絡ください (英語対応"
+"のみ)。</p>"
 
 #: web/templates/web/faq.html:728
 msgid "For Researchers"
@@ -2947,8 +2948,8 @@ msgstr ""
 "                                <p>2023年4月現在、私たちは米国、カナダ、英"
 "国、欧州連合の機関を含む50以上の大学と協定を結んでいます。あなたの所属機関が"
 "既に協定を結んでいるかどうかがわからない場合や、書類を整えるのに支援が必要な"
-"場合は、こちらのメールアドレス <a href=\"mailto:lookit-tech@mit.edu"
-"\">lookit@mit.edu</a> までご連絡ください (英語対応のみ)。</p>\n"
+"場合は、こちらのメールアドレス <a href=\"mailto:lookit-tech@mit."
+"edu\">lookit@mit.edu</a> までご連絡ください (英語対応のみ)。</p>\n"
 "                                <p>これらのステップを踏んでいる間でも、ラボア"
 "カウントを作成し、最初の研究・調査を作成し、研究者コミュニティによってピアレ"
 "ビューを受けることで、Children Helping Scienceプラットフォームの使用を開始す"
@@ -2976,10 +2977,10 @@ msgid ""
 "<a href = \"https://commons.srcd.org/communities/community-home/digestviewer/"
 "viewthread?CommunityKey=bd3d326e-b7db-49bf-"
 "abbb-73642ac0576c&GroupId=109&MessageKey=0871d623-bd97-48c5-"
-"b8e4-54ecda9de9d8&ReturnUrl=%%2Fcommunities%%2Fcommunity-home%%2Fdigestviewer"
-"%%3Fcommunitykey%%3Dbd3d326e-b7db-49bf-abbb-73642ac0576c%%26tab"
-"%%3Ddigestviewer&tab=digestviewer\">discussion forum</a> you might check out!"
-"</p>\n"
+"b8e4-54ecda9de9d8&ReturnUrl=%%2Fcommunities%%2Fcommunity-"
+"home%%2Fdigestviewer%%3Fcommunitykey%%3Dbd3d326e-b7db-49bf-"
+"abbb-73642ac0576c%%26tab%%3Ddigestviewer&tab=digestviewer\">discussion "
+"forum</a> you might check out!</p>\n"
 "                "
 msgstr ""
 "\n"
@@ -2992,10 +2993,10 @@ msgstr ""
 "Developmentも同様に <a href = \"https://commons.srcd.org/communities/"
 "community-home/digestviewer/viewthread?CommunityKey=bd3d326e-b7db-49bf-"
 "abbb-73642ac0576c&GroupId=109&MessageKey=0871d623-bd97-48c5-"
-"b8e4-54ecda9de9d8&ReturnUrl=%%2Fcommunities%%2Fcommunity-home%%2Fdigestviewer"
-"%%3Fcommunitykey%%3Dbd3d326e-b7db-49bf-abbb-73642ac0576c%%26tab"
-"%%3Ddigestviewer&tab=digestviewer\">ディスカッションフォーラム</a>を設けてい"
-"るので、ぜひご確認ください！</p>"
+"b8e4-54ecda9de9d8&ReturnUrl=%%2Fcommunities%%2Fcommunity-"
+"home%%2Fdigestviewer%%3Fcommunitykey%%3Dbd3d326e-b7db-49bf-"
+"abbb-73642ac0576c%%26tab%%3Ddigestviewer&tab=digestviewer\">ディスカッション"
+"フォーラム</a>を設けているので、ぜひご確認ください！</p>"
 
 #: web/templates/web/garden/about.html:13
 msgid "What is Project Garden?"
@@ -3014,34 +3015,40 @@ msgid "Meet the GARDEN Scientists"
 msgstr "&nbsp;"
 
 #: web/templates/web/home.html:15
-msgid ""
-"ChildrenHelpingScience and Lookit have merged - click <a href='{{ url-"
-"participant-signup }}' class='alert-link'>here</a> to make an account or "
-"explore studies below!"
+#, fuzzy
+#| msgid "ChildrenHelpingScience and Lookit have merged!"
+msgid "ChildrenHelpingScience and Lookit have merged - click"
+msgstr "Children Helping Scienceチーム（米国）"
+
+#: web/templates/web/home.html:16
+msgid "here"
 msgstr ""
 
-#: web/templates/web/home.html:17
-#| msgid "The Children Helping Science team"
+#: web/templates/web/home.html:16
+msgid "to make an account or explore studies below!"
+msgstr ""
+
+#: web/templates/web/home.html:18
 msgid "ChildrenHelpingScience and Lookit have merged!"
 msgstr "Children Helping Scienceチーム（米国）"
 
-#: web/templates/web/home.html:35
+#: web/templates/web/home.html:36
 msgid "Powered by Lookit"
 msgstr "提供：Lookit"
 
-#: web/templates/web/home.html:37
+#: web/templates/web/home.html:38
 msgid "Fun for Families, Serious for Science"
 msgstr "家族で楽しく、科学についてしっかりと知りたい方へ"
 
-#: web/templates/web/home.html:40
+#: web/templates/web/home.html:41
 msgid "Participate in a Study"
 msgstr "研究・調査に参加する"
 
-#: web/templates/web/home.html:51
+#: web/templates/web/home.html:52
 msgid "Help Science"
 msgstr "科学を助ける"
 
-#: web/templates/web/home.html:53
+#: web/templates/web/home.html:54
 msgid ""
 "This website has studies you and your child can participate in from your "
 "home, brought to you by researchers from universities around the world!"
@@ -3049,11 +3056,11 @@ msgstr ""
 "このwebサイトには、世界中の大学の研究者がお届けする、ご自宅から親子で参加でき"
 "る研究・調査が掲載されています！"
 
-#: web/templates/web/home.html:58
+#: web/templates/web/home.html:59
 msgid "From Home"
 msgstr "ご家庭から"
 
-#: web/templates/web/home.html:60
+#: web/templates/web/home.html:61
 msgid ""
 "You and your child use your computer to participate. Some studies can also "
 "be done on a tablet or phone."
@@ -3061,11 +3068,11 @@ msgstr ""
 "パソコンを使って親子で研究・調査に参加。タブレットやスマートフォンを使って参"
 "加できる研究・調査も一部あります。"
 
-#: web/templates/web/home.html:65
+#: web/templates/web/home.html:66
 msgid "With Fun Activities"
 msgstr "楽しい活動と一緒に"
 
-#: web/templates/web/home.html:67
+#: web/templates/web/home.html:68
 msgid ""
 "Many studies are either short games, or listening to a story and answering "
 "questions about it. Some are available at any time, and others are a "
@@ -3075,27 +3082,27 @@ msgstr ""
 "です。いつでも参加できるものもあれば、研究者とオンラインミーティングの日程調"
 "整をする場合もあります。"
 
-#: web/templates/web/home.html:72
+#: web/templates/web/home.html:73
 msgid "Join researchers from these schools, and many more!"
 msgstr "&nbsp;"
 
-#: web/templates/web/home.html:84
+#: web/templates/web/home.html:85
 msgid ""
 "Interested in participating in a project with many studies? Learn more about "
 msgstr "&nbsp;"
 
-#: web/templates/web/home.html:84
+#: web/templates/web/home.html:85
 msgid "Project GARDEN"
 msgstr "&nbsp;"
 
-#: web/templates/web/home.html:87
+#: web/templates/web/home.html:88
 msgid ""
 "In this series of studies, your child will help an animated fox named Fen "
 "find the “GARDEN Library” while playing games to help Children Helping "
 "Science understand children's development from many different angles!"
 msgstr "&nbsp;"
 
-#: web/templates/web/home.html:90
+#: web/templates/web/home.html:91
 msgid "See our current studies for different age groups:"
 msgstr "&nbsp;"
 
@@ -3730,8 +3737,7 @@ msgstr "以上の声明は2018年6月に最終更新されました。"
 #: web/templates/web/resources.html:14
 msgid "Find a developmental lab near you"
 msgstr ""
-"この情報は英語圏の方のみ対象となります　Find a "
-"developmental lab near you"
+"この情報は英語圏の方のみ対象となります　Find a developmental lab near you"
 
 #: web/templates/web/scientists.html:10
 msgid "Meet the Children Helping Science team"
@@ -3879,28 +3885,28 @@ msgstr "あなたはまだ外部の研究・調査に参加したことがあり
 msgid "Studies"
 msgstr "研究・調査"
 
-#: web/templates/web/studies-list.html:23
+#: web/templates/web/studies-list.html:24
 msgid "Log in to find studies just right for your child!"
 msgstr ""
 
-#: web/templates/web/studies-list.html:27
+#: web/templates/web/studies-list.html:29
 msgid "Clear"
 msgstr "削除する"
 
-#: web/templates/web/studies-list.html:60
+#: web/templates/web/studies-list.html:62
 msgid "No studies found."
 msgstr "研究・調査が見つかりません。"
 
-#: web/templates/web/studies-list.html:65
+#: web/templates/web/studies-list.html:67
 msgid ""
 "Want to learn more about research with babies & children? Check out the "
 msgstr "&nbsp;"
 
-#: web/templates/web/studies-list.html:68
+#: web/templates/web/studies-list.html:70
 msgid "Resources"
 msgstr "参考資料"
 
-#: web/templates/web/studies-list.html:69
+#: web/templates/web/studies-list.html:71
 msgid "page for activities to try at home and developmental labs near you!"
 msgstr "&nbsp;"
 
@@ -3948,23 +3954,26 @@ msgstr "現在の研究・調査"
 msgid "Duration"
 msgstr "期間"
 
-#: web/templates/web/study-detail.html:86
-msgid "This study is conducted by"
+#. Translators: Please include the untranslated "%(contact)s" string to mark where the contact information should be inserted.
+#: web/templates/web/study-detail.html:88
+#, fuzzy, python-format
+#| msgid "This study is conducted by"
+msgid "This study is conducted by %(contact)s."
 msgstr "この研究・調査を実施している研究者／研究グループ"
 
-#: web/templates/web/study-detail.html:91
+#: web/templates/web/study-detail.html:96
 msgid "Would you like to participate in this study?"
 msgstr "この研究・調査に参加してみませんか？"
 
-#: web/templates/web/study-detail.html:103
+#: web/templates/web/study-detail.html:108
 msgid "Select a child:"
 msgstr "お子さんを選択してください"
 
-#: web/templates/web/study-detail.html:114
+#: web/templates/web/study-detail.html:119
 msgid "None Selected"
 msgstr "選択されていません"
 
-#: web/templates/web/study-detail.html:127
+#: web/templates/web/study-detail.html:132
 msgid ""
 "Your child is still younger than the recommended age range for this study. "
 "If you can wait until he or she is old enough, the researchers will be able "
@@ -3974,7 +3983,7 @@ msgstr ""
 "が十分な年齢になるまでお待ちいただければ、研究者はあなたに補償し、収集した"
 "データを研究に使用することができます。"
 
-#: web/templates/web/study-detail.html:130
+#: web/templates/web/study-detail.html:135
 msgid ""
 "Your child is older than the recommended age range for this study. You're "
 "welcome to try the study anyway, but researchers may not be able to "
@@ -3984,14 +3993,21 @@ msgstr ""
 "研究に参加することは歓迎しますが、研究者はあなたに補償したり、収集したデータ"
 "を研究に使用したりすることはできません。"
 
-#: web/templates/web/study-detail.html:133
-#, python-format
+#. Translators: Please include the untranslated "%(contact)s" string to mark where the contact information should be inserted.
+#: web/templates/web/study-detail.html:139
+#, fuzzy, python-format
+#| msgid ""
+#| " Your child does not meet the eligibility criteria listed for this study. "
+#| "You're welcome to try the study anyway, but researchers may not be able "
+#| "to compensate you or use your data. Please review the “Who can "
+#| "participate” information for this study and contact the study researchers "
+#| "(%(contact)s) if you feel this is in error. "
 msgid ""
-" Your child does not meet the eligibility criteria listed for this study. "
+"Your child does not meet the eligibility criteria listed for this study. "
 "You're welcome to try the study anyway, but researchers may not be able to "
 "compensate you or use your data. Please review the “Who can participate” "
 "information for this study and contact the study researchers (%(contact)s) "
-"if you feel this is in error. "
+"if you feel this is in error."
 msgstr ""
 "␣あなたのお子さんは、この研究に記載されている参加資格を満たしていません。この"
 "研究に参加することは歓迎ですが、研究者はあなたに補償したり、あなたのデータを"
@@ -3999,7 +4015,7 @@ msgstr ""
 "報を確認し、これが誤りであると思われる場合は、研究者(%(contact)s)に連絡してく"
 "ださい。␣"
 
-#: web/templates/web/study-detail.html:145
+#: web/templates/web/study-detail.html:153
 msgid ""
 "For an easy way to see what happens as you update your study protocol, "
 "bookmark the URL the button above sends you to."
@@ -4007,7 +4023,7 @@ msgstr ""
 "研究・調査プロトコルを更新するとどうなるかを簡単に確認する際には、上のボタン"
 "をクリックして送信されるURLをブックマークしてください。"
 
-#: web/templates/web/study-detail.html:149
+#: web/templates/web/study-detail.html:157
 msgid ""
 "This study runs on another website, and clicking to participate will take "
 "you to that link."
@@ -4015,7 +4031,7 @@ msgstr ""
 "この研究は別のウェブサイトで実施されており、参加をクリックするとそのリンクに"
 "移動します。"
 
-#: web/templates/web/study-detail.html:151
+#: web/templates/web/study-detail.html:159
 msgid ""
 "It will also make it possible for the researchers of this study to contact "
 "you, and will share your child's profile information with the researchers."
@@ -4023,11 +4039,11 @@ msgstr ""
 "また、この研究の研究者があなたに連絡することを可能にし、あなたのお子さんのプ"
 "ロフィール情報を研究者と共有します。"
 
-#: web/templates/web/study-detail.html:154
+#: web/templates/web/study-detail.html:162
 msgid "This study runs here on the Lookit platform."
 msgstr "この研究・調査はLookitのプラットフォーム上で行われます。"
 
-#: web/templates/web/study-detail.html:156
+#: web/templates/web/study-detail.html:164
 msgid ""
 "Clicking to participate will make it possible for the researchers of this "
 "study to contact you, and will share your child's profile information with "
@@ -4078,31 +4094,31 @@ msgstr ""
 "はオンラインミーティングです)。これから参加したい研究・調査を選んで、「参加す"
 "る」をクリックしてください。"
 
-#: web/views.py:113
+#: web/views.py:114
 msgid "Participant created."
 msgstr "参加者が作成されました。"
 
-#: web/views.py:156
+#: web/views.py:157
 msgid "Demographic data saved."
 msgstr "人口統計学的データが保存されました。"
 
-#: web/views.py:222
+#: web/views.py:223
 msgid "Child added."
 msgstr "お子さんの情報が追加されました。"
 
-#: web/views.py:263
+#: web/views.py:264
 msgid "Child deleted."
 msgstr "お子さんの情報が削除されました。"
 
-#: web/views.py:265
+#: web/views.py:266
 msgid "Child updated."
 msgstr "お子さんの情報が更新されました。"
 
-#: web/views.py:293
+#: web/views.py:294
 msgid "Email preferences saved."
 msgstr "メール設定が保存されました。"
 
-#: web/views.py:658
+#: web/views.py:699
 #, python-brace-format
 msgid ""
 "The study {study.name} is not currently collecting data - the study is "
