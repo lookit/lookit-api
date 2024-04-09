@@ -68,3 +68,9 @@ css: poetry
 
 makemigrations:
 	poetry run ./manage.py makemigrations
+
+makemessages:
+	poetry run ./manage.py makemessages --all
+
+compilemessages:
+	poetry run ./manage.py compilemessages
