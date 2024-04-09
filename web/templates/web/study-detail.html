@@ -83,7 +83,12 @@
                     {% endif %}
                 </table>
                 <p class="pb-0">
-                    <em class="mt-3 mb-0 text-center text-muted">{% trans "This study is conducted by" %} {{ object.contact_info }}</em>
+                    <em class="mt-3 mb-0 text-center text-muted">
+                        {# Translators: Please include the untranslated "%(contact)s" string to mark where the contact information should be inserted. #}
+                        {% blocktranslate trimmed with contact=study.contact_info %}
+                            This study is conducted by {{ contact }}.
+                        {% endblocktranslate %}
+                    </em>
                 </p>
             </div>
         </div>
