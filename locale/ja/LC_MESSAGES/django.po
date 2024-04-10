@@ -3956,10 +3956,8 @@ msgstr "期間"
 
 #. Translators: Please include the untranslated "%(contact)s" string to mark where the contact information should be inserted.
 #: web/templates/web/study-detail.html:88
-#, fuzzy, python-format
-#| msgid "This study is conducted by"
 msgid "This study is conducted by %(contact)s."
-msgstr "この研究・調査を実施している研究者／研究グループ"
+msgstr "この研究・調査を実施している研究者／研究グループ %(contact)s."
 
 #: web/templates/web/study-detail.html:96
 msgid "Would you like to participate in this study?"

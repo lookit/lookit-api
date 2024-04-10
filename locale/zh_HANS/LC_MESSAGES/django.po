@@ -4054,10 +4054,8 @@ msgstr "时长"
 
 #. Translators: Please include the untranslated "%(contact)s" string to mark where the contact information should be inserted.
 #: web/templates/web/study-detail.html:88
-#, fuzzy, python-format
-#| msgid "This study is conducted by"
 msgid "This study is conducted by %(contact)s."
-msgstr "研究负责人："
+msgstr "研究负责人：%(contact)s."
 
 #: web/templates/web/study-detail.html:96
 msgid "Would you like to participate in this study?"

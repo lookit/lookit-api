@@ -3353,9 +3353,8 @@ msgstr "Varighet"
 
 #. Translators: Please include the untranslated "%(contact)s" string to mark where the contact information should be inserted.
 #: web/templates/web/study-detail.html:88
-#, fuzzy, python-format
 msgid "This study is conducted by %(contact)s."
-msgstr "Denne studien utføres av"
+msgstr "Denne studien utføres av %(contact)s."
 
 #: web/templates/web/study-detail.html:96
 msgid "Would you like to participate in this study?"
