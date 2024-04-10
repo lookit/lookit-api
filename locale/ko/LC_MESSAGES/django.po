@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-09 19:34-0400\n"
+"POT-Creation-Date: 2024-04-10 18:01-0400\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1247,6 +1247,7 @@ msgstr "성공적으로 로그아웃 하셨습니다."
 
 #: web/templates/registration/login.html:6
 #: web/templates/registration/login.html:9
+#: web/templates/web/_navigation.html:13
 #, fuzzy
 msgid "Login"
 msgstr "로그인"
@@ -1463,12 +1464,49 @@ msgid "Connect"
 msgstr "연결하기"
 
 #: web/templates/web/_navigation.html:3
-msgid "Logout"
-msgstr "로그아웃"
+#, fuzzy
+msgid "CHS Home"
+msgstr "홈(메인 페이지)"
 
 #: web/templates/web/_navigation.html:4
 msgid "Experimenter"
 msgstr "연구자"
+
+#: web/templates/web/_navigation.html:5 web/templates/web/studies-list.html:7
+msgid "Studies"
+msgstr "연구들"
+
+#: web/templates/web/_navigation.html:6
+msgid "FAQ"
+msgstr "자주 묻는 질문들"
+
+#: web/templates/web/_navigation.html:7
+#, fuzzy
+msgid "The Scientists"
+msgstr "연구자들"
+
+#: web/templates/web/_navigation.html:8 web/templates/web/studies-list.html:70
+#, fuzzy
+msgid "Resources"
+msgstr "참고 자료실"
+
+#: web/templates/web/_navigation.html:9
+msgid "My Account"
+msgstr "나의 계정"
+
+#: web/templates/web/_navigation.html:10
+#, fuzzy
+#| msgid "Past Studies"
+msgid "My Past Studies"
+msgstr "지난 연구들"
+
+#: web/templates/web/_navigation.html:11
+msgid "Logout"
+msgstr "로그아웃"
+
+#: web/templates/web/_navigation.html:12 web/templatetags/web_extras.py:169
+msgid "Sign up"
+msgstr "회원가입"
 
 #: web/templates/web/_studies-by-age-group.html:10
 msgid "studies for babies (under 1)"
@@ -4009,10 +4047,6 @@ msgstr "귀하께서는 아직 어떤 연구에도 참여하지 않으셨습니�
 msgid "You have not yet participated in any external studies."
 msgstr "귀하께서는 아직 어떤 연구에도 참여하지 않으셨습니다."
 
-#: web/templates/web/studies-list.html:7
-msgid "Studies"
-msgstr "연구들"
-
 #: web/templates/web/studies-list.html:24
 msgid "Log in to find studies just right for your child!"
 msgstr ""
@@ -4029,11 +4063,6 @@ msgstr ""
 msgid ""
 "Want to learn more about research with babies & children? Check out the "
 msgstr ""
-
-#: web/templates/web/studies-list.html:70
-#, fuzzy
-msgid "Resources"
-msgstr "참고 자료실"
 
 #: web/templates/web/studies-list.html:71
 msgid "page for activities to try at home and developmental labs near you!"
@@ -4095,6 +4124,7 @@ msgstr "지속 기간"
 
 #. Translators: Please include the untranslated "%(contact)s" string to mark where the contact information should be inserted.
 #: web/templates/web/study-detail.html:88
+#, python-format
 msgid "This study is conducted by %(contact)s."
 msgstr "이 연구는  에서 진행합니다 %(contact)s."
 
@@ -4187,10 +4217,6 @@ msgid ""
 "study to contact you, and will share your child's profile information with "
 "the researchers."
 msgstr ""
-
-#: web/templatetags/web_extras.py:169
-msgid "Sign up"
-msgstr "회원가입"
 
 #: web/templatetags/web_extras.py:191
 #, fuzzy
@@ -4312,9 +4338,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "varies"
 #~ msgstr "상황에 따라 다름"
-
-#~ msgid "My Account"
-#~ msgstr "나의 계정"
 
 #~ msgid "Last Active:"
 #~ msgstr "마지막 활동:"
@@ -4582,9 +4605,6 @@ msgstr ""
 
 #~ msgid "Email address:"
 #~ msgstr "이메일 주소:"
-
-#~ msgid "FAQ"
-#~ msgstr "자주 묻는 질문들"
 
 #~ msgid "Hi"
 #~ msgstr "안녕하십니까"
