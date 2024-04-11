@@ -24,7 +24,7 @@ class Force2FAClient(Client):
 class RunnerDetailsViewsTestCase(TestCase):
     def setUp(self):
         self.client = Force2FAClient()
-        self.efp_study_details = "exp:efp-study-details"
+        self.efp_study_details = "exp:efp-study-edit-design"
         self.study_details = "exp:study-details"
 
     def test_external_details_view(self):
@@ -45,7 +45,7 @@ class RunnerDetailsViewsTestCase(TestCase):
 
         self.client.force_login(user)
         response = self.client.post(
-            reverse("exp:external-study-details", kwargs={"pk": study.id}),
+            reverse("exp:external-study-edit-design", kwargs={"pk": study.id}),
             {"scheduled": ScheduledChoice.scheduled.value, "url": metadata["url"]},
             follow=True,
         )
@@ -125,7 +125,9 @@ class RunnerDetailsViewsTestCase(TestCase):
             response.redirect_chain,
             [
                 (
-                    reverse("exp:external-study-details", kwargs={"pk": external.id}),
+                    reverse(
+                        "exp:external-study-edit-design", kwargs={"pk": external.id}
+                    ),
                     HTTPStatus.FOUND,
                 )
             ],
@@ -147,7 +149,7 @@ class RunnerDetailsViewsTestCase(TestCase):
             response.redirect_chain,
             [
                 (
-                    reverse("exp:jspsych-study-details", kwargs={"pk": jspsych.id}),
+                    reverse("exp:jspsych-study-edit-design", kwargs={"pk": jspsych.id}),
                     HTTPStatus.FOUND,
                 )
             ],

@@ -263,23 +263,23 @@ urlpatterns = [
     ),
     path("support/", SupportView.as_view(), name="support"),
     path(
-        "studies/<int:pk>/study-details/",
+        "studies/<int:pk>/design/",
         ExperimentRunnerRedirect.as_view(),
-        name="study-details",
+        name="study-edit-design",
     ),
     path(
-        "studies/<int:pk>/study-details/efp/",
+        "studies/<int:pk>/design/efp/",
         EFPEditView.as_view(),
-        name="efp-study-details",
+        name="efp-study-edit-design",
     ),
     path(
-        "studies/<int:pk>/study-details/external/",
+        "studies/<int:pk>/design/external/",
         ExternalEditView.as_view(),
-        name="external-study-details",
+        name="external-study-edit-design",
     ),
     path(
-        "studies/<int:pk>/study-details/jspsych/",
+        "studies/<int:pk>/design/jspsych/",
         JSPsychEditView.as_view(),
-        name="jspsych-study-details",
+        name="jspsych-study-edit-design",
     ),
 ]
