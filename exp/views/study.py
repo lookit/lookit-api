@@ -141,7 +141,7 @@ class StudyCreateView(
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse("exp:study-details", kwargs=dict(pk=self.object.id))
+        return reverse("exp:study-edit-design", kwargs=dict(pk=self.object.id))
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -240,7 +240,7 @@ class StudyUpdateView(
         return context
 
     def get_success_url(self):
-        return reverse("exp:study-details", kwargs={"pk": self.object.id})
+        return reverse("exp:study-edit-design", kwargs={"pk": self.object.id})
 
 
 class StudyListView(

@@ -25,7 +25,7 @@ class RunnerDetailsViewsTestCase(TestCase):
     def setUp(self):
         self.client = Force2FAClient()
         self.efp_study_details = "exp:efp-study-edit-design"
-        self.study_details = "exp:study-details"
+        self.study_edit_design = "exp:study-edit-design"
 
     def test_external_details_view(self):
         user = G(User, is_active=True, is_researcher=True)
@@ -96,7 +96,7 @@ class RunnerDetailsViewsTestCase(TestCase):
         self.client.force_login(user)
 
         response = self.client.get(
-            reverse(self.study_details, kwargs={"pk": efp.id}), follow=True
+            reverse(self.study_edit_design, kwargs={"pk": efp.id}), follow=True
         )
         self.assertEqual(
             response.redirect_chain,
@@ -119,7 +119,7 @@ class RunnerDetailsViewsTestCase(TestCase):
         self.client.force_login(user)
 
         response = self.client.get(
-            reverse(self.study_details, kwargs={"pk": external.id}), follow=True
+            reverse(self.study_edit_design, kwargs={"pk": external.id}), follow=True
         )
         self.assertEqual(
             response.redirect_chain,
@@ -143,7 +143,7 @@ class RunnerDetailsViewsTestCase(TestCase):
 
         self.client.force_login(user)
         response = self.client.get(
-            reverse(self.study_details, kwargs={"pk": jspsych.id}), follow=True
+            reverse(self.study_edit_design, kwargs={"pk": jspsych.id}), follow=True
         )
         self.assertEqual(
             response.redirect_chain,
