@@ -79,10 +79,10 @@ urlpatterns = [
     ),
     path("", TemplateView.as_view(template_name="web/home.html"), name="home"),
     path(
-        "faq/", 
-        views.FaqView.as_view(), 
+        "faq/",
+        views.FaqView.as_view(),
         name="faq",
-        ),
+    ),
     path(
         "privacy/",
         TemplateView.as_view(template_name="web/privacy.html"),
