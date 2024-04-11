@@ -842,18 +842,19 @@ class ScientistsView(generic.TemplateView):
 
         return context
 
+
 class FaqView(generic.TemplateView):
     template_name = "web/faq.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if get_language() == 'ja':
-            context["video_consent_mp4"] = 'videos/consent_ja.mp4' 
-            context["captions_label"] = ''
-            context["captions_src"] = ''
+        if get_language() == "ja":
+            context["video_consent_mp4"] = "videos/consent_ja.mp4"
+            context["captions_label"] = ""
+            context["captions_src"] = ""
         else:
-            context["video_consent_mp4"] = 'videos/consent.mp4' 
-            context["captions_label"] = 'English'
-            context["captions_src"] = 'videos/english/consent.vtt'
+            context["video_consent_mp4"] = "videos/consent.mp4"
+            context["captions_label"] = "English"
+            context["captions_src"] = "videos/english/consent.vtt"
 
         return context
