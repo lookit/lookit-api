@@ -42,9 +42,9 @@ class DotPropertyRelatedLookupHyperlinkedMixin(HyperlinkedMixin):
 
         try:
             kwargs = {
-                lookup_field: attrgetter(lookup_field)(obj)
-                if obj
-                else view.kwargs[lookup_field]
+                lookup_field: (
+                    attrgetter(lookup_field)(obj) if obj else view.kwargs[lookup_field]
+                )
             }
         except AttributeError:
             # Currently a patch for optional relationships - for instance, users may or may
@@ -54,9 +54,9 @@ class DotPropertyRelatedLookupHyperlinkedMixin(HyperlinkedMixin):
         self_kwargs = kwargs.copy()
         self_kwargs.update(
             {
-                "related_field": self.field_name
-                if self.field_name
-                else self.parent.field_name
+                "related_field": (
+                    self.field_name if self.field_name else self.parent.field_name
+                )
             }
         )
         self_link = self.get_url("self", self.self_link_view_name, self_kwargs, request)

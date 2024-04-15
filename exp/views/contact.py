@@ -91,9 +91,9 @@ class StudyParticipantContactView(
             {
                 "sender": {
                     "uuid": message.sender.uuid if message.sender else None,
-                    "full_name": message.sender.get_full_name()
-                    if message.sender
-                    else "<None>",
+                    "full_name": (
+                        message.sender.get_full_name() if message.sender else "<None>"
+                    ),
                 },
                 "subject": message.subject,
                 "recipients": [

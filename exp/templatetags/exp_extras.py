@@ -17,7 +17,7 @@ def query_transform(request, **kwargs):
     # ageoptions=birthday&ageoptions=birthday
     multi_value_keys = ["data_options", "demo_options"]
 
-    for (key, val) in kwargs.items():
+    for key, val in kwargs.items():
         # Cast to string so that e.g. page 2 doesn't cause error on encoding
         val = str(val)
         if key in single_value_keys:
@@ -37,11 +37,15 @@ def get_key(dictionary, key):
 def values_list_as_json(queryset, attribute):
     return json.dumps(
         list(
-            obj[attribute]
-            if type(obj) is dict
-            else getattr(obj, attribute)()
-            if callable(attribute)
-            else getattr(obj, attribute)
+            (
+                obj[attribute]
+                if type(obj) is dict
+                else (
+                    getattr(obj, attribute)()
+                    if callable(attribute)
+                    else getattr(obj, attribute)
+                )
+            )
             for obj in queryset
         ),
         default=str,

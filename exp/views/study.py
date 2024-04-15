@@ -679,9 +679,9 @@ class ChangeStudyStatusView(
             if "declarations" not in study.comments_extra:
                 study.comments_extra["declarations"] = {}
 
-            study.comments_extra["declarations"][
-                "issues_description"
-            ] = self.request.POST.get("issues_description", "")
+            study.comments_extra["declarations"]["issues_description"] = (
+                self.request.POST.get("issues_description", "")
+            )
 
             for key in DECLARATIONS[trigger]:
                 study.comments_extra["declarations"][key] = (

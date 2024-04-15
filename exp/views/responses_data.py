@@ -276,11 +276,11 @@ RESPONSE_COLUMNS = [
             "(and therefore birthdate) with some effort. In this case you might consider directly jittering "
             "birthdates."
         ),
-        extractor=lambda resp: str(
-            round_age(int((resp.date_created.date() - resp.child.birthday).days))
-        )
-        if (resp.date_created and resp.child.birthday)
-        else "",
+        extractor=lambda resp: (
+            str(round_age(int((resp.date_created.date() - resp.child.birthday).days)))
+            if (resp.date_created and resp.child.birthday)
+            else ""
+        ),
         optional=True,
         name="Rounded age",
         include_by_default=True,

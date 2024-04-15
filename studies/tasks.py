@@ -223,14 +223,14 @@ def limit_email_targets(
     random.shuffle(all_user_study_children_tuples)
     study_counts = Counter()
     email_user_study_children_tuples = []
-    for (user_id, study_id, child_id_list) in all_user_study_children_tuples:
+    for user_id, study_id, child_id_list in all_user_study_children_tuples:
         if study_counts[study_id] >= max_emails_per_study:
             continue
         email_user_study_children_tuples.append((user_id, study_id, child_id_list))
         study_counts[study_id] += 1
 
     # Now fetch the actual objects again
-    for (user_id, study_id, child_id_list) in email_user_study_children_tuples:
+    for user_id, study_id, child_id_list in email_user_study_children_tuples:
         yield (
             User.objects.get(id=user_id),
             Study.objects.get(id=study_id),
