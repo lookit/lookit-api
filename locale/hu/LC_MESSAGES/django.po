@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-09 19:34-0400\n"
+"POT-Creation-Date: 2024-04-10 18:01-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1173,6 +1173,7 @@ msgstr ""
 
 #: web/templates/registration/login.html:6
 #: web/templates/registration/login.html:9
+#: web/templates/web/_navigation.html:13
 msgid "Login"
 msgstr ""
 
@@ -1344,11 +1345,43 @@ msgid "Connect"
 msgstr ""
 
 #: web/templates/web/_navigation.html:3
-msgid "Logout"
+msgid "CHS Home"
 msgstr ""
 
 #: web/templates/web/_navigation.html:4
 msgid "Experimenter"
+msgstr ""
+
+#: web/templates/web/_navigation.html:5 web/templates/web/studies-list.html:7
+msgid "Studies"
+msgstr ""
+
+#: web/templates/web/_navigation.html:6
+msgid "FAQ"
+msgstr ""
+
+#: web/templates/web/_navigation.html:7
+msgid "The Scientists"
+msgstr ""
+
+#: web/templates/web/_navigation.html:8 web/templates/web/studies-list.html:70
+msgid "Resources"
+msgstr ""
+
+#: web/templates/web/_navigation.html:9
+msgid "My Account"
+msgstr ""
+
+#: web/templates/web/_navigation.html:10
+msgid "My Past Studies"
+msgstr ""
+
+#: web/templates/web/_navigation.html:11
+msgid "Logout"
+msgstr ""
+
+#: web/templates/web/_navigation.html:12 web/templatetags/web_extras.py:169
+msgid "Sign up"
 msgstr ""
 
 #: web/templates/web/_studies-by-age-group.html:10
@@ -3093,10 +3126,6 @@ msgstr ""
 msgid "You have not yet participated in any external studies."
 msgstr ""
 
-#: web/templates/web/studies-list.html:7
-msgid "Studies"
-msgstr ""
-
 #: web/templates/web/studies-list.html:24
 msgid "Log in to find studies just right for your child!"
 msgstr ""
@@ -3112,10 +3141,6 @@ msgstr ""
 #: web/templates/web/studies-list.html:67
 msgid ""
 "Want to learn more about research with babies & children? Check out the "
-msgstr ""
-
-#: web/templates/web/studies-list.html:70
-msgid "Resources"
 msgstr ""
 
 #: web/templates/web/studies-list.html:71
@@ -3236,10 +3261,6 @@ msgid ""
 "Clicking to participate will make it possible for the researchers of this "
 "study to contact you, and will share your child's profile information with "
 "the researchers."
-msgstr ""
-
-#: web/templatetags/web_extras.py:169
-msgid "Sign up"
 msgstr ""
 
 #: web/templatetags/web_extras.py:191

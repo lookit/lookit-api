@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-09 19:34-0400\n"
+"POT-Creation-Date: 2024-04-10 18:01-0400\n"
 "Language: no\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1237,6 +1237,7 @@ msgstr "Du har logget av"
 
 #: web/templates/registration/login.html:6
 #: web/templates/registration/login.html:9
+#: web/templates/web/_navigation.html:13
 msgid "Login"
 msgstr "Logg inn"
 
@@ -1450,13 +1451,52 @@ msgid "Connect"
 msgstr "Få kontakt"
 
 #: web/templates/web/_navigation.html:3
-msgid "Logout"
-msgstr "Logg ut"
+#, fuzzy
+#| msgid "Home"
+msgid "CHS Home"
+msgstr "Hjem"
 
 #: web/templates/web/_navigation.html:4
 #, fuzzy
 msgid "Experimenter"
 msgstr "Experimenter"
+
+#: web/templates/web/_navigation.html:5 web/templates/web/studies-list.html:7
+msgid "Studies"
+msgstr "Studier"
+
+#: web/templates/web/_navigation.html:6
+msgid "FAQ"
+msgstr "Spørsmål og svar"
+
+#: web/templates/web/_navigation.html:7
+#, fuzzy
+#| msgid "The Scientists"
+msgid "The Scientists"
+msgstr "Forskerne:"
+
+#: web/templates/web/_navigation.html:8 web/templates/web/studies-list.html:70
+msgid "Resources"
+msgstr "Ressurser"
+
+#: web/templates/web/_navigation.html:9
+msgid "My Account"
+msgstr "Min konto"
+
+#: web/templates/web/_navigation.html:10
+#, fuzzy
+#| msgid "Past Studies"
+msgid "My Past Studies"
+msgstr "Tidligere studier"
+
+#: web/templates/web/_navigation.html:11
+msgid "Logout"
+msgstr "Logg ut"
+
+#: web/templates/web/_navigation.html:12 web/templatetags/web_extras.py:169
+#, fuzzy
+msgid "Sign up"
+msgstr "Lag en konto"
 
 #: web/templates/web/_studies-by-age-group.html:10
 msgid "studies for babies (under 1)"
@@ -3271,10 +3311,6 @@ msgstr "Du har ikke deltatt i noen studier enda"
 msgid "You have not yet participated in any external studies."
 msgstr "Du har ikke deltatt i noen studier enda"
 
-#: web/templates/web/studies-list.html:7
-msgid "Studies"
-msgstr "Studier"
-
 #: web/templates/web/studies-list.html:24
 msgid "Log in to find studies just right for your child!"
 msgstr ""
@@ -3291,10 +3327,6 @@ msgstr ""
 msgid ""
 "Want to learn more about research with babies & children? Check out the "
 msgstr ""
-
-#: web/templates/web/studies-list.html:70
-msgid "Resources"
-msgstr "Ressurser"
 
 #: web/templates/web/studies-list.html:71
 msgid "page for activities to try at home and developmental labs near you!"
@@ -3353,6 +3385,7 @@ msgstr "Varighet"
 
 #. Translators: Please include the untranslated "%(contact)s" string to mark where the contact information should be inserted.
 #: web/templates/web/study-detail.html:88
+#, python-format
 msgid "This study is conducted by %(contact)s."
 msgstr "Denne studien utføres av %(contact)s."
 
@@ -3439,11 +3472,6 @@ msgid ""
 "study to contact you, and will share your child's profile information with "
 "the researchers."
 msgstr ""
-
-#: web/templatetags/web_extras.py:169
-#, fuzzy
-msgid "Sign up"
-msgstr "Lag en konto"
 
 #: web/templatetags/web_extras.py:191
 #, fuzzy
@@ -3557,9 +3585,6 @@ msgstr ""
 #~ msgid "varies"
 #~ msgstr "Varierer"
 
-#~ msgid "My Account"
-#~ msgstr "Min konto"
-
 #~ msgid "Last Active:"
 #~ msgstr "Sist aktiv"
 
@@ -3606,9 +3631,6 @@ msgstr ""
 
 #~ msgid "Email address:"
 #~ msgstr "E-postadresse: "
-
-#~ msgid "FAQ"
-#~ msgstr "Spørsmål og svar"
 
 #~ msgid "Hi"
 #~ msgstr "Hei"

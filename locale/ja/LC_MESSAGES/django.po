@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-09 19:34-0400\n"
+"POT-Creation-Date: 2024-04-10 18:01-0400\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1212,6 +1212,7 @@ msgstr "ログアウトに成功しました。"
 
 #: web/templates/registration/login.html:6
 #: web/templates/registration/login.html:9
+#: web/templates/web/_navigation.html:13
 msgid "Login"
 msgstr "ログイン"
 
@@ -1401,12 +1402,50 @@ msgid "Connect"
 msgstr "接続する"
 
 #: web/templates/web/_navigation.html:3
-msgid "Logout"
-msgstr "ログアウト"
+#, fuzzy
+#| msgid "Home"
+msgid "CHS Home"
+msgstr "ホーム"
 
 #: web/templates/web/_navigation.html:4
 msgid "Experimenter"
 msgstr "研究者"
+
+#: web/templates/web/_navigation.html:5 web/templates/web/studies-list.html:7
+msgid "Studies"
+msgstr "研究・調査"
+
+#: web/templates/web/_navigation.html:6
+msgid "FAQ"
+msgstr ""
+
+#: web/templates/web/_navigation.html:7
+msgid "The Scientists"
+msgstr "科学者たち"
+
+#: web/templates/web/_navigation.html:8 web/templates/web/studies-list.html:70
+msgid "Resources"
+msgstr "参考資料"
+
+#: web/templates/web/_navigation.html:9
+#, fuzzy
+#| msgid "My account"
+msgid "My Account"
+msgstr "マイアカウント"
+
+#: web/templates/web/_navigation.html:10
+#, fuzzy
+#| msgid "Past Studies"
+msgid "My Past Studies"
+msgstr "これまでの研究・調査"
+
+#: web/templates/web/_navigation.html:11
+msgid "Logout"
+msgstr "ログアウト"
+
+#: web/templates/web/_navigation.html:12 web/templatetags/web_extras.py:169
+msgid "Sign up"
+msgstr "登録する"
 
 #: web/templates/web/_studies-by-age-group.html:10
 msgid "studies for babies (under 1)"
@@ -3882,10 +3921,6 @@ msgstr "あなたはまだLookitの研究・調査に参加したことがあり
 msgid "You have not yet participated in any external studies."
 msgstr "あなたはまだ外部の研究・調査に参加したことがありません。"
 
-#: web/templates/web/studies-list.html:7
-msgid "Studies"
-msgstr "研究・調査"
-
 #: web/templates/web/studies-list.html:24
 msgid "Log in to find studies just right for your child!"
 msgstr ""
@@ -3902,10 +3937,6 @@ msgstr "研究・調査が見つかりません。"
 msgid ""
 "Want to learn more about research with babies & children? Check out the "
 msgstr "&nbsp;"
-
-#: web/templates/web/studies-list.html:70
-msgid "Resources"
-msgstr "参考資料"
 
 #: web/templates/web/studies-list.html:71
 msgid "page for activities to try at home and developmental labs near you!"
@@ -3957,6 +3988,7 @@ msgstr "期間"
 
 #. Translators: Please include the untranslated "%(contact)s" string to mark where the contact information should be inserted.
 #: web/templates/web/study-detail.html:88
+#, python-format
 msgid "This study is conducted by %(contact)s."
 msgstr "この研究・調査を実施している研究者／研究グループ %(contact)s."
 
@@ -4051,10 +4083,6 @@ msgstr ""
 "参加するをクリックすると、この研究・調査の研究者があなたに連絡することが可能"
 "になり、あなたのお子様のプロフィール情報が研究者と共有されます。"
 
-#: web/templatetags/web_extras.py:169
-msgid "Sign up"
-msgstr "登録する"
-
 #: web/templatetags/web_extras.py:191
 msgid ""
 "Use the tabs above to see activities you can do right now, or scheduled "
@@ -4147,12 +4175,6 @@ msgstr ""
 #~ "め、収集されたデータを実際の研究・調査に使うことはできませんが、その場合で"
 #~ "も研究・調査に参加してみることは可能です (歓迎します！)。もしこの記載が誤"
 #~ "りだと思われる場合は、担当する研究者 %(contact)s にお問い合わせください。"
-
-#~ msgid "The Scientists"
-#~ msgstr "科学者たち"
-
-#~ msgid "My account"
-#~ msgstr "マイアカウント"
 
 #~ msgid "My past studies"
 #~ msgstr "過去の調査"
