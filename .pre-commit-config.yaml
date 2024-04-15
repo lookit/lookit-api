@@ -23,10 +23,10 @@ repos:
     hooks:
       - id: black
   - repo: https://github.com/Riverside-Healthcare/djLint
-    rev: v1.32.1
+    rev: v1.34.1
     hooks:
       - id: djlint-django
-        args: ["--profile", "django", "--lint", "--reformat", "--quiet"]
+        args: ["--profile=django", "--lint", "--reformat", "--quiet"]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
     hooks:
