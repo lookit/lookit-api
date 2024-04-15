@@ -69,7 +69,6 @@ road" in terms of properly segmenting permissions, or represent things
 that simply aren't modeled in the database.
 """
 
-
 from enum import Enum
 from typing import NamedTuple, Tuple
 

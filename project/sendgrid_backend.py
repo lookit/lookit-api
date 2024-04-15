@@ -95,7 +95,7 @@ class LookitSendGridBackend(SendGridBackend):
                 mail.set_reply_to(Email(reply_to_email))
 
         ########################### CUSTOM  HANDLING OF ATTACHMENTS ####################################################
-        for (index, attachment) in enumerate(email.attachments):
+        for index, attachment in enumerate(email.attachments):
             if isinstance(attachment, MIMEBase):
                 attach = Attachment()
 

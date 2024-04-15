@@ -3,6 +3,7 @@
 Toggle Widget stolen shamelessly from https://blog.ihfazh.com/django-custom-widget-with-3-examples.html and modified
 forthwith to support multiple checkboxes.
 """
+
 from bitfield.forms import BitFieldCheckboxSelectMultiple
 
 

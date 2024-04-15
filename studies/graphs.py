@@ -1,4 +1,5 @@
 """Graph facilities for the Analytics study view."""
+
 import pandas
 from django_pandas.io import read_frame
 
