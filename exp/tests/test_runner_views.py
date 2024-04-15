@@ -24,8 +24,8 @@ class Force2FAClient(Client):
 class RunnerDetailsViewsTestCase(TestCase):
     def setUp(self):
         self.client = Force2FAClient()
-        self.efp_study_details = "exp:efp-study-details"
-        self.study_details = "exp:study-details"
+        self.efp_study_details = "exp:efp-study-edit-design"
+        self.study_edit_design = "exp:study-edit-design"
 
     def test_external_details_view(self):
         user = G(User, is_active=True, is_researcher=True)
@@ -45,7 +45,7 @@ class RunnerDetailsViewsTestCase(TestCase):
 
         self.client.force_login(user)
         response = self.client.post(
-            reverse("exp:external-study-details", kwargs={"pk": study.id}),
+            reverse("exp:external-study-edit-design", kwargs={"pk": study.id}),
             {"scheduled": ScheduledChoice.scheduled.value, "url": metadata["url"]},
             follow=True,
         )
@@ -96,7 +96,7 @@ class RunnerDetailsViewsTestCase(TestCase):
         self.client.force_login(user)
 
         response = self.client.get(
-            reverse(self.study_details, kwargs={"pk": efp.id}), follow=True
+            reverse(self.study_edit_design, kwargs={"pk": efp.id}), follow=True
         )
         self.assertEqual(
             response.redirect_chain,
@@ -119,13 +119,15 @@ class RunnerDetailsViewsTestCase(TestCase):
         self.client.force_login(user)
 
         response = self.client.get(
-            reverse(self.study_details, kwargs={"pk": external.id}), follow=True
+            reverse(self.study_edit_design, kwargs={"pk": external.id}), follow=True
         )
         self.assertEqual(
             response.redirect_chain,
             [
                 (
-                    reverse("exp:external-study-details", kwargs={"pk": external.id}),
+                    reverse(
+                        "exp:external-study-edit-design", kwargs={"pk": external.id}
+                    ),
                     HTTPStatus.FOUND,
                 )
             ],
@@ -141,13 +143,13 @@ class RunnerDetailsViewsTestCase(TestCase):
 
         self.client.force_login(user)
         response = self.client.get(
-            reverse(self.study_details, kwargs={"pk": jspsych.id}), follow=True
+            reverse(self.study_edit_design, kwargs={"pk": jspsych.id}), follow=True
         )
         self.assertEqual(
             response.redirect_chain,
             [
                 (
-                    reverse("exp:jspsych-study-details", kwargs={"pk": jspsych.id}),
+                    reverse("exp:jspsych-study-edit-design", kwargs={"pk": jspsych.id}),
                     HTTPStatus.FOUND,
                 )
             ],

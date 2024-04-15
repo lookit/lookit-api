@@ -141,7 +141,7 @@ class StudyCreateView(
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse("exp:study-details", kwargs=dict(pk=self.object.id))
+        return reverse("exp:study-edit-design", kwargs=dict(pk=self.object.id))
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -240,7 +240,7 @@ class StudyUpdateView(
         return context
 
     def get_success_url(self):
-        return reverse("exp:study-details", kwargs={"pk": self.object.id})
+        return reverse("exp:study-edit-design", kwargs={"pk": self.object.id})
 
 
 class StudyListView(
@@ -1074,13 +1074,13 @@ class ExperimentRunnerRedirect(
         study_type: StudyType = study.study_type
 
         if study_type.is_ember_frame_player:
-            view_name = "exp:efp-study-details"
+            view_name = "exp:efp-study-edit-design"
 
         elif study_type.is_external:
-            view_name = "exp:external-study-details"
+            view_name = "exp:external-study-edit-design"
 
         elif study_type.is_jspsych:
-            view_name = "exp:jspsych-study-details"
+            view_name = "exp:jspsych-study-edit-design"
 
         return redirect(reverse(view_name, kwargs={"pk": study.id}))
 
