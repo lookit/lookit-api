@@ -802,23 +802,24 @@ django = ">=2.2"
 
 [[package]]
 name = "djangorestframework-jsonapi"
-version = "3.1.0"
-description = "A Django REST framework API adapter for the JSON API spec."
+version = "5.0.0"
+description = "A Django REST framework API adapter for the JSON:API spec."
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.7"
 files = [
-    {file = "djangorestframework-jsonapi-3.1.0.tar.gz", hash = "sha256:894826320cc9e06942b3f6e3604fc5c093854275fab498d52de4a3cd24aac58f"},
-    {file = "djangorestframework_jsonapi-3.1.0-py2.py3-none-any.whl", hash = "sha256:8d61bb16970e6c4b737b166c3888a319f86dad0321a41d801426d24a6ebd9fc7"},
+    {file = "djangorestframework-jsonapi-5.0.0.tar.gz", hash = "sha256:090c568dc99380ead71cc378020b4cd191db2ffce9ab3e9339df80d5d82c8648"},
+    {file = "djangorestframework_jsonapi-5.0.0-py2.py3-none-any.whl", hash = "sha256:f25b0d24a990690e578668b7a7a191a75162f1d9561abd773d12de331cf16673"},
 ]
 
 [package.dependencies]
-django = ">=1.11"
-djangorestframework = ">=3.10"
-inflection = ">=0.3.0"
+django = ">=2.2,<4.1"
+djangorestframework = ">=3.12,<3.14"
+inflection = ">=0.5.0"
 
 [package.extras]
-django-filter = ["django-filter (>=2.0)"]
-django-polymorphic = ["django-polymorphic (>=2.0)"]
+django-filter = ["django-filter (>=2.4)"]
+django-polymorphic = ["django-polymorphic (>=3.0)"]
+openapi = ["pyyaml (>=5.4)", "uritemplate (>=3.0.1)"]
 
 [[package]]
 name = "djlint"
@@ -2554,4 +2555,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9 <3.10"
-content-hash = "d3a831659e43e443641637bed4345286099542cc273f891b55dedbd143c929f0"
+content-hash = "d7caef494b71f318dfeca067f0610979ab4372e36b7bf10f8a184516afb3761c"
