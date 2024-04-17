@@ -96,18 +96,6 @@ class DemographicsTestCase(APITestCase):
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
         self.assertEqual(api_response.data["links"]["meta"]["count"], 0)
 
-    def testParticipantCanViewOwnDemographicData(self):
-        # As a participant, can view your own demographic data regardless of consent coding status
-        self.client.force_authenticate(user=self.participant_without_consented_response)
-        api_response = self.client.get(
-            self.url, content_type="application/vnd.api+json"
-        )
-        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            api_response.data["results"][0]["additional_comments"],
-            "Additional comments 2",
-        )
-
     def testGetDemographicsIncorrectPermissions(self):
         # None of these perms or groups should be sufficient for viewing demographics
         assign_perm(

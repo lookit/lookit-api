@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import uuid
 
+from django.core.exceptions import FieldDoesNotExist
 from django.db import migrations
 
 
@@ -13,7 +14,7 @@ def gen_salt(apps, schema_editor):
     field = None
     try:
         field = MyModel._meta.get_field("salt")
-    except:
+    except FieldDoesNotExist:
         pass
 
     if field:  # Condition on field existing because otherwise Django checks this query

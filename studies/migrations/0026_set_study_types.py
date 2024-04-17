@@ -9,7 +9,7 @@ from django.db import migrations
 def set_study_types(apps, schema_editor):
     StudyType = apps.get_model("studies.StudyType")
     Study = apps.get_model("studies.Study")
-    st, created = StudyType.objects.get_or_create(
+    st, _ = StudyType.objects.get_or_create(
         name="Ember Frame Player (default)",
         configuration={
             # task module should have a build_experiment method decorated as a
@@ -26,12 +26,12 @@ def set_study_types(apps, schema_editor):
             },
         },
     )
-    ids = Study.objects.all().update(study_type=st)
+    Study.objects.all().update(study_type=st)
 
 
 def unset_study_types(apps, schema_editor):
     Study = apps.get_model("studies.Study")
-    ids = Study.objects.all().update(study_type=None)
+    Study.objects.all().update(study_type=None)
 
 
 class Migration(migrations.Migration):

@@ -29,7 +29,7 @@ def set_study_types(apps, schema_editor):
 
 def unset_study_types(apps, schema_editor):
     Study = apps.get_model("studies.Study")
-    ids = Study.objects.all().update(
+    Study.objects.all().update(
         metadata={
             "addons_repo_url": settings.EMBER_ADDONS_REPO,
             "player_repo_url": settings.EMBER_EXP_PLAYER_REPO,
