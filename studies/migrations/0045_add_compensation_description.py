@@ -8,7 +8,6 @@ import project.fields.datetime_aware_jsonfield
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("studies", "0044_unified_ember_app")]
 
     operations = [

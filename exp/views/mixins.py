@@ -94,7 +94,6 @@ class StudyLookupMixin(LookitHandlerBase):
 class CanViewStudyResponsesMixin(
     ResearcherLoginRequiredMixin, UserPassesTestMixin, StudyLookupMixin
 ):
-
     raise_exception = True
 
     def can_view_responses(self):
@@ -110,7 +109,6 @@ class CanViewStudyResponsesMixin(
 
 
 class SingleObjectFetchProtocol(Protocol[ModelType]):
-
     model: Type[ModelType]
     object: ModelType
 

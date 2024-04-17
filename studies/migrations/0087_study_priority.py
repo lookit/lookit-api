@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("studies", "0086_prior_studies_elegibility_criteria"),
     ]

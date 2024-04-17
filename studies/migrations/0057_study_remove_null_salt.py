@@ -8,7 +8,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("studies", "0056_populate_salt_values")]
 
     operations = [

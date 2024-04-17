@@ -6,7 +6,6 @@ import studies.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("studies", "0078_study_exit_url"),
     ]

@@ -151,14 +151,12 @@ def get_responses_with_current_rulings_and_videos(study_id, preview_only):
         )
 
     for response in responses_for_study:
-
         response["videos"] = videos_per_response.get(response["id"], [])
 
     return responses_for_study
 
 
 def studies_for_which_user_has_perm(user, study_perm: StudyPermission):
-
     study_level_perm_study_ids = get_objects_for_user(
         user, study_perm.prefixed_codename
     ).values_list("id", flat=True)

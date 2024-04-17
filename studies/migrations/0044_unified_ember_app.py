@@ -40,7 +40,6 @@ def unset_study_types(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("studies", "0043_add_video_constructs"),

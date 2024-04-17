@@ -25,7 +25,6 @@ def gen_salt(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("studies", "0055_study_salt")]
 
     operations = [

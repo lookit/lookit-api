@@ -35,7 +35,6 @@ def unset_study_types(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("studies", "0025_auto_20170818_1544")]
 
     operations = [migrations.RunPython(set_study_types, reverse_code=unset_study_types)]

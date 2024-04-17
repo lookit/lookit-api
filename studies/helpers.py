@@ -126,7 +126,6 @@ def get_eligibility_for_response(child_obj, study_obj):
     )
 
     if age_range_diff != 0 or ineligible_participation or ineligible_criteria:
-
         eligibility_set = set()
 
         if age_range_diff > 0:

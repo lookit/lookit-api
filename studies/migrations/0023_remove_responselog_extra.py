@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("studies", "0022_auto_20170815_2241")]
 
     operations = [migrations.RemoveField(model_name="responselog", name="extra")]

@@ -7,7 +7,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("studies", "0047_add_existing_conditions")]
 
     operations = [
