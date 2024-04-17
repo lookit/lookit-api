@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("studies", "0052_add-s3-timestamp")]
 
     operations = [

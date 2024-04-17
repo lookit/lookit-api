@@ -207,9 +207,7 @@ class UserTestCase(APITestCase):
             self.study,
         )
         self.client.force_authenticate(user=self.researcher)
-        overrule_consent_ruling = G(
-            ConsentRuling, response=self.response, action="rejected"
-        )
+        G(ConsentRuling, response=self.response, action="rejected")
         api_response = self.client.get(
             self.user_detail_url, content_type="application/vnd.api+json"
         )

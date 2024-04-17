@@ -1,5 +1,6 @@
 import base64
 from email.mime.base import MIMEBase
+from email.utils import parseaddr
 
 from django.core.mail import EmailMultiAlternatives
 from sendgrid.helpers.mail import (
@@ -14,16 +15,6 @@ from sendgrid.helpers.mail import (
 )
 from sgbackend import SendGridBackend
 
-try:
-    from urllib.error import HTTPError  # pragma: no cover
-except ImportError:  # pragma: no cover
-    from urllib2 import HTTPError  # pragma: no cover
-
-try:
-    import rfc822
-except ImportError:
-    import email.utils as rfc822
-
 
 class LookitSendGridBackend(SendGridBackend):
     def _build_sg_mail(self, email):
@@ -31,7 +22,7 @@ class LookitSendGridBackend(SendGridBackend):
 
         ############# FROM SendGridBackend._build_sg_mail: ############################################################
         mail = Mail()
-        from_name, from_email = rfc822.parseaddr(email.from_email)
+        from_name, from_email = parseaddr(email.from_email)
         # Python sendgrid client should improve
         # sendgrid/helpers/mail/mail.py:164
         if not from_name:
@@ -88,7 +79,7 @@ class LookitSendGridBackend(SendGridBackend):
         # Determine whether reply_to contains a name and email address, or
         # just an email address.
         if reply_to_string:
-            reply_to_name, reply_to_email = rfc822.parseaddr(reply_to_string)
+            reply_to_name, reply_to_email = parseaddr(reply_to_string)
             if reply_to_name and reply_to_email:
                 mail.set_reply_to(Email(reply_to_email, reply_to_name))
             elif reply_to_email:

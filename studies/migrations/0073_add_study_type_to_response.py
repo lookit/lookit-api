@@ -7,7 +7,6 @@ import studies.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("studies", "0072_external_study_type"),
     ]

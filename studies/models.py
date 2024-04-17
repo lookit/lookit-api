@@ -26,7 +26,6 @@ from transitions import Machine
 
 from accounts.models import Child, DemographicData, User
 from attachment_helpers import get_download_url
-from project import settings
 from studies import workflow
 from studies.helpers import (
     FrameActionDispatcher,

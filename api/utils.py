@@ -16,7 +16,6 @@ def format_keys(obj, format_type=None):
         format_type = getattr(api_settings, "JSON_API_FORMAT_KEYS", False)
 
     if format_type in ("dasherize", "camelize", "underscore", "capitalize"):
-
         if isinstance(obj, dict):
             formatted = OrderedDict()
             for key, value in obj.items():

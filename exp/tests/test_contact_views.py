@@ -147,7 +147,7 @@ class ContactViewTestCase(TestCase):
         message = G(
             Message,
             sender=self.senders[4],
-            subject=f"Question 4 about your response",
+            subject="Question 4 about your response",
             related_study=self.other_study,
         )
         message.recipients.add(self.participants[0])

@@ -32,7 +32,6 @@ def unset_study_types(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("studies", "0071_remove_ordering_from_response"),
     ]

@@ -63,7 +63,6 @@ REVERSE_GESTATIONAL_AGE_MAPPING = {
 
 
 def _forwards_migrate_ga_birth_char_field_to_int(apps, schema_editor):
-
     ChildModel = apps.get_model("accounts", "Child")
 
     for child in ChildModel.objects.all():
@@ -84,7 +83,6 @@ def _backwards_reverse_int_field_to_char(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("accounts", "0040_add_message_model")]
 
     operations = [

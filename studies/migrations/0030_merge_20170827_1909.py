@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("studies", "0024_merge_20170823_1352"),
         ("studies", "0029_auto_20170825_1505"),

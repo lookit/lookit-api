@@ -14,6 +14,7 @@ from django.dispatch import receiver
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils.safestring import mark_safe
+from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
@@ -736,9 +737,7 @@ class ExperimentProxyView(
         except Child.DoesNotExist:
             return False
 
-        try:
-            study = Study.objects.get(uuid=kwargs.get("uuid", None))
-        except Study.DoesNotExist:
+        if not Study.objects.filter(uuid=kwargs.get("uuid", None)).exists():
             return False
 
         if child.user != user:

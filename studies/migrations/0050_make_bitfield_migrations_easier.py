@@ -9,7 +9,6 @@ from studies.fields import CONDITIONS, LANGUAGES
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("studies", "0049_clean_up_gender_choice")]
 
     operations = [

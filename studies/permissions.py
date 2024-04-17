@@ -227,11 +227,11 @@ def create_lab_version(study_permission: _PermissionMetaStudiesApp):
 
 class StudyPermission(_PermissionMetaStudiesApp, Enum):
     READ_STUDY_DETAILS = _PermissionMetaStudiesApp(
-        codename=f"read_study__<DETAILS>",
+        codename="read_study__<DETAILS>",
         description="Read study details and preview study",
     )
     WRITE_STUDY_DETAILS = _PermissionMetaStudiesApp(
-        codename=f"edit_study__<DETAILS>", description="Write study details"
+        codename="edit_study__<DETAILS>", description="Write study details"
     )
     CHANGE_STUDY_STATUS = _PermissionMetaStudiesApp(
         codename="edit_study__status", description="Change study status"

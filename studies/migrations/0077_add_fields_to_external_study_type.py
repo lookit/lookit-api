@@ -38,7 +38,6 @@ def revert_config(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("studies", "0076_update_external_study_type"),
     ]

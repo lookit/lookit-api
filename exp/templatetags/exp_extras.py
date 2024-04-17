@@ -39,7 +39,7 @@ def values_list_as_json(queryset, attribute):
         list(
             (
                 obj[attribute]
-                if type(obj) is dict
+                if isinstance(obj, dict)
                 else (
                     getattr(obj, attribute)()
                     if callable(attribute)

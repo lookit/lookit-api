@@ -17,7 +17,7 @@ class TwoFactorAuthenticationBackend(ModelBackend):
         username: Optional[str] = None,
         password: Optional[str] = None,
         auth_code: Optional[str] = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Optional[User]:
         """Authentication override."""
 

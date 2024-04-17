@@ -50,11 +50,9 @@ Questions or feedback for Children Helping Science?: childrenhelpingscience@gmai
 
 
 class TestAnnouncementEmailFunctionality(TestCase):
-
     maxDiff = 2000  # In case we need to check the email body contents
 
     def setUp(self):
-
         five_months_ago = date.today() - timedelta(days=30 * 5)
         one_year_ago = date.today() - timedelta(days=365)
         four_years_ago = date.today() - timedelta(days=365 * 4)
@@ -365,7 +363,6 @@ class TestAnnouncementEmailFunctionality(TestCase):
         )
 
     def test_target_emails_limited_to_max_per_study(self):
-
         # Add a study with 5 eligible children (ages 10-12, no overlap with existing studies) in different families
         school_age_study = G(
             Study,
@@ -1338,7 +1335,6 @@ class ResponseEligibilityTestCase(TestCase):
         )
 
     def test_response_eligibility_participation_flag_only_added_once(self):
-
         G(
             Response,
             child=self.child_in_age_range,

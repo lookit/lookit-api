@@ -15,7 +15,6 @@ from django.http import (
     HttpResponseForbidden,
     HttpResponseRedirect,
 )
-from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
