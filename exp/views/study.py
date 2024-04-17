@@ -9,8 +9,12 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Q
 from django.db.models.functions import Lower
 from django.forms.models import BaseModelForm
-from django.http import HttpRequest, HttpResponseForbidden, HttpResponseRedirect
-from django.http.response import HttpResponse
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseForbidden,
+    HttpResponseRedirect,
+)
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
