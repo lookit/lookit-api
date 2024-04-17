@@ -1,4 +1,5 @@
 import base64
+import email.utils as rfc822
 from email.mime.base import MIMEBase
 
 from django.core.mail import EmailMultiAlternatives
@@ -13,16 +14,6 @@ from sendgrid.helpers.mail import (
     Substitution,
 )
 from sgbackend import SendGridBackend
-
-try:
-    from urllib.error import HTTPError  # pragma: no cover
-except ImportError:  # pragma: no cover
-    from urllib2 import HTTPError  # pragma: no cover
-
-try:
-    import rfc822
-except ImportError:
-    import email.utils as rfc822
 
 
 class LookitSendGridBackend(SendGridBackend):
