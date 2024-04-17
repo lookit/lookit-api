@@ -75,6 +75,4 @@ ignore = "H006,H021,T027"
 extend_exclude = "bootstrap,ember_build"
 
 [tool.ruff]
-# pyflakes, pycodestyle, isort
-# select = ["F", "E", "W", "I001"]
-lint.select = ["I001"]
+lint.select = ["F", "I", "TID"]
