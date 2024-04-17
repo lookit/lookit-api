@@ -538,16 +538,14 @@ test = ["graphene-django", "pytest", "pytest-cov", "pytest-django"]
 
 [[package]]
 name = "django-dynamic-fixture"
-version = "3.1.2"
+version = "4.0.1"
 description = "A full library to create dynamic model instances for testing purposes."
 optional = false
 python-versions = "*"
 files = [
-    {file = "django-dynamic-fixture-3.1.2.tar.gz", hash = "sha256:08cf0dadb91a1058ef7bf2486e5df2a93571f4517a7de1b806d1a6ee6d78b078"},
+    {file = "django-dynamic-fixture-4.0.1.tar.gz", hash = "sha256:2a2197578b7702db8f5eed9ad704f6be33bac8bf0111c7c92f6063c2a4d02933"},
+    {file = "django_dynamic_fixture-4.0.1-py3-none-any.whl", hash = "sha256:d0611b6dc594fb1bccad1fd94dade89cc8deca12385bc2763baded3e48322547"},
 ]
-
-[package.dependencies]
-six = "*"
 
 [[package]]
 name = "django-extensions"
@@ -1315,6 +1313,7 @@ files = [
     {file = "libsass-0.22.0-cp37-abi3-macosx_10_15_x86_64.whl", hash = "sha256:081e256ab3c5f3f09c7b8dea3bf3bf5e64a97c6995fd9eea880639b3f93a9f9a"},
     {file = "libsass-0.22.0-cp37-abi3-win32.whl", hash = "sha256:89c5ce497fcf3aba1dd1b19aae93b99f68257e5f2026b731b00a872f13324c7f"},
     {file = "libsass-0.22.0-cp37-abi3-win_amd64.whl", hash = "sha256:65455a2728b696b62100eb5932604aa13a29f4ac9a305d95773c14aaa7200aaf"},
+    {file = "libsass-0.22.0-cp38-abi3-macosx_14_0_arm64.whl", hash = "sha256:5fb2297a4754a6c8e25cfe5c015a3b51a2b6b9021b333f989bb8ce9d60eb5828"},
     {file = "libsass-0.22.0.tar.gz", hash = "sha256:3ab5ad18e47db560f4f0c09e3d28cf3bb1a44711257488ac2adad69f4f7f8425"},
 ]
 
@@ -2499,4 +2498,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9 <3.10"
-content-hash = "3b8cb3c2c5c0d05007a7aafd5a29c39b68a8c8980a2c3588d7c883d5ed940b7f"
+content-hash = "f74a607a6aaefdd8facb23f0aa4a7a196d46bce9b3e2874d04e1edfbecf8c84a"
