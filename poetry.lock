@@ -740,17 +740,17 @@ rest-framework = ["djangorestframework (>=3.0.0)"]
 
 [[package]]
 name = "djangorestframework"
-version = "3.12.4"
+version = "3.15.1"
 description = "Web APIs for Django, made easy."
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.6"
 files = [
-    {file = "djangorestframework-3.12.4-py3-none-any.whl", hash = "sha256:6d1d59f623a5ad0509fe0d6bfe93cbdfe17b8116ebc8eda86d45f6e16e819aaf"},
-    {file = "djangorestframework-3.12.4.tar.gz", hash = "sha256:f747949a8ddac876e879190df194b925c177cdeb725a099db1460872f7c0a7f2"},
+    {file = "djangorestframework-3.15.1-py3-none-any.whl", hash = "sha256:3ccc0475bce968608cf30d07fb17d8e52d1d7fc8bfe779c905463200750cbca6"},
+    {file = "djangorestframework-3.15.1.tar.gz", hash = "sha256:f88fad74183dfc7144b2756d0d2ac716ea5b4c7c9840995ac3bfd8ec034333c1"},
 ]
 
 [package.dependencies]
-django = ">=2.2"
+django = ">=3.0"
 
 [[package]]
 name = "djangorestframework-jsonapi"
@@ -2498,4 +2498,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9 <3.10"
-content-hash = "f74a607a6aaefdd8facb23f0aa4a7a196d46bce9b3e2874d04e1edfbecf8c84a"
+content-hash = "013fddcf4a1f6d34700d1a233276985bd375e1f960963c83136547750ed5d56b"
