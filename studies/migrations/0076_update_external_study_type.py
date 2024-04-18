@@ -35,7 +35,6 @@ def revert_config(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("studies", "0075_remove_exit_url"),
     ]

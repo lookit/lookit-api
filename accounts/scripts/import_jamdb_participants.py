@@ -237,9 +237,9 @@ def create_demographics(user, participant, apps):
             apps,
         ),
         former_lookit_annual_income=income,
-        annual_income=income
-        if income and "$" not in income and " " not in income
-        else "",
+        annual_income=(
+            income if income and "$" not in income and " " not in income else ""
+        ),
         age=pull_choice_value(attributes.get("demographicsAge"), "age", apps),
         gender=format_gender(attributes.get("demographicsGender")),
         education_level=pull_choice_value(

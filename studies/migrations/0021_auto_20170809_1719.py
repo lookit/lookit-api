@@ -8,7 +8,6 @@ import project.fields.datetime_aware_jsonfield
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("studies", "0020_auto_20170725_1654")]
 
     operations = [

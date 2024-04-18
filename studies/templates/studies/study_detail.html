@@ -143,9 +143,9 @@
                 {% endif %}
                 {% if can_edit_study_details %}
                     <a class="list-group-item list-group-item-action"
-                       href="{% url 'exp:study-edit' pk=study.id %}">{% bs_icon "megaphone-fill" %}Study Ad and Recruitment</a>
+                       href="{% url 'exp:study-edit' pk=study.id %}">{% bs_icon "megaphone-fill" %}Edit Study Ad</a>
                     <a class="list-group-item list-group-item-action"
-                       href="{% url 'exp:study-details' pk=study.id %}">{% bs_icon "pencil-square" %}Study Details</a>
+                       href="{% url 'exp:study-edit-design' pk=study.id %}">{% bs_icon "pencil-square" %}Edit Study Design</a>
                 {% endif %}
                 {% if "read_study__responses" in study_perms or "read_study__responses(is_preview=True)" in study_perms %}
                     <a class="list-group-item list-group-item-action"

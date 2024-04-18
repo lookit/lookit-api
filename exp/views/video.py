@@ -57,7 +57,6 @@ class RenameVideoView(View):
         if authenticated and (
             d["data"]["s3UploadStatus"] == "upload success"
         ):  # Go ahead and move the file
-
             new_name = d["data"]["payload"]
 
             if not new_name:  # Make sure we don't have an empty payload string

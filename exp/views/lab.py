@@ -440,7 +440,6 @@ class LabMembershipRequestView(
     SingleObjectMixin,
     generic.RedirectView,
 ):
-
     http_method_names = ["post"]
     model = Lab
 

@@ -1,4 +1,5 @@
 """Fields constants - at the moment, just used for BitFields."""
+
 from django.utils.translation import gettext_lazy as _
 from model_utils import Choices
 

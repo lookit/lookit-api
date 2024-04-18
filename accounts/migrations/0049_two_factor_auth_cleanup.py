@@ -71,13 +71,10 @@ DROP TABLE IF EXISTS socialaccount_socialtoken CASCADE;
 DROP TABLE IF EXISTS socialaccount_socialapp_sites CASCADE;
 DROP TABLE IF EXISTS socialaccount_socialapp CASCADE;
 DROP TABLE IF EXISTS socialaccount_socialaccount;
-""".format(
-    allauth_account_app_name=ALLAUTH_ACCOUNT_APP
-)
+""".format(allauth_account_app_name=ALLAUTH_ACCOUNT_APP)
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("admin", "0003_logentry_add_action_flag_choices"),
         # If we don't add the above, tests will fail due to the fact that

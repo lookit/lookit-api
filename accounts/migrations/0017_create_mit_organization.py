@@ -17,7 +17,6 @@ def remove_mit_organization(*args, **kwargs):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("contenttypes", "__latest__"),
         ("sites", "__latest__"),

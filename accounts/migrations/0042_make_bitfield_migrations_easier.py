@@ -9,7 +9,6 @@ from studies.fields import CONDITIONS, LANGUAGES
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("accounts", "0041_add_existing_conditions")]
 
     operations = [

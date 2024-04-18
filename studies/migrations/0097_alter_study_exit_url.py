@@ -6,7 +6,6 @@ import studies.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("studies", "0096_response_survey_consent"),
     ]

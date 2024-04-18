@@ -194,11 +194,11 @@
                 {% endblocktranslate %}
                     <div class="d-flex justify-content-center">
                         <video controls preload="metadata">
-                            <source src="{% static 'videos/consent.mp4' %}" type="video/mp4" />
-                            <track label="English"
+                            <source src="{% static video_consent_mp4 %}" type="video/mp4" />
+                            <track label="{{ captions_label }}"
                                    kind="captions"
                                    srclang="en"
-                                   src="{% static 'videos/english/consent.vtt' %}" />
+                                   src="{% static captions_src %}" />
                         </video>
                     </div>
                 </div>

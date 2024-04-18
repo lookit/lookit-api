@@ -206,7 +206,7 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
     def get_serializer_class(self):
         # Use full user serializer (with username data, etc.) iff user has permissions to view all accounts
-        if self.request.user.has_perm("accounts.can_read_usernames"):
+        if self.request and self.request.user.has_perm("accounts.can_read_usernames"):
             return FullUserSerializer
         return BasicUserSerializer
 

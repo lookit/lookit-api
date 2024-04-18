@@ -12,7 +12,6 @@ import project.fields.datetime_aware_jsonfield
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [

@@ -8,7 +8,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("accounts", "0002_add_cos_admin_group_and_assign_perms")]
 
     operations = [

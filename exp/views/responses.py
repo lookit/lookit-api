@@ -214,7 +214,7 @@ def get_frame_data(resp: Union[Response, Dict]) -> List[FrameDataRow]:
         exp_data. Descriptions of each field of the FrameDataRow are given in FRAME_DATA_HEADER_DESCRIPTIONS.
     """
 
-    if type(resp) is not dict:
+    if not isinstance(resp, dict):
         resp = {
             "child__uuid": resp.child.uuid,
             "study__uuid": resp.study.uuid,
@@ -234,8 +234,8 @@ def get_frame_data(resp: Union[Response, Dict]) -> List[FrameDataRow]:
     )
 
     # First add all of the global event timings as events with frame_id "global"
-    for (i_event, event) in enumerate(resp["global_event_timings"]):
-        for (key, value) in event.items():
+    for i_event, event in enumerate(resp["global_event_timings"]):
+        for key, value in event.items():
             frame_data_tuples.append(
                 FrameDataRow(
                     child_hashed_id=child_hashed_id,
@@ -250,7 +250,7 @@ def get_frame_data(resp: Union[Response, Dict]) -> List[FrameDataRow]:
     # Next add all data in exp_data
     event_prefix = "eventTimings."
     for frame_id, frame_data in resp["exp_data"].items():
-        for (key, value) in flatten_dict(frame_data).items():
+        for key, value in flatten_dict(frame_data).items():
             # Process event data separately and include event_number within frame
             if key.startswith(event_prefix):
                 key_pieces = key.split(".")

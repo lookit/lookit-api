@@ -122,7 +122,6 @@ def get_child_participation_eligibility(child, study) -> bool:
 
     # for both must have and must not have participated, ignore responses from internal studies that are empty
     if study.must_have_participated.exists():
-
         must_have_participated_all = [
             i
             for i in study.must_have_participated.all()

@@ -120,7 +120,6 @@ def generate_videos_from_events(response, video_model):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("studies", "0042_add_consent_flag_to_response"),

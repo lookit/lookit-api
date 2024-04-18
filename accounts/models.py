@@ -175,7 +175,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     def __init__(self, *args, **kwargs):
         super(User, self).__init__(*args, **kwargs)
         if self.id:
-            setattr(self, f"__original_groups", self.groups.all())
+            setattr(self, "__original_groups", self.groups.all())
 
     @property
     def identicon(self):

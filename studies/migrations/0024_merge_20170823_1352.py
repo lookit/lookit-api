@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("studies", "0023_remove_responselog_extra"),
         ("studies", "0023_auto_20170817_1400"),
