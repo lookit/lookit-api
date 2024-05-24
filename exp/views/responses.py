@@ -49,6 +49,7 @@ from studies.tasks import build_framedata_dict, build_zipfile_of_videos
 
 CONTENT_TYPE = "text/csv"
 
+MAX_FILESIZE_BYTES = 5e8  # 500 MB approx
 
 # Which headers from the response data summary should go in the child data downloads
 CHILD_CSV_HEADERS = [
@@ -656,15 +657,32 @@ class StudyResponseVideoAttachment(
         download_url = video.download_url
 
         if self.request.GET.get("mode") == "download":
-            r = requests.get(download_url)
-            response = FileResponse(
-                File.open(io.BytesIO(r.content)),
-                filename=video.filename,
-                as_attachment=True,
-            )
-            return response
-
-        return redirect(download_url)
+            # AWS doesn't return Content-length with HEAD requests (requests.head(download_url)) so we need to use a GET with stream=TRUE,
+            # which defers downloading all content until r.content is accessed. We're using a with statement here because
+            # a stream=TRUE request remains open until closed.
+            with requests.get(download_url, stream=True) as r:
+                content_length = r.headers.get("Content-length", None)
+                if content_length is None:
+                    messages.error(
+                        self.request,
+                        f"The file size for {video.filename} could not be verified. Please contact the CHS team on Slack or at childrenhelpingscience@gmail.com.",
+                    )
+                    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+                elif content_length and int(content_length) > MAX_FILESIZE_BYTES:
+                    messages.error(
+                        self.request,
+                        f"The file {video.filename} is too large to download. Please contact the CHS team on Slack or at childrenhelpingscience@gmail.com.",
+                    )
+                    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+                else:
+                    response = FileResponse(
+                        File.open(io.BytesIO(r.content)),
+                        filename=video.filename,
+                        as_attachment=True,
+                    )
+                    return response
+        else:
+            return redirect(download_url)
 
 
 class StudyResponseSubmitFeedback(StudyLookupMixin, UserPassesTestMixin, View):
