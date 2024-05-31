@@ -531,12 +531,14 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
                 if col.id in columns_included_in_summary
             ]
             this_resp_data["videos"] = resp.videos.values("pk", "full_name")
-            for v in this_resp_data["videos"]:
+            download_urls = [v.download_url for v in resp.videos.all()]
+            for i, v in enumerate(this_resp_data["videos"]):
                 v["display_name"] = (
                     v["full_name"]
                     .replace("videoStream_{}_".format(study.uuid), "...")
                     .replace("_{}_".format(resp.uuid), "...")
                 )
+                v["download_url"] = download_urls[i]
             response_data.append(this_resp_data)
         context["response_data"] = response_data
         context["data_options"] = [col for col in RESPONSE_COLUMNS if col.optional]
