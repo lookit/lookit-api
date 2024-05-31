@@ -47,8 +47,6 @@ from studies.tasks import build_framedata_dict, build_zipfile_of_videos
 
 CONTENT_TYPE = "text/csv"
 
-MAX_FILESIZE_BYTES = 5e8  # 500 MB approx
-
 # Which headers from the response data summary should go in the child data downloads
 CHILD_CSV_HEADERS = [
     col.id
