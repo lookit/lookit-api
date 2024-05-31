@@ -529,14 +529,12 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
                 if col.id in columns_included_in_summary
             ]
             this_resp_data["videos"] = resp.videos.values("pk", "full_name")
-            download_urls = [v.download_url for v in resp.videos.all()]
-            for i, v in enumerate(this_resp_data["videos"]):
+            for v in this_resp_data["videos"]:
                 v["display_name"] = (
                     v["full_name"]
                     .replace("videoStream_{}_".format(study.uuid), "...")
                     .replace("_{}_".format(resp.uuid), "...")
                 )
-                v["download_url"] = download_urls[i]
             response_data.append(this_resp_data)
         context["response_data"] = response_data
         context["data_options"] = [col for col in RESPONSE_COLUMNS if col.optional]
@@ -654,7 +652,12 @@ class StudyResponseVideoAttachment(
 
     def get(self, request, *args, **kwargs):
         view_url = self.video.view_url
-        return redirect(view_url)
+        download_url = self.video.download_url
+
+        if self.request.GET.get("mode") == "download":
+            return redirect(download_url)
+        else:
+            return redirect(view_url)
 
 
 class StudyResponseSubmitFeedback(StudyLookupMixin, UserPassesTestMixin, View):
@@ -1394,12 +1397,6 @@ class StudyAttachments(CanViewStudyResponsesMixin, generic.ListView):
         context["sort"] = self.request.GET.get("sort", "")
         context["study"] = self.study
 
-        paginated_videos = context["object_list"]
-        download_urls = [v.download_url for v in paginated_videos.all()]
-        for i, v in enumerate(paginated_videos.values()):
-            v["download_url"] = download_urls[i]
-
-        context["videos"] = paginated_videos
         return context
 
     def post(self, request, *args, **kwargs):

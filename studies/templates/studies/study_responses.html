@@ -189,9 +189,8 @@
                                                    rel="noreferrer noopener"
                                                    href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=view"
                                                    class="{% button_primary_classes %} btn-sm">View</a>
-                                                <a href="{{ video.download_url }}&response-content-disposition=attachment"
-                                                   class="{% button_primary_classes %} btn-sm"
-                                                   download>Download</a>
+                                                <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
+                                                   class="{% button_primary_classes %} btn-sm">Download</a>
                                             </div>
                                         </div>
                                     {% empty %}
