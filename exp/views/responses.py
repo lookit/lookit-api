@@ -1394,6 +1394,12 @@ class StudyAttachments(CanViewStudyResponsesMixin, generic.ListView):
         context["sort"] = self.request.GET.get("sort", "")
         context["study"] = self.study
 
+        paginated_videos = context["object_list"]
+        download_urls = [v.download_url for v in paginated_videos.all()]
+        for i, v in enumerate(paginated_videos.values()):
+            v["download_url"] = download_urls[i]
+
+        context["videos"] = paginated_videos
         return context
 
     def post(self, request, *args, **kwargs):

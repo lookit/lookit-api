@@ -83,15 +83,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for video in video_list %}
+                        {% for video in videos %}
                             <tr>
                                 <td>
                                     <span class="small">{{ video.full_name }}</span>
                                 </td>
                                 <td>{{ video.created_at|date:"n/j/Y g:i A"|default:"N/A" }}</td>
                                 <td>
-                                    <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
-                                       class="{% button_primary_classes %} btn-sm">Download</a>
+                                    <a href="{{ video.download_url }}"
+                                       class="{% button_primary_classes %} btn-sm"
+                                       download>Download</a>
                                 </td>
                             </tr>
                         {% empty %}
