@@ -31,23 +31,16 @@ def get_url(video_key, recording_method_is_pipe, set_attachment_header):
         # RecordRTC bucket
         bucket = settings.S3_BUCKET_NAME
 
+    params = {"Bucket": bucket, "Key": video_key}
+    if set_attachment_header:
+        params["ResponseContentDisposition"] = "attachment"
+
     try:
-        if set_attachment_header:
-            url = S3_CLIENT.generate_presigned_url(
-                "get_object",
-                Params={
-                    "Bucket": bucket,
-                    "Key": video_key,
-                    "ResponseContentDisposition": "attachment",
-                },
-                ExpiresIn=600,
-            )
-        else:
-            url = S3_CLIENT.generate_presigned_url(
-                "get_object",
-                Params={"Bucket": bucket, "Key": video_key},
-                ExpiresIn=600,
-            )
+        url = S3_CLIENT.generate_presigned_url(
+            "get_object",
+            Params=params,
+            ExpiresIn=600,
+        )
     except ClientError as e:
         logger.warning(f"Video {video_key} not found in bucket. {e}")
         return None
