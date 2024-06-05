@@ -500,7 +500,7 @@ class StudyListSearchForm(forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
-        child = cleaned_data["child"]
+        child = cleaned_data.get("child")
         if (
             not child
             or "," in child
