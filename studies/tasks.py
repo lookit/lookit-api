@@ -374,7 +374,7 @@ def build_zipfile_of_videos(
             with zipfile.ZipFile(zip_file_path, "w") as zf:
                 for video in video_qs:
                     temporary_file_path = os.path.join(temp_directory, video.full_name)
-                    file_response = requests.get(video.download_url, stream=True)
+                    file_response = requests.get(video.view_url, stream=True)
                     with open(temporary_file_path, mode="w+b") as local_file:
                         for chunk in file_response.iter_content(8192):
                             local_file.write(chunk)

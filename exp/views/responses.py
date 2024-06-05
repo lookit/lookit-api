@@ -4,11 +4,9 @@ import zipfile
 from functools import cached_property
 from typing import Dict, KeysView, List, NamedTuple, Set, Text, Union
 
-import requests
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousOperation
-from django.core.files import File
 from django.core.paginator import Paginator
 from django.db.models import Prefetch
 from django.http import (
@@ -48,7 +46,6 @@ from studies.queries import (
 from studies.tasks import build_framedata_dict, build_zipfile_of_videos
 
 CONTENT_TYPE = "text/csv"
-
 
 # Which headers from the response data summary should go in the child data downloads
 CHILD_CSV_HEADERS = [
@@ -652,19 +649,13 @@ class StudyResponseVideoAttachment(
     test_func = can_view_this_video
 
     def get(self, request, *args, **kwargs):
-        video = self.video
-        download_url = video.download_url
+        view_url = self.video.view_url
+        download_url = self.video.download_url
 
         if self.request.GET.get("mode") == "download":
-            r = requests.get(download_url)
-            response = FileResponse(
-                File.open(io.BytesIO(r.content)),
-                filename=video.filename,
-                as_attachment=True,
-            )
-            return response
-
-        return redirect(download_url)
+            return redirect(download_url)
+        else:
+            return redirect(view_url)
 
 
 class StudyResponseSubmitFeedback(StudyLookupMixin, UserPassesTestMixin, View):

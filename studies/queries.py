@@ -11,7 +11,7 @@ from django.db.models.functions import Coalesce, Concat
 from django.utils.timezone import now
 from guardian.shortcuts import get_objects_for_user
 
-from attachment_helpers import get_download_url
+from attachment_helpers import get_url
 from studies.models import (
     ACCEPTED,
     PENDING,
@@ -145,7 +145,7 @@ def get_responses_with_current_rulings_and_videos(study_id, preview_only):
         ).recording_method_is_pipe
         videos_per_response[video["response_id"]].append(
             {
-                "aws_url": get_download_url(video["full_name"], recording_is_pipe),
+                "aws_url": get_url(video["full_name"], recording_is_pipe, False),
                 "filename": video["full_name"],
             }
         )
