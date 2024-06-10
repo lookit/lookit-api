@@ -32,6 +32,7 @@
     {% url 'exp:study-responses-download-csv' pk=study.id as url_download_all_csv %}
     {% url 'exp:study-responses-download-summary-dict-csv' pk=study.id as url_download_summary_dict %}
     {% url 'exp:study-responses-download-frame-data-zip-csv' pk=study.id as url_download_frame_data %}
+    {% url 'exp:study-responses-download-frame-data-zip-psychDS' pk=study.id as url_download_frame_data_psychDS %}
     {% url 'exp:study-responses-download-frame-data-dict-csv' pk=study.id as url_download_frame_data_dict %}
     {% url 'exp:study-responses-children-summary-csv' pk=study.id as url_download_children_summary_data %}
     {% url 'exp:study-responses-children-summary-dict-csv' pk=study.id as url_download_children_summary_data_dict %}
@@ -154,6 +155,29 @@
                                         {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes id="download-frame-dict-csv" formaction=url_download_frame_data_dict %}
                                     {% else %}
                                         {% bootstrap_button bs_icon_download|add:" CSV" button_class=btn_primary_classes id="download-frame-dict-csv" formaction=url_download_frame_data_dict disabled="disabled" %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col">
+                                Psych-DS formatted frame data
+                                <p class="fst-italic text-muted mt-2">
+                                    The Psych-DS formatted frame data includes all of the data described in the above "Frame data",
+                                    packaged into a zip file with a metadata file that includes relevant contextual information about 
+                                    the researcher/lab/study, a data subdirectory containing CSV files for all responses, and additional 
+                                    materials such as a copy of the study protocol provided in a separate subdirectory. This response
+                                    download is designed to be compliant with the Psych-DS data standard.
+                                </p>
+                            </div>
+                            <div class="col">
+                                <div class="text-end my-3 download-button">
+                                    Data (one file per response)
+                                    {% if n_responses %}
+                                        {% bootstrap_button bs_icon_download|add:" ZIP, CSVs" button_class=btn_primary_classes id="download-frame-data-psychDS" formaction=url_download_frame_data_psychDS %}
+                                    {% else %}
+                                        {% bootstrap_button bs_icon_download|add:" ZIP, CSVs" button_class=btn_primary_classes id="download-frame-data-csv" formaction=url_download_frame_data_psychDS disabled="disabled" %}
                                     {% endif %}
                                 </div>
                             </div>
