@@ -173,6 +173,10 @@ class ResponseViewsTestCase(TestCase):
                 "exp:study-responses-download-frame-data-zip-csv",
                 kwargs={"pk": self.study.pk},
             ),
+            reverse(
+                "exp:study-responses-download-frame-data-zip-psychds",
+                kwargs={"pk": self.study.pk},
+            ),
             reverse("exp:study-demographics", kwargs={"pk": self.study.pk}),
             reverse(
                 "exp:study-demographics-download-json", kwargs={"pk": self.study.pk}
