@@ -91,7 +91,7 @@ class TOTPCheckForm(forms.Form):
     def clean_otp_code(self):
         """Validation check on OTP code."""
         otp_code = self.cleaned_data["otp_code"]
-        if self.otp.verify(otp_code):
+        if self.otp and self.otp.verify(otp_code):
             return otp_code
         else:
             raise forms.ValidationError(
@@ -500,7 +500,7 @@ class StudyListSearchForm(forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
-        child = cleaned_data["child"]
+        child = cleaned_data.get("child")
         if (
             not child
             or "," in child

@@ -25,7 +25,7 @@ from model_utils import Choices
 from transitions import Machine
 
 from accounts.models import Child, DemographicData, User
-from attachment_helpers import get_download_url
+from attachment_helpers import get_url
 from studies import workflow
 from studies.helpers import (
     FrameActionDispatcher,
@@ -1436,7 +1436,11 @@ class Video(models.Model):
 
     @property
     def download_url(self):
-        return get_download_url(self.full_name, self.recording_method_is_pipe)
+        return get_url(self.full_name, self.recording_method_is_pipe, True)
+
+    @property
+    def view_url(self):
+        return get_url(self.full_name, self.recording_method_is_pipe, False)
 
     @property
     def recording_method_is_pipe(self):
