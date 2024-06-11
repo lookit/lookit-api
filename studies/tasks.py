@@ -483,12 +483,14 @@ def delete_video_from_cloud(task, s3_video_name):
 
     Meant to have a delay of about 7 days.
     """
-    video_in_pipe_bucket = studies.models.Video.objects.get(
-        full_name=s3_video_name
-    ).recording_method_is_pipe
-    if video_in_pipe_bucket:
-        # delete from Pipe bucket
-        S3_RESOURCE.Object(settings.BUCKET_NAME, s3_video_name).delete()
-    else:
-        # delete from RecordRTC bucket
-        S3_RESOURCE.Object(settings.S3_BUCKET_NAME, s3_video_name).delete()
+    video = studies.models.Video.objects.filter(full_name=s3_video_name)
+
+    if video.exists():
+        video_in_pipe_bucket = video[0].recording_method_is_pipe
+
+        if video_in_pipe_bucket:
+            # delete from Pipe bucket
+            S3_RESOURCE.Object(settings.BUCKET_NAME, s3_video_name).delete()
+        else:
+            # delete from RecordRTC bucket
+            S3_RESOURCE.Object(settings.S3_BUCKET_NAME, s3_video_name).delete()
