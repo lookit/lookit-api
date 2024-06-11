@@ -69,6 +69,7 @@ def csv_filename(study: Study, *args) -> Text:
     args = map(str, args)
     return f"{study_name_for_files(study.name)}_{'_'.join(args)}.csv"
 
+
 def keyword_filename(keywords: object, filetype: str) -> Text:
     """Generates filename for CSV using keyword key-value pairs.
 
@@ -80,7 +81,7 @@ def keyword_filename(keywords: object, filetype: str) -> Text:
         Text: CSV filename with keyword formatting
     """
     return_str = ""
-    for key,value in keywords.items():
+    for key, value in keywords.items():
         return_str += f"{key}-{value}_"
     return f"{return_str}data.{filetype}"
 
@@ -419,43 +420,45 @@ def build_single_response_framedata_csv(response):
 
     return output.getvalue()
 
+
 def build_metadata_object(study):
     """
     Builds an appropriate metadata JSON for the study at hand, in psych-DS format.
     """
     metadata_json = {
-        "@context":"https://schema.org/",
-        "@type":"Dataset",
-        "name":study.name,
-        "description":study.short_description,
+        "@context": "https://schema.org/",
+        "@type": "Dataset",
+        "name": study.name,
+        "description": study.short_description,
     }
     if study.creator:
-        metadata_json['creator'] = {
-            "uuid":str(study.creator.uuid),
-            "email":study.creator.username,
+        metadata_json["creator"] = {
+            "uuid": str(study.creator.uuid),
+            "email": study.creator.username,
         }
-        if study.creator.given_name and study.creator.given_name != '':
-            metadata_json['creator']['givenName'] = study.creator.given_name
-        if study.creator.family_name and study.creator.family_name != '':
-            metadata_json['creator']['familyName'] = study.creator.given_name
+        if study.creator.given_name and study.creator.given_name != "":
+            metadata_json["creator"]["givenName"] = study.creator.given_name
+        if study.creator.family_name and study.creator.family_name != "":
+            metadata_json["creator"]["familyName"] = study.creator.given_name
         if study.lab:
-            metadata_json['creator']['affiliation'] = {
+            metadata_json["creator"]["affiliation"] = {
                 "@type": "Organization",
-                "email":study.lab.contact_email,
-                "telephone":study.lab.contact_phone,
-                "name":study.lab.name,
-                "description":study.lab.description,
-                "uuid":str(study.lab.uuid),
+                "email": study.lab.contact_email,
+                "telephone": study.lab.contact_phone,
+                "name": study.lab.name,
+                "description": study.lab.description,
+                "uuid": str(study.lab.uuid),
             }
-            if study.lab.lab_website != '':
-                metadata_json['creator']['affiliation']['@id'] = study.lab.lab_website
-            if study.lab.institution != '':
-                metadata_json['creator']['affiliation']['parentOrganization'] = {
-                    "@type":"Organization",
-                    "name":study.lab.institution
+            if study.lab.lab_website != "":
+                metadata_json["creator"]["affiliation"]["@id"] = study.lab.lab_website
+            if study.lab.institution != "":
+                metadata_json["creator"]["affiliation"]["parentOrganization"] = {
+                    "@type": "Organization",
+                    "name": study.lab.institution,
                 }
 
     return metadata_json
+
 
 class ResponseDownloadMixin(CanViewStudyResponsesMixin, MultipleObjectMixin):
     model = Response
@@ -1160,6 +1163,7 @@ class StudyChildrenDictCSV(CanViewStudyResponsesMixin, View):
         set_content_disposition(response, filename)
         return response
 
+
 class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListView):
     """Hitting this URL downloads a ZIP file in Psych-DS formatting with frame data from one response per file in CSV format"""
 
@@ -1175,7 +1179,7 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
             )
 
             return study_responses_all(study)
-        
+
         # build dict with contextual infomation about the study/lab/user
         metadata_json = build_metadata_object(study)
         # variables from column headers will be collected while looping through files
@@ -1188,23 +1192,37 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
                 for resp in page_of_responses:
                     data = build_single_response_framedata_csv(resp)
                     # get column headers from first row
-                    variables_measured += [column.strip('"') for column in data.split('\n')[0].strip().split(',')]
+                    variables_measured += [
+                        column.strip('"')
+                        for column in data.split("\n")[0].strip().split(",")
+                    ]
                     # psych-DS files use "keyword" formatting
-                    keywords = {'study':study_name_for_files(study.name),'response':resp.id,'child':resp.child_id}
-                    filename = keyword_filename(keywords,"csv")
-                    zipped.writestr(f"/data/{filename}", data)
-                    #make a response-specific metadata file
-                    sidecar_metadata = {
-                        "response_uuid":str(resp.uuid),
-                        "eligibility":resp.eligibility[0],
-                        "study_completed":resp.completed
+                    keywords = {
+                        "study": study_name_for_files(study.name),
+                        "response": resp.id,
+                        "child": resp.child_id,
                     }
-                    sidecar_filename = keyword_filename(keywords,"json")
-                    zipped.writestr(f"/data/{sidecar_filename}", json.dumps(sidecar_metadata,indent=4))
-            zipped.writestr(f"/materials/study_protocol.json", json.dumps(study.structure,indent=4))
-            #add final variables list to metadata
-            metadata_json['variableMeasured'] = variables_measured
-            zipped.writestr('dataset_description.json',f"{json.dumps(metadata_json,indent=4)}")
+                    filename = keyword_filename(keywords, "csv")
+                    zipped.writestr(f"/data/{filename}", data)
+                    # make a response-specific metadata file
+                    sidecar_metadata = {
+                        "response_uuid": str(resp.uuid),
+                        "eligibility": resp.eligibility[0],
+                        "study_completed": resp.completed,
+                    }
+                    sidecar_filename = keyword_filename(keywords, "json")
+                    zipped.writestr(
+                        f"/data/{sidecar_filename}",
+                        json.dumps(sidecar_metadata, indent=4),
+                    )
+            zipped.writestr(
+                "/materials/study_protocol.json", json.dumps(study.structure, indent=4)
+            )
+            # add final variables list to metadata
+            metadata_json["variableMeasured"] = variables_measured
+            zipped.writestr(
+                "dataset_description.json", f"{json.dumps(metadata_json,indent=4)}"
+            )
 
         zipped_file.seek(0)
         response = FileResponse(
@@ -1216,6 +1234,7 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
         )
 
         return response
+
 
 class StudyResponsesFrameDataCSV(ResponseDownloadMixin, generic.list.ListView):
     """Hitting this URL downloads a ZIP file with frame data from one response per file in CSV format"""
