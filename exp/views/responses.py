@@ -1200,15 +1200,15 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
                     # psych-DS files use "keyword" formatting
                     keywords = {
                         "study": study_name_for_files(study.name),
-                        "response": resp.id,
-                        "child": resp.child_id,
+                        "response": str(resp.uuid).replace("-",""),
+                        "child": str(resp.child.uuid).replace("-",""),
                     }
                     filename = keyword_filename(keywords, "csv")
                     zipped.writestr(f"/data/{filename}", data)
                     # make a response-specific metadata file
                     sidecar_metadata = {
                         "response_uuid": str(resp.uuid),
-                        "eligibility": resp.eligibility[0],
+                        "eligibility": resp.eligibility,
                         "study_completed": resp.completed,
                     }
                     sidecar_filename = keyword_filename(keywords, "json")
@@ -1216,11 +1216,16 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
                         f"/data/{sidecar_filename}",
                         json.dumps(sidecar_metadata, indent=4),
                     )
+            # save study protocol
             zipped.writestr(
                 "/materials/study_protocol.json", json.dumps(study.structure, indent=4)
             )
+            # save protocol generator
+            zipped.writestr(
+                "/materials/protocol_generator.js", json.dumps(study.generator, indent=4)
+            )
             # add final variables list to metadata
-            metadata_json["variableMeasured"] = variables_measured
+            metadata_json["variableMeasured"] = list(set(variables_measured))
             zipped.writestr(
                 "dataset_description.json", f"{json.dumps(metadata_json,indent=4)}"
             )
