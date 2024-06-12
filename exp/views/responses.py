@@ -1200,8 +1200,8 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
                     # psych-DS files use "keyword" formatting
                     keywords = {
                         "study": study_name_for_files(study.name),
-                        "response": str(resp.uuid).replace("-",""),
-                        "child": str(resp.child.uuid).replace("-",""),
+                        "response": str(resp.uuid).replace("-", ""),
+                        "child": str(resp.child.uuid).replace("-", ""),
                     }
                     filename = keyword_filename(keywords, "csv")
                     zipped.writestr(f"/data/{filename}", data)
@@ -1222,7 +1222,8 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
             )
             # save protocol generator
             zipped.writestr(
-                "/materials/protocol_generator.js", json.dumps(study.generator, indent=4)
+                "/materials/protocol_generator.js",
+                json.dumps(study.generator, indent=4),
             )
             # add final variables list to metadata
             metadata_json["variableMeasured"] = list(set(variables_measured))
