@@ -18,6 +18,7 @@ from typing import Generator, NamedTuple
 import boto3
 import docker
 import requests
+from botocore.exceptions import ClientError, ParamValidationError
 from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.db import connection
@@ -49,6 +50,7 @@ formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+S3_CLIENT = boto3.client("s3")
 
 MESSAGE_TARGET_QUERY = """
 WITH message_targets AS ( -- all valid user-child-study triplets
@@ -492,3 +494,69 @@ def delete_video_from_cloud(task, s3_video_name):
     else:
         # delete from RecordRTC bucket
         S3_RESOURCE.Object(settings.S3_BUCKET_NAME, s3_video_name).delete()
+
+
+@app.task(bind=True)
+def clean_up_incomplete_video_uploads(task):
+    """Check for incomplete multi-part uploads in S3, and either manually complete the video (with a flag) or delete the parts."""
+    logger.debug("Cleaning up incomplete video uploads...")
+    incomplete_video_uploads = get_all_incomplete_video_files()
+    for video in incomplete_video_uploads:
+        parts = get_file_parts(video.Key, video.UploadId)
+        complete_response = complete_multipart_upload(video.Key, video.UploadId, parts)
+        return complete_response  # placeholder to get rid of 'variable assigned but never used' error
+
+
+def get_all_incomplete_video_files():
+    """Gets a list of all incomplete multipart uploads from our S3 video bucket.
+    Returns an array with 0 or more objects, where each object corresponds to an incomplete multipart upload.
+    Each object contains the following keys: UploadId, Key (filename), Initiated (timestamp), StorageClass, Owner (DisplayName and ID), Initiator (DisplayName and ID).
+    """
+    incomplete_uploads = []
+
+    try:
+        uploads_response = S3_CLIENT.list_multipart_uploads(
+            Bucket=settings.S3_BUCKET_NAME
+        )
+    except ClientError as error:
+        raise error
+    except ParamValidationError as error:
+        raise ValueError("The parameters you provided are incorrect: {}".format(error))
+
+    if uploads_response.Uploads:
+        # filter out in-progress uploads that might still be actively recording - started in last 7 days?
+        incomplete_uploads = uploads_response.Uploads
+
+    return incomplete_uploads
+
+
+def get_file_parts(filename, id):
+    """Gets the uploaded part list for a particular incomplete video upload.
+    Returns an array with 1 or more objects, where each object contains a part number and ETag for all parts that were successfully uploaded.
+    """
+    file_parts_response = S3_CLIENT.list_parts(
+        Bucket=settings.S3_BUCKET_NAME, Key=filename, UploadId=id
+    )
+    parts = dict(
+        (key, value)
+        for key, value in file_parts_response.Parts.iteritems()
+        if key in ("PartNumber", "ETag")
+    )
+    return parts
+
+
+def complete_multipart_upload(filename, id, parts):
+    """Attempt to complete the multi-part upload for a given incomplete file.
+    Takes the filename, upload ID, and list of parts for the incomplete file.
+    """
+    try:
+        S3_CLIENT.complete_multipart_upload(
+            Bucket=settings.S3_BUCKET_NAME,
+            Key=filename,
+            MultipartUpload=parts,
+            UploadId=id,
+        )
+    except ClientError as error:
+        raise error
+    except ParamValidationError as error:
+        raise ValueError("The parameters you provided are incorrect: {}".format(error))
