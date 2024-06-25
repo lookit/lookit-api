@@ -217,9 +217,9 @@ urlpatterns = [
         name="study-responses-download-frame-data-zip-csv",
     ),
     path(
-        "studies/<int:pk>/responses/all/download_frame_zip_psychDS/",
+        "studies/<int:pk>/responses/all/download_frame_zip_psychds/",
         StudyResponsesFrameDataPsychDS.as_view(),
-        name="study-responses-download-frame-data-zip-psychDS",
+        name="study-responses-download-frame-data-zip-psychds",
     ),
     path(
         "studies/<int:pk>/responses/all/download_frame_dict_csv/",
