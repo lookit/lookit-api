@@ -1258,7 +1258,7 @@ class StudyChildrenCSV(ResponseDownloadMixin, generic.list.ListView):
         study = self.study
 
         # Loop through responses to get child overview data
-        child_list, session_list = get_child_overview_csv(paginator, study)
+        session_list = get_child_overview_csv(paginator, study)
 
         output, writer = csv_dict_output_and_writer(CHILD_CSV_HEADERS)
         writer.writerows(session_list)
