@@ -588,14 +588,17 @@ def build_metadata_object(study):
         "name": study.name,
         "description": study.short_description,
     }
+    # if study has a creator
     if study.creator:
         metadata_json["creator"] = {
             "@type": "Person",
             "uuid": str(study.creator.uuid),
             "email": study.creator.username,
         }
+        # if given name is not not and not blank (both possible given study model)
         if study.creator.given_name and study.creator.given_name != "":
             metadata_json["creator"]["givenName"] = study.creator.given_name
+        # if family name is not not and not blank (both possible given study model)
         if study.creator.family_name and study.creator.family_name != "":
             metadata_json["creator"]["familyName"] = study.creator.given_name
         if study.lab:
