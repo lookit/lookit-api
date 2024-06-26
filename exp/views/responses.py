@@ -445,6 +445,16 @@ def build_zip_for_psychds(
             "/data/raw/video/README.md",
             VIDEOS_README_STR,
         )
+        study_ad = {
+            "preview_summary":study.preview_summary,
+            "short_description":study.short_description,
+            "purpose":study.purpose,
+            "compensation":study.compensation_description,
+            "criteria_expression":study.criteria_expression
+        }
+        zipped.writestr(
+            "materials/study_ad_info.json", f"{json.dumps(study_ad,indent=4)}"
+        )
 
         zipped.writestr(
             "dataset_description.json", f"{json.dumps(metadata_json,indent=4)}"
