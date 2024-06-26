@@ -319,6 +319,23 @@ def get_study_responses_csv(self, paginator, study):
 
     return session_list, header_options, header_list
 
+def make_chunk(paginator, page_num, header_options):
+    chunk = ""
+    if page_num == 1:
+        chunk = "[\n"
+    chunk += ",\n".join(
+        json.dumps(
+            construct_response_dictionary(resp, RESPONSE_COLUMNS, header_options),
+            indent="\t",  # Use tab rather than spaces to make file smaller (ex. 60MB -> 25MB)
+            default=str,
+        )
+        for resp in paginator.page(page_num)
+    )
+    if page_num == paginator.page_range[-1]:
+        chunk += "\n]"
+    else:
+        chunk += ",\n"
+    return chunk
 
 # Helper function for taking session_data dict list and converting it to csv formatted string
 def build_overview_str(session_list, header_list):
@@ -395,6 +412,8 @@ def build_zip_for_psychds(
     overview_str,
     child_overview_str,
     metadata_json,
+    all_response_filename,
+    all_response_json_str
 ):
     zipped_file = io.BytesIO()
     with zipfile.ZipFile(zipped_file, "w", zipfile.ZIP_DEFLATED) as zipped:
@@ -445,17 +464,23 @@ def build_zip_for_psychds(
             "/data/raw/video/README.md",
             VIDEOS_README_STR,
         )
+        # save all responses json
+        zipped.writestr(
+            f"/data/raw/{all_response_filename}",
+            all_response_json_str,
+        )
         study_ad = {
-            "preview_summary": study.preview_summary,
-            "short_description": study.short_description,
-            "purpose": study.purpose,
-            "compensation": study.compensation_description,
-            "criteria_expression": study.criteria_expression,
+            "preview_summary":study.preview_summary,
+            "short_description":study.short_description,
+            "purpose":study.purpose,
+            "compensation":study.compensation_description,
+            "criteria_expression":study.criteria_expression
         }
+        # save study ad info
         zipped.writestr(
             "materials/study_ad_info.json", f"{json.dumps(study_ad,indent=4)}"
         )
-
+        # save global metadata file
         zipped.writestr(
             "dataset_description.json", f"{json.dumps(metadata_json,indent=4)}"
         )
@@ -1161,24 +1186,6 @@ class StudyResponsesJSON(ResponseDownloadMixin, generic.list.ListView):
     # responses in memory
     paginate_by = 1
 
-    def make_chunk(self, paginator, page_num, header_options):
-        chunk = ""
-        if page_num == 1:
-            chunk = "[\n"
-        chunk += ",\n".join(
-            json.dumps(
-                construct_response_dictionary(resp, RESPONSE_COLUMNS, header_options),
-                indent="\t",  # Use tab rather than spaces to make file smaller (ex. 60MB -> 25MB)
-                default=str,
-            )
-            for resp in paginator.page(page_num)
-        )
-        if page_num == paginator.page_range[-1]:
-            chunk += "\n]"
-        else:
-            chunk += ",\n"
-        return chunk
-
     def render_to_response(self, context, **response_kwargs):
         paginator = context["paginator"]
         study = self.study
@@ -1191,7 +1198,7 @@ class StudyResponsesJSON(ResponseDownloadMixin, generic.list.ListView):
 
         response = StreamingHttpResponse(
             (
-                self.make_chunk(paginator, page_num, header_options)
+                make_chunk(paginator, page_num, header_options)
                 for page_num in paginator.page_range
             ),
             content_type="text/json",
@@ -1337,6 +1344,11 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
         child_overview_str = build_overview_str(child_session_list, CHILD_CSV_HEADERS)
         # gets data necessary for building psychds framedata files
         response_data, variables_measured = get_framedata_for_psychds(paginator, study)
+        # builds "all response" json download
+        all_response_filename = "all_responses{}.json".format(
+            ("_identifiable" if IDENTIFIABLE_DATA_HEADERS & header_options else ""),
+        )
+        all_response_json_str = ''.join([make_chunk(paginator, page_num, header_options) for page_num in paginator.page_range])
         # add final variables list to metadata
         metadata_json["variableMeasured"] = list(set(variables_measured))
 
@@ -1348,6 +1360,8 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
             overview_str,
             child_overview_str,
             metadata_json,
+            all_response_filename,
+            all_response_json_str
         )
 
         return response
