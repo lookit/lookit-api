@@ -51,7 +51,7 @@ urlpatterns = [
         name="email-preferences",
     ),
     re_path(
-        r"^account/(?P<username>[\w.@+-]+)/(?P<token>[\w.:\-_=]+)/$",
+        r"^account/(?P<username>.+@.+)/(?P<token>[\w.:\-_=]+)/$",
         views.ParticipantEmailUnsubscribeView.as_view(),
         name="email-unsubscribe-link",
     ),
