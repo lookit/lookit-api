@@ -1457,8 +1457,9 @@ def delete_video_on_s3(sender, instance, using, **kwargs):
 
     Do this in a pre_delete hook rather than a custom delete function because this will
     be called when cascading deletion from responses."""
+    video_in_pipe_bucket = instance.recording_method_is_pipe
     delete_video_from_cloud.apply_async(
-        args=(instance.full_name,), countdown=60 * 60 * 24 * 7
+        args=(instance.full_name, video_in_pipe_bucket), countdown=60 * 60 * 24 * 7
     )  # Delete after 1 week.
 
 
