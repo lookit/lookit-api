@@ -594,7 +594,10 @@ class TestAnnouncementEmailFunctionality(TestCase):
 
 class TestSendMail(TestCase):
     def setUp(self):
-        self.context = {"token": G(User).generate_token(), "username": "username"}
+        self.context = {
+            "token": G(User).generate_token(),
+            "username": "username@email.com",
+        }
 
     def test_send_email_with_image(self):
         email = send_mail(
