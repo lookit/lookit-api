@@ -2725,7 +2725,7 @@ msgstr "これまでの研究・調査"
 #: web/templates/web/home.html:15
 #, fuzzy
 msgid "ChildrenHelpingScience and Lookit have merged - click"
-msgstr "Children Helping Scienceチーム（米国）"
+msgstr "&nbsp;"
 
 #: web/templates/web/home.html:16
 msgid "here"
@@ -2733,7 +2733,7 @@ msgstr "こちら"
 
 #: web/templates/web/home.html:16
 msgid "to make an account or explore studies below!"
-msgstr "アカウントを作成するため、または以下の調査を検索するため"
+msgstr "をクリックすると、アカウント作成画面に進みます。"
 
 #. Translators: Please include the untranslated "%(contact)s" string to mark where the contact information should be inserted.
 #: web/templates/web/study-detail.html:88
