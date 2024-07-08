@@ -38,7 +38,6 @@ def remove_scheduled_jobs(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("accounts", "0050_child_message_join_table_for_announcement_emails"),
     ]

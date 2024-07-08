@@ -25,7 +25,6 @@ from django.utils import timezone
 from google.cloud import storage as gc_storage
 from more_itertools import chunked, first, flatten, groupby_transform, map_reduce
 
-import studies.models
 from accounts.models import Child, Message, User
 from accounts.queries import get_child_eligibility_for_study
 from project.celery import app
@@ -223,14 +222,14 @@ def limit_email_targets(
     random.shuffle(all_user_study_children_tuples)
     study_counts = Counter()
     email_user_study_children_tuples = []
-    for (user_id, study_id, child_id_list) in all_user_study_children_tuples:
+    for user_id, study_id, child_id_list in all_user_study_children_tuples:
         if study_counts[study_id] >= max_emails_per_study:
             continue
         email_user_study_children_tuples.append((user_id, study_id, child_id_list))
         study_counts[study_id] += 1
 
     # Now fetch the actual objects again
-    for (user_id, study_id, child_id_list) in email_user_study_children_tuples:
+    for user_id, study_id, child_id_list in email_user_study_children_tuples:
         yield (
             User.objects.get(id=user_id),
             Study.objects.get(id=study_id),
@@ -374,7 +373,7 @@ def build_zipfile_of_videos(
             with zipfile.ZipFile(zip_file_path, "w") as zf:
                 for video in video_qs:
                     temporary_file_path = os.path.join(temp_directory, video.full_name)
-                    file_response = requests.get(video.download_url, stream=True)
+                    file_response = requests.get(video.view_url, stream=True)
                     with open(temporary_file_path, mode="w+b") as local_file:
                         for chunk in file_response.iter_content(8192):
                             local_file.write(chunk)
@@ -399,7 +398,6 @@ def build_zipfile_of_videos(
         "download_zip",
         "Your video archive has been created",
         [requesting_user.username],
-        from_email=settings.EMAIL_FROM_ADDRESS,
         **email_context,
     )
 
@@ -474,21 +472,17 @@ def build_framedata_dict(filename, study_uuid, requesting_user_uuid):
         "download_framedata_dict",
         "Your frame data dictionary has been created",
         [requesting_user.username],
-        from_email=settings.EMAIL_FROM_ADDRESS,
         **email_context,
     )
 
 
 @app.task(bind=True)
-def delete_video_from_cloud(task, s3_video_name):
+def delete_video_from_cloud(task, s3_video_name, recording_method_is_pipe):
     """Delete videos in S3.
 
     Meant to have a delay of about 7 days.
     """
-    video_in_pipe_bucket = studies.models.Video.objects.get(
-        full_name=s3_video_name
-    ).recording_method_is_pipe
-    if video_in_pipe_bucket:
+    if recording_method_is_pipe:
         # delete from Pipe bucket
         S3_RESOURCE.Object(settings.BUCKET_NAME, s3_video_name).delete()
     else:

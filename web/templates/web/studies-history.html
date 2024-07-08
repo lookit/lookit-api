@@ -82,7 +82,7 @@
                             {% if response.videos.all %}
                                 <video controls width="100%" height="auto">
                                     {% for video in response.videos.all %}
-                                        <source src="{{ video.download_url }}"
+                                        <source src="{{ video.view_url }}"
                                                 type="video/mp4"
                                                 data-index="{{ forloop.counter }}" />
                                     {% endfor %}

@@ -107,7 +107,7 @@ def nav_link(
     Args:
         request (Request): Reqeust submitted from template
         url_name (Text): Name of url to be looked up by reverse
-        text (Text): Text to be displayed in item
+        text (Text): Text to be displayed in item (translated before passed in as argument)
         html_classes (Array): optional list of one or more classes for the <a> element
         queryString (Text): optional query string to be appended to the end of URL
         list (Boolean): should the nav links be inside <li> elements? (default is False)
@@ -135,7 +135,7 @@ def nav_link(
     if queryString:
         url = url + queryString
     nav_a_tag = (
-        f'<a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a>'
+        f'<a class="{" ".join(html_classes)}"{aria_current} href="{url}">{text}</a>'
     )
 
     if list:

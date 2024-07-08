@@ -15,6 +15,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
+from django.shortcuts import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
@@ -24,8 +25,7 @@ from model_utils import Choices
 from transitions import Machine
 
 from accounts.models import Child, DemographicData, User
-from attachment_helpers import get_download_url
-from project import settings
+from attachment_helpers import get_url
 from studies import workflow
 from studies.helpers import (
     FrameActionDispatcher,
@@ -281,6 +281,10 @@ def default_study_structure():
     return {"frames": {}, "sequence": []}
 
 
+def default_exit_url():
+    return f"{settings.BASE_URL}{reverse('web:studies-history')}"
+
+
 class Study(models.Model):
     MONITORING_FIELDS = [
         "structure",
@@ -324,7 +328,7 @@ class Study(models.Model):
     max_age_months = models.IntegerField(default=0, choices=MONTH_CHOICES)
     max_age_years = models.IntegerField(default=0, choices=YEAR_CHOICES)
     image = models.ImageField(null=True, upload_to="study_images/")
-    exit_url = models.URLField(default="https://lookit.mit.edu/studies/history/")
+    exit_url = models.URLField(default=default_exit_url)
     comments = models.TextField(blank=True, null=True)
     comments_extra = models.JSONField(blank=True, null=True, default=dict)
     study_type = models.ForeignKey(
@@ -1432,7 +1436,11 @@ class Video(models.Model):
 
     @property
     def download_url(self):
-        return get_download_url(self.full_name, self.recording_method_is_pipe)
+        return get_url(self.full_name, self.recording_method_is_pipe, True)
+
+    @property
+    def view_url(self):
+        return get_url(self.full_name, self.recording_method_is_pipe, False)
 
     @property
     def recording_method_is_pipe(self):
@@ -1449,8 +1457,9 @@ def delete_video_on_s3(sender, instance, using, **kwargs):
 
     Do this in a pre_delete hook rather than a custom delete function because this will
     be called when cascading deletion from responses."""
+    video_in_pipe_bucket = instance.recording_method_is_pipe
     delete_video_from_cloud.apply_async(
-        args=(instance.full_name,), countdown=60 * 60 * 24 * 7
+        args=(instance.full_name, video_in_pipe_bucket), countdown=60 * 60 * 24 * 7
     )  # Delete after 1 week.
 
 

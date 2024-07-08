@@ -28,7 +28,6 @@ def create_scheduled_jobs(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("studies", "0039_auto_20180219_1259")]
 
     operations = [migrations.RunPython(create_scheduled_jobs)]

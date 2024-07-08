@@ -4,11 +4,9 @@ import zipfile
 from functools import cached_property
 from typing import Dict, KeysView, List, NamedTuple, Set, Text, Union
 
-import requests
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousOperation
-from django.core.files import File
 from django.core.paginator import Paginator
 from django.db.models import Prefetch
 from django.http import (
@@ -48,7 +46,6 @@ from studies.queries import (
 from studies.tasks import build_framedata_dict, build_zipfile_of_videos
 
 CONTENT_TYPE = "text/csv"
-
 
 # Which headers from the response data summary should go in the child data downloads
 CHILD_CSV_HEADERS = [
@@ -214,7 +211,7 @@ def get_frame_data(resp: Union[Response, Dict]) -> List[FrameDataRow]:
         exp_data. Descriptions of each field of the FrameDataRow are given in FRAME_DATA_HEADER_DESCRIPTIONS.
     """
 
-    if type(resp) is not dict:
+    if not isinstance(resp, dict):
         resp = {
             "child__uuid": resp.child.uuid,
             "study__uuid": resp.study.uuid,
@@ -234,8 +231,8 @@ def get_frame_data(resp: Union[Response, Dict]) -> List[FrameDataRow]:
     )
 
     # First add all of the global event timings as events with frame_id "global"
-    for (i_event, event) in enumerate(resp["global_event_timings"]):
-        for (key, value) in event.items():
+    for i_event, event in enumerate(resp["global_event_timings"]):
+        for key, value in event.items():
             frame_data_tuples.append(
                 FrameDataRow(
                     child_hashed_id=child_hashed_id,
@@ -250,7 +247,7 @@ def get_frame_data(resp: Union[Response, Dict]) -> List[FrameDataRow]:
     # Next add all data in exp_data
     event_prefix = "eventTimings."
     for frame_id, frame_data in resp["exp_data"].items():
-        for (key, value) in flatten_dict(frame_data).items():
+        for key, value in flatten_dict(frame_data).items():
             # Process event data separately and include event_number within frame
             if key.startswith(event_prefix):
                 key_pieces = key.split(".")
@@ -652,19 +649,13 @@ class StudyResponseVideoAttachment(
     test_func = can_view_this_video
 
     def get(self, request, *args, **kwargs):
-        video = self.video
-        download_url = video.download_url
+        view_url = self.video.view_url
+        download_url = self.video.download_url
 
         if self.request.GET.get("mode") == "download":
-            r = requests.get(download_url)
-            response = FileResponse(
-                File.open(io.BytesIO(r.content)),
-                filename=video.filename,
-                as_attachment=True,
-            )
-            return response
-
-        return redirect(download_url)
+            return redirect(download_url)
+        else:
+            return redirect(view_url)
 
 
 class StudyResponseSubmitFeedback(StudyLookupMixin, UserPassesTestMixin, View):

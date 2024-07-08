@@ -307,7 +307,6 @@ class StudiesHistoryViewTestCase(ExternalTestCase):
 
     @patch.object(StudiesHistoryView, "request", create=True)
     def test_history_view_only_users_responses(self, mock_request):
-
         user = G(User)
         child = G(Child, user=user)
         study = G(Study, study_type=StudyType.get_ember_frame_player())

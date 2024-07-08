@@ -1,5 +1,6 @@
-{% autoescape off %}
-    {{ custom_message }}
-{% endautoescape %}
-<br />
-<a href="{{ base_url }}{% url 'web:email-preferences' %}">Update your email preferences</a>
+{% extends "emails/base.html" %}
+{% block content %}
+    {% autoescape off %}
+        {{ custom_message }}
+    {% endautoescape %}
+{% endblock content %}

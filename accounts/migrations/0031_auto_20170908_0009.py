@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("accounts", "0030_child_former_lookit_profile_id")]
 
     operations = [

@@ -19,7 +19,7 @@ def get_all_study_attachments(study_uuid):
     return bucket.objects.filter(Prefix=f"videoStream_{study_uuid}")
 
 
-def get_download_url(video_key, recording_method_is_pipe):
+def get_url(video_key, recording_method_is_pipe, set_attachment_header):
     """
     Generate a presigned url for the video that expires in 10 minutes.
     """
@@ -31,10 +31,14 @@ def get_download_url(video_key, recording_method_is_pipe):
         # RecordRTC bucket
         bucket = settings.S3_BUCKET_NAME
 
+    params = {"Bucket": bucket, "Key": video_key}
+    if set_attachment_header:
+        params["ResponseContentDisposition"] = "attachment"
+
     try:
         url = S3_CLIENT.generate_presigned_url(
             "get_object",
-            Params={"Bucket": bucket, "Key": video_key},
+            Params=params,
             ExpiresIn=600,
         )
     except ClientError as e:

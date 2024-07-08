@@ -1,12 +1,21 @@
 {% load i18n %}
 {% load web_extras %}
-{% trans "Logout" as logout %}
+{% trans "CHS Home" as chs_home %}
 {% trans "Experimenter" as experimenter %}
+{% trans "Studies" as studies %}
+{% trans "FAQ" as faq %}
+{% trans "The Scientists" as scientists %}
+{% trans "Resources" as resources %}
+{% trans "My Account" as my_account %}
+{% trans "My Past Studies" as my_past_studies %}
+{% trans "Logout" as logout %}
+{% trans "Sign up" as sign_up %}
+{% trans "Login" as login %}
 <header class="row" id="navbar-row">
     <nav class="navbar navbar-expand-md bg-light text-dark">
         <div class="container-fluid">
             <div class="navbar-nav nav-pills navbar-collapse">
-                {% nav_link request 'web:home' 'CHS Home' %}
+                {% nav_link request 'web:home' chs_home %}
                 {% if user.is_researcher %}
                     {% nav_link request 'exp:study-list' experimenter %}
                 {% endif %}
@@ -19,19 +28,19 @@
             </div>
             {% block nav_links %}
                 <div class="navbar-nav nav-pills navbar-collapse collapse collapse1 justify-content-center">
-                    {% nav_link request 'web:studies-list' 'Studies' %}
-                    {% nav_link request 'web:faq' 'FAQ' %}
-                    {% nav_link request 'web:scientists' 'The Scientists' %}
-                    {% nav_link request 'web:resources' 'Resources' %}
+                    {% nav_link request 'web:studies-list' studies %}
+                    {% nav_link request 'web:faq' faq %}
+                    {% nav_link request 'web:scientists' scientists %}
+                    {% nav_link request 'web:resources' resources %}
                 </div>
                 <div class="navbar-nav nav-pills navbar-collapse collapse collapse1 justify-content-end">
                     {% if user.is_authenticated %}
-                        {% nav_link request 'accounts:manage-account' 'My Account' %}
-                        {% nav_link request 'web:studies-history' 'My Past Studies' %}
+                        {% nav_link request 'accounts:manage-account' my_account %}
+                        {% nav_link request 'web:studies-history' my_past_studies %}
                         {% nav_link request 'logout' logout %}
                     {% else %}
-                        {% nav_signup request 'Sign up' %}
-                        {% nav_login request 'Login' %}
+                        {% nav_signup request sign_up %}
+                        {% nav_login request login %}
                     {% endif %}
                 </div>
             {% endblock nav_links %}

@@ -147,7 +147,7 @@ class ContactViewTestCase(TestCase):
         message = G(
             Message,
             sender=self.senders[4],
-            subject=f"Question 4 about your response",
+            subject="Question 4 about your response",
             related_study=self.other_study,
         )
         message.recipients.add(self.participants[0])
@@ -252,19 +252,16 @@ class ContactViewTestCase(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        # Ensure message sent to participants 0, 1, 2
-        mock_send_mail.assert_called_once()
+        # Ensure message sent to participants 0, 1, 2.  We now mail each person
+        # individually to provide an appropriate unsubscribe link.
+        self.assertEqual(mock_send_mail.call_count, 3)
+
+        # checking that we aren't adding any users to bbc.
+        self.assertFalse("bbc" in mock_send_mail.call_args.kwargs)
         self.assertEqual(
-            mock_send_mail.call_args.args,
-            ("custom_email", "test email", ["lookit.robot@some.domain"]),
+            mock_send_mail.call_args.kwargs["reply_to"], [self.study.lab.contact_email]
         )
-        self.assertEqual(
-            mock_send_mail.call_args.kwargs["bcc"],
-            [p.username for p in self.participants[0:3]],
-        )
-        self.assertEqual(
-            mock_send_mail.call_args.kwargs["from_email"], self.study.lab.contact_email
-        )
+        self.assertFalse("from_email" in mock_send_mail.call_args)
 
         # And that appropriate message object created
         self.assertTrue(Message.objects.filter(subject="test email").exists())
@@ -289,15 +286,16 @@ class ContactViewTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         # Ensure message sent only to participant 3, not participant 4 (who did not participate in this study)
-        mock_send_mail.assert_called_once()
+        mock_send_mail.assert_called()
         self.assertEqual(
             mock_send_mail.call_args.args,
-            ("custom_email", "test email", [self.participants[3].username]),
+            ("custom_email", "test email", self.participants[3].username),
         )
-        self.assertEqual(mock_send_mail.call_args.kwargs["bcc"], [])
+        self.assertFalse("bbc" in mock_send_mail.call_args.kwargs)
         self.assertEqual(
-            mock_send_mail.call_args.kwargs["from_email"], self.study.lab.contact_email
+            mock_send_mail.call_args.kwargs["reply_to"], [self.study.lab.contact_email]
         )
+        self.assertFalse("from_email" in mock_send_mail.call_args)
 
         # And that appropriate message object created
         self.assertTrue(Message.objects.filter(subject="test email").exists())

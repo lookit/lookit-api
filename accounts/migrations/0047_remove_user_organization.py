@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("accounts", "0046_catch-up-migrations-to-current")]
 
     operations = [migrations.RemoveField(model_name="user", name="organization")]

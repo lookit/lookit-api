@@ -12,7 +12,9 @@ from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
 from django.dispatch import receiver
 from django.http import HttpResponseForbidden, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect, reverse
+from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.utils.safestring import mark_safe
+from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
@@ -297,6 +299,51 @@ class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
         context = super().get_context_data(**kwargs)
         context["has_study_child"] = self.request.user.has_study_child(self.request)
         return context
+
+
+class ParticipantEmailUnsubscribeView(generic.View):
+    template_name = "web/unsubscribe.html"
+
+    def get(self, request, username, *args, **kwargs):
+        return render(request, self.template_name, {"username": username})
+
+    def post(self, request, username, token, *args, **kwargs):
+        try:
+            user = User.objects.get(username=username)
+            valid_token = user.check_token(token)
+            already_unsubscribed = not any(
+                (
+                    user.email_new_studies,
+                    user.email_next_session,
+                    user.email_study_updates,
+                    user.email_response_questions,
+                )
+            )
+        except User.DoesNotExist:
+            user = None
+
+        if not user:
+            messages.error(request, f'User "{username}" could not be found.')
+        elif already_unsubscribed and valid_token:
+            messages.info(request, f"{username} has already unsubscribed.")
+        elif valid_token:
+            User.objects.filter(pk=user.id).update(
+                email_new_studies=False,
+                email_next_session=False,
+                email_study_updates=False,
+                email_response_questions=False,
+            )
+            messages.info(request, f"{username} has been unsubscribed.")
+        else:
+            email_pref_url = reverse("web:email-preferences")
+            messages.error(
+                request,
+                mark_safe(
+                    f'{username} could not be unsubscribed. Click <a href="{email_pref_url}">here</a> to update your email preferences.'
+                ),
+            )
+
+        return redirect("web:home")
 
 
 class StudiesListView(generic.ListView, FormView):
@@ -695,9 +742,7 @@ class ExperimentProxyView(
         except Child.DoesNotExist:
             return False
 
-        try:
-            study = Study.objects.get(uuid=kwargs.get("uuid", None))
-        except Study.DoesNotExist:
+        if not Study.objects.filter(uuid=kwargs.get("uuid", None)).exists():
             return False
 
         if child.user != user:
@@ -798,5 +843,22 @@ class ScientistsView(generic.TemplateView):
             (s, Institution.objects.filter(section=s))
             for s in InstitutionSection.objects.order_by("order")
         ]
+
+        return context
+
+
+class FaqView(generic.TemplateView):
+    template_name = "web/faq.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if get_language() == "ja":
+            context["video_consent_mp4"] = "videos/consent_ja.mp4"
+            context["captions_label"] = ""
+            context["captions_src"] = ""
+        else:
+            context["video_consent_mp4"] = "videos/consent.mp4"
+            context["captions_label"] = "English"
+            context["captions_src"] = "videos/english/consent.vtt"
 
         return context

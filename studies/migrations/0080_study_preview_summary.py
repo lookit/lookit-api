@@ -29,7 +29,6 @@ def reverse_data(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("studies", "0079_update_jsonfield"),
     ]

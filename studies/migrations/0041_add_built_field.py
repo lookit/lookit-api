@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("studies", "0040_add_scheduled_jobs")]
 
     operations = [

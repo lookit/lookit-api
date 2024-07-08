@@ -11,8 +11,9 @@
     <div class="alert alert-warning alert-dismissible fade show text-center"
          role="alert">
         {% if not request.user.is_authenticated %}
-        {% url 'web:participant-signup' as url-participant-signup %}
-        {% trans "ChildrenHelpingScience and Lookit have merged - click <a href='{{ url-participant-signup }}' class='alert-link'>here</a> to make an account or explore studies below!" %}      
+            {% url "web:participant-signup" as url_participant_signup %}
+            {% trans "ChildrenHelpingScience and Lookit have merged - click" %}
+            <a href="{{ url_participant_signup }}" class="alert-link">{% trans "here" %}</a> {% trans "to make an account or explore studies below!" %}
         {% else %}
             {% trans "ChildrenHelpingScience and Lookit have merged!" %}
         {% endif %}

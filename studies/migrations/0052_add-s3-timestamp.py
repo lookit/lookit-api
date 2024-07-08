@@ -21,7 +21,6 @@ def add_s3_timestamp(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("studies", "0051_eligibility_criteria_expression_support")]
 
     operations = [

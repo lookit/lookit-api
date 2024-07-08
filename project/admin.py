@@ -6,7 +6,6 @@ from accounts.forms import TOTPLoginForm
 
 
 class TwoFactorAuthProtectedAdminSite(admin.AdminSite):
-
     login_form = TOTPLoginForm
     login_template = "registration/login.html"
 

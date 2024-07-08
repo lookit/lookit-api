@@ -171,9 +171,9 @@ class StudyFormTestCase(TestCase):
         data = model_to_dict(self.study)
         data["min_age_years"] = 0
         data["min_age_months"] = 11
-        data[
-            "min_age_days"
-        ] = 31  # Min age 361 days per usual definitions; 365.6 if month = 365/12
+        data["min_age_days"] = (
+            31  # Min age 361 days per usual definitions; 365.6 if month = 365/12
+        )
         data["max_age_years"] = 1
         data["max_age_months"] = 0
         data["max_age_days"] = 0

@@ -83,7 +83,12 @@
                     {% endif %}
                 </table>
                 <p class="pb-0">
-                    <em class="mt-3 mb-0 text-center text-muted">{% trans "This study is conducted by" %} {{ object.contact_info }}</em>
+                    <em class="mt-3 mb-0 text-center text-muted">
+                        {# Translators: Please include the untranslated "%(contact)s" string to mark where the contact information should be inserted. #}
+                        {% blocktranslate trimmed with contact=study.contact_info %}
+                            This study is conducted by {{ contact }}.
+                        {% endblocktranslate %}
+                    </em>
                 </p>
             </div>
         </div>
@@ -130,7 +135,10 @@
                             {% trans "Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but researchers may not be able to compensate you or use the collected data in their research." %}
                         </p>
                         <p class="text-danger mb-0 mt-3 d-none" id="criteria-not-met">
-                            {% blocktranslate with contact=study.contact_info %} Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but researchers may not be able to compensate you or use your data. Please review the “Who can participate” information for this study and contact the study researchers ({{ contact }}) if you feel this is in error. {% endblocktranslate %}
+                            {# Translators: Please include the untranslated "%(contact)s" string to mark where the contact information should be inserted. #}
+                            {% blocktranslate trimmed with contact=study.contact_info %}
+                                Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but researchers may not be able to compensate you or use your data. Please review the “Who can participate” information for this study and contact the study researchers ({{ contact }}) if you feel this is in error.
+                            {% endblocktranslate %}
                         </p>
                         {% if preview_mode and object.needs_to_be_built %}
                             {% bootstrap_button build_runner href=build_runner_url button_class=btn_secondary_classes id="participate-button" %}

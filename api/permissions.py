@@ -61,7 +61,7 @@ class VideoFromS3Permissions:
                 except KeyError:
                     # results in 401 unauthorized response
                     raise exceptions.AuthenticationFailed(
-                        f"No HMAC signature found in request header."
+                        "No HMAC signature found in request header."
                     )
 
             # calculate signature to compare with the one sent
@@ -83,7 +83,7 @@ class VideoFromS3Permissions:
 
             # false results in 401 unauthorized response
             if not signature_received == signature_calculated:
-                raise exceptions.AuthenticationFailed(f"HMAC signatures do not match.")
+                raise exceptions.AuthenticationFailed("HMAC signatures do not match.")
             else:
                 return True
         else:

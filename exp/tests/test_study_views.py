@@ -764,7 +764,7 @@ class ManageResearcherPermissionsViewTestCase(TestCase):
             "notify_researcher_of_study_permissions",
             f"New access granted for study {mock_get_object().name}",
             mock_user.username,
-            from_email=mock_get_object().lab.contact_email,
+            reply_to=[mock_get_object().lab.contact_email],
             permission=mock_permission,
             study_name=mock_get_object().name,
             study_id=mock_get_object().id,

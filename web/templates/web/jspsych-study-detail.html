@@ -17,18 +17,23 @@
         <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.2"
                 integrity="sha384-ieDTpJ57nlVDQBu9ti3FiIIqRDAYQWLVyNSvkkA241eFPk+63fwBqc0Rn+ePnSZt"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@lookit/lookit-initjspsych@1.0.4"
-                integrity="sha384-ChFT/KSP0S4cJ0N9WAg7v86UvHTOK2ItNJMTGAjz/88HciyA8hGoUJkoDce0rXc9"
+        <script src="https://unpkg.com/@lookit/lookit-initjspsych@0.0.1"
+                integrity="sha384-RepAqqTAnziAru8pDzd7Zp6izZdkSvLZ0EKGQv1JAnGpfjKLm10+GjIE7OEpFp16"
+                crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/@lookit/lookit-helpers@0.0.1"
+                integrity="sha384-Ty+Qfh8Ms6Bjv4eKgq/Unoa3C0xQiXE6UyRb2lPl3WpCiUFEGCBzgZhTO/UKdG59"
                 crossorigin="anonymous"></script>
         <link rel="stylesheet"
               href="https://unpkg.com/jspsych@7.3.3/css/jspsych.css"
               integrity="sha384-V/UDJ5gQqHFzUZFNp/XZxaqNCEGfcX0ExsYH3gH8dFRe6piMutG6hSKyCYJsql96"
               crossorigin="anonymous">
-        <script>
-                const responseApiUrl="{% url 'api:response-detail' version='v2' uuid=response.uuid %}";
+        {# This survey css should be removed when plugin is in production #}
+        <link rel="stylesheet"
+              href="https://raw.githack.com/jspsych/jsPsych/survey-plugin-rewrite/packages/plugin-survey/css/survey.css">
+        <script type="module">
                 const responseUuid="{{ response.uuid }}";
-                const exitUrl="{{ response.study.exit_url }}"
-                initJsPsych = lookitInitJsPsych(responseApiUrl, responseUuid, exitUrl);
+                await chsData.load(responseUuid);
+                initJsPsych = chsInitJsPsych(responseUuid);
                 {% autoescape off %}{{ study.metadata.experiment }}{% endautoescape %}
         </script>
     </head>
