@@ -1338,7 +1338,7 @@ msgstr "人口統計学的データを記入する"
 
 #: web/templates/web/study-detail.html:19
 msgid "now"
-msgstr "現在"
+msgstr "&nbsp;"
 
 #: web/views.py:114
 msgid "Participant created."
