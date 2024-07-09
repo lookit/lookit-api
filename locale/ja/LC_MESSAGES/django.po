@@ -220,72 +220,58 @@ msgid "40 or more weeks"
 msgstr "40週以上"
 
 #: accounts/models.py:87
-#, fuzzy
 msgid "Can View Organization"
 msgstr "所属機関を見ることができる"
 
 #: accounts/models.py:88
-#, fuzzy
 msgid "Can Edit Organization"
 msgstr "所属機関を編集することができる"
 
 #: accounts/models.py:89
-#, fuzzy
 msgid "Can Create Organization"
 msgstr "所属機関を作成することができる"
 
 #: accounts/models.py:90
-#, fuzzy
 msgid "Can Remove Organization"
 msgstr "所属機関を削除することができる"
 
 #: accounts/models.py:91
-#, fuzzy
 msgid "Can View Experimenter"
 msgstr "研究者を見ることができる"
 
 #: accounts/models.py:92
-#, fuzzy
 msgid "Can View Analytics"
 msgstr "統計を表示することができる"
 
 #: accounts/models.py:324
-#, fuzzy
 msgid "Can Create User"
 msgstr "ユーザーを作成できる"
 
 #: accounts/models.py:325
-#, fuzzy
 msgid "Can View User"
 msgstr "ユーザーを表示できる"
 
 #: accounts/models.py:326
-#, fuzzy
 msgid "Can Edit User"
 msgstr "ユーザーを編集できる"
 
 #: accounts/models.py:327
-#, fuzzy
 msgid "Can Remove User"
 msgstr "ユーザーを削除できる"
 
 #: accounts/models.py:328
-#, fuzzy
 msgid "Can View User Permissions"
 msgstr "ユーザー権限を表示できる"
 
 #: accounts/models.py:329
-#, fuzzy
 msgid "Can Edit User Permissions"
 msgstr "ユーザー権限を編集できる"
 
 #: accounts/models.py:330
-#, fuzzy
 msgid "Can Read All User Data"
 msgstr "すべてのユーザーデータを読み取れる"
 
 #: accounts/models.py:331
-#, fuzzy
 msgid "Can Read User Usernames"
 msgstr "ユーザー名を読み取れる"
 
@@ -608,7 +594,6 @@ msgid "State"
 msgstr "都道府県"
 
 #: accounts/templates/accounts/participant_detail.html:72
-#, fuzzy
 msgid "Area description"
 msgstr "地域の説明"
 
@@ -637,7 +622,6 @@ msgid "Race"
 msgstr "人種"
 
 #: accounts/forms.py:223
-#, fuzzy
 msgid "Nickname"
 msgstr "ユーザー名"
 
@@ -710,7 +694,6 @@ msgid "Your password was changed."
 msgstr "パスワードが変更されました。"
 
 #: web/templates/registration/password_change_form.html:12
-#, fuzzy
 msgid "Documentation"
 msgstr "概要"
 
@@ -2061,7 +2044,6 @@ msgstr "\n"
 ""
 
 #: web/templates/web/faq.html:114
-#, fuzzy
 msgid "\n"
 "                <p>All of the research conducted on the website is created by scientists to learn about child development, leading to articles in scientific journals. These publications can help inform other scientists, parents, educators, and policy-makers. Usually, these scientists work at colleges, universities, or hospitals. Rarely, a scientist who works at a nonprofit or a company might also do a study that fits this goal. If a study is meant to publish results in scientific journals for everyone to see (instead of just for one nonprofit or company), then it is possible it would appear on this website.</p>\n"
 "                <p>If a scientist wants to use this platform, their institution has to sign a contract with MIT where they agree to the <a href=\"%(termsofuse)s\">Terms of Use</a> and certify that their studies will be reviewed and approved by an institutional review board. Studies are also subject to review and approval by Children Helping Science. As of April 2023, we have agreements with over 90 universities,  including institutions in the United States, Canada, the United Kingdom, and European Union.</p>\n"
@@ -2213,7 +2195,6 @@ msgstr "<p>研究・調査への参加に同意する際には、その研究・
 "                                <p>研究・調査の実施からそれらが公表されるまでの間には長い時間差が生じる場合があります。5歳だったお子さんが、結果が公表される前に8歳になってしまった、ということもあるでしょう！　そのため、科学的な結果の発表に加えて、このwebサイトに研究・調査を掲載している研究室の多くは、保護者が最新情報を受け取れるように登録する仕組みを用意しています。また、あなたが参加した研究・調査の結果が出た際に、Children Helping Scienceから通知が届くように設定することもできます。</p>"
 
 #: web/templates/web/faq.html:590
-#, fuzzy
 msgid "\n"
 "                <p>Become a parent ambassador! One of the biggest challenges in developmental research is reaching families like you. With more children, we can also answer more sophisticated questions -- including questions about individual differences, the ways many different factors can interact to affect outcomes. Families like yours can help us make our science more representative and more reliable. </p>\n"
 "                <p>If you like what you are doing, please share this website (<a href=\"%(url_home)s\">https://www.childrenhelpingscience.com</a>), with our sincere thanks. Research on child development would be impossible without the support of parents like you.</p>\n"
@@ -2643,7 +2624,6 @@ msgstr "上のタブを使って、今すぐにできるものや、日程調整
 "研究・調査への参加にはノートPCまたはデスクトップPCが必要です (スマートフォンやタブレットは使用できません)。特に指定がない限りは、ChromeまたはFirefoxのブラウザが必要となります。"
 
 #: accounts/forms.py:109
-#, fuzzy
 msgid "Please enter a correct %(username)s and password. Note that email and password fields may be case-sensitive. If you have turned on two-factor authentication, you will need a one-time password (OTP code) from Google Authenticator as well. "
 msgstr "正しい %（ユーザーネーム）とパスワードを入力してください。メールアドレス欄とパスワード欄は設定によって異なります。二段階認証を有効にしている場合は、Google認証システムからのワンタイムパスワード（OTPコード）も必要になります。"
 
@@ -2700,9 +2680,8 @@ msgid "Find a developmental lab near you"
 msgstr "この情報は英語圏の方のみ対象となります　Find a developmental lab near you"
 
 #: web/templates/web/_navigation.html:3
-#, fuzzy
 msgid "CHS Home"
-msgstr "ホーム"
+msgstr "CHSホーム"
 
 #: web/templates/web/_navigation.html:6
 msgid "FAQ"
@@ -2713,17 +2692,14 @@ msgid "The Scientists"
 msgstr "科学者たち"
 
 #: web/templates/web/_navigation.html:9
-#, fuzzy
 msgid "My Account"
 msgstr "マイアカウント"
 
 #: web/templates/web/_navigation.html:10
-#, fuzzy
 msgid "My Past Studies"
-msgstr "これまでの研究・調査"
+msgstr "これまで参加した研究・調査"
 
 #: web/templates/web/home.html:15
-#, fuzzy
 msgid "ChildrenHelpingScience and Lookit have merged - click"
 msgstr "&nbsp;"
 
@@ -2742,7 +2718,6 @@ msgstr "この研究・調査を実施している研究者／研究グループ
 
 #. Translators: Please include the untranslated "%(contact)s" string to mark where the contact information should be inserted.
 #: web/templates/web/study-detail.html:139
-#, fuzzy
 msgid "Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but researchers may not be able to compensate you or use your data. Please review the “Who can participate” information for this study and contact the study researchers (%(contact)s) if you feel this is in error."
 msgstr "␣あなたのお子さんは、この研究に記載されている参加資格を満たしていません。この研究に参加することは歓迎ですが、研究者はあなたに補償したり、あなたのデータを使用することができないかもしれません。この研究の「研究・調査への参加資格 」情報を確認し、これが誤りであると思われる場合は、研究者(%(contact)s)に連絡してください。␣"
 
