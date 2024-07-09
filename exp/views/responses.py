@@ -440,15 +440,17 @@ def build_zip_for_psychds(
             f"/data/overview/study-{study_short_uuid}_all-children_identifiable-true_data.csv",
             child_overview_str,
         )
-        # save study protocol
-        zipped.writestr(
-            "/materials/study_protocol.json", json.dumps(study.structure, indent=4)
-        )
-        # save protocol generator
-        zipped.writestr(
-            "/materials/protocol_generator.js",
-            json.dumps(study.generator, indent=4),
-        )
+        if not study.use_generator:
+            # save study protocol
+            zipped.writestr(
+                "/materials/study_protocol.json", json.dumps(study.structure, indent=4)
+            )
+        else:
+            # save protocol generator
+            zipped.writestr(
+                "/materials/protocol_generator.js",
+                json.dumps(study.generator, indent=4),
+            )
         # save informative README
         zipped.writestr(
             "/README.md",
