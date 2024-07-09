@@ -1887,7 +1887,7 @@ msgstr "登録フォーム"
 
 #: web/templates/web/participant-signup.html:21
 msgid "instead."
-msgstr "その代わり"
+msgstr "&nbsp;"
 
 #: web/templates/web/studies-history.html:145
 msgid "You have not yet participated in any Lookit studies."
