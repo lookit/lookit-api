@@ -376,14 +376,14 @@ def get_child_overview_csv(paginator, study):
 
 
 # Helper function to grab all relevant data for framedata responses for psychds download
-def get_framedata_for_psychds(paginator, study):
-    study_short_uuid = study.uuid.hex[:4]
+def get_framedata_for_psychds(paginator, study, truncate_uuids):
+    study_short_uuid = study.uuid.hex[:8] if truncate_uuids else study.uuid.hex
     response_data = []
     variables_measured = []
     for page_num in paginator.page_range:
         page_of_responses = paginator.page(page_num)
         for resp in page_of_responses:
-            response_short_uuid = resp.uuid.hex[:4]
+            response_short_uuid = resp.uuid.hex[:8] if truncate_uuids else study.uuid.hex
             # get framedata for response
             data = build_single_response_framedata_csv(resp)
             # get column headers from first row
@@ -1325,7 +1325,8 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
     def render_to_response(self, context, **response_kwargs):
         paginator = context["paginator"]
         study = self.study
-        study_short_uuid = study.uuid.hex[:4]
+        truncate_uuids = self.request.GET.get('full_uuids') is None
+        study_short_uuid = study.uuid.hex[:8] if truncate_uuids else study.uuid.hex
 
         if study.study_type.is_external:
             messages.error(
@@ -1345,7 +1346,7 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
         child_session_list = get_child_overview_csv(paginator, study)
         child_overview_str = build_overview_str(child_session_list, CHILD_CSV_HEADERS)
         # gets data necessary for building psychds framedata files
-        response_data, variables_measured = get_framedata_for_psychds(paginator, study)
+        response_data, variables_measured = get_framedata_for_psychds(paginator, study, truncate_uuids)
         # builds "all response" json download
         all_response_filename = "all_responses{}.json".format(
             ("_identifiable" if IDENTIFIABLE_DATA_HEADERS & header_options else ""),
