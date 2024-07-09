@@ -341,8 +341,6 @@ def make_chunk(paginator, page_num, header_options):
 
 # Helper function for taking session_data dict list and converting it to csv formatted string
 def build_overview_str(session_list, header_list):
-    for _ in session_list:
-        print(_)
     session_strings = [
         ",".join(
             [
