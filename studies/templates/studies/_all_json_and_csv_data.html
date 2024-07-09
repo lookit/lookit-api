@@ -174,11 +174,13 @@
                             <div class="col">
                                 <div class="text-end my-3 download-button">
                                     Data (one file per response)
+                                    
                                     {% if n_responses %}
                                         {% bootstrap_button bs_icon_download|add:" ZIP, CSVs" button_class=btn_primary_classes id="download-frame-data-psychds" formaction=url_download_frame_data_psychds %}
                                     {% else %}
                                         {% bootstrap_button bs_icon_download|add:" ZIP, CSVs" button_class=btn_primary_classes id="download-frame-data-csv" formaction=url_download_frame_data_psychds disabled="disabled" %}
                                     {% endif %}
+                                    {% include "studies/_full_uuids.html" %}
                                 </div>
                             </div>
                         </div>
