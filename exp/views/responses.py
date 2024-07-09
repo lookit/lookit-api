@@ -300,8 +300,20 @@ def get_frame_data(resp: Union[Response, Dict]) -> List[FrameDataRow]:
     return frame_data_tuples
 
 
+"""Get headers and rows for constructing csv for response overview download
+
+    Args:
+        paginator(Paginator): Serialized set of entries from the studies_responses table
+        study(Study): Query object for the given study
+
+    Returns:
+        session_list(list of strings): list of assembled rows for response csv
+        header_options(list of strings): list of selected headers from header_options
+        header_list(list of strings): comprehensive list of headers
+    """
 # Helper function for building study response objects for response overview download
 def get_study_responses_csv(self, paginator, study):
+    print(type(study))
     headers = set()
     session_list = []
 
@@ -319,7 +331,16 @@ def get_study_responses_csv(self, paginator, study):
 
     return session_list, header_options, header_list
 
+"""Construct portion of response overview JSON from paginated response data
 
+    Args:
+        paginator(Paginator): Serialized set of entries from the studies_responses table
+        page_num(integer): The page of the paginator that is being processed
+        header_options(list of strings): list of columns to include in response data
+
+    Returns:
+        chunk(string): Portion of the response overview for the page number of the paginator in question.
+    """
 def make_chunk(paginator, page_num, header_options):
     chunk = ""
     if page_num == 1:
@@ -338,8 +359,15 @@ def make_chunk(paginator, page_num, header_options):
         chunk += ",\n"
     return chunk
 
+"""Takes session_data dict list and converts it to csv formatted string
 
-# Helper function for taking session_data dict list and converting it to csv formatted string
+    Args:
+        session_list(list of strings): list of strings representing rows of the csv
+        header_list(list of strings): list of headers to include at top of csv string
+
+    Returns:
+        (string): csv-formattted string for response data file.
+    """
 def build_overview_str(session_list, header_list):
     session_strings = [
         ",".join(
@@ -353,8 +381,15 @@ def build_overview_str(session_list, header_list):
     header_str = ",".join(header_list)
     return "\n".join([header_str] + session_strings)
 
+"""Aggregates child data over responses and returns list of dictionaries for each row of csv
 
-# Helper function for aggregating child data over responses
+    Args:
+        paginator(Paginator): Serialized set of entries from the studies_responses table
+        study(Study): Query object for the given study
+
+    Returns:
+        session_list(list of dictionaries): list of dicts representing rows of child overview csv
+    """
 def get_child_overview_csv(paginator, study):
     child_list = []
     session_list = []
@@ -374,16 +409,26 @@ def get_child_overview_csv(paginator, study):
                 session_list.append(row_data)
     return session_list
 
+"""Grab all relevant frame data for framedata responses for psychds download
 
+    Args:
+        paginator(Paginator): Serialized set of entries from the studies_responses table
+        study(Study): Query object for the given study
+        truncate_uuids(boolean): Represents whether user has selected to truncate their uuids in filenames
+
+    Returns:
+        response_data(list of lists): contains necessary objects for building and writing files related to frame data for each response
+        variables_measured(list of strings): global record of which columns appeared in various response files
+    """
 # Helper function to grab all relevant data for framedata responses for psychds download
 def get_framedata_for_psychds(paginator, study, truncate_uuids):
-    study_short_uuid = study.uuid.hex[:8] if truncate_uuids else study.uuid.hex
+    study_uuid = study.uuid.hex[:8] if truncate_uuids else study.uuid.hex
     response_data = []
     variables_measured = []
     for page_num in paginator.page_range:
         page_of_responses = paginator.page(page_num)
         for resp in page_of_responses:
-            response_short_uuid = resp.uuid.hex[:8] if truncate_uuids else study.uuid.hex
+            response_uuid = resp.uuid.hex[:8] if truncate_uuids else study.uuid.hex
             # get framedata for response
             data = build_single_response_framedata_csv(resp)
             # get column headers from first row
@@ -391,7 +436,7 @@ def get_framedata_for_psychds(paginator, study, truncate_uuids):
                 column.strip('"') for column in data.split("\n")[0].strip().split(",")
             ]
             # psych-DS files use "keyword" formatting
-            keywords = {"study": study_short_uuid, "response": response_short_uuid}
+            keywords = {"study": study_uuid, "response": response_uuid}
             filename = keyword_filename(keywords, "csv")
             # make a response-specific metadata file
             sidecar_metadata = {
@@ -403,12 +448,31 @@ def get_framedata_for_psychds(paginator, study, truncate_uuids):
             response_data.append([data, filename, sidecar_metadata, sidecar_filename])
     return response_data, variables_measured
 
+"""Writes psych-ds formatted zip file based on all response data aggregated
 
+    Args:
+        response_data(list of lists): list of the following objects for each response object:
+            data(string): framedata-per-response csv string
+            filename(string): formatted name for csv file
+            sidecar_metadata(dict): JSON object for sidecar metadata file
+            sidecar_filename(string): formatted name for sidecar file
+        study(Study): Query object for the given study
+        header_options(list of strings): list of selected headers from header_options
+        study_uuid(string): uuid for study object, either truncated or untruncated
+        overview_str(string): string representing reponse overview file 
+        child_overview_str(string): string representing child overview file
+        metadata_json(dict): JSON object for global metadata file
+        all_response_filename(string): filename for response overview file
+        all_response_json_str(string): string representing json for all response overview file
+
+    Returns:
+        response(FileResponse): Formatted response object with constructed zipfile
+    """
 def build_zip_for_psychds(
     response_data,
     study,
     header_options,
-    study_short_uuid,
+    study_uuid,
     overview_str,
     child_overview_str,
     metadata_json,
@@ -432,12 +496,12 @@ def build_zip_for_psychds(
             all_responses += "_identifiable-true"
         # save response overview
         zipped.writestr(
-            f"/data/overview/study-{study_short_uuid}_{all_responses}_data.csv",
+            f"/data/overview/study-{study_uuid}_{all_responses}_data.csv",
             overview_str,
         )
         # save children overview
         zipped.writestr(
-            f"/data/overview/study-{study_short_uuid}_all-children_identifiable-true_data.csv",
+            f"/data/overview/study-{study_uuid}_all-children_identifiable-true_data.csv",
             child_overview_str,
         )
         if not study.use_generator:
@@ -614,10 +678,17 @@ def build_single_response_framedata_csv(response):
 
     return output.getvalue()
 
+"""Builds an appropriate metadata JSON for the study at hand, in psych-DS format.
 
+    Args:
+        study(Study): Query object for the given study
+
+    Returns:
+        metadata_json(dict): JSON object representing global metadata file
+    """
 def build_metadata_object(study):
     """
-    Builds an appropriate metadata JSON for the study at hand, in psych-DS format.
+    
     """
     metadata_json = {
         "@context": "https://schema.org/",
@@ -1326,7 +1397,7 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
         paginator = context["paginator"]
         study = self.study
         truncate_uuids = self.request.GET.get('full_uuids') is None
-        study_short_uuid = study.uuid.hex[:8] if truncate_uuids else study.uuid.hex
+        study_uuid = study.uuid.hex[:8] if truncate_uuids else study.uuid.hex
 
         if study.study_type.is_external:
             messages.error(
@@ -1364,7 +1435,7 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
             response_data,
             study,
             header_options,
-            study_short_uuid,
+            study_uuid,
             overview_str,
             child_overview_str,
             metadata_json,
