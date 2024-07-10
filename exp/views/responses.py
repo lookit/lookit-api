@@ -696,9 +696,6 @@ def build_single_response_framedata_csv(response):
         metadata_json(dict): JSON object representing global metadata file
     """
 def build_metadata_object(study):
-    """
-    
-    """
     metadata_json = {
         "@context": "https://schema.org/",
         "@type": "Dataset",
@@ -709,8 +706,8 @@ def build_metadata_object(study):
     if study.creator:
         metadata_json["creator"] = {
             "@type": "Person",
-            "uuid": str(study.creator.uuid),
-            "email": study.creator.username,
+            "@id": "[A unique URI such as an ORCID ID works best here]",
+            "email": "",
         }
         # if given name is not not and not blank (both possible given study model)
         if study.creator.given_name and study.creator.given_name != "":
@@ -722,10 +719,12 @@ def build_metadata_object(study):
             metadata_json["creator"]["affiliation"] = {
                 "@type": "Organization",
                 "email": study.lab.contact_email,
-                "telephone": study.lab.contact_phone,
                 "name": study.lab.name,
                 "description": study.lab.description,
-                "uuid": str(study.lab.uuid),
+                "founder": {
+                    "@type":"Person",
+                    "name":study.lab.principal_investigator_name
+                }
             }
             if study.lab.lab_website != "":
                 metadata_json["creator"]["affiliation"]["@id"] = study.lab.lab_website
