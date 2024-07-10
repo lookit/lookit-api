@@ -84,16 +84,15 @@
                             <div class="col">
                                 All frame and overview datasets (Psych-DS)
                                 <p class="fst-italic text-muted mt-2">
-                                    This download provides a single directory containing both data and materials 
-                                    (i.e. current versions of the study protocol, ad text, etc.). All of the data 
-                                    types listed below are included in this download, though note that the filenames 
+                                    This download provides a single directory containing both data and materials
+                                    (i.e. current versions of the study protocol, ad text, etc.). All of the data
+                                    types listed below are included in this download, though note that the filenames
                                     used are slightly different. This directory follows the Psych-DS system for data organization.
                                 </p>
                             </div>
                             <div class="col">
                                 <div class="text-end my-3 download-button">
                                     Data (zipped directory)
-                                    
                                     {% if n_responses %}
                                         {% bootstrap_button bs_icon_download|add:" ZIP" button_class=btn_primary_classes id="download-frame-data-psychds" formaction=url_download_frame_data_psychds %}
                                     {% else %}
