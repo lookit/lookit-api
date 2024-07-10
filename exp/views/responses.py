@@ -312,9 +312,7 @@ def get_frame_data(resp: Union[Response, Dict]) -> List[FrameDataRow]:
         header_options(list of strings): list of selected headers from header_options
         header_list(list of strings): comprehensive list of headers
     """
-# Helper function for building study response objects for response overview download
 def get_study_responses_csv(self, paginator, study):
-    print(type(study))
     headers = set()
     session_list = []
 
@@ -387,13 +385,17 @@ def build_overview_str(session_list, header_list):
     Args:
         paginator(Paginator): Serialized set of entries from the studies_responses table
         study(Study): Query object for the given study
+        header_options(list of strings): list of columns to include in response data
 
     Returns:
         session_list(list of dictionaries): list of dicts representing rows of child overview csv
+        header_list(list of strings): list of headers to include in child overview csv
     """
-def get_child_overview_csv(paginator, study):
+def get_child_overview_csv(paginator, study, header_options):
     child_list = []
     session_list = []
+
+    header_list = get_response_headers(header_options, set(CHILD_CSV_HEADERS))
 
     for page_num in paginator.page_range:
         page_of_responses = paginator.page(page_num)
@@ -402,13 +404,13 @@ def get_child_overview_csv(paginator, study):
                 {
                     col.id: col.extractor(resp)
                     for col in RESPONSE_COLUMNS
-                    if col.id in CHILD_CSV_HEADERS
+                    if col.id in header_list
                 }
             )
-            if row_data["child__global_id"] not in child_list:
-                child_list.append(row_data["child__global_id"])
+            if row_data["child__hashed_id"] not in child_list:
+                child_list.append(row_data["child__hashed_id"])
                 session_list.append(row_data)
-    return session_list
+    return session_list, header_list
 
 """Grab all relevant frame data for framedata responses for psychds download
 
@@ -493,8 +495,11 @@ def build_zip_for_psychds(
 
         # mark response overview with identifiable keyword if identifiable columns were selected
         all_responses = "all-responses"
+        all_children = "all-children"
         if IDENTIFIABLE_DATA_HEADERS & header_options:
             all_responses += "_identifiable-true"
+            all_children += "_identifiable-true"
+
         # save response overview
         zipped.writestr(
             f"/data/overview/study-{study_uuid}_{all_responses}_data.csv",
@@ -502,7 +507,7 @@ def build_zip_for_psychds(
         )
         # save children overview
         zipped.writestr(
-            f"/data/overview/study-{study_uuid}_all-children_identifiable-true_data.csv",
+            f"/data/overview/study-{study_uuid}_{all_children}_data.csv",
             child_overview_str,
         )
         if not study.use_generator:
@@ -1355,14 +1360,19 @@ class StudyChildrenCSV(ResponseDownloadMixin, generic.list.ListView):
         paginator = context["paginator"]
         study = self.study
 
-        # Loop through responses to get child overview data
-        session_list = get_child_overview_csv(paginator, study)
+        header_options = set(self.request.GET.getlist("data_options"))
 
-        output, writer = csv_dict_output_and_writer(CHILD_CSV_HEADERS)
+        # Loop through responses to get child overview data
+        session_list, header_list = get_child_overview_csv(paginator, study, header_options)
+
+        output, writer = csv_dict_output_and_writer(header_list)
         writer.writerows(session_list)
         cleaned_data = output.getvalue()
 
-        filename = csv_filename(study, "all-children-identifiable")
+        filename = "all-children{}.csv".format(
+            ("-identifiable" if IDENTIFIABLE_DATA_HEADERS & header_options else ""),
+        )
+        filename = csv_filename(study, filename)
         response = HttpResponse(cleaned_data, content_type=CONTENT_TYPE)
         set_content_disposition(response, filename)
         return response
@@ -1425,8 +1435,8 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
         )
         overview_str = build_overview_str(session_list, header_list)
         # gets data necessary for building child overview file
-        child_session_list = get_child_overview_csv(paginator, study)
-        child_overview_str = build_overview_str(child_session_list, CHILD_CSV_HEADERS)
+        child_session_list, child_header_list = get_child_overview_csv(paginator, study, header_options)
+        child_overview_str = build_overview_str(child_session_list, child_header_list)
         # gets data necessary for building psychds framedata files
         response_data, variables_measured = get_framedata_for_psychds(paginator, study, truncate_uuids)
         variables_measured += header_list + CHILD_CSV_HEADERS
