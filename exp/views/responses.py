@@ -536,12 +536,20 @@ def build_zip_for_psychds(
             f"/data/raw/{all_response_filename}",
             all_response_json_str,
         )
+        # save psychds-ignore file to avoid NOT_INCLUDED warnings
+        zipped.writestr(
+            "/.psychds-ignore",
+            PSYCHDS_IGNORE_STR,
+        )
         study_ad = {
             "preview_summary": study.preview_summary,
             "short_description": study.short_description,
             "purpose": study.purpose,
             "compensation": study.compensation_description,
+            "criteria": study.criteria,
             "criteria_expression": study.criteria_expression,
+            "must_have_participated":[study.name for study in study.must_have_participated.all()] if study.must_have_participated else "",
+            "must_not_have_participated":[study.name for study in study.must_not_have_participated.all()] if study.must_not_have_participated else ""
         }
         # save study ad info
         zipped.writestr(
@@ -556,7 +564,7 @@ def build_zip_for_psychds(
     response = FileResponse(
         zipped_file,
         as_attachment=True,
-        filename="{}_full_dataset_psychds.zip".format(study_name_for_files(study.name)),
+        filename="{}--psychds.zip".format(study_name_for_files(study.name)),
     )
     return response
 
@@ -1409,6 +1417,9 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
 
         # build dict with contextual infomation about the study/lab/user
         metadata_json = build_metadata_object(study)
+        # get mapping of column names to column descriptions
+        descriptions = {col.id: col.description for col in RESPONSE_COLUMNS}
+        descriptions.update(FRAME_DATA_HEADER_DESCRIPTIONS)
         # gets data necessary for building response overview file
         session_list, header_options, header_list = get_study_responses_csv(
             self, paginator, study
@@ -1419,6 +1430,7 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
         child_overview_str = build_overview_str(child_session_list, CHILD_CSV_HEADERS)
         # gets data necessary for building psychds framedata files
         response_data, variables_measured = get_framedata_for_psychds(paginator, study, truncate_uuids)
+        variables_measured += header_list + CHILD_CSV_HEADERS
         # builds "all response" json download
         all_response_filename = "all_responses{}.json".format(
             ("_identifiable" if IDENTIFIABLE_DATA_HEADERS & header_options else ""),
@@ -1429,8 +1441,17 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
                 for page_num in paginator.page_range
             ]
         )
+        # construct more informative variablesMeasured object
+        variables_measured_objects = [
+            {
+                "@type":"PropertyValue",
+                "name":column,
+                "description":descriptions[column.split('.')[0]]
+             }
+             for column in list(set(variables_measured))
+        ]
         # add final variables list to metadata
-        metadata_json["variableMeasured"] = list(set(variables_measured))
+        metadata_json["variableMeasured"] = variables_measured_objects
 
         response = build_zip_for_psychds(
             response_data,
@@ -1907,4 +1928,9 @@ VIDEOS_README_STR = """
 -----
 
 This folder is included as a placeholder for the participant videos you download from Children Helping Science. You can download and place all response videos in this folder, but be careful when sharing datasets in cases where videos (or other identifiable information) should not be included.
+"""
+
+PSYCHDS_IGNORE_STR = """
+data/raw/*
+data/demographic/README.md
 """
