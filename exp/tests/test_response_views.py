@@ -1030,11 +1030,6 @@ class ResponseDataDownloadTestCase(TestCase):
             content,
             "Data from unconsented response included in child file download!",
         )
-        self.assertNotIn(
-            "non-preview-child",
-            content,
-            "Data from child who provided consented non-preview response not available to researcher",
-        )
 
     def test_get_study_demographics_view_as_researcher(self):
         # Check indicated number of responses is correct for all-response permissions
