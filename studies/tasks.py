@@ -26,7 +26,6 @@ from django.utils import timezone
 from google.cloud import storage as gc_storage
 from more_itertools import chunked, first, flatten, groupby_transform, map_reduce
 
-import studies.models
 from accounts.models import Child, Message, User
 from accounts.queries import get_child_eligibility_for_study
 from project.celery import app
@@ -480,15 +479,12 @@ def build_framedata_dict(filename, study_uuid, requesting_user_uuid):
 
 
 @app.task(bind=True)
-def delete_video_from_cloud(task, s3_video_name):
+def delete_video_from_cloud(task, s3_video_name, recording_method_is_pipe):
     """Delete videos in S3.
 
     Meant to have a delay of about 7 days.
     """
-    video_in_pipe_bucket = studies.models.Video.objects.get(
-        full_name=s3_video_name
-    ).recording_method_is_pipe
-    if video_in_pipe_bucket:
+    if recording_method_is_pipe:
         # delete from Pipe bucket
         S3_RESOURCE.Object(settings.BUCKET_NAME, s3_video_name).delete()
     else:
