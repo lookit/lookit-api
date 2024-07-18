@@ -494,17 +494,19 @@ def delete_video_from_cloud(task, s3_video_name, recording_method_is_pipe):
 
 @app.task(bind=True)
 def clean_up_incomplete_video_uploads(task):
-    """Check for incomplete multi-part uploads in S3, and either manually complete the video (with a flag) or delete the parts."""
+    """Check for incomplete multi-part uploads in S3 and try to manually complete the video."""
     logger.debug("Cleaning up incomplete video uploads...")
     incomplete_video_uploads = get_all_incomplete_video_files()
-    for video in incomplete_video_uploads:
-        parts = get_file_parts(video.Key, video.UploadId)
-        complete_response = complete_multipart_upload(video.Key, video.UploadId, parts)
-        return complete_response  # placeholder to get rid of 'variable assigned but never used' error
+    if incomplete_video_uploads:
+        for video in incomplete_video_uploads:
+            logger.debug(f"Handling incomplete file: {video['Key']}")
+            parts = get_file_parts(video["Key"], video["UploadId"])
+            if parts:
+                complete_multipart_upload(video["Key"], video["UploadId"], parts)
 
 
 def get_all_incomplete_video_files():
-    """Gets a list of all incomplete multipart uploads from our S3 video bucket.
+    """Gets a list of all incomplete multipart uploads from our EFP RecordRTC S3 video bucket.
     Returns an array with 0 or more objects, where each object corresponds to an incomplete multipart upload.
     Each object contains the following keys: UploadId, Key (filename), Initiated (timestamp), StorageClass, Owner (DisplayName and ID), Initiator (DisplayName and ID).
     """
@@ -517,27 +519,45 @@ def get_all_incomplete_video_files():
     except ClientError as error:
         raise error
     except ParamValidationError as error:
-        raise ValueError("The parameters you provided are incorrect: {}".format(error))
+        raise ValueError(f"The parameters you provided are incorrect: {error}")
 
-    if uploads_response.Uploads:
-        # filter out in-progress uploads that might still be actively recording - started in last 7 days?
-        incomplete_uploads = uploads_response.Uploads
+    if uploads_response["Uploads"]:
+        # Filter out incomplete uploads that might still be actively recording - started in last 24 hours.
+        # The upload's 'Initiated' value is a datetime in UTC timezone.
+        uploads_list = uploads_response["Uploads"]
+        incomplete_uploads = [
+            upload
+            for upload in uploads_list
+            if (
+                (datetime.datetime.now(timezone.utc) - upload["Initiated"])
+                > datetime.timedelta(hours=24)
+            )
+        ]
 
     return incomplete_uploads
 
 
 def get_file_parts(filename, id):
     """Gets the uploaded part list for a particular incomplete video upload.
-    Returns an array with 1 or more objects, where each object contains a part number and ETag for all parts that were successfully uploaded.
+    Returns an array with 0 or more objects, where each object contains a part number and ETag for all parts that were successfully uploaded.
     """
-    file_parts_response = S3_CLIENT.list_parts(
-        Bucket=settings.S3_BUCKET_NAME, Key=filename, UploadId=id
-    )
-    parts = dict(
-        (key, value)
-        for key, value in file_parts_response.Parts.iteritems()
-        if key in ("PartNumber", "ETag")
-    )
+    parts = []
+    try:
+        file_parts_response = S3_CLIENT.list_parts(
+            Bucket=settings.S3_BUCKET_NAME, Key=filename, UploadId=id
+        )
+    except ClientError as error:
+        logger.debug(f"Error completing file {filename}: {error}")
+        raise error
+    except ParamValidationError as error:
+        raise ValueError(f"The parameters you provided are incorrect: {error}")
+
+    if "Parts" in file_parts_response and file_parts_response["Parts"]:
+        parts = [
+            {"PartNumber": part["PartNumber"], "ETag": eval(part["ETag"])}
+            for part in file_parts_response["Parts"]
+        ]
+
     return parts
 
 
@@ -546,13 +566,20 @@ def complete_multipart_upload(filename, id, parts):
     Takes the filename, upload ID, and list of parts for the incomplete file.
     """
     try:
-        S3_CLIENT.complete_multipart_upload(
+        resp = S3_CLIENT.complete_multipart_upload(
             Bucket=settings.S3_BUCKET_NAME,
             Key=filename,
-            MultipartUpload=parts,
+            MultipartUpload={"Parts": parts},
             UploadId=id,
         )
+        if resp["ResponseMetadata"]["HTTPStatusCode"] == 200:
+            logger.debug(f"Completed file {filename}")
+        else:
+            logger.debug(
+                f"File {filename} returned HTTP Status Code {resp['ResponseMetadata']['HTTPStatusCode']}"
+            )
     except ClientError as error:
+        logger.debug(f"Error completing file {filename}: {error}")
         raise error
     except ParamValidationError as error:
-        raise ValueError("The parameters you provided are incorrect: {}".format(error))
+        raise ValueError(f"The parameters you provided are incorrect: {error}")
