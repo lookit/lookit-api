@@ -493,7 +493,7 @@ def delete_video_from_cloud(task, s3_video_name, recording_method_is_pipe):
 
 
 @app.task(bind=True)
-def clean_up_incomplete_video_uploads(task):
+def cleanup_incomplete_video_uploads(task):
     """Check for incomplete multi-part uploads in S3 and try to manually complete the video."""
     logger.debug("Cleaning up incomplete video uploads...")
     incomplete_video_uploads = get_all_incomplete_video_files()
