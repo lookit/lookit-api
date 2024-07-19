@@ -379,7 +379,7 @@ def build_overview_str(session_list, header_list):
     session_strings = [
         ",".join(
             [
-                (str(session_row[key]) if key in session_row else "")
+                (f'"{str(session_row[key])}"' if key in session_row else "")
                 for key in header_list
             ]
         )
