@@ -177,6 +177,9 @@
                     <div class="card bg-light my-4">
                         <div class="card-body">
                             <h5 class="card-title">Videos</h5>
+                            <p class="card-text fst-italic text-muted mt-2">
+                                <em class="my-2">Video recordings should become available for download after a few minutes. It can take up to 24 hours for videos to become available if they were not completed successfully (e.g. because the particpant left the study early, internet connection problems).</em>
+                            </p>
                             {% for response in response_data %}
                                 <div class="response-attachments"
                                      id="resp-attachment-{{ forloop.counter }}"
@@ -193,10 +196,6 @@
                                                    class="{% button_primary_classes %} btn-sm">Download</a>
                                             </div>
                                         </div>
-                                    {% empty %}
-                                        <p class="card-text">
-                                            <em class="my-2">Expect a delay of a few minutes for videos to be available for download.</em>
-                                        </p>
                                     {% endfor %}
                                 </div>
                             {% endfor %}
