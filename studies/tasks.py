@@ -557,6 +557,8 @@ def get_file_parts(filename, id):
             {"PartNumber": part["PartNumber"], "ETag": eval(part["ETag"])}
             for part in file_parts_response["Parts"]
         ]
+    else:
+        logger.debug(f"Unable to complete {filename}: no parts uploaded")
 
     return parts
 
