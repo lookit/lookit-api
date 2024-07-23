@@ -580,6 +580,15 @@ def complete_multipart_upload(filename, id, parts):
             )
     except ClientError as error:
         logger.debug(f"Error completing file {filename}: {error}")
-        raise error
+        # If the file cannot be completed because of a problem with size/parts,
+        # ignore it and move on. It will be deleted via the S3 bucket's lifecycle rule.
+        ignore_errors = [
+            "EntityTooSmall",
+            "InvalidPart",
+            "InvalidPartOrder",
+            "NoSuchUpload",
+        ]
+        if error.response["Error"]["Code"] not in ignore_errors:
+            raise error
     except ParamValidationError as error:
         raise ValueError(f"The parameters you provided are incorrect: {error}")
