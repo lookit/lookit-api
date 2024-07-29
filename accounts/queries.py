@@ -144,7 +144,7 @@ def get_child_participation_eligibility(child, study) -> bool:
         )
         must_not = must_not_have_count == 0
 
-    return must_have and must_not
+    return must_not
 
 
 def _child_in_age_range_for_study(child, study):
