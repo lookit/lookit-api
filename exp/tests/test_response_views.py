@@ -173,6 +173,10 @@ class ResponseViewsTestCase(TestCase):
                 "exp:study-responses-download-frame-data-zip-csv",
                 kwargs={"pk": self.study.pk},
             ),
+            reverse(
+                "exp:study-responses-download-frame-data-zip-psychds",
+                kwargs={"pk": self.study.pk},
+            ),
             reverse("exp:study-demographics", kwargs={"pk": self.study.pk}),
             reverse(
                 "exp:study-demographics-download-json", kwargs={"pk": self.study.pk}
@@ -1025,11 +1029,6 @@ class ResponseDataDownloadTestCase(TestCase):
             self.poison_string,
             content,
             "Data from unconsented response included in child file download!",
-        )
-        self.assertIn(
-            "non-preview-child",
-            content,
-            "Data from child who provided consented non-preview response not available to researcher",
         )
 
     def test_get_study_demographics_view_as_researcher(self):

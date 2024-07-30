@@ -32,6 +32,7 @@
     {% url 'exp:study-responses-download-csv' pk=study.id as url_download_all_csv %}
     {% url 'exp:study-responses-download-summary-dict-csv' pk=study.id as url_download_summary_dict %}
     {% url 'exp:study-responses-download-frame-data-zip-csv' pk=study.id as url_download_frame_data %}
+    {% url 'exp:study-responses-download-frame-data-zip-psychds' pk=study.id as url_download_frame_data_psychds %}
     {% url 'exp:study-responses-download-frame-data-dict-csv' pk=study.id as url_download_frame_data_dict %}
     {% url 'exp:study-responses-children-summary-csv' pk=study.id as url_download_children_summary_data %}
     {% url 'exp:study-responses-children-summary-dict-csv' pk=study.id as url_download_children_summary_data_dict %}
@@ -78,6 +79,31 @@
                         </div>
                     </div>
                     <hr />
+                    {% if study.show_frame_data %}
+                        <div class="row">
+                            <div class="col">
+                                All frame and overview datasets (Psych-DS)
+                                <p class="fst-italic text-muted mt-2">
+                                    This download provides a single directory containing both data and materials
+                                    (i.e. current versions of the study protocol, ad text, etc.). All of the data
+                                    types listed below are included in this download, though note that the filenames
+                                    used are slightly different. This directory follows the Psych-DS system for data organization.
+                                </p>
+                            </div>
+                            <div class="col">
+                                <div class="text-end my-3 download-button">
+                                    Data (zipped directory)
+                                    {% if n_responses %}
+                                        {% bootstrap_button bs_icon_download|add:" ZIP" button_class=btn_primary_classes id="download-frame-data-psychds" formaction=url_download_frame_data_psychds %}
+                                    {% else %}
+                                        {% bootstrap_button bs_icon_download|add:" ZIP" button_class=btn_primary_classes id="download-frame-data-csv" formaction=url_download_frame_data_psychds disabled="disabled" %}
+                                    {% endif %}
+                                    {% include "studies/_full_uuids.html" %}
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                    {% endif %}
                     <div class="row">
                         <div class="col">
                             All response data
@@ -164,7 +190,7 @@
                         <div class="col">
                             Child data
                             <p class="fst-italic text-muted mt-2">
-                                The child data files contain one row per unique child. The data available about each child is the same as is available in the response summary CSV (with the exception of age at time of participation, which depends on the response time). All child data will be included in this file, regardless of selections above; you can use it to store this identifiable data separately from the response data.
+                                The child data files contain one row per unique child. The data available about each child is the same as is available in the response summary CSV (with the exception of age at time of participation, which depends on the response time).
                             </p>
                         </div>
                         <div class="col">
