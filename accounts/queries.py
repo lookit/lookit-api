@@ -114,39 +114,37 @@ def get_child_participation_eligibility(child, study) -> bool:
     Returns:
         bool: Return true if child is eligible based on their prior study participation
     """
-    # Need to import StudyType here due to circular import problems
-    from studies.models import StudyType
 
-    must_have_participated = True
-    must_not_have_participated = True
+    ember_frame_player_id = 1
+    must_have = True
+    must_not = True
 
     # for both must have and must not have participated, ignore responses from internal studies that are empty
-    if study.must_have_participated.exists():
-        must_have_participated_all = [
-            i
-            for i in study.must_have_participated.all()
-            if child.responses.filter(study=i)
-            .exclude(study__study_type=StudyType.get_ember_frame_player(), sequence=[])
-            .exists()
-        ]
 
-        # only true if response exists for each of the studies in the list
-        must_have_participated = set(must_have_participated_all) == set(
-            study.must_have_participated.all()
+    if study.must_have_participated.exists():
+        must_have_count = (
+            child.responses.filter(study__in=study.must_have_participated.all())
+            .exclude(study__study_type_id=ember_frame_player_id, sequence=[])
+            .distinct()
+            .values_list("study")
+            .count()
         )
+        must_have = must_have_count == study.must_have_participated.count()
+
+        if not must_have:
+            return False
 
     if study.must_not_have_participated.exists():
-        must_not_have_participated_all = [
-            i
-            for i in study.must_not_have_participated.all()
-            if child.responses.filter(study=i)
-            .exclude(study__study_type=StudyType.get_ember_frame_player(), sequence=[])
-            .exists()
-        ]
-        # only true if response does NOT exist for any one (or more) of the studies in the list
-        must_not_have_participated = len(must_not_have_participated_all) == 0
+        must_not_have_count = (
+            child.responses.filter(study__in=study.must_not_have_participated.all())
+            .exclude(study__study_type_id=ember_frame_player_id, sequence=[])
+            .distinct()
+            .values_list("study")
+            .count()
+        )
+        must_not = must_not_have_count == 0
 
-    return must_have_participated and must_not_have_participated
+    return must_not
 
 
 def _child_in_age_range_for_study(child, study):
