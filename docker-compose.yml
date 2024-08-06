@@ -3,6 +3,7 @@ services:
   db:
     image: postgres:9.6
     container_name: lookit-api-db
+    restart: unless-stopped
     command: postgres -c stats_temp_directory=/tmp
     volumes:
       - ./data:/var/lib/postgresql/data
@@ -28,6 +29,25 @@ services:
       - .:/code
     ports:
       - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=db
+      - RABBITMQ_HOST=broker
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web-international:
+    build:
+      dockerfile: Dockerfile.web-international
+    container_name: lookit-api-web-international
+    restart: unless-stopped
+    command: poetry run python ./manage.py runsslserver --certificate ./certs/combined.pem --key ./certs/mbah.key 0.0.0.0:443
+    volumes:
+      - .:/code
+    ports:
+      - "443:443"
     env_file:
       - .env
     environment:
