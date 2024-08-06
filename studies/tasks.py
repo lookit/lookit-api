@@ -18,6 +18,7 @@ from typing import Generator, NamedTuple
 import boto3
 import docker
 import requests
+from botocore.exceptions import ClientError, ParamValidationError
 from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.db import connection
@@ -48,6 +49,7 @@ formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+S3_CLIENT = boto3.client("s3")
 
 MESSAGE_TARGET_QUERY = """
 WITH message_targets AS ( -- all valid user-child-study triplets
@@ -488,3 +490,107 @@ def delete_video_from_cloud(task, s3_video_name, recording_method_is_pipe):
     else:
         # delete from RecordRTC bucket
         S3_RESOURCE.Object(settings.S3_BUCKET_NAME, s3_video_name).delete()
+
+
+@app.task(bind=True)
+def cleanup_incomplete_video_uploads(task):
+    """Check for incomplete multi-part uploads in S3 and try to manually complete the video."""
+    logger.debug("Cleaning up incomplete video uploads...")
+    incomplete_video_uploads = get_all_incomplete_video_files()
+    if incomplete_video_uploads:
+        for video in incomplete_video_uploads:
+            logger.debug(f"Handling incomplete file: {video['Key']}")
+            parts = get_file_parts(video["Key"], video["UploadId"])
+            if parts:
+                complete_multipart_upload(video["Key"], video["UploadId"], parts)
+
+
+def get_all_incomplete_video_files():
+    """Gets a list of all incomplete multipart uploads from our EFP RecordRTC S3 video bucket.
+    Returns an array with 0 or more objects, where each object corresponds to an incomplete multipart upload.
+    Each object contains the following keys: UploadId, Key (filename), Initiated (timestamp), StorageClass, Owner (DisplayName and ID), Initiator (DisplayName and ID).
+    """
+    incomplete_uploads = []
+
+    try:
+        uploads_response = S3_CLIENT.list_multipart_uploads(
+            Bucket=settings.S3_BUCKET_NAME
+        )
+    except ClientError as error:
+        raise error
+    except ParamValidationError as error:
+        raise ValueError(f"The parameters you provided are incorrect: {error}")
+
+    if uploads_response["Uploads"]:
+        # Filter out incomplete uploads that might still be actively recording - started in last 24 hours.
+        # The upload's 'Initiated' value is a datetime in UTC timezone.
+        uploads_list = uploads_response["Uploads"]
+        incomplete_uploads = [
+            upload
+            for upload in uploads_list
+            if (
+                (datetime.datetime.now(timezone.utc) - upload["Initiated"])
+                > datetime.timedelta(hours=24)
+            )
+        ]
+
+    return incomplete_uploads
+
+
+def get_file_parts(filename, id):
+    """Gets the uploaded part list for a particular incomplete video upload.
+    Returns an array with 0 or more objects, where each object contains a part number and ETag for all parts that were successfully uploaded.
+    """
+    parts = []
+    try:
+        file_parts_response = S3_CLIENT.list_parts(
+            Bucket=settings.S3_BUCKET_NAME, Key=filename, UploadId=id
+        )
+    except ClientError as error:
+        logger.debug(f"Error completing file {filename}: {error}")
+        raise error
+    except ParamValidationError as error:
+        raise ValueError(f"The parameters you provided are incorrect: {error}")
+
+    if "Parts" in file_parts_response and file_parts_response["Parts"]:
+        parts = [
+            {"PartNumber": part["PartNumber"], "ETag": eval(part["ETag"])}
+            for part in file_parts_response["Parts"]
+        ]
+    else:
+        logger.debug(f"Unable to complete {filename}: no parts uploaded")
+
+    return parts
+
+
+def complete_multipart_upload(filename, id, parts):
+    """Attempt to complete the multi-part upload for a given incomplete file.
+    Takes the filename, upload ID, and list of parts for the incomplete file.
+    """
+    try:
+        resp = S3_CLIENT.complete_multipart_upload(
+            Bucket=settings.S3_BUCKET_NAME,
+            Key=filename,
+            MultipartUpload={"Parts": parts},
+            UploadId=id,
+        )
+        if resp["ResponseMetadata"]["HTTPStatusCode"] == 200:
+            logger.debug(f"Completed file {filename}")
+        else:
+            logger.debug(
+                f"File {filename} returned HTTP Status Code {resp['ResponseMetadata']['HTTPStatusCode']}"
+            )
+    except ClientError as error:
+        logger.debug(f"Error completing file {filename}: {error}")
+        # If the file cannot be completed because of a problem with size/parts,
+        # ignore it and move on. It will be deleted via the S3 bucket's lifecycle rule.
+        ignore_errors = [
+            "EntityTooSmall",
+            "InvalidPart",
+            "InvalidPartOrder",
+            "NoSuchUpload",
+        ]
+        if error.response["Error"]["Code"] not in ignore_errors:
+            raise error
+    except ParamValidationError as error:
+        raise ValueError(f"The parameters you provided are incorrect: {error}")
