@@ -15,7 +15,6 @@ msgstr ""
 "Google認証システムからの適切な6桁のワンタイムパスワードを入力してください"
 
 #: accounts/forms.py:108
-#, fuzzy, python-format
 #| msgid ""
 #| "Please enter a correct %(username)s and password. Note that email and "
 #| "password fields may be case-sensitive. If you have turned on two-factor "
@@ -28,8 +27,8 @@ msgid ""
 "Authenticator as well. "
 msgstr ""
 "正しい %（ユーザーネーム）とパスワードを入力してください。メールアドレス欄と"
-"パスワード欄は設定によって異なります。二段階認証を有効にしている場合は、"
-"Google認証システムからのワンタイムパスワード（OTPコード）も必要になります。"
+"パスワード欄では大文字と小文字は区別されているかもしれませんのでご注意ください。二段階認証を有効にしている場合は、"
+"Google認証システムのワンタイムパスワード（OTPコード）も必要になります。"
 
 #: accounts/forms.py:113
 msgid "This account is inactive."
