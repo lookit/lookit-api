@@ -3975,13 +3975,11 @@ msgid "Would you like to participate in this study?"
 msgstr "この研究・調査に参加してみませんか？"
 
 #: web/templates/web/study-detail.html:98
-#, fuzzy
 #| msgid "Sign up to participate"
 msgid "Log in to participate"
 msgstr "参加申し込み"
 
 #: web/templates/web/study-detail.html:99
-#, fuzzy
 #| msgid "Create Account"
 msgid "Create a new account"
 msgstr "アカウントを作成する"
