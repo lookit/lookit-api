@@ -95,8 +95,10 @@
         <div class="col-md-3">
             <h4 class="mt-4 mb-3">{% trans "Would you like to participate in this study?" %}</h4>
             {% if not request.user.is_authenticated %}
-                <div class="my-3">{% nav_login request text="Log in to participate" button=True %}</div>
-                <div class="my-3">{% nav_signup request text="Create a new account" button=True %}</div>
+                {% trans "Log in to participate" as log_in_to_participate %}
+                {% trans "Create a new account" as create_a_new_account %}
+                <div class="my-3">{% nav_login request text=log_in_to_participate button=True %}</div>
+                <div class="my-3">{% nav_signup request text=create_a_new_account button=True %}</div>
             {% elif not children %}
                 {% bootstrap_button add_child_profile href=add_child_url button_class=btn_secondary_classes %}
             {% elif not has_demographic %}
