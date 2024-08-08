@@ -177,6 +177,12 @@
                     <div class="card bg-light my-4">
                         <div class="card-body">
                             <h5 class="card-title">Videos</h5>
+                            <p class="card-text fst-italic text-muted mt-2">
+                                <em class="my-2">Video recordings usually become available for download after a few minutes, but may take as long as 24 hours to appear.
+                                    <br>
+                                    <br>
+                                Note: In rare cases, video uploads can be damaged or lost, e.g. because the participant left the study early, there was an internet connection problem, etc. We automatically attempt to restore any incomplete video files that reach the servers. If video files do not appear here after 24 hours, they unfortunately can't be recovered.</em>
+                            </p>
                             {% for response in response_data %}
                                 <div class="response-attachments"
                                      id="resp-attachment-{{ forloop.counter }}"
@@ -193,10 +199,6 @@
                                                    class="{% button_primary_classes %} btn-sm">Download</a>
                                             </div>
                                         </div>
-                                    {% empty %}
-                                        <p class="card-text">
-                                            <em class="my-2">Expect a delay of a few minutes for videos to be available for download.</em>
-                                        </p>
                                     {% endfor %}
                                 </div>
                             {% endfor %}

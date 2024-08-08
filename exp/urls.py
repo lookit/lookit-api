@@ -51,6 +51,7 @@ from exp.views import (
     StudyResponsesDictCSV,
     StudyResponsesFrameDataCSV,
     StudyResponsesFrameDataDictCSV,
+    StudyResponsesFrameDataPsychDS,
     StudyResponsesJSON,
     StudyResponsesList,
     StudyResponseSubmitFeedback,
@@ -214,6 +215,11 @@ urlpatterns = [
         "studies/<int:pk>/responses/all/download_frame_zip_csv/",
         StudyResponsesFrameDataCSV.as_view(),
         name="study-responses-download-frame-data-zip-csv",
+    ),
+    path(
+        "studies/<int:pk>/responses/all/download_frame_zip_psychds/",
+        StudyResponsesFrameDataPsychDS.as_view(),
+        name="study-responses-download-frame-data-zip-psychds",
     ),
     path(
         "studies/<int:pk>/responses/all/download_frame_dict_csv/",
