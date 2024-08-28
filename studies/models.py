@@ -529,7 +529,9 @@ class Study(models.Model):
     def responses_for_researcher(self, user):
         """Return all responses to this study that the researcher has access to read"""
 
-        if self.study_type.is_external:
+        # TODO: Currently jspsych studies don't have a consent manager.  When
+        # that's been completed, this should be updated.
+        if self.study_type.is_external or self.study_type.is_jspsych:
             responses = self.responses
         else:
             responses = self.consented_responses
@@ -540,6 +542,7 @@ class Study(models.Model):
             responses = responses.filter(is_preview=True)
         if not user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, self):
             responses = responses.filter(is_preview=False)
+
         return responses
 
     @property
@@ -834,20 +837,23 @@ class Study(models.Model):
         self._log_action(ev)
 
     def columns_included_in_summary(self):
-        if self.study_type.is_ember_frame_player:
+        """Here are a list of columns used in the researchers experiment data
+        view.  There is an assumption that summary columns for jspsych and EFP
+        experiments will be the same.
+
+        Returns:
+            List[Str]: columns for data summary
+        """
+        if self.study_type.is_external:
             return [
                 "response__id",
                 "response__uuid",
                 "response__date_created",
-                "response__completed",
-                "response__withdrawn",
                 "response__eligibility",
                 "response__parent_feedback",
                 "response__birthdate_difference",
-                "response__video_privacy",
                 "response__databrary",
                 "response__is_preview",
-                "response__sequence",
                 "participant__global_id",
                 "participant__hashed_id",
                 "participant__nickname",
@@ -861,16 +867,20 @@ class Study(models.Model):
                 "child__condition_list",
                 "child__additional_information",
             ]
-        if self.study_type.is_external:
+        else:
             return [
                 "response__id",
                 "response__uuid",
                 "response__date_created",
+                "response__completed",
+                "response__withdrawn",
                 "response__eligibility",
                 "response__parent_feedback",
                 "response__birthdate_difference",
+                "response__video_privacy",
                 "response__databrary",
                 "response__is_preview",
+                "response__sequence",
                 "participant__global_id",
                 "participant__hashed_id",
                 "participant__nickname",
@@ -1108,6 +1118,12 @@ class Response(models.Model):
         }
 
     def exit_frame_properties(self, property):
+        if self.study_type.is_ember_frame_player:
+            return self.exit_frame_properties_efp(property)
+        elif self.study_type.is_jspsych:
+            return self.exit_frame_properties_jspsych(property)
+
+    def exit_frame_properties_efp(self, property):
         exit_frame_values = [
             f.get(property, None)
             for f in self.exp_data.values()
@@ -1115,6 +1131,16 @@ class Response(models.Model):
         ]
         if exit_frame_values and exit_frame_values != [None]:
             return exit_frame_values[-1]
+        else:
+            return None
+
+    def exit_frame_properties_jspsych(self, property):
+        exit_frame_filter_fn = lambda x: x.get("chs_type") == "exit"
+        exit_frame_filter = filter(exit_frame_filter_fn, self.exp_data)
+        exit_frame_list = list(exit_frame_filter)
+
+        if exit_frame_list:
+            return exit_frame_list[-1]["response"].get(property)
         else:
             return None
 
