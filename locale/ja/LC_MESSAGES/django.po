@@ -99,11 +99,11 @@ msgstr "住んでいる地域をどんなところですか？"
 
 #: accounts/forms.py:336
 msgid "How many children do you have?"
-msgstr "お子様は何人いますか？"
+msgstr "お子さんは何人いますか？"
 
 #: accounts/forms.py:337
 msgid "For each child, please enter his or her birthdate:"
-msgstr "お子様一人一人の生年月日を記入してください。"
+msgstr "お子さん一人一人の生年月日を記入してください。"
 
 #: accounts/forms.py:339
 msgid "How many parents/guardians do your children live with?"
@@ -2582,7 +2582,7 @@ msgstr ""
 
 #: web/templates/web/faq.html:510
 msgid "Will we be paid for our participation?"
-msgstr "研究・調査に参加したら、何か報酬がもらえるのでしょうか？"
+msgstr "研究・調査に参加すると謝礼はもらえますか？"
 
 #: web/templates/web/faq.html:518
 msgid ""
@@ -2591,9 +2591,9 @@ msgid ""
 "rules of the university that's doing the research.) This information will be "
 "listed on the study description page."
 msgstr ""
-"研究によっては、研究・調査への参加終了時にギフトカードなどの報酬が提供される"
+"研究によっては、研究・調査への参加終了時にギフトカードなどの謝礼が提供される"
 "こともありますが、ボランティアでの参加となる場合もあります（研究・調査を実施"
-"している大学の規則によって異なることが多いです）。報酬の有無についての情報"
+"している大学の規則によって異なることが多いです）。謝礼の有無についての情報"
 "は、研究・調査についての説明ページに記載されています。"
 
 #: web/templates/web/faq.html:531
@@ -2760,7 +2760,7 @@ msgid ""
 "                "
 msgstr ""
 "\n"
-"<p>本サイトの研究にお子様と一緒に参加された保護者の方、または本サイトに研究を"
+"<p>本サイトの研究にお子さんと一緒に参加された保護者の方、または本サイトに研究を"
 "掲載された大学の研究者の方は、保護者研究者共同体（Parent Researcher "
 "Collaborative）のメンバーであると言えるでしょう！</p>\n"
 "<p>一体誰がこのウェブサイトを運営しているのかと聞かれたら、私たちは科学者の集"
@@ -3467,7 +3467,7 @@ msgstr ""
 "<ul>\n"
 "<li>ユーザ名、お子さんのニックネーム、連絡先情報などを研究・調査の対象として"
 "使用することはできません</li>\n"
-"<li>研究者は、研究・調査への参加報酬や、研究・調査への参加に必要な資料を送付"
+"<li>研究者は、研究・調査への参加謝礼や、研究・調査への参加に必要な資料を送付"
 "するためにのみ、郵送にて参加者に連絡を取ることができます</li>\n"
 "</ul>"
 
@@ -3781,7 +3781,7 @@ msgid ""
 "Lookit studies run here on our platform, and usually include a video of your "
 "session! "
 msgstr ""
-"Lookit 研究・調査は私たちのプラットフォームで実施され、通常は参加者様のビデオ"
+"Lookit 研究・調査は私たちのプラットフォームで実施され、通常は参加者のビデオ"
 "セッションも含まれています！"
 
 #: web/templates/web/studies-history.html:33
@@ -3835,7 +3835,7 @@ msgstr "いいえ"
 #: web/templates/web/studies-history.html:72
 #: web/templates/web/study-detail.html:79
 msgid "Compensation"
-msgstr "報酬"
+msgstr "謝礼"
 
 #: web/templates/web/studies-history.html:78
 msgid "Study Responses"
@@ -4062,7 +4062,7 @@ msgid ""
 "the researchers."
 msgstr ""
 "参加するをクリックすると、この研究・調査の研究者があなたに連絡することが可能"
-"になり、あなたのお子様のプロフィール情報が研究者と共有されます。"
+"になり、あなたのお子さんのプロフィール情報が研究者と共有されます。"
 
 #: web/templatetags/web_extras.py:191
 msgid ""
