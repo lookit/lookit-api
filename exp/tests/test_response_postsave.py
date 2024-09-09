@@ -215,6 +215,7 @@ class ResponseSaveHandlingTestCase(TestCase):
 
 class JspsychResponseSaveHandlingTestCase(TestCase):
     def setUp(self):
+        settings.CELERY_TASK_ALWAYS_EAGER = True
         jspsych = StudyType.get_jspsych()
         user = G(User)
         child = G(Child, birthday=datetime.date(1911, 11, 11), user=user)
@@ -235,8 +236,10 @@ class JspsychResponseSaveHandlingTestCase(TestCase):
             frame_id=frame_id,
         )
 
+    def tearDown(self):
+        settings.CELERY_TASK_ALWAYS_EAGER = False
+
     def test_exit_withdraw_videos(self):
-        settings.CELERY_TASK_ALWAYS_EAGER = True
         self.response.exp_data = [
             {"chs_type": "exit", "response": {"withdrawal": True}}
         ]
