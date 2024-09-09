@@ -1,4 +1,4 @@
-serve:
+serve: poetry
 	docker compose up --pull always --build
 
 clean:
@@ -51,8 +51,8 @@ media:
 media-prod:
 	gsutil -m cp -r "gs://lookit-production/media" ./project
 
-test:
-	docker compose run --rm -e ENVIRONMENT= web poetry run ./manage.py test --failfast 
+test: poetry
+	docker compose run --rm -e ENVIRONMENT= web poetry run ./manage.py test --failfast --verbosity 2
 
 collectstatic: 
 	docker compose run --rm web poetry run ./manage.py collectstatic --clear --noinput

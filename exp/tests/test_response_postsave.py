@@ -1,5 +1,8 @@
+import datetime
+
 from django.conf import settings
 from django.test import TestCase
+from django.utils import timezone
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
 
@@ -208,3 +211,55 @@ class ResponseSaveHandlingTestCase(TestCase):
             .first()
             .study_type.is_ember_frame_player
         )
+
+
+class JspsychResponseSaveHandlingTestCase(TestCase):
+    def setUp(self):
+        settings.CELERY_TASK_ALWAYS_EAGER = True
+        jspsych = StudyType.get_jspsych()
+        user = G(User)
+        child = G(Child, birthday=datetime.date(1911, 11, 11), user=user)
+        study = G(Study, study_type=jspsych)
+        frame_id = "0-survey"
+        self.response = G(
+            Response,
+            child=child,
+            study=study,
+            study_type=jspsych,
+            sequence=[frame_id],
+        )
+        G(
+            Video,
+            response=self.response,
+            study=study,
+            s3_timestamp=timezone.now(),
+            frame_id=frame_id,
+        )
+
+    def tearDown(self):
+        settings.CELERY_TASK_ALWAYS_EAGER = False
+
+    def test_exit_withdraw_videos(self):
+        self.response.exp_data = [
+            {"chs_type": "exit", "response": {"withdrawal": True}}
+        ]
+        self.assertEqual(len(self.response.videos.all()), 1)
+        self.response.save()
+        self.assertEqual(len(self.response.videos.all()), 0)
+
+    def test_exit_not_withdraw_videos(self):
+        self.response.exp_data = [
+            {"chs_type": "exit", "response": {"withdrawal": False}}
+        ]
+        self.assertEqual(len(self.response.videos.all()), 1)
+
+        self.response.save()
+
+        self.assertEqual(len(self.response.videos.all()), 1)
+
+    def test_consent_video(self):
+        self.response.exp_data = [{"chs_type": "consent", "response": {}}]
+        self.assertEqual(len(self.response.videos.all()), 1)
+        self.assertFalse(self.response.videos.first().is_consent_footage)
+        self.response.save()
+        self.assertTrue(self.response.videos.first().is_consent_footage)

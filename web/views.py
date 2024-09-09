@@ -823,9 +823,13 @@ class JsPsychExperimentView(
         study = context["study"]
         child_uuid = context["view"].kwargs["child_id"]
         child = Child.objects.get(uuid=child_uuid)
-        demo = DemographicData.objects.filter(user=child.user).first()
+        demo = child.user.latest_demographics
         response = Response.objects.create(
-            study=study, child=child, demographic_snapshot=demo, exp_data=[]
+            study=study,
+            child=child,
+            demographic_snapshot=demo,
+            exp_data=[],
+            study_type=study.study_type,
         )
 
         context.update(response=response)
