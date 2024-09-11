@@ -529,9 +529,7 @@ class Study(models.Model):
     def responses_for_researcher(self, user):
         """Return all responses to this study that the researcher has access to read"""
 
-        # TODO: Currently jspsych studies don't have a consent manager.  When
-        # that's been completed, this should be updated.
-        if self.study_type.is_external or self.study_type.is_jspsych:
+        if self.study_type.is_external:
             responses = self.responses
         else:
             responses = self.consented_responses
@@ -585,7 +583,7 @@ class Study(models.Model):
 
     @property
     def show_consent(self):
-        return self.study_type.is_ember_frame_player
+        return self.study_type.is_ember_frame_player or self.study_type.is_jspsych
 
     @property
     def show_responses(self):
