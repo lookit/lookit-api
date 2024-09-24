@@ -93,6 +93,21 @@ def get_external_url(study: Study, response: Response) -> Text:
     return url.geturl()
 
 
+def get_jspsych_response(context, is_preview=False):
+    study = context["study"]
+    child_uuid = context["view"].kwargs["child_id"]
+    child = Child.objects.get(uuid=child_uuid)
+    demo = child.user.latest_demographics
+    return Response.objects.create(
+        study=study,
+        child=child,
+        demographic_snapshot=demo,
+        exp_data=[],
+        is_preview=is_preview,
+        study_type=study.study_type,
+    )
+
+
 class ParticipantSignupView(generic.CreateView):
     """
     Allows a participant to sign up. Redirects them to a page to add their demographic data.
@@ -820,18 +835,7 @@ class JsPsychExperimentView(
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        study = context["study"]
-        child_uuid = context["view"].kwargs["child_id"]
-        child = Child.objects.get(uuid=child_uuid)
-        demo = child.user.latest_demographics
-        response = Response.objects.create(
-            study=study,
-            child=child,
-            demographic_snapshot=demo,
-            exp_data=[],
-            study_type=study.study_type,
-        )
-
+        response = get_jspsych_response(context)
         context.update(response=response)
 
         return context

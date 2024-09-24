@@ -171,7 +171,7 @@ class FrameActionDispatcher(object):
 
         if response.study_type.is_jspsych:
             exp_data = response.exp_data[-1]
-            frame_data = exp_data["response"]
+            frame_data = exp_data.get("response")
             frame_type = exp_data.get("chs_type")
         elif response.study_type.is_ember_frame_player:
             frame_data = response.exp_data[current_frame_id]
