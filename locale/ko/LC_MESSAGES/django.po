@@ -2,20 +2,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-10 18:01-0400\n"
+"POT-Creation-Date: 2024-10-04 17:42-0400\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
 
-#: accounts/forms.py:56
+#: accounts/forms.py:55
 msgid "Enter a valid 6-digit one-time password from Google Authenticator"
 msgstr ""
 "구글 인증 (Google Authenticator)에서 제공된 유효한 6자리 일회용 비밀번호를 입"
 "력해주십시오."
 
-#: accounts/forms.py:109
+#: accounts/forms.py:108
 #, fuzzy, python-format
 #| msgid ""
 #| "Please enter a correct %(username)s and password. Note that email and "
@@ -33,29 +33,29 @@ msgstr ""
 "다면, 구글 인증(Google Authenticator)으로부터 일회용 비밀번호 (OTP코드) 가 필"
 "요할 수 있습니다."
 
-#: accounts/forms.py:114
+#: accounts/forms.py:113
 msgid "This account is inactive."
 msgstr "본 계정은 활성화되어있지 않습니다."
 
-#: accounts/forms.py:222 accounts/forms.py:238 accounts/models.py:148
+#: accounts/forms.py:221 accounts/forms.py:237 accounts/models.py:148
 msgid "Email address"
 msgstr "이메일 주소"
 
-#: accounts/forms.py:223
+#: accounts/forms.py:222
 msgid "Nickname"
 msgstr "별칭"
 
-#: accounts/forms.py:286
+#: accounts/forms.py:285
 #, fuzzy
 msgid ""
 "It's time for another session of a study we are currently participating in"
 msgstr "현재 우리가 참여하고있는 연구의 다른 세션을 살펴보겠습니다"
 
-#: accounts/forms.py:288
+#: accounts/forms.py:287
 msgid "A new study is available for one of my children"
 msgstr "귀하의 자녀분(들) 중 한 명이 참여가능한 새로운 연구가 있습니다"
 
-#: accounts/forms.py:290
+#: accounts/forms.py:289
 msgid ""
 "There's an update about a study we participated in (for example, results are "
 "published)"
@@ -63,7 +63,7 @@ msgstr ""
 "우리가 참여한 연구에 대한 새로운 알림이 있습니다 (예를 들어, 연구결과가 출판"
 "됨)"
 
-#: accounts/forms.py:293
+#: accounts/forms.py:292
 msgid ""
 "A researcher has questions about my individual responses (for example, if I "
 "report a technical problem during the study)"
@@ -71,98 +71,98 @@ msgstr ""
 "연구자가 귀하의 개별 응답에 대해 질문이 있습니다 (예를 들어, 귀하께서 연구 중"
 "에 기술적 문제를 보고하시는 경우)"
 
-#: accounts/forms.py:323
+#: accounts/forms.py:322
 #, fuzzy
 msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
 msgstr ""
 "다음 형태에 맞게 년/월/일을 입력해주십시오 (쉼표로 구분): 0000-00-00, "
 "0000-00-00, ..."
 
-#: accounts/forms.py:326
+#: accounts/forms.py:325
 msgid ""
 "If the answer varies or needs more explanation, you can tell us more below."
 msgstr ""
 
-#: accounts/forms.py:329
+#: accounts/forms.py:328
 msgid ""
 "Please select the appropriate responses for everyone in your children's "
 "immediate family."
 msgstr ""
 
-#: accounts/forms.py:334
+#: accounts/forms.py:333
 msgid "What country do you live in?"
 msgstr "귀하께서는 어느 나라에 살고 계십니까?"
 
-#: accounts/forms.py:335
+#: accounts/forms.py:334
 #, fuzzy
 msgid "What state do you live in?"
 msgstr "귀하는 어느 지역 (도, 특별시) 에 살고 계십니까?"
 
-#: accounts/forms.py:336
+#: accounts/forms.py:335
 msgid "How would you describe the area where you live?"
 msgstr "귀하께서 살고 계신 지역을 어떻게 설명 하시겠습니까?"
 
-#: accounts/forms.py:337
+#: accounts/forms.py:336
 #, fuzzy
 msgid "How many children do you have?"
 msgstr "귀하는 자녀분이 몇명 있으십니까?"
 
-#: accounts/forms.py:338
+#: accounts/forms.py:337
 msgid "For each child, please enter his or her birthdate:"
 msgstr "각 자녀분의 생년월일을 입력해주십시오:"
 
-#: accounts/forms.py:340
+#: accounts/forms.py:339
 #, fuzzy
 msgid "How many parents/guardians do your children live with?"
 msgstr "귀하의 자녀분(들)은 몇 명의 부모/법적보호자와 함께 살고 있습니까?"
 
-#: accounts/forms.py:342
+#: accounts/forms.py:341
 msgid "What is your age?"
 msgstr "귀하의 만 나이는 무엇입니까?"
 
-#: accounts/forms.py:343
+#: accounts/forms.py:342
 msgid "What is your gender?"
 msgstr "귀하의 성별은 무엇입니까?"
 
-#: accounts/forms.py:344
+#: accounts/forms.py:343
 #, fuzzy
 #| msgid "What is your gender?"
 msgid "Describe your gender"
 msgstr "귀하의 성별은 무엇입니까?"
 
-#: accounts/forms.py:346
+#: accounts/forms.py:345
 #, fuzzy
 msgid "What is the highest level of education you've completed?"
 msgstr "귀하가 수료한 최고학력은 무엇입니까?"
 
-#: accounts/forms.py:349
+#: accounts/forms.py:348
 msgid "What is your approximate family yearly income (in US dollars)?"
 msgstr "대략적인 연간 가족 소득은 얼마입니까 (한국 원화로)?"
 
-#: accounts/forms.py:351
+#: accounts/forms.py:350
 msgid "Anything else you'd like us to know?"
 msgstr "저희에게 더 알려주시고 싶으신 부분이 있으십니까?"
 
-#: accounts/forms.py:352
+#: accounts/forms.py:351
 msgid "How did you hear about Lookit?"
 msgstr "Lookit에 대해 어떻게 알게 되셨습니까?"
 
-#: accounts/forms.py:354
+#: accounts/forms.py:353
 msgid ""
 "What racial group(s) does your family identify with/belong to? Please select "
 "any that apply to someone in your children's immediate family."
 msgstr ""
 
-#: accounts/forms.py:357
+#: accounts/forms.py:356
 #, fuzzy
 msgid "Share more about your family's race, ethnicity, or origin:"
 msgstr "다른 인종, 민족 또는 출신"
 
-#: accounts/forms.py:360
+#: accounts/forms.py:359
 msgid "Share more about your children's parents/guardians:"
 msgstr ""
 
-#: accounts/forms.py:379
+#: accounts/forms.py:378
 #, fuzzy
 msgid ""
 "This lets us figure out exactly how old your child is when they participate "
@@ -173,44 +173,44 @@ msgstr ""
 "줍니다. 저희는 다른 독자가 자녀분의 생년월일을 계산할 수 있는 형태의 정보를 "
 "절대로 출판하지 않습니다."
 
-#: accounts/forms.py:386
+#: accounts/forms.py:385
 #, fuzzy
 msgid "Birthdays cannot be in the future."
 msgstr "생일은 미래의 날짜일 수 없습니다."
 
-#: accounts/forms.py:403
+#: accounts/forms.py:402
 msgid "First Name"
 msgstr "이름"
 
-#: accounts/forms.py:404 accounts/templates/accounts/participant_detail.html:36
+#: accounts/forms.py:403 accounts/templates/accounts/participant_detail.html:36
 #: web/templates/web/children-list.html:45
 msgid "Birthday"
 msgstr "생년월일"
 
-#: accounts/forms.py:405 accounts/templates/accounts/participant_detail.html:44
+#: accounts/forms.py:404 accounts/templates/accounts/participant_detail.html:44
 msgid "Gender"
 msgstr "성별"
 
-#: accounts/forms.py:406 accounts/templates/accounts/participant_detail.html:48
+#: accounts/forms.py:405 accounts/templates/accounts/participant_detail.html:48
 msgid "Gestational Age at Birth"
 msgstr "임신 주 수 (출생 당시 __주)"
 
-#: accounts/forms.py:408
+#: accounts/forms.py:407
 msgid "Any additional information you'd like us to know"
 msgstr "저희에게 더 알려주시고 싶으신 부분이 있으십니까?"
 
-#: accounts/forms.py:410
+#: accounts/forms.py:409
 #, fuzzy
 msgid "Characteristics and conditions"
 msgstr "특성 및 조건"
 
-#: accounts/forms.py:412
+#: accounts/forms.py:411
 msgid ""
 "Languages this child is exposed to at home, school, or with another "
 "caregiver."
 msgstr "자녀분이 가정, 학교 또는 다른 보호자와 있을 때 노출되는 언어(들)"
 
-#: accounts/forms.py:418
+#: accounts/forms.py:417
 #, fuzzy
 msgid ""
 "This lets you select the correct child to participate in a particular study. "
@@ -223,185 +223,185 @@ msgstr ""
 "함할 수 있지만 (예 : \"영희가 참여할 수 있는 새로운 연구가 있습니다!\") 저희"
 "는 절대 자녀분의 이름을 공적으로 게시하거나 연구에 사용하지 않을 것입니다."
 
-#: accounts/forms.py:421
+#: accounts/forms.py:420
 msgid ""
 "For instance, diagnosed developmental disorders or vision or hearing problems"
 msgstr "예를 들어, 발달 장애 또는 시력 및 청력 문제를 진단받은 적이 있습니다."
 
-#: accounts/forms.py:424
+#: accounts/forms.py:423
 #, fuzzy
 msgid "Please round down to the nearest full week of pregnancy completed"
 msgstr ""
 "출산까지 임신 하셨던 기간을 가장 가까운 정수로 내림하여 응답해주십시오 (예 "
 "36.5주 --> 36주)."
 
-#: accounts/forms.py:427
+#: accounts/forms.py:426
 msgid ""
 "Most research studies are designed for a general age range, but some focus "
 "on a particular group of children. The choices you make below are used to "
 "show you studies that are designed for children with these characteristics."
 msgstr ""
 
-#: accounts/forms.py:457
+#: accounts/forms.py:456
 #, fuzzy
 #| msgid "Studies"
 msgid "All studies"
 msgstr "연구들"
 
-#: accounts/forms.py:458
+#: accounts/forms.py:457
 msgid "Studies happening right now"
 msgstr ""
 
-#: accounts/forms.py:459
+#: accounts/forms.py:458
 #, fuzzy
 msgid "Scheduled studies"
 msgstr "현재 진행중인 연구들"
 
-#: accounts/forms.py:462
+#: accounts/forms.py:461
 msgid "Find studies for..."
 msgstr ""
 
-#: accounts/forms.py:463
+#: accounts/forms.py:462
 msgid "babies (under 1)"
 msgstr ""
 
-#: accounts/forms.py:464
+#: accounts/forms.py:463
 msgid "toddlers (1-2)"
 msgstr ""
 
-#: accounts/forms.py:465
+#: accounts/forms.py:464
 msgid "preschoolers (3-4)"
 msgstr ""
 
-#: accounts/forms.py:466
+#: accounts/forms.py:465
 msgid "school-age kids (5-17)"
 msgstr ""
 
-#: accounts/forms.py:467
+#: accounts/forms.py:466
 msgid "adults (18+)"
 msgstr ""
 
-#: accounts/forms.py:470
+#: accounts/forms.py:469
 msgid "Show studies happening..."
 msgstr ""
 
-#: accounts/forms.py:471
+#: accounts/forms.py:470
 #, fuzzy
 #| msgid "Meet the Lookit team"
 msgid "here on the Lookit platform"
 msgstr "Lookit 팀을 만나보십시오."
 
-#: accounts/forms.py:472
+#: accounts/forms.py:471
 msgid "on other websites"
 msgstr ""
 
-#: accounts/forms.py:477
+#: accounts/forms.py:476
 msgid "Hide Studies We've Done"
 msgstr ""
 
-#: accounts/forms.py:516
+#: accounts/forms.py:515
 #, fuzzy
 #| msgid "Your past studies"
 msgid "Lookit studies"
 msgstr "귀하의 지난 연구들"
 
-#: accounts/forms.py:517
+#: accounts/forms.py:516
 #, fuzzy
 msgid "External studies"
 msgstr "현재 진행중인 연구들"
 
 #: accounts/migrations/0041_add_existing_conditions.py:12
-#: accounts/models.py:339 studies/fields.py:136
+#: accounts/models.py:339 studies/fields.py:137
 msgid "Not sure or prefer not to answer"
 msgstr "확실하지 않거나 답변하기를 원하지 않습니다"
 
 #: accounts/migrations/0041_add_existing_conditions.py:13
-#: accounts/models.py:340 studies/fields.py:137
+#: accounts/models.py:340 studies/fields.py:138
 msgid "Under 24 weeks"
 msgstr "24주 미만"
 
 #: accounts/migrations/0041_add_existing_conditions.py:14
-#: accounts/models.py:341 studies/fields.py:138
+#: accounts/models.py:341 studies/fields.py:139
 msgid "24 weeks"
 msgstr "24주"
 
 #: accounts/migrations/0041_add_existing_conditions.py:15
-#: accounts/models.py:342 studies/fields.py:139
+#: accounts/models.py:342 studies/fields.py:140
 msgid "25 weeks"
 msgstr "25주"
 
 #: accounts/migrations/0041_add_existing_conditions.py:16
-#: accounts/models.py:343 studies/fields.py:140
+#: accounts/models.py:343 studies/fields.py:141
 msgid "26 weeks"
 msgstr "26주"
 
 #: accounts/migrations/0041_add_existing_conditions.py:17
-#: accounts/models.py:344 studies/fields.py:141
+#: accounts/models.py:344 studies/fields.py:142
 msgid "27 weeks"
 msgstr "27주"
 
 #: accounts/migrations/0041_add_existing_conditions.py:18
-#: accounts/models.py:345 studies/fields.py:142
+#: accounts/models.py:345 studies/fields.py:143
 msgid "28 weeks"
 msgstr "28주"
 
 #: accounts/migrations/0041_add_existing_conditions.py:19
-#: accounts/models.py:346 studies/fields.py:143
+#: accounts/models.py:346 studies/fields.py:144
 msgid "29 weeks"
 msgstr "29주"
 
 #: accounts/migrations/0041_add_existing_conditions.py:20
-#: accounts/models.py:347 studies/fields.py:144
+#: accounts/models.py:347 studies/fields.py:145
 msgid "30 weeks"
 msgstr "30주"
 
 #: accounts/migrations/0041_add_existing_conditions.py:21
-#: accounts/models.py:348 studies/fields.py:145
+#: accounts/models.py:348 studies/fields.py:146
 msgid "31 weeks"
 msgstr "31주"
 
 #: accounts/migrations/0041_add_existing_conditions.py:22
-#: accounts/models.py:349 studies/fields.py:146
+#: accounts/models.py:349 studies/fields.py:147
 msgid "32 weeks"
 msgstr "32주"
 
 #: accounts/migrations/0041_add_existing_conditions.py:23
-#: accounts/models.py:350 studies/fields.py:147
+#: accounts/models.py:350 studies/fields.py:148
 msgid "33 weeks"
 msgstr "33주"
 
 #: accounts/migrations/0041_add_existing_conditions.py:24
-#: accounts/models.py:351 studies/fields.py:148
+#: accounts/models.py:351 studies/fields.py:149
 msgid "34 weeks"
 msgstr "34주"
 
 #: accounts/migrations/0041_add_existing_conditions.py:25
-#: accounts/models.py:352 studies/fields.py:149
+#: accounts/models.py:352 studies/fields.py:150
 msgid "35 weeks"
 msgstr "35주"
 
 #: accounts/migrations/0041_add_existing_conditions.py:26
-#: accounts/models.py:353 studies/fields.py:150
+#: accounts/models.py:353 studies/fields.py:151
 msgid "36 weeks"
 msgstr "36주"
 
 #: accounts/migrations/0041_add_existing_conditions.py:27
-#: accounts/models.py:354 studies/fields.py:151
+#: accounts/models.py:354 studies/fields.py:152
 msgid "37 weeks"
 msgstr "37주"
 
 #: accounts/migrations/0041_add_existing_conditions.py:28
-#: accounts/models.py:355 studies/fields.py:152
+#: accounts/models.py:355 studies/fields.py:153
 msgid "38 weeks"
 msgstr "38주"
 
 #: accounts/migrations/0041_add_existing_conditions.py:29
-#: accounts/models.py:356 studies/fields.py:153
+#: accounts/models.py:356 studies/fields.py:154
 msgid "39 weeks"
 msgstr "39주"
 
 #: accounts/migrations/0041_add_existing_conditions.py:30
-#: accounts/models.py:357 studies/fields.py:154
+#: accounts/models.py:357 studies/fields.py:155
 msgid "40 or more weeks"
 msgstr "40주 이상"
 
@@ -916,318 +916,318 @@ msgstr "법적 보호자에 대한 설명 :"
 msgid "Race"
 msgstr "인종"
 
-#: studies/fields.py:7
+#: studies/fields.py:8
 msgid "Autism Spectrum Disorder"
 msgstr "자폐 스펙트럼 장애"
 
-#: studies/fields.py:8
+#: studies/fields.py:9
 msgid "Deaf"
 msgstr "귀가 들리지 않음 (청각장애)"
 
-#: studies/fields.py:9
+#: studies/fields.py:10
 msgid "Hard of Hearing"
 msgstr "난청"
 
-#: studies/fields.py:10
+#: studies/fields.py:11
 msgid "Dyslexia"
 msgstr "난독증"
 
-#: studies/fields.py:11
+#: studies/fields.py:12
 msgid "Multiple Birth (twin, triplet, or higher order)"
 msgstr "생일 정보가 다양함 (쌍둥이, 세쌍둥이, 또는 그 이상)"
 
-#: studies/fields.py:45
+#: studies/fields.py:46
 msgid "Twin"
 msgstr "쌍둥이"
 
-#: studies/fields.py:46
+#: studies/fields.py:47
 msgid "Triplet"
 msgstr "세 쌍둥이"
 
-#: studies/fields.py:47
+#: studies/fields.py:48
 #, fuzzy
 msgid "Quadruplet"
 msgstr "네 쌍둥이"
 
-#: studies/fields.py:48
+#: studies/fields.py:49
 #, fuzzy
 msgid "Quintuplet"
 msgstr "다섯 쌍둥이"
 
-#: studies/fields.py:49
+#: studies/fields.py:50
 #, fuzzy
 msgid "Sextuplet"
 msgstr "여섯 쌍둥이"
 
-#: studies/fields.py:50
+#: studies/fields.py:51
 #, fuzzy
 msgid "Septuplet"
 msgstr "일곱 쌍둥이"
 
-#: studies/fields.py:51
+#: studies/fields.py:52
 #, fuzzy
 msgid "Octuplet"
 msgstr "여덟 쌍둥이"
 
-#: studies/fields.py:57
+#: studies/fields.py:58
 msgid "English"
 msgstr "영어(English)"
 
-#: studies/fields.py:58
+#: studies/fields.py:59
 msgid "Amharic"
 msgstr "암하라어(Amharic)"
 
-#: studies/fields.py:59
+#: studies/fields.py:60
 msgid "Bengali"
 msgstr "벵골어(Bengali)"
 
-#: studies/fields.py:60
+#: studies/fields.py:61
 msgid "Bhojpuri"
 msgstr "보즈푸리어(Bhojpuri)"
 
-#: studies/fields.py:61
+#: studies/fields.py:62
 msgid "Burmese"
 msgstr "버마어(Burmese)"
 
-#: studies/fields.py:62
+#: studies/fields.py:63
 msgid "Cebuano"
 msgstr "세부아노어(Cebuano)"
 
-#: studies/fields.py:63
+#: studies/fields.py:64
 msgid "Chhattisgarhi"
 msgstr "차티스가르어(Chhattisgarhi)"
 
-#: studies/fields.py:64
+#: studies/fields.py:65
 msgid "Dutch"
 msgstr "네덜란드어(Dutch)"
 
-#: studies/fields.py:65
+#: studies/fields.py:66
 msgid "Egyptian Spoken Arabic"
 msgstr "이집트계 통용 아랍어(Egyptian Spoken Arabic)"
 
-#: studies/fields.py:66
+#: studies/fields.py:67
 msgid "French"
 msgstr "프랑스어(French)"
 
-#: studies/fields.py:67
+#: studies/fields.py:68
 msgid "Gan"
 msgstr "관화(Gan)"
 
-#: studies/fields.py:68
+#: studies/fields.py:69
 msgid "German"
 msgstr "독일어(German)"
 
-#: studies/fields.py:69
+#: studies/fields.py:70
 msgid "Gujarati"
 msgstr "구자라트어(Gujarati)"
 
-#: studies/fields.py:70
+#: studies/fields.py:71
 msgid "Hakka"
 msgstr "하카어(Hakka)"
 
-#: studies/fields.py:71
+#: studies/fields.py:72
 msgid "Hausa"
 msgstr "하우사어(Hausa)"
 
-#: studies/fields.py:72
+#: studies/fields.py:73
 msgid "Hebrew"
 msgstr "히브리어"
 
-#: studies/fields.py:73
+#: studies/fields.py:74
 msgid "Hindi"
 msgstr "힌디어(Hindi)"
 
-#: studies/fields.py:74
+#: studies/fields.py:75
 msgid "Igbo"
 msgstr "이그보우어(Igbo)"
 
-#: studies/fields.py:75
+#: studies/fields.py:76
 msgid "Indonesian"
 msgstr "인도네시아어(Indonesian)"
 
-#: studies/fields.py:76
+#: studies/fields.py:77
 msgid "Iranian Persian"
 msgstr "이란계 페르시아어(Iranian Persian)"
 
-#: studies/fields.py:77
+#: studies/fields.py:78
 msgid "Italian"
 msgstr "이탈리아어 (Italian)"
 
-#: studies/fields.py:78
+#: studies/fields.py:79
 msgid "Japanese"
 msgstr "일본어(Japanese)"
 
-#: studies/fields.py:79
+#: studies/fields.py:80
 msgid "Javanese"
 msgstr "자바어(Javanese)"
 
-#: studies/fields.py:80
+#: studies/fields.py:81
 msgid "Jinyu"
 msgstr "진위안어(Jinyu)"
 
-#: studies/fields.py:81
+#: studies/fields.py:82
 msgid "Kannada"
 msgstr "칸나다어(Kannada)"
 
-#: studies/fields.py:82
+#: studies/fields.py:83
 msgid "Khmer"
 msgstr "크메르어(Khmer)"
 
-#: studies/fields.py:83
+#: studies/fields.py:84
 msgid "Korean"
 msgstr "한국어(Korean)"
 
-#: studies/fields.py:84
+#: studies/fields.py:85
 msgid "Magahi"
 msgstr "마가히어(Magahi)"
 
-#: studies/fields.py:85
+#: studies/fields.py:86
 msgid "Maithili"
 msgstr "마이틸리어(Maithili)"
 
-#: studies/fields.py:86
+#: studies/fields.py:87
 msgid "Malay"
 msgstr "말레이어(Malay)"
 
-#: studies/fields.py:87
+#: studies/fields.py:88
 msgid "Malayalam"
 msgstr "말라얄람어(Malayalam)"
 
-#: studies/fields.py:88
+#: studies/fields.py:89
 #, fuzzy
 #| msgid "Mandarin"
 msgid "Chinese (Mandarin)"
 msgstr "표준 중국어(Mandarin)"
 
-#: studies/fields.py:89
+#: studies/fields.py:90
 msgid "Marathi"
 msgstr "마라티어(Marathi)"
 
-#: studies/fields.py:90
+#: studies/fields.py:91
 msgid "Min Nan"
 msgstr "민난어(Min Nan)"
 
-#: studies/fields.py:91
+#: studies/fields.py:92
 msgid "Moroccan Spoken Arabic"
 msgstr "모로코계 통용 아랍어(Moroccan Spoken Arabic)"
 
-#: studies/fields.py:92
+#: studies/fields.py:93
 msgid "Northern Pashto"
 msgstr "북부 파슈토어(Northern Pashto)"
 
-#: studies/fields.py:93
+#: studies/fields.py:94
 msgid "Northern Uzbek"
 msgstr "북부 우즈베크어(Northern Uzbek)"
 
-#: studies/fields.py:94
+#: studies/fields.py:95
 msgid "Odia"
 msgstr "오리야어(Odia)"
 
-#: studies/fields.py:95
+#: studies/fields.py:96
 msgid "Polish"
 msgstr "폴란드어(Polish)"
 
-#: studies/fields.py:96
+#: studies/fields.py:97
 msgid "Portuguese"
 msgstr "포르투갈어(Portuguese)"
 
-#: studies/fields.py:97
+#: studies/fields.py:98
 msgid "Romanian"
 msgstr "루마니아어(Romanian)"
 
-#: studies/fields.py:98
+#: studies/fields.py:99
 msgid "Russian"
 msgstr "러시아어(Russian)"
 
-#: studies/fields.py:99
+#: studies/fields.py:100
 msgid "Saraiki"
 msgstr "사라이키어(Saraiki)"
 
-#: studies/fields.py:100
+#: studies/fields.py:101
 msgid "Sindhi"
 msgstr "신디어(Sindhi)"
 
-#: studies/fields.py:101
+#: studies/fields.py:102
 msgid "Somali"
 msgstr "소말리어(Somali)"
 
-#: studies/fields.py:102
+#: studies/fields.py:103
 msgid "Spanish"
 msgstr "스페인어(Spanish)"
 
-#: studies/fields.py:103
+#: studies/fields.py:104
 msgid "Sunda"
 msgstr "순다어(Sunda)"
 
-#: studies/fields.py:104
+#: studies/fields.py:105
 msgid "Tagalog"
 msgstr "타갈로그어(Tagalog)"
 
-#: studies/fields.py:105
+#: studies/fields.py:106
 msgid "Tamil"
 msgstr "타밀어(Tamil)"
 
-#: studies/fields.py:106
+#: studies/fields.py:107
 msgid "Telugu"
 msgstr "텔루구어(Telugu)"
 
-#: studies/fields.py:107
+#: studies/fields.py:108
 msgid "Thai"
 msgstr "태국어(Thai)"
 
-#: studies/fields.py:108
+#: studies/fields.py:109
 msgid "Turkish"
 msgstr "터키어(Turkish)"
 
-#: studies/fields.py:109
+#: studies/fields.py:110
 msgid "Ukrainian"
 msgstr "우크라이나어(Ukrainian)"
 
-#: studies/fields.py:110
+#: studies/fields.py:111
 msgid "Urdu"
 msgstr "우르두어(Urdu)"
 
-#: studies/fields.py:111
+#: studies/fields.py:112
 msgid "Vietnamese"
 msgstr "베트남어(Vietnamese)"
 
-#: studies/fields.py:112
+#: studies/fields.py:113
 msgid "Western Punjabi"
 msgstr "서부 펀자브어(Western Punjabi)"
 
-#: studies/fields.py:113
+#: studies/fields.py:114
 msgid "Wu"
 msgstr "중국의 장쑤, 저장, 상하이에서 사용되는 중국어 (Wu)"
 
-#: studies/fields.py:114
+#: studies/fields.py:115
 msgid "Xiang Chinese"
 msgstr "중국의 후난에서 사용되는 중국어(Xiang Chinese)"
 
-#: studies/fields.py:115
+#: studies/fields.py:116
 msgid "Yoruba"
 msgstr "요루바어(Yoruba)"
 
-#: studies/fields.py:116
+#: studies/fields.py:117
 msgid "Chinese (Cantonese)"
 msgstr ""
 
-#: studies/fields.py:124
+#: studies/fields.py:125
 msgid "Not answered"
 msgstr "대답 하지 않음"
 
-#: studies/fields.py:125
+#: studies/fields.py:126
 msgid "Other"
 msgstr "기타"
 
-#: studies/fields.py:126
+#: studies/fields.py:127
 msgid "Male"
 msgstr "남성"
 
-#: studies/fields.py:127
+#: studies/fields.py:128
 msgid "Female"
 msgstr "여성"
 
-#: studies/models.py:143
+#: studies/models.py:142
 #, fuzzy
 msgid ""
 "The Users who belong to this Lab. A user in this lab will be able to create "
@@ -1236,7 +1236,7 @@ msgstr ""
 "이 연구실에 속한 사용자들입니다. 이 연구실의 사용자는 이 연구실과 관련된 연구"
 "를 만들 수 있으며, 이 연구실의 연구들에 추가 될 수 있습니다."
 
-#: studies/models.py:152
+#: studies/models.py:151
 #, fuzzy
 msgid "The Users who have requested to join this Lab."
 msgstr "이 연구실에 가입을 요청한 사용자들입니다."
@@ -4132,15 +4132,27 @@ msgstr "이 연구는  에서 진행합니다 %(contact)s."
 msgid "Would you like to participate in this study?"
 msgstr "이 연구에 참여하시겠습니까?"
 
-#: web/templates/web/study-detail.html:108
+#: web/templates/web/study-detail.html:98
+#, fuzzy
+#| msgid "Log in to participate"
+msgid "Log in to participate"
+msgstr "참여하시려면 로그인하십시오."
+
+#: web/templates/web/study-detail.html:99
+#, fuzzy
+#| msgid "Create Account"
+msgid "Create a new account"
+msgstr "계정 만들기"
+
+#: web/templates/web/study-detail.html:110
 msgid "Select a child:"
 msgstr "자녀 선택:"
 
-#: web/templates/web/study-detail.html:119
+#: web/templates/web/study-detail.html:121
 msgid "None Selected"
 msgstr "선택되지 않음"
 
-#: web/templates/web/study-detail.html:132
+#: web/templates/web/study-detail.html:134
 #, fuzzy
 #| msgid ""
 #| "Your child is still younger than the recommended age range for this "
@@ -4155,7 +4167,7 @@ msgstr ""
 "이 될 때까지 </span> 기다리실 수 있다면 <span id='wait-until'> 수집된 연구정"
 "보를 저희의 연구에 사용할 수 있습니다!"
 
-#: web/templates/web/study-detail.html:135
+#: web/templates/web/study-detail.html:137
 #, fuzzy
 #| msgid ""
 #| "Your child is older than the recommended age range for this study. You're "
@@ -4170,7 +4182,7 @@ msgstr ""
 "수는 있지만, 수집된 연구정보는 저희의 연구에 사용 되지 않습니다."
 
 #. Translators: Please include the untranslated "%(contact)s" string to mark where the contact information should be inserted.
-#: web/templates/web/study-detail.html:139
+#: web/templates/web/study-detail.html:141
 #, fuzzy, python-format
 #| msgid ""
 #| "Your child does not meet the eligibility criteria listed for this study. "
@@ -4187,7 +4199,7 @@ msgstr ""
 "하실 수는 있지만, 수집된 연구정보는 저희의 연구에 사용 되지 없습니다. 연구자"
 "에게 문의하여 주십시오."
 
-#: web/templates/web/study-detail.html:153
+#: web/templates/web/study-detail.html:155
 msgid ""
 "For an easy way to see what happens as you update your study protocol, "
 "bookmark the URL the button above sends you to."
@@ -4195,23 +4207,23 @@ msgstr ""
 "귀하의 연구 프로토콜을 업데이트할 때 발생하는 상황을 쉽게 보려면 위의 버튼에"
 "서 전송하는 URL을 즐겨찾기에 추가하십시오."
 
-#: web/templates/web/study-detail.html:157
+#: web/templates/web/study-detail.html:159
 msgid ""
 "This study runs on another website, and clicking to participate will take "
 "you to that link."
 msgstr ""
 
-#: web/templates/web/study-detail.html:159
+#: web/templates/web/study-detail.html:161
 msgid ""
 "It will also make it possible for the researchers of this study to contact "
 "you, and will share your child's profile information with the researchers."
 msgstr ""
 
-#: web/templates/web/study-detail.html:162
+#: web/templates/web/study-detail.html:164
 msgid "This study runs here on the Lookit platform."
 msgstr ""
 
-#: web/templates/web/study-detail.html:164
+#: web/templates/web/study-detail.html:166
 msgid ""
 "Clicking to participate will make it possible for the researchers of this "
 "study to contact you, and will share your child's profile information with "
@@ -4249,31 +4261,31 @@ msgid ""
 "then click \"Participate\" to sign up for a study session in the future."
 msgstr ""
 
-#: web/views.py:114
+#: web/views.py:130
 msgid "Participant created."
 msgstr "연구참여자 계정이 생성됨"
 
-#: web/views.py:157
+#: web/views.py:173
 msgid "Demographic data saved."
 msgstr "인구 통계 정보가 저장됨"
 
-#: web/views.py:223
+#: web/views.py:239
 msgid "Child added."
 msgstr "자녀 정보가 추가됨"
 
-#: web/views.py:264
+#: web/views.py:280
 msgid "Child deleted."
 msgstr "자녀 정보가 삭제됨"
 
-#: web/views.py:266
+#: web/views.py:282
 msgid "Child updated."
 msgstr "자녀 정보가 업데이트 됨"
 
-#: web/views.py:294
+#: web/views.py:310
 msgid "Email preferences saved."
 msgstr "이메일 선호 방식이 저장됨"
 
-#: web/views.py:699
+#: web/views.py:720
 #, fuzzy, python-brace-format
 #| msgid ""
 #| "The study {study.name} is not currently collecting data - the study is "
