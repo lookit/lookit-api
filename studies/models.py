@@ -1083,7 +1083,7 @@ class Response(models.Model):
     @property
     def most_recent_ruling_comment(self):
         ruling = self._get_recent_consent_ruling()
-        return ruling.comments if ruling else None
+        return ruling.comments if ruling and ruling.comments else None
 
     @property
     def comment_or_reason_for_absence(self):
@@ -1104,7 +1104,7 @@ class Response(models.Model):
     @property
     def most_recent_ruling_arbiter(self):
         ruling = self._get_recent_consent_ruling()
-        return ruling.arbiter.get_full_name() if ruling else None
+        return ruling.arbiter.get_full_name() if ruling and ruling.arbiter else None
 
     @property
     def current_consent_details(self):
