@@ -1458,13 +1458,27 @@ class Video(models.Model):
     def display_name(self):
         return f"Response({self.full_name.split('_')[3][:8]})"
 
+    @cached_property
+    def study_type_is_jspsych(self):
+        return self.study.study_type.is_jspsych
+
     @property
     def download_url(self):
-        return get_url(self.full_name, self.recording_method_is_pipe, True)
+        return get_url(
+            self.full_name,
+            self.recording_method_is_pipe,
+            self.study_type_is_jspsych,
+            True,
+        )
 
     @property
     def view_url(self):
-        return get_url(self.full_name, self.recording_method_is_pipe, False)
+        return get_url(
+            self.full_name,
+            self.recording_method_is_pipe,
+            self.study_type_is_jspsych,
+            False,
+        )
 
     @property
     def recording_method_is_pipe(self):
@@ -1482,8 +1496,10 @@ def delete_video_on_s3(sender, instance, using, **kwargs):
     Do this in a pre_delete hook rather than a custom delete function because this will
     be called when cascading deletion from responses."""
     video_in_pipe_bucket = instance.recording_method_is_pipe
+    study_type_is_jspsych = instance.study_type_is_jspsych
     delete_video_from_cloud.apply_async(
-        args=(instance.full_name, video_in_pipe_bucket), countdown=60 * 60 * 24 * 7
+        args=(instance.full_name, video_in_pipe_bucket, study_type_is_jspsych),
+        countdown=60 * 60 * 24 * 7,
     )  # Delete after 1 week.
 
 

@@ -19,12 +19,17 @@ def get_all_study_attachments(study_uuid):
     return bucket.objects.filter(Prefix=f"videoStream_{study_uuid}")
 
 
-def get_url(video_key, recording_method_is_pipe, set_attachment_header):
+def get_url(
+    video_key, recording_method_is_pipe, study_type_is_jspsych, set_attachment_header
+):
     """
     Generate a presigned url for the video that expires in 10 minutes.
     """
     url = None
-    if recording_method_is_pipe:
+    if study_type_is_jspsych:
+        # jsPsych bucket
+        bucket = settings.JSPSYCH_S3_BUCKET
+    elif recording_method_is_pipe:
         # Pipe bucket
         bucket = settings.BUCKET_NAME
     else:
