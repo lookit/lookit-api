@@ -575,7 +575,7 @@ class Study(models.Model):
 
     @property
     def show_videos(self):
-        return self.study_type.is_ember_frame_player
+        return self.study_type.is_ember_frame_player or self.study_type.is_jspsych
 
     @property
     def show_frame_data(self):
