@@ -29,12 +29,14 @@ def get_url(
     if study_type_is_jspsych:
         # jsPsych bucket
         bucket = settings.JSPSYCH_S3_BUCKET
-    elif recording_method_is_pipe:
-        # Pipe bucket
-        bucket = settings.BUCKET_NAME
     else:
-        # RecordRTC bucket
-        bucket = settings.S3_BUCKET_NAME
+        # EFP
+        if recording_method_is_pipe:
+            # Pipe bucket
+            bucket = settings.BUCKET_NAME
+        else:
+            # RecordRTC bucket
+            bucket = settings.S3_BUCKET_NAME
 
     params = {"Bucket": bucket, "Key": video_key}
     if set_attachment_header:
