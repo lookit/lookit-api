@@ -479,12 +479,17 @@ def build_framedata_dict(filename, study_uuid, requesting_user_uuid):
 
 
 @app.task(bind=True)
-def delete_video_from_cloud(task, s3_video_name, recording_method_is_pipe):
+def delete_video_from_cloud(
+    task, s3_video_name, recording_method_is_pipe, study_type_is_jspsych
+):
     """Delete videos in S3.
 
     Meant to have a delay of about 7 days.
     """
-    if recording_method_is_pipe:
+    if study_type_is_jspsych:
+        # delete from lookit-jspsych bucket
+        S3_RESOURCE.Object(settings.JSPSYCH_S3_BUCKET, s3_video_name).delete()
+    elif recording_method_is_pipe:
         # delete from Pipe bucket
         S3_RESOURCE.Object(settings.BUCKET_NAME, s3_video_name).delete()
     else:

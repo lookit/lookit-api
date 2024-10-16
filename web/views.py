@@ -422,7 +422,9 @@ class StudiesListView(generic.ListView, FormView):
 
         # study location
         if study_location_value == StudyListSearchForm.StudyLocation.lookit.value[0]:
-            query = Q(study_type__name=StudyTypeEnum.ember_frame_player.value)
+            query = Q(study_type__name=StudyTypeEnum.ember_frame_player.value) | Q(
+                study_type__name=StudyTypeEnum.jspsych.value
+            )
         elif (
             study_location_value == StudyListSearchForm.StudyLocation.external.value[0]
         ):
@@ -434,9 +436,14 @@ class StudiesListView(generic.ListView, FormView):
 
         # Scheduled or unscheduled studies
         if tab_value == StudyListSearchForm.Tabs.synchronous_studies.value[0]:
-            query = Q(
-                study_type__name=StudyTypeEnum.external.value, metadata__scheduled=False
-            ) | Q(study_type__name=StudyTypeEnum.ember_frame_player.value)
+            query = (
+                Q(
+                    study_type__name=StudyTypeEnum.external.value,
+                    metadata__scheduled=False,
+                )
+                | Q(study_type__name=StudyTypeEnum.ember_frame_player.value)
+                | Q(study_type__name=StudyTypeEnum.jspsych.value)
+            )
         elif tab_value == StudyListSearchForm.Tabs.asynchronous_studies.value[0]:
             query = Q(
                 study_type__name=StudyTypeEnum.external.value, metadata__scheduled=True
@@ -498,6 +505,11 @@ class StudiesListView(generic.ListView, FormView):
                     child=child,
                     completed_consent_frame=True,
                     study_type=StudyType.get_ember_frame_player(),
+                )
+                | Q(
+                    child=child,
+                    completed_consent_frame=True,
+                    study_type=StudyType.get_jspsych(),
                 )
                 | Q(child=child, study_type=StudyType.get_external())
             )
@@ -620,7 +632,9 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
         study_query = Q()
 
         if tab_value == PastStudiesFormTabChoices.lookit_studies.value[0]:
-            study_query = Q(study_type__name=StudyTypeEnum.ember_frame_player.value)
+            study_query = Q(
+                study_type__name=StudyTypeEnum.ember_frame_player.value
+            ) | Q(study_type__name=StudyTypeEnum.jspsych.value)
             response_query = Q(completed_consent_frame=True)
         elif tab_value == PastStudiesFormTabChoices.external_studies.value[0]:
             study_query = Q(study_type__name=StudyTypeEnum.external.value)

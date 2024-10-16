@@ -138,6 +138,7 @@ def get_responses_with_current_rulings_and_videos(study_id, preview_only):
     consent_videos = Video.objects.filter(
         study_id=study_id, is_consent_footage=True
     ).values("full_name", "response_id")
+    study_type_is_jspsych = Study.objects.get(pk=study_id).study_type.is_jspsych
     videos_per_response = defaultdict(list)
     for video in consent_videos:
         recording_is_pipe = Video.objects.get(
@@ -145,7 +146,9 @@ def get_responses_with_current_rulings_and_videos(study_id, preview_only):
         ).recording_method_is_pipe
         videos_per_response[video["response_id"]].append(
             {
-                "aws_url": get_url(video["full_name"], recording_is_pipe, False),
+                "aws_url": get_url(
+                    video["full_name"], recording_is_pipe, study_type_is_jspsych, False
+                ),
                 "filename": video["full_name"],
             }
         )
