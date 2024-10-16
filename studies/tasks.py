@@ -489,14 +489,12 @@ def delete_video_from_cloud(
     if study_type_is_jspsych:
         # delete from lookit-jspsych bucket
         S3_RESOURCE.Object(settings.JSPSYCH_S3_BUCKET, s3_video_name).delete()
+    elif recording_method_is_pipe:
+        # delete from Pipe bucket
+        S3_RESOURCE.Object(settings.BUCKET_NAME, s3_video_name).delete()
     else:
-        # EFP
-        if recording_method_is_pipe:
-            # delete from Pipe bucket
-            S3_RESOURCE.Object(settings.BUCKET_NAME, s3_video_name).delete()
-        else:
-            # delete from RecordRTC bucket
-            S3_RESOURCE.Object(settings.S3_BUCKET_NAME, s3_video_name).delete()
+        # delete from RecordRTC bucket
+        S3_RESOURCE.Object(settings.S3_BUCKET_NAME, s3_video_name).delete()
 
 
 @app.task(bind=True)
