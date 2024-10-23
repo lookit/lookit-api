@@ -226,7 +226,13 @@ def get_frame_data(resp: Union[Response, Dict]) -> List[FrameDataRow]:
         exp_data. Descriptions of each field of the FrameDataRow are given in FRAME_DATA_HEADER_DESCRIPTIONS.
     """
 
-    if not isinstance(resp, dict):
+    if isinstance(resp, Response):
+        # Where study type is jspysch, convert experiment data to format expected below.
+        if resp.study_type.is_jspsych:
+            resp.exp_data = {
+                key: value for key, value in zip(resp.sequence, resp.exp_data)
+            }
+
         resp = {
             "child__uuid": resp.child.uuid,
             "study__uuid": resp.study.uuid,
