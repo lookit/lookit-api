@@ -1405,7 +1405,7 @@ class StudyChildrenCSV(ResponseDownloadMixin, generic.list.ListView):
         writer.writerows(session_list)
         cleaned_data = output.getvalue()
 
-        filename = "all-children{}.csv".format(
+        filename = "all-children{}".format(
             ("-identifiable" if IDENTIFIABLE_DATA_HEADERS & header_options else ""),
         )
         filename = csv_filename(study, filename)
