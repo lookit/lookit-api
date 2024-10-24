@@ -1174,6 +1174,14 @@ class Response(models.Model):
         else:
             return None
 
+    @property
+    def normalized_exp_data(self):
+        # Where study type is jspysch, convert experiment data to resemble EFP exp data.
+        if self.study_type.is_jspsych:
+            return {key: value for key, value in zip(self.sequence, self.exp_data)}
+        else:
+            return self.exp_data
+
     def generate_videos_from_events(self):
         """Creates the video containers/representations for this given response.
 
