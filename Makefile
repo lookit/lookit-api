@@ -58,8 +58,9 @@ collectstatic:
 	docker compose run --rm web poetry run ./manage.py collectstatic --clear --noinput
 
 poetry:
-	poetry self update
 	poetry check 
+	poetry self update
+	poetry env use 3.9
 	poetry install --sync --no-root
 
 lint: poetry 

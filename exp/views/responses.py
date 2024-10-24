@@ -226,14 +226,14 @@ def get_frame_data(resp: Union[Response, Dict]) -> List[FrameDataRow]:
         exp_data. Descriptions of each field of the FrameDataRow are given in FRAME_DATA_HEADER_DESCRIPTIONS.
     """
 
-    if not isinstance(resp, dict):
+    if isinstance(resp, Response):
         resp = {
             "child__uuid": resp.child.uuid,
             "study__uuid": resp.study.uuid,
             "study__salt": resp.study.salt,
             "study__hash_digits": resp.study.hash_digits,
             "uuid": resp.uuid,
-            "exp_data": resp.exp_data,
+            "exp_data": resp.normalized_exp_data,
             "global_event_timings": resp.global_event_timings,
         }
 
