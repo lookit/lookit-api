@@ -902,7 +902,7 @@ class JsPsychExperimentView(
                 "There was an error starting this study. Please contact lookit@mit.edu.",
             )
             return redirect(
-                reverse("exp:preview-detail", kwargs={"uuid": self.get_object().uuid})
+                reverse("web:study-detail", kwargs={"uuid": self.get_object().uuid})
             )
 
         self.aws_vars = aws_vars
