@@ -918,17 +918,26 @@ class JsPsychPreviewView(
 
     test_func = can_preview
 
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        response = get_jspsych_response(context, is_preview=True)
+    def get(self, request, *args, **kwargs):
+        # Need to check for AWS variables here instead of get_context_data, so that we can redirect if there's an error.
         aws_vars = get_jspsych_aws_values()
         if aws_vars is None:
             messages.error(
                 self.request,
                 "There was an error starting this study. Please contact lookit@mit.edu.",
             )
+            return redirect(
+                reverse("exp:preview-detail", kwargs={"uuid": self.get_object().uuid})
+            )
+
+        self.aws_vars = aws_vars
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        response = get_jspsych_response(context, is_preview=True)
         context.update(response=response)
-        context.update({"aws_vars": aws_vars})
+        context.update({"aws_vars": self.aws_vars})
         return context
 
 
