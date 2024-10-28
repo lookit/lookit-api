@@ -1,9 +1,12 @@
+import logging
 import re
 from hashlib import sha256
 from typing import Any, Dict, Text
 from urllib.parse import parse_qs, urlencode, urlparse
 from uuid import UUID
 
+import boto3
+from botocore.exceptions import ClientError
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -39,6 +42,8 @@ from project import settings
 from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum, Video
 from web.mixins import AuthenticatedRedirectMixin
 from web.models import Institution, InstitutionSection
+
+logger = logging.getLogger(__name__)
 
 
 @receiver(signals.user_logged_out)
@@ -106,6 +111,47 @@ def get_jspsych_response(context, is_preview=False):
         is_preview=is_preview,
         study_type=study.study_type,
     )
+
+
+def get_jspsych_aws_values():
+    # generate temporary AWS credentials
+    sts_client = boto3.client("sts")
+    token_name = "jspsych-experiment-runner"
+    policy_arns = [
+        {"arn": "arn:aws:iam::173217630753:policy/put-things-on-lookitjpsych-staging"},
+    ]
+    try:
+        # Call get_federation_token to get temporary AWS credentials
+        response = sts_client.get_federation_token(
+            Name=token_name,
+            PolicyArns=policy_arns,
+            DurationSeconds=129600,  # min is 900 (15 min), max is 129600 (36 hours)
+        )
+        credentials = response["Credentials"]
+        return {
+            "JSPSYCH_S3_REGION": settings.JSPSYCH_S3_REGION,
+            "JSPSYCH_S3_BUCKET": settings.JSPSYCH_S3_BUCKET,
+            "JSPSYCH_S3_ACCESS_KEY_ID": credentials["AccessKeyId"],
+            "JSPSYCH_S3_SECRET_ACCESS_KEY": credentials["SecretAccessKey"],
+            "JSPSYCH_S3_SESSION_TOKEN": credentials["SessionToken"],
+            "JSPSYCH_S3_EXPIRATION": credentials["Expiration"].isoformat(),
+        }
+
+    except sts_client.exceptions.MalformedPolicyDocumentException as e:
+        logger.warning(f"Malformed policy document: {e}")
+        return None
+    except sts_client.exceptions.PackedPolicyTooLargeException as e:
+        logger.warning(f"Packed policy too large: {e}")
+        return None
+    except sts_client.exceptions.RegionDisabledException as e:
+        logger.warning(f"Region is disabled: {e}")
+        return None
+    except ClientError as e:
+        logger.warning(f"An error occurred: {e}")
+        return None
+    except:
+        logger.warning("An error occurred")
+        return None
 
 
 class ParticipantSignupView(generic.CreateView):
@@ -850,8 +896,14 @@ class JsPsychExperimentView(
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         response = get_jspsych_response(context)
+        aws_vars = get_jspsych_aws_values()
+        if aws_vars is None:
+            messages.error(
+                self.request,
+                "There was an error starting this study. Please contact lookit@mit.edu.",
+            )
         context.update(response=response)
-
+        context.update({"aws_vars": aws_vars})
         return context
 
 

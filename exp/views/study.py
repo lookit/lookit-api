@@ -50,7 +50,12 @@ from studies.workflow import (
     TRANSITION_HELP_TEXT,
     TRANSITION_LABELS,
 )
-from web.views import create_external_response, get_external_url, get_jspsych_response
+from web.views import (
+    create_external_response,
+    get_external_url,
+    get_jspsych_aws_values,
+    get_jspsych_response,
+)
 
 
 class DiscoverabilityKey(NamedTuple):
@@ -916,8 +921,14 @@ class JsPsychPreviewView(
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         response = get_jspsych_response(context, is_preview=True)
+        aws_vars = get_jspsych_aws_values()
+        if aws_vars is None:
+            messages.error(
+                self.request,
+                "There was an error starting this study. Please contact lookit@mit.edu.",
+            )
         context.update(response=response)
-
+        context.update({"aws_vars": aws_vars})
         return context
 
 
