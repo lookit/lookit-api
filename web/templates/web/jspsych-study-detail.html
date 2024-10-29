@@ -5,6 +5,7 @@
         <meta name="description" content="">
         <meta name="keywords" content="">
         <title>My experiment</title>
+        {{ aws_vars|json_script:"aws-vars" }}
         <script src="https://unpkg.com/jspsych@8.0.2"
                 integrity="sha384-Jv5oCjRKoeC3ZAbZHoc9+PbvlVKc6wIr1furnITdjHLbmxoC/tu+9cXzONlMoDEY"
                 crossorigin="anonymous"></script>
