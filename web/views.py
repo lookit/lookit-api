@@ -895,8 +895,8 @@ class JsPsychExperimentView(
 
     def get(self, request, *args, **kwargs):
         # Need to check for AWS variables here instead of get_context_data, so that we can redirect if there's an error.
-        aws_vars = get_jspsych_aws_values()
-        if aws_vars is None:
+        self.aws_vars = get_jspsych_aws_values()
+        if self.aws_vars is None:
             messages.error(
                 self.request,
                 "There was an error starting this study. Please contact lookit@mit.edu.",
@@ -905,7 +905,6 @@ class JsPsychExperimentView(
                 reverse("web:study-detail", kwargs={"uuid": self.get_object().uuid})
             )
 
-        self.aws_vars = aws_vars
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
