@@ -6,42 +6,42 @@
         <meta name="keywords" content="">
         <title>My experiment</title>
         {{ aws_vars|json_script:"aws-vars" }}
-        <script src="https://unpkg.com/jspsych@8.0.2"
-                integrity="sha384-Jv5oCjRKoeC3ZAbZHoc9+PbvlVKc6wIr1furnITdjHLbmxoC/tu+9cXzONlMoDEY"
+        <script src="https://unpkg.com/jspsych@8.0.3"
+                integrity="sha384-YlD0H7IvUJqPzueP9WYLT0zKLtEnoNlbxZ5Kd4jg+3orRU5jXGk4ozBUMLqQ+SQ1"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.2"
-                integrity="sha384-OkLOx/zqNc6it80uNeB4A6sI89Aa45ZwwYFOaCkDrFxluA24m2qKUZCTyjTDVkwf"
+        <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@2.0.0"
+                integrity="sha384-3rxt+0Ug6ruPv/HON9dlEFlhrBHhqZeHQizgSO59PsPIu0OGscC8sMgifOe7/uJG"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@1.1.2"
-                integrity="sha384-n5lRhMXasLPtKtknOygWdXDGA2kzOIpkNO+S2G+CJrcM4nZZ3lUExDJ2SwFRz0xa"
+        <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@2.0.0"
+                integrity="sha384-BqelFj5L0Q3ifJf9rlngrTf8zZgfZhmaGwODK7vjHchtxS/Um3LVYj58qymHDn1i"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.2"
-                integrity="sha384-ieDTpJ57nlVDQBu9ti3FiIIqRDAYQWLVyNSvkkA241eFPk+63fwBqc0Rn+ePnSZt"
+        <script src="https://unpkg.com/@jspsych/plugin-preload@2.0.0"
+                integrity="sha384-veBuhHbf5WLQIFlG9N6a+5E/kRYJcBTDKkqJRTkc7wuGwptljsBa2fYuTseMkOBI"
                 crossorigin="anonymous"></script>
         {% comment %} Data and templates packages are peer dependencies and should be listed first. {% endcomment %}
         <script src="https://unpkg.com/@lookit/data@0.1.0"
                 integrity="sha384-T29LOLggOVVniByVqJF6Yq7UmMSFy6mwYAZUV3aZtbi6zZtSTehvkHPyfbgYe6OM"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@lookit/templates@1.0.0"
-                integrity="sha384-fEWHTHpIckE3pH6UPnjKhu8BHi2BDUxsnwtF2b9s9N2+Lz5QjnK3NrCSmy7iy6YB"
+        <script src="https://unpkg.com/@lookit/templates@1.1.0"
+                integrity="sha384-y8Lv8IntycgsWBkGgcu1IpW0eI3i8aFDaX6Kt2xvg5xxAVloxDC7VWUGNfILPjZJ"
                 crossorigin="anonymous"></script>
         {% comment %} End peer dependencies. {% endcomment %}
         <script src="https://unpkg.com/@lookit/lookit-initjspsych@1.0.6"
                 integrity="sha384-ceIt1bWJgPvf8NMUHYXWWmZa6M7wUcIVxX2D5sIY1aoNhyc/3wfXPmTtN5earPUY"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@lookit/record@1.0.0"
-                integrity="sha384-sl8WVvqAWw28UbpT7IKoyyVQs5RK1E8+WgbCFpEtes/FidXcsvTqWQ+zsWQNmWRd"
+        <script src="https://unpkg.com/@lookit/record@2.0.0"
+                integrity="sha384-CHfbEEONZJEVCZHsXsSyMk1VghmyUiI1EeT3XLaQJNhojUccFanrfjcpZUi4IF38"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@lookit/surveys@1.0.0"
-                integrity="sha384-dmd+MPAsKxyyyZrKo6R1TLrEQS331Q+9O+gtTgXe4x8tGCpiF8ZmANJ08YBnf/hp"
+        <script src="https://unpkg.com/@lookit/surveys@2.0.0"
+                integrity="sha384-R491EHrNnuFolMkegYl7VV1o+bF12v+p6EpyBfpFk7j2LDS5u6Lo1fuEA5POWuPP"
                 crossorigin="anonymous"></script>
         <link rel="stylesheet"
-              href="https://unpkg.com/jspsych@7.3.3/css/jspsych.css"
-              integrity="sha384-V/UDJ5gQqHFzUZFNp/XZxaqNCEGfcX0ExsYH3gH8dFRe6piMutG6hSKyCYJsql96"
+              href="https://unpkg.com/jspsych@8.0.3/css/jspsych.css"
+              integrity="sha384-JNNpz6XWsC9uPPHlCuf9rr6LrSD2uYvbkApP5kAp6g/lFBue51K1kMzxGawS50nK"
               crossorigin="anonymous">
         <link rel="stylesheet"
-              href="https://unpkg.com/@lookit/style@0.0.5"
-              integrity="sha384-zE9pbhyuBmGp3FU6/tRBMkjGgV5gISievAd1Xz7zpqs5LU+UOSN76DqIvS2r+yGH"
+              href="https://unpkg.com/@lookit/style@0.0.6"
+              integrity="sha384-TUtiGS0hKYpfwP+oGI45662nzZUHCWVJ5PN4pIX3Hl/ztO8iyl1SY1piLsQo6HNg"
               crossorigin="anonymous">
         <script type="module">
                 const responseUuid="{{ response.uuid }}";
