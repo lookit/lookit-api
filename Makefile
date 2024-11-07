@@ -14,7 +14,7 @@ migrate:
 superuser:
 	docker compose run --rm web poetry run ./manage.py createsuperuser
 
-site:
+site: migrate
 	docker compose run --rm web poetry run python -c \
 		"import os; \
 		import django; \
