@@ -163,13 +163,21 @@ class FrameActionDispatcher(object):
 
     def __call__(self, response, *args, **kwargs):
         """Dispatcher that delegates to inner methods."""
-        if response.sequence:
-            current_frame_id = response.sequence[-1]
+
+        if not response.sequence:
+            return
+
+        current_frame_id = response.sequence[-1]
+
+        if response.study_type.is_jspsych:
+            exp_data = response.exp_data[-1]
+            frame_data = exp_data.get("response")
+            frame_type = exp_data.get("chs_type")
+        elif response.study_type.is_ember_frame_player:
             frame_data = response.exp_data[current_frame_id]
-            frame_type = frame_data.get("frameType", None)
-            if frame_type is None:
-                return
-        else:
+            frame_type = frame_data.get("frameType")
+
+        if not frame_type:
             return
 
         try:

@@ -1,4 +1,4 @@
-serve:
+serve: poetry
 	docker compose up --pull always --build
 
 clean:
@@ -14,7 +14,7 @@ migrate:
 superuser:
 	docker compose run --rm web poetry run ./manage.py createsuperuser
 
-site:
+site: migrate
 	docker compose run --rm web poetry run python -c \
 		"import os; \
 		import django; \
@@ -51,14 +51,17 @@ media:
 media-prod:
 	gsutil -m cp -r "gs://lookit-production/media" ./project
 
-test:
-	docker compose run --rm -e ENVIRONMENT= web poetry run ./manage.py test --failfast 
+test: poetry
+	docker compose run --rm -e ENVIRONMENT= web poetry run ./manage.py test --failfast --verbosity 2
 
 collectstatic: 
 	docker compose run --rm web poetry run ./manage.py collectstatic --clear --noinput
 
 poetry:
-	poetry check && poetry install --sync --no-root
+	poetry check 
+	poetry self update
+	poetry env use 3.9
+	poetry install --sync --no-root
 
 lint: poetry 
 	poetry run pre-commit run --all-files

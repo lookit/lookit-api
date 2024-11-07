@@ -540,6 +540,7 @@ class Study(models.Model):
             responses = responses.filter(is_preview=True)
         if not user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, self):
             responses = responses.filter(is_preview=False)
+
         return responses
 
     @property
@@ -574,15 +575,15 @@ class Study(models.Model):
 
     @property
     def show_videos(self):
-        return self.study_type.is_ember_frame_player
+        return self.study_type.is_ember_frame_player or self.study_type.is_jspsych
 
     @property
     def show_frame_data(self):
-        return self.study_type.is_ember_frame_player
+        return self.study_type.is_ember_frame_player or self.study_type.is_jspsych
 
     @property
     def show_consent(self):
-        return self.study_type.is_ember_frame_player
+        return self.study_type.is_ember_frame_player or self.study_type.is_jspsych
 
     @property
     def show_responses(self):
@@ -834,20 +835,23 @@ class Study(models.Model):
         self._log_action(ev)
 
     def columns_included_in_summary(self):
-        if self.study_type.is_ember_frame_player:
+        """Here are a list of columns used in the researchers experiment data
+        view.  There is an assumption that summary columns for jspsych and EFP
+        experiments will be the same.
+
+        Returns:
+            List[Str]: columns for data summary
+        """
+        if self.study_type.is_external:
             return [
                 "response__id",
                 "response__uuid",
                 "response__date_created",
-                "response__completed",
-                "response__withdrawn",
                 "response__eligibility",
                 "response__parent_feedback",
                 "response__birthdate_difference",
-                "response__video_privacy",
                 "response__databrary",
                 "response__is_preview",
-                "response__sequence",
                 "participant__global_id",
                 "participant__hashed_id",
                 "participant__nickname",
@@ -861,16 +865,20 @@ class Study(models.Model):
                 "child__condition_list",
                 "child__additional_information",
             ]
-        if self.study_type.is_external:
+        else:
             return [
                 "response__id",
                 "response__uuid",
                 "response__date_created",
+                "response__completed",
+                "response__withdrawn",
                 "response__eligibility",
                 "response__parent_feedback",
                 "response__birthdate_difference",
+                "response__video_privacy",
                 "response__databrary",
                 "response__is_preview",
+                "response__sequence",
                 "participant__global_id",
                 "participant__hashed_id",
                 "participant__nickname",
@@ -1021,7 +1029,7 @@ class Response(models.Model):
     study_type = models.ForeignKey(
         StudyType, on_delete=models.PROTECT, default=StudyType.default_pk
     )
-    recording_method = models.CharField(max_length=50, default="pipe")
+    recording_method = models.CharField(max_length=50, null=True)
     eligibility = ArrayField(
         models.CharField(max_length=100, choices=ResponseEligibility.choices),
         blank=True,
@@ -1075,7 +1083,7 @@ class Response(models.Model):
     @property
     def most_recent_ruling_comment(self):
         ruling = self._get_recent_consent_ruling()
-        return ruling.comments if ruling else None
+        return ruling.comments if ruling and ruling.comments else None
 
     @property
     def comment_or_reason_for_absence(self):
@@ -1096,7 +1104,7 @@ class Response(models.Model):
     @property
     def most_recent_ruling_arbiter(self):
         ruling = self._get_recent_consent_ruling()
-        return ruling.arbiter.get_full_name() if ruling else None
+        return ruling.arbiter.get_full_name() if ruling and ruling.arbiter else None
 
     @property
     def current_consent_details(self):
@@ -1108,6 +1116,12 @@ class Response(models.Model):
         }
 
     def exit_frame_properties(self, property):
+        if self.study_type.is_ember_frame_player:
+            return self.exit_frame_properties_efp(property)
+        elif self.study_type.is_jspsych:
+            return self.exit_frame_properties_jspsych(property)
+
+    def exit_frame_properties_efp(self, property):
         exit_frame_values = [
             f.get(property, None)
             for f in self.exp_data.values()
@@ -1115,6 +1129,16 @@ class Response(models.Model):
         ]
         if exit_frame_values and exit_frame_values != [None]:
             return exit_frame_values[-1]
+        else:
+            return None
+
+    def exit_frame_properties_jspsych(self, property):
+        exit_frame_filter_fn = lambda x: x.get("chs_type") == "exit"
+        exit_frame_filter = filter(exit_frame_filter_fn, self.exp_data)
+        exit_frame_list = list(exit_frame_filter)
+
+        if exit_frame_list:
+            return exit_frame_list[-1]["response"].get(property)
         else:
             return None
 
@@ -1149,6 +1173,14 @@ class Response(models.Model):
                 return None
         else:
             return None
+
+    @property
+    def normalized_exp_data(self):
+        # Where study type is jspysch, convert experiment data to resemble EFP exp data.
+        if self.study_type.is_jspsych:
+            return {key: value for key, value in zip(self.sequence, self.exp_data)}
+        else:
+            return self.exp_data
 
     def generate_videos_from_events(self):
         """Creates the video containers/representations for this given response.
@@ -1434,21 +1466,41 @@ class Video(models.Model):
     def display_name(self):
         return f"Response({self.full_name.split('_')[3][:8]})"
 
+    @cached_property
+    def study_type_is_jspsych(self):
+        return self.study.study_type.is_jspsych
+
     @property
     def download_url(self):
-        return get_url(self.full_name, self.recording_method_is_pipe, True)
+        return get_url(
+            self.full_name,
+            self.recording_method_is_pipe,
+            self.study_type_is_jspsych,
+            True,
+        )
 
     @property
     def view_url(self):
-        return get_url(self.full_name, self.recording_method_is_pipe, False)
+        return get_url(
+            self.full_name,
+            self.recording_method_is_pipe,
+            self.study_type_is_jspsych,
+            False,
+        )
 
     @property
     def recording_method_is_pipe(self):
-        return str.lower(self.response.recording_method) == "pipe"
+        if self.response.recording_method is None:
+            return False
+        else:
+            return str.lower(self.response.recording_method) == "pipe"
 
     @property
     def recording_method_is_recordrtc(self):
-        return str.lower(self.response.recording_method) == "recordrtc"
+        if self.response.recording_method is None:
+            return False
+        else:
+            return str.lower(self.response.recording_method) == "recordrtc"
 
 
 @receiver(pre_delete, sender=Video)
@@ -1458,8 +1510,10 @@ def delete_video_on_s3(sender, instance, using, **kwargs):
     Do this in a pre_delete hook rather than a custom delete function because this will
     be called when cascading deletion from responses."""
     video_in_pipe_bucket = instance.recording_method_is_pipe
+    study_type_is_jspsych = instance.study_type_is_jspsych
     delete_video_from_cloud.apply_async(
-        args=(instance.full_name, video_in_pipe_bucket), countdown=60 * 60 * 24 * 7
+        args=(instance.full_name, video_in_pipe_bucket, study_type_is_jspsych),
+        countdown=60 * 60 * 24 * 7,
     )  # Delete after 1 week.
 
 

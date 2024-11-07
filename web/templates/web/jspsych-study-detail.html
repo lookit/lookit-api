@@ -5,31 +5,50 @@
         <meta name="description" content="">
         <meta name="keywords" content="">
         <title>My experiment</title>
-        <script src="https://unpkg.com/jspsych@7.3.3"
-                integrity="sha384-YfngsIDAxx7VemaPcvC24KXIoOrW/+mNwlAM9mUWhaKAPHhZvQLTgugAYgQiDT+e"
+        {{ aws_vars|json_script:"aws-vars" }}
+        <script src="https://unpkg.com/jspsych@8.0.3"
+                integrity="sha384-YlD0H7IvUJqPzueP9WYLT0zKLtEnoNlbxZ5Kd4jg+3orRU5jXGk4ozBUMLqQ+SQ1"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.2"
-                integrity="sha384-OkLOx/zqNc6it80uNeB4A6sI89Aa45ZwwYFOaCkDrFxluA24m2qKUZCTyjTDVkwf"
+        <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@2.0.0"
+                integrity="sha384-3rxt+0Ug6ruPv/HON9dlEFlhrBHhqZeHQizgSO59PsPIu0OGscC8sMgifOe7/uJG"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@1.1.2"
-                integrity="sha384-n5lRhMXasLPtKtknOygWdXDGA2kzOIpkNO+S2G+CJrcM4nZZ3lUExDJ2SwFRz0xa"
+        <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@2.0.0"
+                integrity="sha384-BqelFj5L0Q3ifJf9rlngrTf8zZgfZhmaGwODK7vjHchtxS/Um3LVYj58qymHDn1i"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.2"
-                integrity="sha384-ieDTpJ57nlVDQBu9ti3FiIIqRDAYQWLVyNSvkkA241eFPk+63fwBqc0Rn+ePnSZt"
+        <script src="https://unpkg.com/@jspsych/plugin-html-button-response@2.0.0"
+                integrity="sha384-YkXp8JHPul+fAB8ACoBIXD4fMzweAXqwajNbmkFxKo0z4CEZJssZ5EWqMCefJs8J"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@lookit/lookit-initjspsych@0.0.1"
-                integrity="sha384-RepAqqTAnziAru8pDzd7Zp6izZdkSvLZ0EKGQv1JAnGpfjKLm10+GjIE7OEpFp16"
+        <script src="https://unpkg.com/@jspsych/plugin-image-button-response@2.0.0"
+                integrity="sha384-akngF9Va8sW0TdFvi4EsfM6SGOE94o2XZ+n99/QKYbVhdUEvX1h/OJdfa8yRoEPX"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@lookit/lookit-helpers@0.0.1"
-                integrity="sha384-Ty+Qfh8Ms6Bjv4eKgq/Unoa3C0xQiXE6UyRb2lPl3WpCiUFEGCBzgZhTO/UKdG59"
+        <script src="https://unpkg.com/@jspsych/plugin-preload@2.0.0"
+                integrity="sha384-veBuhHbf5WLQIFlG9N6a+5E/kRYJcBTDKkqJRTkc7wuGwptljsBa2fYuTseMkOBI"
+                crossorigin="anonymous"></script>
+        {% comment %} Data and templates packages are peer dependencies and should be listed first. {% endcomment %}
+        <script src="https://unpkg.com/@lookit/data@0.2.0"
+                integrity="sha384-iMjDaQDmCTXe6XO59EktLBsg7KmDZZvT5jN/QMiP+ctA8YfQDT/hATDKM1EtoxBQ"
+                crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/@lookit/templates@2.0.0"
+                integrity="sha384-pFbKMtALU+nxncMjtRL7BOm4SjMZnsH7/5WJfLEhB4vcFIPPBuKgDjhxRxLBFsV0"
+                crossorigin="anonymous"></script>
+        {% comment %} End peer dependencies. {% endcomment %}
+        <script src="https://unpkg.com/@lookit/lookit-initjspsych@2.0.0"
+                integrity="sha384-NgGItJfqHH+X9FYqSH8IixpRmTdmF7CKS4478moXvrkBRuw5vkTJTVLyX8uM5lB6"
+                crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/@lookit/record@3.0.0"
+                integrity="sha384-OgK3OcKASIuUR22VBQWY8J1Tlg2OtnbNGHf3xx0WL/+NxgQvD+7ZtlcuGDP6r0+1"
+                crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/@lookit/surveys@3.0.0"
+                integrity="sha384-VGTgnbjyqwY8iskMk78Ws8rD42Tt1L36O8siFiUxBGwPJki+OAukw3zUbGmyuEpt"
                 crossorigin="anonymous"></script>
         <link rel="stylesheet"
-              href="https://unpkg.com/jspsych@7.3.3/css/jspsych.css"
-              integrity="sha384-V/UDJ5gQqHFzUZFNp/XZxaqNCEGfcX0ExsYH3gH8dFRe6piMutG6hSKyCYJsql96"
+              href="https://unpkg.com/jspsych@8.0.3/css/jspsych.css"
+              integrity="sha384-JNNpz6XWsC9uPPHlCuf9rr6LrSD2uYvbkApP5kAp6g/lFBue51K1kMzxGawS50nK"
               crossorigin="anonymous">
-        {# This survey css should be removed when plugin is in production #}
         <link rel="stylesheet"
-              href="https://raw.githack.com/jspsych/jsPsych/survey-plugin-rewrite/packages/plugin-survey/css/survey.css">
+              href="https://unpkg.com/@lookit/style@0.1.0"
+              integrity="sha384-o4Jr9BezLWmcw7oGKwKmv3K0zUwG/bGzbGeMBEfuMyyAsq8POYKOxuI0ID466t2J"
+              crossorigin="anonymous">
         <script type="module">
                 const responseUuid="{{ response.uuid }}";
                 await chsData.load(responseUuid);

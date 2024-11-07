@@ -56,6 +56,15 @@ S3_SECRET_ACCESS_KEY = os.environ.get(
 AWS_LAMBDA_SECRET_ACCESS_KEY = os.environ.get(
     "AWS_LAMBDA_SECRET_ACCESS_KEY", "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmn"
 )
+# S3 bucket name and keys for videos recorded during lookit-jsPsych studies
+JSPSYCH_S3_REGION = os.environ.get("JSPSYCH_S3_REGION", "fake-region-1")
+JSPSYCH_S3_ACCESS_KEY_ID = os.environ.get(
+    "JSPSYCH_S3_ACCESS_KEY_ID", "ABCDEFGHIJKLMNOPQRST"
+)
+JSPSYCH_S3_SECRET_ACCESS_KEY = os.environ.get(
+    "JSPSYCH_S3_SECRET_ACCESS_KEY", "abcdefghijklmnopqrstuvwxyz01234567891012"
+)
+JSPSYCH_S3_BUCKET = os.environ.get("JSPSYCH_S3_BUCKET", "fakeBucketName")
 
 # Application definition
 

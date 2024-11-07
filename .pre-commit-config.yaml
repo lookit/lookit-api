@@ -1,17 +1,17 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.3.7
+    rev: v0.6.4
     hooks:
       - id: ruff
         args: [--fix]
       - id: ruff-format
   - repo: https://github.com/djlint/djLint
-    rev: v1.34.1
+    rev: v1.35.2
     hooks:
       - id: djlint-django
       - id: djlint-reformat-django
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.6.0
     hooks:
       - id: check-merge-conflict
       - id: check-ast

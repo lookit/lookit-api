@@ -712,14 +712,24 @@ class StudyTypeModelTestCase(TestCase):
         self.assertTrue(
             StudyType.objects.get(name=StudyTypeEnum.external.value).is_external
         )
+        self.assertTrue(
+            StudyType.objects.get(name=StudyTypeEnum.jspsych.value).is_jspsych
+        )
 
     def test_get_ember_frame_player(self):
         self.assertTrue(StudyType.get_ember_frame_player().is_ember_frame_player)
         self.assertFalse(StudyType.get_ember_frame_player().is_external)
+        self.assertFalse(StudyType.get_ember_frame_player().is_jspsych)
 
     def test_get_external(self):
         self.assertTrue(StudyType.get_external().is_external)
         self.assertFalse(StudyType.get_external().is_ember_frame_player)
+        self.assertFalse(StudyType.get_external().is_jspsych)
+
+    def test_get_jspsych(self):
+        self.assertTrue(StudyType.get_jspsych().is_jspsych)
+        self.assertFalse(StudyType.get_jspsych().is_ember_frame_player)
+        self.assertFalse(StudyType.get_jspsych().is_external)
 
 
 class StudyModelTestCase(TestCase):

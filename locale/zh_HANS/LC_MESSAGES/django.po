@@ -2,18 +2,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-10 18:01-0400\n"
+"POT-Creation-Date: 2024-10-04 17:42-0400\n"
 "Language: zh-Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
 
-#: accounts/forms.py:56
+#: accounts/forms.py:55
 msgid "Enter a valid 6-digit one-time password from Google Authenticator"
 msgstr "请输入来自谷歌身份验证器一次性的有效六位数密码"
 
-#: accounts/forms.py:109
+#: accounts/forms.py:108
 #, fuzzy, python-format
 #| msgid ""
 #| "Please enter a correct %(username)s and password. Note that email and "
@@ -29,125 +29,125 @@ msgstr ""
 "请输入正确的用户名和密码。请注意，电子邮件和密码字段会区分大小写。如果您启用"
 "了双重认证，则还需要谷歌身份验证器的一次性密码（OTP代码）。 "
 
-#: accounts/forms.py:114
+#: accounts/forms.py:113
 msgid "This account is inactive."
 msgstr "此账号尚未激活。"
 
-#: accounts/forms.py:222 accounts/forms.py:238 accounts/models.py:148
+#: accounts/forms.py:221 accounts/forms.py:237 accounts/models.py:148
 msgid "Email address"
 msgstr "邮箱地址"
 
-#: accounts/forms.py:223
+#: accounts/forms.py:222
 msgid "Nickname"
 msgstr "昵称"
 
-#: accounts/forms.py:286
+#: accounts/forms.py:285
 msgid ""
 "It's time for another session of a study we are currently participating in"
 msgstr "是时候进行本实验中的另一个部分了"
 
-#: accounts/forms.py:288
+#: accounts/forms.py:287
 msgid "A new study is available for one of my children"
 msgstr "有一项新研究可供我的一位孩子参加"
 
-#: accounts/forms.py:290
+#: accounts/forms.py:289
 msgid ""
 "There's an update about a study we participated in (for example, results are "
 "published)"
 msgstr "我们曾经参加过的一项研究有了新的进展（例如：实验结果已发表）"
 
-#: accounts/forms.py:293
+#: accounts/forms.py:292
 msgid ""
 "A researcher has questions about my individual responses (for example, if I "
 "report a technical problem during the study)"
 msgstr "一位研究员对于我的个人反馈有疑问（例如：在研究中我反映了技术问题）"
 
-#: accounts/forms.py:323
+#: accounts/forms.py:322
 msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
 msgstr "请用逗号分隔日期，如：2015-05-10, 2018-01-22, ..."
 
-#: accounts/forms.py:326
+#: accounts/forms.py:325
 msgid ""
 "If the answer varies or needs more explanation, you can tell us more below."
 msgstr ""
 
-#: accounts/forms.py:329
+#: accounts/forms.py:328
 msgid ""
 "Please select the appropriate responses for everyone in your children's "
 "immediate family."
 msgstr ""
 
-#: accounts/forms.py:334
+#: accounts/forms.py:333
 msgid "What country do you live in?"
 msgstr "您居住在哪个国家？"
 
-#: accounts/forms.py:335
+#: accounts/forms.py:334
 msgid "What state do you live in?"
 msgstr "您居住在哪个省份/自治区/直辖市/特别行政区？"
 
-#: accounts/forms.py:336
+#: accounts/forms.py:335
 msgid "How would you describe the area where you live?"
 msgstr "您会如何描述您所居住的区域？"
 
-#: accounts/forms.py:337
+#: accounts/forms.py:336
 msgid "How many children do you have?"
 msgstr "您有几位子女？"
 
-#: accounts/forms.py:338
+#: accounts/forms.py:337
 msgid "For each child, please enter his or her birthdate:"
 msgstr "请输入每一位子女的出生日期："
 
-#: accounts/forms.py:340
+#: accounts/forms.py:339
 msgid "How many parents/guardians do your children live with?"
 msgstr "您的孩子与几位父母/监护人居住在一起？"
 
-#: accounts/forms.py:342
+#: accounts/forms.py:341
 msgid "What is your age?"
 msgstr "您的年龄是？"
 
-#: accounts/forms.py:343
+#: accounts/forms.py:342
 msgid "What is your gender?"
 msgstr "您的性别是？"
 
-#: accounts/forms.py:344
+#: accounts/forms.py:343
 #, fuzzy
 #| msgid "What is your gender?"
 msgid "Describe your gender"
 msgstr "您的性别是？"
 
-#: accounts/forms.py:346
+#: accounts/forms.py:345
 msgid "What is the highest level of education you've completed?"
 msgstr "您获得的最高学历是什么？"
 
-#: accounts/forms.py:349
+#: accounts/forms.py:348
 msgid "What is your approximate family yearly income (in US dollars)?"
 msgstr "您的家庭年收入大概是多少（人民币）？"
 
-#: accounts/forms.py:351
+#: accounts/forms.py:350
 msgid "Anything else you'd like us to know?"
 msgstr "请问您还有什么想让我们知道的吗？"
 
-#: accounts/forms.py:352
+#: accounts/forms.py:351
 msgid "How did you hear about Lookit?"
 msgstr "您是怎么了解到Lookit的？"
 
-#: accounts/forms.py:354
+#: accounts/forms.py:353
 msgid ""
 "What racial group(s) does your family identify with/belong to? Please select "
 "any that apply to someone in your children's immediate family."
 msgstr ""
 
-#: accounts/forms.py:357
+#: accounts/forms.py:356
 #, fuzzy
 #| msgid "Another race, ethnicity, or origin"
 msgid "Share more about your family's race, ethnicity, or origin:"
 msgstr "其他种族、民族或出身"
 
-#: accounts/forms.py:360
+#: accounts/forms.py:359
 msgid "Share more about your children's parents/guardians:"
 msgstr ""
 
-#: accounts/forms.py:379
+#: accounts/forms.py:378
 msgid ""
 "This lets us figure out exactly how old your child is when they participate "
 "in a study. We never publish children's birthdates or information that would "
@@ -156,42 +156,42 @@ msgstr ""
 "这能帮助我们计算出您孩子参加研究时的确切年龄。我们从不公布儿童的出生日期或能"
 "让读者计算出生日期的信息。"
 
-#: accounts/forms.py:386
+#: accounts/forms.py:385
 msgid "Birthdays cannot be in the future."
 msgstr "生日不能为将来的时间。"
 
-#: accounts/forms.py:403
+#: accounts/forms.py:402
 msgid "First Name"
 msgstr "名"
 
-#: accounts/forms.py:404 accounts/templates/accounts/participant_detail.html:36
+#: accounts/forms.py:403 accounts/templates/accounts/participant_detail.html:36
 #: web/templates/web/children-list.html:45
 msgid "Birthday"
 msgstr "出生日期"
 
-#: accounts/forms.py:405 accounts/templates/accounts/participant_detail.html:44
+#: accounts/forms.py:404 accounts/templates/accounts/participant_detail.html:44
 msgid "Gender"
 msgstr "性别"
 
-#: accounts/forms.py:406 accounts/templates/accounts/participant_detail.html:48
+#: accounts/forms.py:405 accounts/templates/accounts/participant_detail.html:48
 msgid "Gestational Age at Birth"
 msgstr "出生时的胎龄"
 
-#: accounts/forms.py:408
+#: accounts/forms.py:407
 msgid "Any additional information you'd like us to know"
 msgstr "您想让我们知道的其他信息。"
 
-#: accounts/forms.py:410
+#: accounts/forms.py:409
 msgid "Characteristics and conditions"
 msgstr "特殊情况"
 
-#: accounts/forms.py:412
+#: accounts/forms.py:411
 msgid ""
 "Languages this child is exposed to at home, school, or with another "
 "caregiver."
 msgstr "该儿童在家庭、学校或与其他照顾者在一起时所接触的语言。"
 
-#: accounts/forms.py:418
+#: accounts/forms.py:417
 msgid ""
 "This lets you select the correct child to participate in a particular study. "
 "A nickname or initials are fine! We may include your child's name in email "
@@ -202,184 +202,184 @@ msgstr ""
 "电子邮件中使用您孩子的名字（例如，\"小明可以参加一项新的研究！\"），但绝不会"
 "在我们的研究中公布或使用姓名。"
 
-#: accounts/forms.py:421
+#: accounts/forms.py:420
 msgid ""
 "For instance, diagnosed developmental disorders or vision or hearing problems"
 msgstr "例如，被诊断为发育障碍，或有视力、听力问题。"
 
-#: accounts/forms.py:424
+#: accounts/forms.py:423
 msgid "Please round down to the nearest full week of pregnancy completed"
 msgstr "请将怀孕周数四舍五入到整数。"
 
-#: accounts/forms.py:427
+#: accounts/forms.py:426
 msgid ""
 "Most research studies are designed for a general age range, but some focus "
 "on a particular group of children. The choices you make below are used to "
 "show you studies that are designed for children with these characteristics."
 msgstr ""
 
-#: accounts/forms.py:457
+#: accounts/forms.py:456
 #, fuzzy
 #| msgid "Studies"
 msgid "All studies"
 msgstr "研究"
 
-#: accounts/forms.py:458
+#: accounts/forms.py:457
 msgid "Studies happening right now"
 msgstr ""
 
-#: accounts/forms.py:459
+#: accounts/forms.py:458
 #, fuzzy
 #| msgid "Current studies"
 msgid "Scheduled studies"
 msgstr "当前的研究"
 
-#: accounts/forms.py:462
+#: accounts/forms.py:461
 msgid "Find studies for..."
 msgstr ""
 
-#: accounts/forms.py:463
+#: accounts/forms.py:462
 msgid "babies (under 1)"
 msgstr ""
 
-#: accounts/forms.py:464
+#: accounts/forms.py:463
 msgid "toddlers (1-2)"
 msgstr ""
 
-#: accounts/forms.py:465
+#: accounts/forms.py:464
 msgid "preschoolers (3-4)"
 msgstr ""
 
-#: accounts/forms.py:466
+#: accounts/forms.py:465
 msgid "school-age kids (5-17)"
 msgstr ""
 
-#: accounts/forms.py:467
+#: accounts/forms.py:466
 msgid "adults (18+)"
 msgstr ""
 
-#: accounts/forms.py:470
+#: accounts/forms.py:469
 msgid "Show studies happening..."
 msgstr ""
 
-#: accounts/forms.py:471
+#: accounts/forms.py:470
 #, fuzzy
 #| msgid "Meet the Lookit team"
 msgid "here on the Lookit platform"
 msgstr "Lookit团队"
 
-#: accounts/forms.py:472
+#: accounts/forms.py:471
 msgid "on other websites"
 msgstr ""
 
-#: accounts/forms.py:477
+#: accounts/forms.py:476
 msgid "Hide Studies We've Done"
 msgstr ""
 
-#: accounts/forms.py:516
+#: accounts/forms.py:515
 #, fuzzy
 #| msgid "Your past studies"
 msgid "Lookit studies"
 msgstr "您参与过的研究"
 
-#: accounts/forms.py:517
+#: accounts/forms.py:516
 #, fuzzy
 #| msgid "Current studies"
 msgid "External studies"
 msgstr "当前的研究"
 
 #: accounts/migrations/0041_add_existing_conditions.py:12
-#: accounts/models.py:339 studies/fields.py:136
+#: accounts/models.py:339 studies/fields.py:137
 msgid "Not sure or prefer not to answer"
 msgstr "不确定或不愿回答"
 
 #: accounts/migrations/0041_add_existing_conditions.py:13
-#: accounts/models.py:340 studies/fields.py:137
+#: accounts/models.py:340 studies/fields.py:138
 msgid "Under 24 weeks"
 msgstr "24周以下"
 
 #: accounts/migrations/0041_add_existing_conditions.py:14
-#: accounts/models.py:341 studies/fields.py:138
+#: accounts/models.py:341 studies/fields.py:139
 msgid "24 weeks"
 msgstr "24周"
 
 #: accounts/migrations/0041_add_existing_conditions.py:15
-#: accounts/models.py:342 studies/fields.py:139
+#: accounts/models.py:342 studies/fields.py:140
 msgid "25 weeks"
 msgstr "25周"
 
 #: accounts/migrations/0041_add_existing_conditions.py:16
-#: accounts/models.py:343 studies/fields.py:140
+#: accounts/models.py:343 studies/fields.py:141
 msgid "26 weeks"
 msgstr "26周"
 
 #: accounts/migrations/0041_add_existing_conditions.py:17
-#: accounts/models.py:344 studies/fields.py:141
+#: accounts/models.py:344 studies/fields.py:142
 msgid "27 weeks"
 msgstr "27周"
 
 #: accounts/migrations/0041_add_existing_conditions.py:18
-#: accounts/models.py:345 studies/fields.py:142
+#: accounts/models.py:345 studies/fields.py:143
 msgid "28 weeks"
 msgstr "28周"
 
 #: accounts/migrations/0041_add_existing_conditions.py:19
-#: accounts/models.py:346 studies/fields.py:143
+#: accounts/models.py:346 studies/fields.py:144
 msgid "29 weeks"
 msgstr "29周"
 
 #: accounts/migrations/0041_add_existing_conditions.py:20
-#: accounts/models.py:347 studies/fields.py:144
+#: accounts/models.py:347 studies/fields.py:145
 msgid "30 weeks"
 msgstr "30周"
 
 #: accounts/migrations/0041_add_existing_conditions.py:21
-#: accounts/models.py:348 studies/fields.py:145
+#: accounts/models.py:348 studies/fields.py:146
 msgid "31 weeks"
 msgstr "31周"
 
 #: accounts/migrations/0041_add_existing_conditions.py:22
-#: accounts/models.py:349 studies/fields.py:146
+#: accounts/models.py:349 studies/fields.py:147
 msgid "32 weeks"
 msgstr "32周"
 
 #: accounts/migrations/0041_add_existing_conditions.py:23
-#: accounts/models.py:350 studies/fields.py:147
+#: accounts/models.py:350 studies/fields.py:148
 msgid "33 weeks"
 msgstr "33周"
 
 #: accounts/migrations/0041_add_existing_conditions.py:24
-#: accounts/models.py:351 studies/fields.py:148
+#: accounts/models.py:351 studies/fields.py:149
 msgid "34 weeks"
 msgstr "34周"
 
 #: accounts/migrations/0041_add_existing_conditions.py:25
-#: accounts/models.py:352 studies/fields.py:149
+#: accounts/models.py:352 studies/fields.py:150
 msgid "35 weeks"
 msgstr "35周"
 
 #: accounts/migrations/0041_add_existing_conditions.py:26
-#: accounts/models.py:353 studies/fields.py:150
+#: accounts/models.py:353 studies/fields.py:151
 msgid "36 weeks"
 msgstr "36周"
 
 #: accounts/migrations/0041_add_existing_conditions.py:27
-#: accounts/models.py:354 studies/fields.py:151
+#: accounts/models.py:354 studies/fields.py:152
 msgid "37 weeks"
 msgstr "37周"
 
 #: accounts/migrations/0041_add_existing_conditions.py:28
-#: accounts/models.py:355 studies/fields.py:152
+#: accounts/models.py:355 studies/fields.py:153
 msgid "38 weeks"
 msgstr "38周"
 
 #: accounts/migrations/0041_add_existing_conditions.py:29
-#: accounts/models.py:356 studies/fields.py:153
+#: accounts/models.py:356 studies/fields.py:154
 msgid "39 weeks"
 msgstr "39周"
 
 #: accounts/migrations/0041_add_existing_conditions.py:30
-#: accounts/models.py:357 studies/fields.py:154
+#: accounts/models.py:357 studies/fields.py:155
 msgid "40 or more weeks"
 msgstr "40周及以上"
 
@@ -878,319 +878,319 @@ msgstr "对监护人的解释"
 msgid "Race"
 msgstr "种族"
 
-#: studies/fields.py:7
+#: studies/fields.py:8
 msgid "Autism Spectrum Disorder"
 msgstr "自闭症谱系障碍"
 
-#: studies/fields.py:8
+#: studies/fields.py:9
 msgid "Deaf"
 msgstr "聋"
 
-#: studies/fields.py:9
+#: studies/fields.py:10
 msgid "Hard of Hearing"
 msgstr "听力障碍"
 
-#: studies/fields.py:10
+#: studies/fields.py:11
 msgid "Dyslexia"
 msgstr "阅读障碍"
 
-#: studies/fields.py:11
+#: studies/fields.py:12
 msgid "Multiple Birth (twin, triplet, or higher order)"
 msgstr "多胎出生（双胞胎，三胞胎或更多）"
 
-#: studies/fields.py:45
+#: studies/fields.py:46
 msgid "Twin"
 msgstr "双胞胎"
 
-#: studies/fields.py:46
+#: studies/fields.py:47
 msgid "Triplet"
 msgstr "三胞胎"
 
-#: studies/fields.py:47
+#: studies/fields.py:48
 msgid "Quadruplet"
 msgstr "四胞胎"
 
-#: studies/fields.py:48
+#: studies/fields.py:49
 msgid "Quintuplet"
 msgstr "五胞胎"
 
-#: studies/fields.py:49
+#: studies/fields.py:50
 msgid "Sextuplet"
 msgstr "六胞胎"
 
-#: studies/fields.py:50
+#: studies/fields.py:51
 msgid "Septuplet"
 msgstr "七胞胎"
 
-#: studies/fields.py:51
+#: studies/fields.py:52
 msgid "Octuplet"
 msgstr "八胞胎"
 
-#: studies/fields.py:57
+#: studies/fields.py:58
 msgid "English"
 msgstr "英语"
 
-#: studies/fields.py:58
+#: studies/fields.py:59
 msgid "Amharic"
 msgstr "阿姆哈拉语"
 
-#: studies/fields.py:59
+#: studies/fields.py:60
 msgid "Bengali"
 msgstr "孟加拉语"
 
-#: studies/fields.py:60
+#: studies/fields.py:61
 msgid "Bhojpuri"
 msgstr "博普里语"
 
-#: studies/fields.py:61
+#: studies/fields.py:62
 msgid "Burmese"
 msgstr "缅甸语"
 
-#: studies/fields.py:62
+#: studies/fields.py:63
 msgid "Cebuano"
 msgstr "宿雾语"
 
-#: studies/fields.py:63
+#: studies/fields.py:64
 msgid "Chhattisgarhi"
 msgstr "恰蒂斯加里语"
 
-#: studies/fields.py:64
+#: studies/fields.py:65
 msgid "Dutch"
 msgstr "荷兰语"
 
-#: studies/fields.py:65
+#: studies/fields.py:66
 msgid "Egyptian Spoken Arabic"
 msgstr "埃及阿拉伯口语"
 
-#: studies/fields.py:66
+#: studies/fields.py:67
 msgid "French"
 msgstr "法语"
 
-#: studies/fields.py:67
+#: studies/fields.py:68
 msgid "Gan"
 msgstr "中文（赣方言）"
 
-#: studies/fields.py:68
+#: studies/fields.py:69
 msgid "German"
 msgstr "德语"
 
-#: studies/fields.py:69
+#: studies/fields.py:70
 msgid "Gujarati"
 msgstr "古吉拉特语"
 
-#: studies/fields.py:70
+#: studies/fields.py:71
 msgid "Hakka"
 msgstr "中文（客家语）"
 
-#: studies/fields.py:71
+#: studies/fields.py:72
 msgid "Hausa"
 msgstr "豪萨语"
 
-#: studies/fields.py:72
+#: studies/fields.py:73
 msgid "Hebrew"
 msgstr "希伯来语"
 
-#: studies/fields.py:73
+#: studies/fields.py:74
 msgid "Hindi"
 msgstr "印地语"
 
-#: studies/fields.py:74
+#: studies/fields.py:75
 msgid "Igbo"
 msgstr "伊博语"
 
-#: studies/fields.py:75
+#: studies/fields.py:76
 msgid "Indonesian"
 msgstr "印度尼西亚语"
 
-#: studies/fields.py:76
+#: studies/fields.py:77
 msgid "Iranian Persian"
 msgstr "伊朗波斯语"
 
-#: studies/fields.py:77
+#: studies/fields.py:78
 msgid "Italian"
 msgstr "意大利语"
 
-#: studies/fields.py:78
+#: studies/fields.py:79
 msgid "Japanese"
 msgstr "日语"
 
-#: studies/fields.py:79
+#: studies/fields.py:80
 msgid "Javanese"
 msgstr "爪哇语"
 
-#: studies/fields.py:80
+#: studies/fields.py:81
 msgid "Jinyu"
 msgstr "中文（晋方言）"
 
-#: studies/fields.py:81
+#: studies/fields.py:82
 msgid "Kannada"
 msgstr "卡纳达语"
 
-#: studies/fields.py:82
+#: studies/fields.py:83
 msgid "Khmer"
 msgstr "高棉语"
 
-#: studies/fields.py:83
+#: studies/fields.py:84
 msgid "Korean"
 msgstr "韩语"
 
-#: studies/fields.py:84
+#: studies/fields.py:85
 msgid "Magahi"
 msgstr "马加伊语"
 
-#: studies/fields.py:85
+#: studies/fields.py:86
 msgid "Maithili"
 msgstr "迈蒂利语"
 
-#: studies/fields.py:86
+#: studies/fields.py:87
 msgid "Malay"
 msgstr "马来语"
 
-#: studies/fields.py:87
+#: studies/fields.py:88
 msgid "Malayalam"
 msgstr "马拉雅拉姆语"
 
-#: studies/fields.py:88
+#: studies/fields.py:89
 #, fuzzy
 #| msgid "Mandarin"
 msgid "Chinese (Mandarin)"
 msgstr "中文（普通话）"
 
-#: studies/fields.py:89
+#: studies/fields.py:90
 msgid "Marathi"
 msgstr "马拉地语"
 
-#: studies/fields.py:90
+#: studies/fields.py:91
 msgid "Min Nan"
 msgstr "中文（闽南方言）"
 
-#: studies/fields.py:91
+#: studies/fields.py:92
 msgid "Moroccan Spoken Arabic"
 msgstr "摩洛哥阿拉伯口语"
 
-#: studies/fields.py:92
+#: studies/fields.py:93
 msgid "Northern Pashto"
 msgstr "北普什图语"
 
-#: studies/fields.py:93
+#: studies/fields.py:94
 msgid "Northern Uzbek"
 msgstr "北乌兹别克语"
 
-#: studies/fields.py:94
+#: studies/fields.py:95
 msgid "Odia"
 msgstr "奥里亚语"
 
-#: studies/fields.py:95
+#: studies/fields.py:96
 msgid "Polish"
 msgstr "波兰语"
 
-#: studies/fields.py:96
+#: studies/fields.py:97
 msgid "Portuguese"
 msgstr "葡萄牙语"
 
-#: studies/fields.py:97
+#: studies/fields.py:98
 msgid "Romanian"
 msgstr "罗马尼亚语"
 
-#: studies/fields.py:98
+#: studies/fields.py:99
 msgid "Russian"
 msgstr "俄语"
 
-#: studies/fields.py:99
+#: studies/fields.py:100
 msgid "Saraiki"
 msgstr "西莱基语"
 
-#: studies/fields.py:100
+#: studies/fields.py:101
 msgid "Sindhi"
 msgstr "信德语"
 
-#: studies/fields.py:101
+#: studies/fields.py:102
 msgid "Somali"
 msgstr "索马里语"
 
-#: studies/fields.py:102
+#: studies/fields.py:103
 msgid "Spanish"
 msgstr "西班牙语"
 
-#: studies/fields.py:103
+#: studies/fields.py:104
 msgid "Sunda"
 msgstr "巽他语"
 
-#: studies/fields.py:104
+#: studies/fields.py:105
 msgid "Tagalog"
 msgstr "塔加拉语"
 
-#: studies/fields.py:105
+#: studies/fields.py:106
 msgid "Tamil"
 msgstr "泰米尔语"
 
-#: studies/fields.py:106
+#: studies/fields.py:107
 msgid "Telugu"
 msgstr "泰卢固语"
 
-#: studies/fields.py:107
+#: studies/fields.py:108
 msgid "Thai"
 msgstr "泰语"
 
-#: studies/fields.py:108
+#: studies/fields.py:109
 msgid "Turkish"
 msgstr "土耳其语"
 
-#: studies/fields.py:109
+#: studies/fields.py:110
 msgid "Ukrainian"
 msgstr "乌克兰语"
 
-#: studies/fields.py:110
+#: studies/fields.py:111
 msgid "Urdu"
 msgstr "乌尔都语"
 
-#: studies/fields.py:111
+#: studies/fields.py:112
 msgid "Vietnamese"
 msgstr "越南语"
 
-#: studies/fields.py:112
+#: studies/fields.py:113
 msgid "Western Punjabi"
 msgstr "西旁遮普语"
 
-#: studies/fields.py:113
+#: studies/fields.py:114
 msgid "Wu"
 msgstr "中文（吴方言）"
 
-#: studies/fields.py:114
+#: studies/fields.py:115
 msgid "Xiang Chinese"
 msgstr "中文（湘方言）"
 
-#: studies/fields.py:115
+#: studies/fields.py:116
 msgid "Yoruba"
 msgstr "约鲁巴语"
 
-#: studies/fields.py:116
+#: studies/fields.py:117
 msgid "Chinese (Cantonese)"
 msgstr ""
 
-#: studies/fields.py:124
+#: studies/fields.py:125
 msgid "Not answered"
 msgstr "未回答"
 
-#: studies/fields.py:125
+#: studies/fields.py:126
 msgid "Other"
 msgstr "其他"
 
-#: studies/fields.py:126
+#: studies/fields.py:127
 msgid "Male"
 msgstr "男"
 
-#: studies/fields.py:127
+#: studies/fields.py:128
 msgid "Female"
 msgstr "女"
 
-#: studies/models.py:143
+#: studies/models.py:142
 msgid ""
 "The Users who belong to this Lab. A user in this lab will be able to create "
 "studies associated with this Lab and can be added to this Lab's studies."
 msgstr "属于本实验室的用户。该用户可以创建或添加到附属于本实验室的研究中。"
 
-#: studies/models.py:152
+#: studies/models.py:151
 msgid "The Users who have requested to join this Lab."
 msgstr "申请加入本实验室的用户。"
 
@@ -4093,15 +4093,27 @@ msgstr "研究负责人：%(contact)s."
 msgid "Would you like to participate in this study?"
 msgstr "您是否愿意参加这项研究？"
 
-#: web/templates/web/study-detail.html:108
+#: web/templates/web/study-detail.html:98
+#, fuzzy
+#| msgid "Log in to participate"
+msgid "Log in to participate"
+msgstr "请登录后参与"
+
+#: web/templates/web/study-detail.html:99
+#, fuzzy
+#| msgid "Create Account"
+msgid "Create a new account"
+msgstr "创建账号"
+
+#: web/templates/web/study-detail.html:110
 msgid "Select a child:"
 msgstr "选择一个孩子："
 
-#: web/templates/web/study-detail.html:119
+#: web/templates/web/study-detail.html:121
 msgid "None Selected"
 msgstr "未选择"
 
-#: web/templates/web/study-detail.html:132
+#: web/templates/web/study-detail.html:134
 #, fuzzy
 #| msgid ""
 #| "Your child is still younger than the recommended age range for this "
@@ -4115,7 +4127,7 @@ msgstr ""
 "您的孩子比这项研究建议的年龄范围要小。如果您能等待<span id='wait-until'>直到"
 "</span>他或她满足年龄要求再来参加，我们将能在研究中使用您孩子的数据。"
 
-#: web/templates/web/study-detail.html:135
+#: web/templates/web/study-detail.html:137
 #, fuzzy
 #| msgid ""
 #| "Your child is older than the recommended age range for this study. You're "
@@ -4130,7 +4142,7 @@ msgstr ""
 "集到的数据用于此研究。"
 
 #. Translators: Please include the untranslated "%(contact)s" string to mark where the contact information should be inserted.
-#: web/templates/web/study-detail.html:139
+#: web/templates/web/study-detail.html:141
 #, fuzzy, python-format
 #| msgid ""
 #| "Your child does not meet the eligibility criteria listed for this study. "
@@ -4146,29 +4158,29 @@ msgstr ""
 "您的孩子不符合本研究的参与资格。我们仍欢迎您尝试他，但我们不能将收集到的数据"
 "用于此研究。请联系研究负责人"
 
-#: web/templates/web/study-detail.html:153
+#: web/templates/web/study-detail.html:155
 msgid ""
 "For an easy way to see what happens as you update your study protocol, "
 "bookmark the URL the button above sends you to."
 msgstr "请将上方按钮显示的网址加入书签，以便预览您更新后的研究。"
 
-#: web/templates/web/study-detail.html:157
+#: web/templates/web/study-detail.html:159
 msgid ""
 "This study runs on another website, and clicking to participate will take "
 "you to that link."
 msgstr ""
 
-#: web/templates/web/study-detail.html:159
+#: web/templates/web/study-detail.html:161
 msgid ""
 "It will also make it possible for the researchers of this study to contact "
 "you, and will share your child's profile information with the researchers."
 msgstr ""
 
-#: web/templates/web/study-detail.html:162
+#: web/templates/web/study-detail.html:164
 msgid "This study runs here on the Lookit platform."
 msgstr ""
 
-#: web/templates/web/study-detail.html:164
+#: web/templates/web/study-detail.html:166
 msgid ""
 "Clicking to participate will make it possible for the researchers of this "
 "study to contact you, and will share your child's profile information with "
@@ -4206,31 +4218,31 @@ msgid ""
 "then click \"Participate\" to sign up for a study session in the future."
 msgstr ""
 
-#: web/views.py:114
+#: web/views.py:130
 msgid "Participant created."
 msgstr "参与者已创建。"
 
-#: web/views.py:157
+#: web/views.py:173
 msgid "Demographic data saved."
 msgstr "基本信息已保存。"
 
-#: web/views.py:223
+#: web/views.py:239
 msgid "Child added."
 msgstr "儿童档案已添加。"
 
-#: web/views.py:264
+#: web/views.py:280
 msgid "Child deleted."
 msgstr "儿童档案已删除。"
 
-#: web/views.py:266
+#: web/views.py:282
 msgid "Child updated."
 msgstr "儿童档案已更新。"
 
-#: web/views.py:294
+#: web/views.py:310
 msgid "Email preferences saved."
 msgstr "电子邮件偏好已保存。"
 
-#: web/views.py:699
+#: web/views.py:720
 #, python-brace-format
 msgid ""
 "The study {study.name} is not currently collecting data - the study is "

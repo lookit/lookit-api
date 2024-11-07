@@ -2,18 +2,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-10 18:01-0400\n"
+"POT-Creation-Date: 2024-10-04 17:42-0400\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
 
-#: accounts/forms.py:56
+#: accounts/forms.py:55
 msgid "Enter a valid 6-digit one-time password from Google Authenticator"
 msgstr ""
 
-#: accounts/forms.py:109
+#: accounts/forms.py:108
 #, python-format
 msgid ""
 "Please enter a correct %(username)s and password. Note that email and "
@@ -22,28 +22,28 @@ msgid ""
 "Authenticator as well. "
 msgstr ""
 
-#: accounts/forms.py:114
+#: accounts/forms.py:113
 msgid "This account is inactive."
 msgstr ""
 
-#: accounts/forms.py:222 accounts/forms.py:238 accounts/models.py:148
+#: accounts/forms.py:221 accounts/forms.py:237 accounts/models.py:148
 msgid "Email address"
 msgstr "Adresă de e-mail"
 
-#: accounts/forms.py:223
+#: accounts/forms.py:222
 msgid "Nickname"
 msgstr "Poreclă"
 
-#: accounts/forms.py:286
+#: accounts/forms.py:285
 msgid ""
 "It's time for another session of a study we are currently participating in"
 msgstr "E momentul unei noi sesiuni a studiului la care participați"
 
-#: accounts/forms.py:288
+#: accounts/forms.py:287
 msgid "A new study is available for one of my children"
 msgstr "Un nou studiu este disponibil pentru unul dintre copiii dvs."
 
-#: accounts/forms.py:290
+#: accounts/forms.py:289
 msgid ""
 "There's an update about a study we participated in (for example, results are "
 "published)"
@@ -51,7 +51,7 @@ msgstr ""
 "Avem noutăți cu privire la un studiu la care ați participat (de exemplu, au "
 "fost publicate rezultatele)"
 
-#: accounts/forms.py:293
+#: accounts/forms.py:292
 msgid ""
 "A researcher has questions about my individual responses (for example, if I "
 "report a technical problem during the study)"
@@ -59,92 +59,92 @@ msgstr ""
 "Un cercetător are întrebări cu privire la răspunsurile dvs. anterioare (de "
 "exemplu, dacă ați semnalat probleme tehnice pe durata studiului)"
 
-#: accounts/forms.py:323
+#: accounts/forms.py:322
 msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
 msgstr "Separați cu o virgula: AAAA-LL-ZZ, AAAA-LL-ZZ,..."
 
-#: accounts/forms.py:326
+#: accounts/forms.py:325
 msgid ""
 "If the answer varies or needs more explanation, you can tell us more below."
 msgstr ""
 
-#: accounts/forms.py:329
+#: accounts/forms.py:328
 msgid ""
 "Please select the appropriate responses for everyone in your children's "
 "immediate family."
 msgstr ""
 
-#: accounts/forms.py:334
+#: accounts/forms.py:333
 msgid "What country do you live in?"
 msgstr "În ce țară locuiți?"
 
-#: accounts/forms.py:335
+#: accounts/forms.py:334
 msgid "What state do you live in?"
 msgstr "În ce județ locuiți?"
 
-#: accounts/forms.py:336
+#: accounts/forms.py:335
 msgid "How would you describe the area where you live?"
 msgstr "Cum ați descrie zona în care locuiți?"
 
-#: accounts/forms.py:337
+#: accounts/forms.py:336
 msgid "How many children do you have?"
 msgstr "Câți copii aveți?"
 
-#: accounts/forms.py:338
+#: accounts/forms.py:337
 msgid "For each child, please enter his or her birthdate:"
 msgstr "Introduceți ziua de naștere a fiecărui copil"
 
-#: accounts/forms.py:340
+#: accounts/forms.py:339
 msgid "How many parents/guardians do your children live with?"
 msgstr "Câți părinți / tutori au copiii dumneavoastră?"
 
-#: accounts/forms.py:342
+#: accounts/forms.py:341
 msgid "What is your age?"
 msgstr "Ce vârstă aveți?"
 
-#: accounts/forms.py:343
+#: accounts/forms.py:342
 msgid "What is your gender?"
 msgstr "Ce gen aveţi?"
 
-#: accounts/forms.py:344
+#: accounts/forms.py:343
 #, fuzzy
 #| msgid "What is your gender?"
 msgid "Describe your gender"
 msgstr "Ce gen aveţi?"
 
-#: accounts/forms.py:346
+#: accounts/forms.py:345
 msgid "What is the highest level of education you've completed?"
 msgstr "Care e nivelul dvs. de educaţie?"
 
-#: accounts/forms.py:349
+#: accounts/forms.py:348
 msgid "What is your approximate family yearly income (in US dollars)?"
 msgstr "Ce salariu anual aveţi (în RON)?"
 
-#: accounts/forms.py:351
+#: accounts/forms.py:350
 msgid "Anything else you'd like us to know?"
 msgstr "Vreți să mai adaugați ceva ce ați dori să ştim?"
 
-#: accounts/forms.py:352
+#: accounts/forms.py:351
 msgid "How did you hear about Lookit?"
 msgstr "Cum ați auzit de Lookit?"
 
-#: accounts/forms.py:354
+#: accounts/forms.py:353
 msgid ""
 "What racial group(s) does your family identify with/belong to? Please select "
 "any that apply to someone in your children's immediate family."
 msgstr ""
 
-#: accounts/forms.py:357
+#: accounts/forms.py:356
 #, fuzzy
 #| msgid "Another race, ethnicity, or origin"
 msgid "Share more about your family's race, ethnicity, or origin:"
 msgstr "altă rasă, etnie sau origine"
 
-#: accounts/forms.py:360
+#: accounts/forms.py:359
 msgid "Share more about your children's parents/guardians:"
 msgstr ""
 
-#: accounts/forms.py:379
+#: accounts/forms.py:378
 msgid ""
 "This lets us figure out exactly how old your child is when they participate "
 "in a study. We never publish children's birthdates or information that would "
@@ -155,43 +155,43 @@ msgstr ""
 "copiilor sau informații personale care să permită cititorului să calculeze "
 "data nașterii."
 
-#: accounts/forms.py:386
+#: accounts/forms.py:385
 msgid "Birthdays cannot be in the future."
 msgstr "Datele de naștere nu pot fi în viitor"
 
-#: accounts/forms.py:403
+#: accounts/forms.py:402
 msgid "First Name"
 msgstr "Prenume"
 
-#: accounts/forms.py:404 accounts/templates/accounts/participant_detail.html:36
+#: accounts/forms.py:403 accounts/templates/accounts/participant_detail.html:36
 #: web/templates/web/children-list.html:45
 msgid "Birthday"
 msgstr "Data de naștere"
 
-#: accounts/forms.py:405 accounts/templates/accounts/participant_detail.html:44
+#: accounts/forms.py:404 accounts/templates/accounts/participant_detail.html:44
 msgid "Gender"
 msgstr "Gen"
 
-#: accounts/forms.py:406 accounts/templates/accounts/participant_detail.html:48
+#: accounts/forms.py:405 accounts/templates/accounts/participant_detail.html:48
 msgid "Gestational Age at Birth"
 msgstr "Vârsta gestațională la naștere"
 
-#: accounts/forms.py:408
+#: accounts/forms.py:407
 msgid "Any additional information you'd like us to know"
 msgstr "Vreți să mai adaugați ceva ce ați dori să ştim?"
 
-#: accounts/forms.py:410
+#: accounts/forms.py:409
 msgid "Characteristics and conditions"
 msgstr "Caracteristici și condiții"
 
-#: accounts/forms.py:412
+#: accounts/forms.py:411
 msgid ""
 "Languages this child is exposed to at home, school, or with another "
 "caregiver."
 msgstr ""
 "Limbile la care e expus acest copil acasă, la școală sau cu alte îngrijitoare"
 
-#: accounts/forms.py:418
+#: accounts/forms.py:417
 msgid ""
 "This lets you select the correct child to participate in a particular study. "
 "A nickname or initials are fine! We may include your child's name in email "
@@ -204,185 +204,185 @@ msgstr ""
 "exemplu, „Avem un nou studiu disponibil pentru Ina!”), dar nu vom face "
 "publice niciodată numele și nu le vom folosi în cercetarea noastră."
 
-#: accounts/forms.py:421
+#: accounts/forms.py:420
 msgid ""
 "For instance, diagnosed developmental disorders or vision or hearing problems"
 msgstr ""
 "De exemplu, tulburări de dezvoltare sau probleme de vedere sau auz "
 "diagnosticate"
 
-#: accounts/forms.py:424
+#: accounts/forms.py:423
 msgid "Please round down to the nearest full week of pregnancy completed"
 msgstr ""
 "Vă rugăm să rotunjiți până la cea mai apropiată săptămână întreagă de sarcină"
 
-#: accounts/forms.py:427
+#: accounts/forms.py:426
 msgid ""
 "Most research studies are designed for a general age range, but some focus "
 "on a particular group of children. The choices you make below are used to "
 "show you studies that are designed for children with these characteristics."
 msgstr ""
 
-#: accounts/forms.py:457
+#: accounts/forms.py:456
 #, fuzzy
 #| msgid "Studies"
 msgid "All studies"
 msgstr "Studii"
 
-#: accounts/forms.py:458
+#: accounts/forms.py:457
 msgid "Studies happening right now"
 msgstr ""
 
-#: accounts/forms.py:459
+#: accounts/forms.py:458
 #, fuzzy
 #| msgid "Current studies"
 msgid "Scheduled studies"
 msgstr "Studiile curente"
 
-#: accounts/forms.py:462
+#: accounts/forms.py:461
 msgid "Find studies for..."
 msgstr ""
 
-#: accounts/forms.py:463
+#: accounts/forms.py:462
 msgid "babies (under 1)"
 msgstr ""
 
-#: accounts/forms.py:464
+#: accounts/forms.py:463
 msgid "toddlers (1-2)"
 msgstr ""
 
-#: accounts/forms.py:465
+#: accounts/forms.py:464
 msgid "preschoolers (3-4)"
 msgstr ""
 
-#: accounts/forms.py:466
+#: accounts/forms.py:465
 msgid "school-age kids (5-17)"
 msgstr ""
 
-#: accounts/forms.py:467
+#: accounts/forms.py:466
 msgid "adults (18+)"
 msgstr ""
 
-#: accounts/forms.py:470
+#: accounts/forms.py:469
 msgid "Show studies happening..."
 msgstr ""
 
-#: accounts/forms.py:471
+#: accounts/forms.py:470
 msgid "here on the Lookit platform"
 msgstr ""
 
-#: accounts/forms.py:472
+#: accounts/forms.py:471
 msgid "on other websites"
 msgstr ""
 
-#: accounts/forms.py:477
+#: accounts/forms.py:476
 msgid "Hide Studies We've Done"
 msgstr ""
 
-#: accounts/forms.py:516
+#: accounts/forms.py:515
 #, fuzzy
 #| msgid "Your past studies"
 msgid "Lookit studies"
 msgstr "Studiile dvs. precedente"
 
-#: accounts/forms.py:517
+#: accounts/forms.py:516
 #, fuzzy
 #| msgid "Current studies"
 msgid "External studies"
 msgstr "Studiile curente"
 
 #: accounts/migrations/0041_add_existing_conditions.py:12
-#: accounts/models.py:339 studies/fields.py:136
+#: accounts/models.py:339 studies/fields.py:137
 msgid "Not sure or prefer not to answer"
 msgstr "Nu sunt sigur / sigură sau prefer să nu răspund"
 
 #: accounts/migrations/0041_add_existing_conditions.py:13
-#: accounts/models.py:340 studies/fields.py:137
+#: accounts/models.py:340 studies/fields.py:138
 msgid "Under 24 weeks"
 msgstr "Sub 24 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:14
-#: accounts/models.py:341 studies/fields.py:138
+#: accounts/models.py:341 studies/fields.py:139
 msgid "24 weeks"
 msgstr "24 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:15
-#: accounts/models.py:342 studies/fields.py:139
+#: accounts/models.py:342 studies/fields.py:140
 msgid "25 weeks"
 msgstr "25 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:16
-#: accounts/models.py:343 studies/fields.py:140
+#: accounts/models.py:343 studies/fields.py:141
 msgid "26 weeks"
 msgstr "26 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:17
-#: accounts/models.py:344 studies/fields.py:141
+#: accounts/models.py:344 studies/fields.py:142
 msgid "27 weeks"
 msgstr "27 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:18
-#: accounts/models.py:345 studies/fields.py:142
+#: accounts/models.py:345 studies/fields.py:143
 msgid "28 weeks"
 msgstr "28 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:19
-#: accounts/models.py:346 studies/fields.py:143
+#: accounts/models.py:346 studies/fields.py:144
 msgid "29 weeks"
 msgstr "29 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:20
-#: accounts/models.py:347 studies/fields.py:144
+#: accounts/models.py:347 studies/fields.py:145
 msgid "30 weeks"
 msgstr "30 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:21
-#: accounts/models.py:348 studies/fields.py:145
+#: accounts/models.py:348 studies/fields.py:146
 msgid "31 weeks"
 msgstr "31 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:22
-#: accounts/models.py:349 studies/fields.py:146
+#: accounts/models.py:349 studies/fields.py:147
 msgid "32 weeks"
 msgstr "32 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:23
-#: accounts/models.py:350 studies/fields.py:147
+#: accounts/models.py:350 studies/fields.py:148
 msgid "33 weeks"
 msgstr "33 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:24
-#: accounts/models.py:351 studies/fields.py:148
+#: accounts/models.py:351 studies/fields.py:149
 msgid "34 weeks"
 msgstr "34 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:25
-#: accounts/models.py:352 studies/fields.py:149
+#: accounts/models.py:352 studies/fields.py:150
 msgid "35 weeks"
 msgstr "35 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:26
-#: accounts/models.py:353 studies/fields.py:150
+#: accounts/models.py:353 studies/fields.py:151
 msgid "36 weeks"
 msgstr "36 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:27
-#: accounts/models.py:354 studies/fields.py:151
+#: accounts/models.py:354 studies/fields.py:152
 msgid "37 weeks"
 msgstr "37 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:28
-#: accounts/models.py:355 studies/fields.py:152
+#: accounts/models.py:355 studies/fields.py:153
 msgid "38 weeks"
 msgstr "38 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:29
-#: accounts/models.py:356 studies/fields.py:153
+#: accounts/models.py:356 studies/fields.py:154
 msgid "39 weeks"
 msgstr "39 de săptămâni"
 
 #: accounts/migrations/0041_add_existing_conditions.py:30
-#: accounts/models.py:357 studies/fields.py:154
+#: accounts/models.py:357 studies/fields.py:155
 msgid "40 or more weeks"
 msgstr "40 de săptămâni sau mai mult"
 
@@ -875,317 +875,317 @@ msgstr "Explicație tutori"
 msgid "Race"
 msgstr "Etnie"
 
-#: studies/fields.py:7
+#: studies/fields.py:8
 msgid "Autism Spectrum Disorder"
 msgstr ""
 
-#: studies/fields.py:8
+#: studies/fields.py:9
 msgid "Deaf"
 msgstr ""
 
-#: studies/fields.py:9
+#: studies/fields.py:10
 msgid "Hard of Hearing"
 msgstr ""
 
-#: studies/fields.py:10
+#: studies/fields.py:11
 msgid "Dyslexia"
 msgstr ""
 
-#: studies/fields.py:11
+#: studies/fields.py:12
 msgid "Multiple Birth (twin, triplet, or higher order)"
 msgstr ""
 
-#: studies/fields.py:45
+#: studies/fields.py:46
 msgid "Twin"
 msgstr "Geamăn"
 
-#: studies/fields.py:46
+#: studies/fields.py:47
 msgid "Triplet"
 msgstr "Triplet"
 
-#: studies/fields.py:47
+#: studies/fields.py:48
 msgid "Quadruplet"
 msgstr "Cvadruplet"
 
-#: studies/fields.py:48
+#: studies/fields.py:49
 msgid "Quintuplet"
 msgstr "Quintuplet"
 
-#: studies/fields.py:49
+#: studies/fields.py:50
 msgid "Sextuplet"
 msgstr "Sextuplet"
 
-#: studies/fields.py:50
+#: studies/fields.py:51
 msgid "Septuplet"
 msgstr "Septuplet"
 
-#: studies/fields.py:51
+#: studies/fields.py:52
 msgid "Octuplet"
 msgstr "Octuplet"
 
-#: studies/fields.py:57
+#: studies/fields.py:58
 msgid "English"
 msgstr ""
 
-#: studies/fields.py:58
+#: studies/fields.py:59
 msgid "Amharic"
 msgstr ""
 
-#: studies/fields.py:59
+#: studies/fields.py:60
 msgid "Bengali"
 msgstr ""
 
-#: studies/fields.py:60
+#: studies/fields.py:61
 msgid "Bhojpuri"
 msgstr ""
 
-#: studies/fields.py:61
+#: studies/fields.py:62
 msgid "Burmese"
 msgstr ""
 
-#: studies/fields.py:62
+#: studies/fields.py:63
 msgid "Cebuano"
 msgstr ""
 
-#: studies/fields.py:63
+#: studies/fields.py:64
 msgid "Chhattisgarhi"
 msgstr ""
 
-#: studies/fields.py:64
+#: studies/fields.py:65
 msgid "Dutch"
 msgstr ""
 
-#: studies/fields.py:65
+#: studies/fields.py:66
 msgid "Egyptian Spoken Arabic"
 msgstr ""
 
-#: studies/fields.py:66
+#: studies/fields.py:67
 msgid "French"
 msgstr ""
 
-#: studies/fields.py:67
+#: studies/fields.py:68
 msgid "Gan"
 msgstr ""
 
-#: studies/fields.py:68
+#: studies/fields.py:69
 msgid "German"
 msgstr ""
 
-#: studies/fields.py:69
+#: studies/fields.py:70
 #, fuzzy
 #| msgid "Duration"
 msgid "Gujarati"
 msgstr "Durată"
 
-#: studies/fields.py:70
+#: studies/fields.py:71
 msgid "Hakka"
 msgstr ""
 
-#: studies/fields.py:71
+#: studies/fields.py:72
 msgid "Hausa"
 msgstr ""
 
-#: studies/fields.py:72
+#: studies/fields.py:73
 msgid "Hebrew"
 msgstr ""
 
-#: studies/fields.py:73
+#: studies/fields.py:74
 msgid "Hindi"
 msgstr ""
 
-#: studies/fields.py:74
+#: studies/fields.py:75
 msgid "Igbo"
 msgstr ""
 
-#: studies/fields.py:75
+#: studies/fields.py:76
 msgid "Indonesian"
 msgstr ""
 
-#: studies/fields.py:76
+#: studies/fields.py:77
 msgid "Iranian Persian"
 msgstr ""
 
-#: studies/fields.py:77
+#: studies/fields.py:78
 msgid "Italian"
 msgstr ""
 
-#: studies/fields.py:78
+#: studies/fields.py:79
 msgid "Japanese"
 msgstr ""
 
-#: studies/fields.py:79
+#: studies/fields.py:80
 msgid "Javanese"
 msgstr ""
 
-#: studies/fields.py:80
+#: studies/fields.py:81
 msgid "Jinyu"
 msgstr ""
 
-#: studies/fields.py:81
+#: studies/fields.py:82
 msgid "Kannada"
 msgstr ""
 
-#: studies/fields.py:82
+#: studies/fields.py:83
 msgid "Khmer"
 msgstr ""
 
-#: studies/fields.py:83
+#: studies/fields.py:84
 msgid "Korean"
 msgstr ""
 
-#: studies/fields.py:84
+#: studies/fields.py:85
 msgid "Magahi"
 msgstr ""
 
-#: studies/fields.py:85
+#: studies/fields.py:86
 msgid "Maithili"
 msgstr ""
 
-#: studies/fields.py:86
+#: studies/fields.py:87
 msgid "Malay"
 msgstr ""
 
-#: studies/fields.py:87
+#: studies/fields.py:88
 msgid "Malayalam"
 msgstr ""
 
-#: studies/fields.py:88
+#: studies/fields.py:89
 msgid "Chinese (Mandarin)"
 msgstr ""
 
-#: studies/fields.py:89
+#: studies/fields.py:90
 #, fuzzy
 #| msgid "Duration"
 msgid "Marathi"
 msgstr "Durată"
 
-#: studies/fields.py:90
+#: studies/fields.py:91
 msgid "Min Nan"
 msgstr ""
 
-#: studies/fields.py:91
+#: studies/fields.py:92
 msgid "Moroccan Spoken Arabic"
 msgstr ""
 
-#: studies/fields.py:92
+#: studies/fields.py:93
 msgid "Northern Pashto"
 msgstr ""
 
-#: studies/fields.py:93
+#: studies/fields.py:94
 msgid "Northern Uzbek"
 msgstr ""
 
-#: studies/fields.py:94
+#: studies/fields.py:95
 msgid "Odia"
 msgstr ""
 
-#: studies/fields.py:95
+#: studies/fields.py:96
 msgid "Polish"
 msgstr ""
 
-#: studies/fields.py:96
+#: studies/fields.py:97
 msgid "Portuguese"
 msgstr ""
 
-#: studies/fields.py:97
+#: studies/fields.py:98
 msgid "Romanian"
 msgstr ""
 
-#: studies/fields.py:98
+#: studies/fields.py:99
 #, fuzzy
 #| msgid "Asian"
 msgid "Russian"
 msgstr "asiatică"
 
-#: studies/fields.py:99
+#: studies/fields.py:100
 msgid "Saraiki"
 msgstr ""
 
-#: studies/fields.py:100
+#: studies/fields.py:101
 msgid "Sindhi"
 msgstr ""
 
-#: studies/fields.py:101
+#: studies/fields.py:102
 msgid "Somali"
 msgstr ""
 
-#: studies/fields.py:102
+#: studies/fields.py:103
 msgid "Spanish"
 msgstr ""
 
-#: studies/fields.py:103
+#: studies/fields.py:104
 msgid "Sunda"
 msgstr ""
 
-#: studies/fields.py:104
+#: studies/fields.py:105
 msgid "Tagalog"
 msgstr ""
 
-#: studies/fields.py:105
+#: studies/fields.py:106
 msgid "Tamil"
 msgstr ""
 
-#: studies/fields.py:106
+#: studies/fields.py:107
 msgid "Telugu"
 msgstr ""
 
-#: studies/fields.py:107
+#: studies/fields.py:108
 msgid "Thai"
 msgstr ""
 
-#: studies/fields.py:108
+#: studies/fields.py:109
 msgid "Turkish"
 msgstr ""
 
-#: studies/fields.py:109
+#: studies/fields.py:110
 msgid "Ukrainian"
 msgstr ""
 
-#: studies/fields.py:110
+#: studies/fields.py:111
 msgid "Urdu"
 msgstr ""
 
-#: studies/fields.py:111
+#: studies/fields.py:112
 msgid "Vietnamese"
 msgstr ""
 
-#: studies/fields.py:112
+#: studies/fields.py:113
 msgid "Western Punjabi"
 msgstr ""
 
-#: studies/fields.py:113
+#: studies/fields.py:114
 msgid "Wu"
 msgstr ""
 
-#: studies/fields.py:114
+#: studies/fields.py:115
 msgid "Xiang Chinese"
 msgstr ""
 
-#: studies/fields.py:115
+#: studies/fields.py:116
 msgid "Yoruba"
 msgstr ""
 
-#: studies/fields.py:116
+#: studies/fields.py:117
 msgid "Chinese (Cantonese)"
 msgstr ""
 
-#: studies/fields.py:124
+#: studies/fields.py:125
 msgid "Not answered"
 msgstr "Fără răspuns"
 
-#: studies/fields.py:125
+#: studies/fields.py:126
 msgid "Other"
 msgstr "Alt răspuns"
 
-#: studies/fields.py:126
+#: studies/fields.py:127
 msgid "Male"
 msgstr "Masculin"
 
-#: studies/fields.py:127
+#: studies/fields.py:128
 msgid "Female"
 msgstr "Feminin"
 
-#: studies/models.py:143
+#: studies/models.py:142
 msgid ""
 "The Users who belong to this Lab. A user in this lab will be able to create "
 "studies associated with this Lab and can be added to this Lab's studies."
@@ -1194,7 +1194,7 @@ msgstr ""
 "vor putea crea studii asociate cu acest laborator care pot fi adăugate la "
 "studiile acestui laborator."
 
-#: studies/models.py:152
+#: studies/models.py:151
 msgid "The Users who have requested to join this Lab."
 msgstr "Utilizatorii care au solicitat să se alăture acestui laborator."
 
@@ -3360,15 +3360,27 @@ msgstr "Acest studiu e condus de %(contact)s."
 msgid "Would you like to participate in this study?"
 msgstr "Doriți să participați la acest studiu?"
 
-#: web/templates/web/study-detail.html:108
+#: web/templates/web/study-detail.html:98
+#, fuzzy
+#| msgid "Log in to participate"
+msgid "Log in to participate"
+msgstr "Conectați-vă pentru a participa"
+
+#: web/templates/web/study-detail.html:99
+#, fuzzy
+#| msgid "Create an account!"
+msgid "Create a new account"
+msgstr "Creați un cont!"
+
+#: web/templates/web/study-detail.html:110
 msgid "Select a child:"
 msgstr "Selectați un copil"
 
-#: web/templates/web/study-detail.html:119
+#: web/templates/web/study-detail.html:121
 msgid "None Selected"
 msgstr "Nu ați selectat nimic"
 
-#: web/templates/web/study-detail.html:132
+#: web/templates/web/study-detail.html:134
 #, fuzzy
 #| msgid ""
 #| "Your child is still younger than the recommended age range for this "
@@ -3384,7 +3396,7 @@ msgstr ""
 "el sau ea are vârsta suficientă, vom putea folosi datele colectate în "
 "cercetarea noastră!"
 
-#: web/templates/web/study-detail.html:135
+#: web/templates/web/study-detail.html:137
 #, fuzzy
 #| msgid ""
 #| "Your child is older than the recommended age range for this study. You're "
@@ -3400,7 +3412,7 @@ msgstr ""
 "folosi datele dvs. în cercetarea noastră."
 
 #. Translators: Please include the untranslated "%(contact)s" string to mark where the contact information should be inserted.
-#: web/templates/web/study-detail.html:139
+#: web/templates/web/study-detail.html:141
 #, fuzzy, python-format
 #| msgid ""
 #| "Your child does not meet the eligibility criteria listed for this study. "
@@ -3418,7 +3430,7 @@ msgstr ""
 "în cercetarea noastră. Vă rugăm să contactați cercetătorii responsabili "
 "pentru acest studiu."
 
-#: web/templates/web/study-detail.html:153
+#: web/templates/web/study-detail.html:155
 msgid ""
 "For an easy way to see what happens as you update your study protocol, "
 "bookmark the URL the button above sends you to."
@@ -3427,23 +3439,23 @@ msgstr ""
 "actualizați protocolul de studiu, marcați adresa URL la care vă trimite "
 "butonul de mai sus."
 
-#: web/templates/web/study-detail.html:157
+#: web/templates/web/study-detail.html:159
 msgid ""
 "This study runs on another website, and clicking to participate will take "
 "you to that link."
 msgstr ""
 
-#: web/templates/web/study-detail.html:159
+#: web/templates/web/study-detail.html:161
 msgid ""
 "It will also make it possible for the researchers of this study to contact "
 "you, and will share your child's profile information with the researchers."
 msgstr ""
 
-#: web/templates/web/study-detail.html:162
+#: web/templates/web/study-detail.html:164
 msgid "This study runs here on the Lookit platform."
 msgstr ""
 
-#: web/templates/web/study-detail.html:164
+#: web/templates/web/study-detail.html:166
 msgid ""
 "Clicking to participate will make it possible for the researchers of this "
 "study to contact you, and will share your child's profile information with "
@@ -3481,43 +3493,43 @@ msgid ""
 "then click \"Participate\" to sign up for a study session in the future."
 msgstr ""
 
-#: web/views.py:114
+#: web/views.py:130
 #, fuzzy
 #| msgid "Participant account"
 msgid "Participant created."
 msgstr "Contul participantului"
 
-#: web/views.py:157
+#: web/views.py:173
 #, fuzzy
 #| msgid "Demographic Survey"
 msgid "Demographic data saved."
 msgstr "Sondaj demografic"
 
-#: web/views.py:223
+#: web/views.py:239
 #, fuzzy
 #| msgid "Children"
 msgid "Child added."
 msgstr "Copii"
 
-#: web/views.py:264
+#: web/views.py:280
 #, fuzzy
 #| msgid "Children"
 msgid "Child deleted."
 msgstr "Copii"
 
-#: web/views.py:266
+#: web/views.py:282
 #, fuzzy
 #| msgid "Children"
 msgid "Child updated."
 msgstr "Copii"
 
-#: web/views.py:294
+#: web/views.py:310
 #, fuzzy
 #| msgid "Email Preferences"
 msgid "Email preferences saved."
 msgstr "Preferinţe e-mail"
 
-#: web/views.py:699
+#: web/views.py:720
 #, python-brace-format
 msgid ""
 "The study {study.name} is not currently collecting data - the study is "
@@ -3747,9 +3759,6 @@ msgstr ""
 
 #~ msgid "Looking for "
 #~ msgstr "Căutați"
-
-#~ msgid "Create an account!"
-#~ msgstr "Creați un cont!"
 
 #~ msgid "Account information"
 #~ msgstr "Informații cont"
