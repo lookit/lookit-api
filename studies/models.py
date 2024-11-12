@@ -1490,16 +1490,20 @@ class Video(models.Model):
 
     @property
     def recording_method_is_pipe(self):
+        recording_method = self.response.recording_method
         return (
             self.response.study_type.is_ember_frame_player
-            and str.lower(self.response.recording_method) == "pipe"
+            and recording_method
+            and str.lower(recording_method) == "pipe"
         )
 
     @property
     def recording_method_is_recordrtc(self):
+        recording_method = self.response.recording_method
         return (
             self.response.study_type.is_ember_frame_player
-            and str.lower(self.response.recording_method) == "recordrtc"
+            and recording_method
+            and str.lower(recording_method) == "recordrtc"
         )
 
 
