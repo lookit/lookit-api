@@ -1029,7 +1029,7 @@ class Response(models.Model):
     study_type = models.ForeignKey(
         StudyType, on_delete=models.PROTECT, default=StudyType.default_pk
     )
-    recording_method = models.CharField(max_length=50, null=True)
+    recording_method = models.CharField(max_length=50, null=True, default="pipe")
     eligibility = ArrayField(
         models.CharField(max_length=100, choices=ResponseEligibility.choices),
         blank=True,
