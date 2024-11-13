@@ -111,6 +111,7 @@ def get_jspsych_response(context, is_preview=False):
         exp_data=[],
         is_preview=is_preview,
         study_type=study.study_type,
+        recording_method="jspsych",
     )
 
 
