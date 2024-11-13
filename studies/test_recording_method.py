@@ -1,12 +1,15 @@
 import datetime
 import uuid
+from urllib.parse import parse_qs, urlparse
 
+from django.conf import settings
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
 
 from accounts.models import Child, User
+from attachment_helpers import get_url
 from studies.models import Lab, Response, Study, StudyType
 from web.views import create_external_response, get_jspsych_response
 
@@ -139,3 +142,34 @@ class RecordingMethodEFPTestCase(TestCase):
             study_type=study_type, child=child, study=study
         )
         self.assertEqual(response.recording_method, "pipe")
+
+
+class GetUrlTestCase(TestCase):
+    def test_efp_pipe_bucket(self):
+        pipe = True
+        jspsych = False
+        header = False
+        url = urlparse(get_url("some video key", pipe, jspsych, header))
+        self.assertEqual(url.hostname.split(".")[0], settings.BUCKET_NAME)
+
+    def test_efp_recordrtc_bucket(self):
+        pipe = False
+        jspsych = False
+        header = False
+        url = urlparse(get_url("some video key", pipe, jspsych, header))
+        self.assertEqual(url.hostname.split(".")[0], settings.S3_BUCKET_NAME)
+
+    def test_jspsych_bucket(self):
+        pipe = False
+        jspsych = True
+        header = False
+        url = urlparse(get_url("some video key", pipe, jspsych, header))
+        self.assertEqual(url.path.split("/")[1], settings.JSPSYCH_S3_BUCKET)
+
+    def test_attachment(self):
+        pipe = True
+        jspsych = False
+        header = True
+        url = urlparse(get_url("some video key", pipe, jspsych, header))
+        query = parse_qs(url.query)
+        self.assertEqual(query["response-content-disposition"], ["attachment"])
