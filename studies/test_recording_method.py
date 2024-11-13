@@ -1,5 +1,6 @@
 import datetime
 import uuid
+from unittest import skip
 from urllib.parse import parse_qs, urlparse
 
 from django.conf import settings
@@ -122,6 +123,7 @@ class RecordingMethodExternalTestCase(TestCase):
         response_uuid = response.url.split("response=")[1]
         self.assertIsNone(Response.objects.get(uuid=response_uuid).recording_method)
 
+    @skip("Need AWS credentials.")
     def test_external_researcher_preview(self):
         researcher, researcher_study, researcher_child = get_researcher(
             StudyType.get_external()
@@ -145,6 +147,7 @@ class RecordingMethodEFPTestCase(TestCase):
 
 
 class GetUrlTestCase(TestCase):
+    @skip("Need AWS credentials.")
     def test_efp_pipe_bucket(self):
         pipe = True
         jspsych = False
@@ -152,6 +155,7 @@ class GetUrlTestCase(TestCase):
         url = urlparse(get_url("some video key", pipe, jspsych, header))
         self.assertEqual(url.hostname.split(".")[0], settings.BUCKET_NAME)
 
+    @skip("Need AWS credentials.")
     def test_efp_recordrtc_bucket(self):
         pipe = False
         jspsych = False
@@ -159,6 +163,7 @@ class GetUrlTestCase(TestCase):
         url = urlparse(get_url("some video key", pipe, jspsych, header))
         self.assertEqual(url.hostname.split(".")[0], settings.S3_BUCKET_NAME)
 
+    @skip("Need AWS credentials.")
     def test_jspsych_bucket(self):
         pipe = False
         jspsych = True
@@ -166,6 +171,7 @@ class GetUrlTestCase(TestCase):
         url = urlparse(get_url("some video key", pipe, jspsych, header))
         self.assertEqual(url.path.split("/")[1], settings.JSPSYCH_S3_BUCKET)
 
+    @skip("Need AWS credentials.")
     def test_attachment(self):
         pipe = True
         jspsych = False
