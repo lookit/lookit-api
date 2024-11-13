@@ -4,23 +4,27 @@ from django.db import migrations, models
 
 EFP = 1
 EXTERNAL = 2
-JSPSYCH = 3
 
 
 def populate_recording_method(apps, schema_editor):
+    # EFP responses
     responses = apps.get_model("studies", "Response").objects.filter(
-        recording_method=None
+        recording_method=None, study_type_id=EFP
     )
     for response in responses:
-        if response.study_type.id == EXTERNAL:
-            response.recording_method = None
-        elif response.study_type.id == JSPSYCH:
-            response.recording_method = "jspsych"
-        elif response.study_type.id == EFP:
-            if response.videos.count() > 0 and all(
-                v.pipe_name is not None for v in response.videos.all()
+        if response.study_type.id == EFP:
+            if response.videos.count() and all(
+                v.pipe_name for v in response.videos.all()
             ):
                 response.recording_method = "pipe"
+        response.save()
+
+    # External responses
+    responses = apps.get_model("studies", "Response").objects.filter(
+        study_type_id=EXTERNAL
+    )
+    for response in responses:
+        response.recording_method = None
         response.save()
 
 
