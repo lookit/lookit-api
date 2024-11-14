@@ -69,6 +69,7 @@ def create_external_response(study: Study, child_uuid: UUID, preview=False) -> R
         study_type=study.study_type,
         demographic_snapshot=child.user.latest_demographics,
         is_preview=preview,
+        recording_method=None,
     )
 
 
@@ -110,6 +111,7 @@ def get_jspsych_response(context, is_preview=False):
         exp_data=[],
         is_preview=is_preview,
         study_type=study.study_type,
+        recording_method="jspsych",
     )
 
 

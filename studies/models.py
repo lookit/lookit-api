@@ -1029,7 +1029,7 @@ class Response(models.Model):
     study_type = models.ForeignKey(
         StudyType, on_delete=models.PROTECT, default=StudyType.default_pk
     )
-    recording_method = models.CharField(max_length=50, null=True)
+    recording_method = models.CharField(max_length=50, null=True, default="pipe")
     eligibility = ArrayField(
         models.CharField(max_length=100, choices=ResponseEligibility.choices),
         blank=True,
@@ -1490,17 +1490,21 @@ class Video(models.Model):
 
     @property
     def recording_method_is_pipe(self):
-        if self.response.recording_method is None:
-            return False
-        else:
-            return str.lower(self.response.recording_method) == "pipe"
+        recording_method = self.response.recording_method
+        return (
+            self.response.study_type.is_ember_frame_player
+            and recording_method
+            and str.lower(recording_method) == "pipe"
+        )
 
     @property
     def recording_method_is_recordrtc(self):
-        if self.response.recording_method is None:
-            return False
-        else:
-            return str.lower(self.response.recording_method) == "recordrtc"
+        recording_method = self.response.recording_method
+        return (
+            self.response.study_type.is_ember_frame_player
+            and recording_method
+            and str.lower(recording_method) == "recordrtc"
+        )
 
 
 @receiver(pre_delete, sender=Video)
