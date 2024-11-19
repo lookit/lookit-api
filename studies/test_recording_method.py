@@ -1,15 +1,15 @@
 import datetime
 import uuid
-from unittest import skip
-from urllib.parse import parse_qs, urlparse
+from datetime import date
+from unittest.mock import patch
 
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 from accounts.models import Child, User
-from attachment_helpers import get_url
+from attachment_helpers import S3_CLIENT, get_url
 from studies.models import Lab, Response, Study, StudyType
 from web.views import create_external_response, get_jspsych_response
 
@@ -65,6 +65,17 @@ def get_user(study_type):
     return (user, study, child)
 
 
+def make_boto_client(mock):
+    mock().get_federation_token.return_value = {
+        "Credentials": {
+            "AccessKeyId": "",
+            "SecretAccessKey": "",
+            "SessionToken": "",
+            "Expiration": date.today(),
+        }
+    }
+
+
 class Force2FAClient(Client):
     """For convenience when testing researcher views, let's just pretend everyone is two-factor auth'd."""
 
@@ -75,15 +86,18 @@ class Force2FAClient(Client):
         return _session
 
 
-@skip("Need AWS credentials.")
 class RecordingMethodJsPsychTestCase(TestCase):
-    def test_jspysch(self):
-        user, study, child = get_user(StudyType.get_jspsych())
+    @patch("boto3.client")
+    def test_jspysch(self, mock_client):
+        make_boto_client(mock_client)
+        _, study, child = get_user(StudyType.get_jspsych())
         context = {"study": study, "view": TestView(child.uuid)}
         response = get_jspsych_response(context)
         self.assertEqual(response.recording_method, "jspsych")
 
-    def test_jspsych_view(self):
+    @patch("boto3.client")
+    def test_jspsych_view(self, mock_client):
+        make_boto_client(mock_client)
         user, study, child = get_user(StudyType.get_jspsych())
         url = reverse(
             "web:jspsych-experiment",
@@ -95,7 +109,9 @@ class RecordingMethodJsPsychTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["response"].recording_method, "jspsych")
 
-    def test_jspsych_researcher_preview(self):
+    @patch("boto3.client")
+    def test_jspsych_researcher_preview(self, mock_client):
+        make_boto_client(mock_client)
         user, study, child = get_researcher(StudyType.get_jspsych())
         url = reverse(
             "exp:preview-jspsych",
@@ -105,19 +121,19 @@ class RecordingMethodJsPsychTestCase(TestCase):
         self.client.force_login(user)
         response = self.client.get(url, follow=True)
 
+        self.assertEqual(response.redirect_chain, [])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context_data["response"].recording_method, "jspsych")
 
 
-@skip("Need AWS credentials.")
 class RecordingMethodExternalTestCase(TestCase):
     def test_external(self):
-        user, study, child = get_user(StudyType.get_external())
+        _, study, child = get_user(StudyType.get_external())
         response = create_external_response(study, child.uuid)
         self.assertIsNone(response.recording_method)
 
     def test_external_view(self):
-        user, study, child = get_user(StudyType.get_external())
+        _, study, child = get_user(StudyType.get_external())
         url = reverse("web:study-detail", kwargs={"uuid": study.uuid})
         response = self.client.post(url, {"child_id": child.uuid})
         response_uuid = response.url.split("response=")[1]
@@ -135,44 +151,65 @@ class RecordingMethodExternalTestCase(TestCase):
         self.assertIsNone(Response.objects.get(uuid=response_uuid).recording_method)
 
 
-@skip("Need AWS credentials.")
 class RecordingMethodEFPTestCase(TestCase):
     def test_efp(self):
         study_type = StudyType.get_ember_frame_player()
-        user, study, child = get_user(study_type)
+        _, study, child = get_user(study_type)
         response = Response.objects.create(
             study_type=study_type, child=child, study=study
         )
         self.assertEqual(response.recording_method, "pipe")
 
 
-@skip("Need AWS credentials.")
 class GetUrlTestCase(TestCase):
-    def test_efp_pipe_bucket(self):
+    @override_settings(BUCKET_NAME=uuid.uuid4)
+    @patch.object(S3_CLIENT, "generate_presigned_url")
+    def test_efp_pipe_bucket(self, mock_url):
         pipe = True
         jspsych = False
         header = False
-        url = urlparse(get_url("some video key", pipe, jspsych, header))
-        self.assertEqual(url.hostname.split(".")[0], settings.BUCKET_NAME)
+        test_url = "some url"
+        mock_url.return_value = test_url
+        self.assertEqual(get_url("some video key", pipe, jspsych, header), test_url)
+        _, kwargs = mock_url.call_args
+        self.assertEqual(kwargs["Params"]["Bucket"], settings.BUCKET_NAME)
+        self.assertTrue(settings.BUCKET_NAME)
+        # url = urlparse(get_url("some video key", pipe, jspsych, header))
+        # self.assertEqual(url.hostname.split(".")[0], settings.BUCKET_NAME)
 
-    def test_efp_recordrtc_bucket(self):
+    @override_settings(S3_BUCKET_NAME=uuid.uuid4)
+    @patch.object(S3_CLIENT, "generate_presigned_url")
+    def test_efp_recordrtc_bucket(self, mock_url):
         pipe = False
         jspsych = False
         header = False
-        url = urlparse(get_url("some video key", pipe, jspsych, header))
-        self.assertEqual(url.hostname.split(".")[0], settings.S3_BUCKET_NAME)
+        test_url = "some url"
+        mock_url.return_value = test_url
+        self.assertEqual(get_url("some video key", pipe, jspsych, header), test_url)
+        _, kwargs = mock_url.call_args
+        self.assertEqual(kwargs["Params"]["Bucket"], settings.S3_BUCKET_NAME)
+        self.assertTrue(settings.S3_BUCKET_NAME)
 
-    def test_jspsych_bucket(self):
+    @override_settings(JSPSYCH_S3_BUCKET=uuid.uuid4)
+    @patch.object(S3_CLIENT, "generate_presigned_url")
+    def test_jspsych_bucket(self, mock_url):
         pipe = False
         jspsych = True
         header = False
-        url = urlparse(get_url("some video key", pipe, jspsych, header))
-        self.assertEqual(url.path.split("/")[1], settings.JSPSYCH_S3_BUCKET)
+        test_url = "some url"
+        mock_url.return_value = test_url
+        self.assertEqual(get_url("some video key", pipe, jspsych, header), test_url)
+        _, kwargs = mock_url.call_args
+        self.assertEqual(kwargs["Params"]["Bucket"], settings.JSPSYCH_S3_BUCKET)
+        self.assertTrue(settings.JSPSYCH_S3_BUCKET)
 
-    def test_attachment(self):
+    @patch.object(S3_CLIENT, "generate_presigned_url")
+    def test_attachment(self, mock_url):
+        test_url = "some url"
         pipe = True
         jspsych = False
         header = True
-        url = urlparse(get_url("some video key", pipe, jspsych, header))
-        query = parse_qs(url.query)
-        self.assertEqual(query["response-content-disposition"], ["attachment"])
+        mock_url.return_value = test_url
+        self.assertEqual(get_url("some video key", pipe, jspsych, header), test_url)
+        _, kwargs = mock_url.call_args
+        self.assertEqual(kwargs["Params"]["ResponseContentDisposition"], "attachment")
