@@ -174,8 +174,6 @@ class GetUrlTestCase(TestCase):
         _, kwargs = mock_url.call_args
         self.assertEqual(kwargs["Params"]["Bucket"], settings.BUCKET_NAME)
         self.assertTrue(settings.BUCKET_NAME)
-        # url = urlparse(get_url("some video key", pipe, jspsych, header))
-        # self.assertEqual(url.hostname.split(".")[0], settings.BUCKET_NAME)
 
     @override_settings(S3_BUCKET_NAME=uuid.uuid4)
     @patch.object(S3_CLIENT, "generate_presigned_url")
