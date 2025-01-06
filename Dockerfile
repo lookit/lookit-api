@@ -17,9 +17,7 @@ RUN apt-get update \
     && gosu nobody true \
     && update-ca-certificates \
     && pip install -U pip wheel setuptools \
-    && curl https://install.python-poetry.org > /tmp/install-poetry.py \
-    && python /tmp/install-poetry.py \ 
+    && curl -sSL https://install.python-poetry.org | python3 - --version 1.8.4 \
     && poetry config virtualenvs.create false \
     && poetry install --no-dev \
-    && python manage.py compilemessages \
-    && rm /tmp/install-poetry.py
+    && python manage.py compilemessages 
