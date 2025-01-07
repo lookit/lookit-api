@@ -37,11 +37,14 @@
     <div class="row">
         <div class="col-12">
             <span class="text-end">
+                {% comment %}
+                {# TODO: When the zip video files task has been fixed, this comment should be removed. #}
                 <form method="post">
                     {% csrf_token %}
                     {% bootstrap_button "Download all videos" button_class=btn_primary_classes button_type="submit" name="all-attachments" value="all" %}
                     {% bootstrap_button "Download all consent videos" button_class=btn_primary_classes button_type="submit" name="all-consent-videos" value="all" %}
                 </form>
+                {% endcomment %}
             </span>
         </div>
     </div>
