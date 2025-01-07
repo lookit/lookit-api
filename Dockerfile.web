@@ -18,5 +18,5 @@ RUN apt-get update \
     && locale-gen en_US.UTF-8 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && curl -sSL https://install.python-poetry.org | python3 - --version 1.8.4 \
+    && curl -sSL --proto "=https" https://install.python-poetry.org | python3 - --version 1.8.4 \
     && poetry install
