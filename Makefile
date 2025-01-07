@@ -59,7 +59,7 @@ collectstatic:
 
 poetry:
 	poetry check 
-	poetry self update
+	poetry self update 1.8.4
 	poetry env use 3.9
 	poetry install --sync --no-root
 
