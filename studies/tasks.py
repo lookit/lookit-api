@@ -538,6 +538,10 @@ def get_all_incomplete_video_files():
                 > datetime.timedelta(hours=24)
             )
         ]
+    else:
+        logger.debug(
+            f"Uploads key not found in list of multipart uploads for bucket {settings.S3_BUCKET_NAME}: {uploads_response}"
+        )
 
     return incomplete_uploads
 
