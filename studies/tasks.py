@@ -526,7 +526,7 @@ def get_all_incomplete_video_files():
     except ParamValidationError as error:
         raise ValueError(f"The parameters you provided are incorrect: {error}")
 
-    if uploads_response["Uploads"]:
+    if "Uploads" in uploads_response:
         # Filter out incomplete uploads that might still be actively recording - started in last 24 hours.
         # The upload's 'Initiated' value is a datetime in UTC timezone.
         uploads_list = uploads_response["Uploads"]
