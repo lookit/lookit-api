@@ -21,6 +21,7 @@ from studies.tasks import (
     MessageTarget,
     acquire_potential_announcement_email_targets,
     get_all_incomplete_video_files,
+    get_file_parts,
     limit_email_targets,
     potential_message_targets,
 )
@@ -1596,6 +1597,92 @@ class TestListIncompleteVideoUploads(TestCase):
             report=error_message
         )
 
-        # Test that the ValueError is raised
+        # Test that the ValueError is raised (ParamValidationError is caught and re-raised as ValueError)
         with self.assertRaises(ValueError):
             get_all_incomplete_video_files()
+
+
+class TestListFilePartsFromIncompleteUpload(TestCase):
+    # Patch the S3_CLIENT directly (instead of boto3) because it has already been created globally in the module
+    @patch("studies.tasks.S3_CLIENT")
+    def test_with_valid_s3_response(self, mock_s3_client):
+        # get_file_parts should return an array with all file parts from the S3 list_parts request for that file.
+
+        # Set up a successful S3 response from list_parts
+        mock_s3_client.list_parts.return_value = {
+            "Parts": [
+                {"PartNumber": 1, "ETag": '"etag1"'},
+                {"PartNumber": 2, "ETag": '"etag2"'},
+            ]
+        }
+
+        result = get_file_parts("example_video.webm", "upload-id-123")
+
+        # Assert that list_parts mock was called
+        mock_s3_client.list_parts.assert_called_once()
+        # get_file_parts should return the list of file parts
+        self.assertEqual(
+            result,
+            [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
+        )
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_s3_response_is_none(self, mock_s3_client):
+        # get_file_parts should return an empty array if S3 does not return a valid response for the list parts request.
+
+        mock_s3_client.list_parts.return_value = None
+
+        result = get_file_parts("example_video.webm", "upload-id-123")
+
+        mock_s3_client.list_parts.assert_called_once()
+        # get_file_parts should return an empty array
+        self.assertEqual(result, [])
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_no_parts_key_in_s3_response(self, mock_s3_client):
+        # get_file_parts should return an empty array if the S3 response exists but there is no "Parts" key in the response.
+
+        mock_s3_client.list_parts.return_value = {"SomeOtherKey": "Value"}
+
+        result = get_file_parts("example_video.webm", "upload-id-123")
+
+        mock_s3_client.list_parts.assert_called_once()
+        # get_file_parts should return an empty array
+        self.assertEqual(result, [])
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_get_file_parts_with_no_parts(self, mock_s3_client):
+        # get_file_parts should return an empty array if the S3 response exists and contains a "Parts" key, but the list is empty.
+        mock_s3_client.list_parts.return_value = {"Parts": []}
+
+        result = get_file_parts("example_video.webm", "upload-id-123")
+
+        mock_s3_client.list_parts.assert_called_once()
+        # get_file_parts should return an empty list
+        self.assertEqual(result, [])
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_get_file_parts_client_error(self, mock_s3_client):
+        # get_file_parts should raise a ClientError if S3 produces a Client Error in repsonse to the list parts request.
+        error_response = {
+            "Error": {
+                "Code": "AccessDenied",
+                "Message": "Access denied for the requested S3 operation.",
+            }
+        }
+        mock_s3_client.list_parts.side_effect = ClientError(error_response, "ListParts")
+        # get_file_parts should raise a ClientError
+        with self.assertRaises(ClientError):
+            get_file_parts("example_video.webm", "upload-id-123")
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_get_file_parts_param_validation_error(self, mock_s3_client):
+        # get_file_parts should raise a ValueError if S3 produces a Parameter Validation Error in repsonse to the list parts request.
+        error_message = "The parameters you provided are incorrect."
+        mock_s3_client.list_parts.side_effect = ParamValidationError(
+            report=error_message
+        )
+
+        # get_file_parts should raise a ValueError (since ParamValidationError is caught and re-raised as ValueError)
+        with self.assertRaises(ValueError):
+            get_file_parts("example_video.webm", "upload-id-123")
