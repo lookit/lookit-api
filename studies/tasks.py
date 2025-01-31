@@ -522,11 +522,16 @@ def get_all_incomplete_video_files():
             Bucket=settings.S3_BUCKET_NAME
         )
     except ClientError as error:
+        logger.error(f"Failed to list multipart uploads due to a ClientError: {error}")
         raise error
     except ParamValidationError as error:
+        logger.error("Failed to list multipart uploads due to a ParamValidationError")
         raise ValueError(f"The parameters you provided are incorrect: {error}")
+    except Exception as error:
+        logger.error("Failed to list multipart uploads: Unknown error type")
+        raise error
 
-    if uploads_response["Uploads"]:
+    if uploads_response is not None and "Uploads" in uploads_response:
         # Filter out incomplete uploads that might still be actively recording - started in last 24 hours.
         # The upload's 'Initiated' value is a datetime in UTC timezone.
         uploads_list = uploads_response["Uploads"]
@@ -538,6 +543,10 @@ def get_all_incomplete_video_files():
                 > datetime.timedelta(hours=24)
             )
         ]
+    else:
+        logger.debug(
+            f"Uploads key not found in list of multipart uploads for bucket {settings.S3_BUCKET_NAME}: {uploads_response}"
+        )
 
     return incomplete_uploads
 
@@ -552,12 +561,26 @@ def get_file_parts(filename, id):
             Bucket=settings.S3_BUCKET_NAME, Key=filename, UploadId=id
         )
     except ClientError as error:
-        logger.debug(f"Error completing file {filename}: {error}")
+        logger.error(
+            f"Failed to list file parts for file {filename} due to a ClientError: {error}"
+        )
         raise error
     except ParamValidationError as error:
+        logger.error(
+            f"Failed to list file parts for file {filename} ParamValidationError"
+        )
         raise ValueError(f"The parameters you provided are incorrect: {error}")
+    except Exception as error:
+        logger.error(
+            f"Failed to list file parts for file {filename}: Unknown error type"
+        )
+        raise error
 
-    if "Parts" in file_parts_response and file_parts_response["Parts"]:
+    if (
+        file_parts_response is not None
+        and "Parts" in file_parts_response
+        and file_parts_response["Parts"]
+    ):
         parts = [
             {"PartNumber": part["PartNumber"], "ETag": eval(part["ETag"])}
             for part in file_parts_response["Parts"]
@@ -579,16 +602,23 @@ def complete_multipart_upload(filename, id, parts):
             MultipartUpload={"Parts": parts},
             UploadId=id,
         )
-        if resp["ResponseMetadata"]["HTTPStatusCode"] == 200:
-            logger.debug(f"Completed file {filename}")
+        if (
+            resp is not None
+            and "ResponseMetadata" in resp
+            and "HTTPStatusCode" in resp["ResponseMetadata"]
+        ):
+            if resp["ResponseMetadata"]["HTTPStatusCode"] == 200:
+                logger.debug(f"Completed file {filename}")
+            else:
+                logger.debug(
+                    f"File {filename} returned HTTP Status Code {resp['ResponseMetadata']['HTTPStatusCode']}"
+                )
         else:
-            logger.debug(
-                f"File {filename} returned HTTP Status Code {resp['ResponseMetadata']['HTTPStatusCode']}"
-            )
+            logger.debug(f"Error completing file {filename}. S3 response: {resp}")
     except ClientError as error:
-        logger.debug(f"Error completing file {filename}: {error}")
-        # If the file cannot be completed because of a problem with size/parts,
+        # If the file cannot be completed because of a problem with size/parts, log it for our info but
         # ignore it and move on. It will be deleted via the S3 bucket's lifecycle rule.
+        logger.debug(f"Error completing file {filename}: {error}")
         ignore_errors = [
             "EntityTooSmall",
             "InvalidPart",
@@ -599,3 +629,6 @@ def complete_multipart_upload(filename, id, parts):
             raise error
     except ParamValidationError as error:
         raise ValueError(f"The parameters you provided are incorrect: {error}")
+    except Exception as error:
+        logger.error(f"Failed to complete file {filename}: Unknown error type")
+        raise error
