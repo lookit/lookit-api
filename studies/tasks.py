@@ -561,12 +561,26 @@ def get_file_parts(filename, id):
             Bucket=settings.S3_BUCKET_NAME, Key=filename, UploadId=id
         )
     except ClientError as error:
-        logger.debug(f"Error completing file {filename}: {error}")
+        logger.error(
+            f"Failed to list file parts for file {filename} due to a ClientError: {error}"
+        )
         raise error
     except ParamValidationError as error:
+        logger.error(
+            f"Failed to list file parts for file {filename} ParamValidationError"
+        )
         raise ValueError(f"The parameters you provided are incorrect: {error}")
+    except Exception as error:
+        logger.error(
+            f"Failed to list file parts for file {filename}: Unknown error type"
+        )
+        raise error
 
-    if "Parts" in file_parts_response and file_parts_response["Parts"]:
+    if (
+        file_parts_response is not None
+        and "Parts" in file_parts_response
+        and file_parts_response["Parts"]
+    ):
         parts = [
             {"PartNumber": part["PartNumber"], "ETag": eval(part["ETag"])}
             for part in file_parts_response["Parts"]
