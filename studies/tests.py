@@ -20,6 +20,7 @@ from studies.permissions import StudyPermission
 from studies.tasks import (
     MessageTarget,
     acquire_potential_announcement_email_targets,
+    complete_multipart_upload,
     get_all_incomplete_video_files,
     get_file_parts,
     limit_email_targets,
@@ -1686,3 +1687,125 @@ class TestListFilePartsFromIncompleteUpload(TestCase):
         # get_file_parts should raise a ValueError (since ParamValidationError is caught and re-raised as ValueError)
         with self.assertRaises(ValueError):
             get_file_parts("example_video.webm", "upload-id-123")
+
+
+class TestCompleteMultipartUpload(TestCase):
+    # Patch the logger from studies.tasks to test execution in logs, because this function doesn't return anything
+    @patch("studies.tasks.logger")
+    # Patch the S3_CLIENT directly (instead of boto3) because it has already been created globally in the module
+    @patch("studies.tasks.S3_CLIENT")
+    def test_complete_multipart_upload_success(self, mock_s3_client, mock_logger):
+        # Mock a successful response from S3 complete_multipart_upload request
+        mock_s3_client.complete_multipart_upload.return_value = {
+            "ResponseMetadata": {"HTTPStatusCode": 200}
+        }
+
+        complete_multipart_upload(
+            "example_video.webm",
+            "upload-id-123",
+            [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
+        )
+
+        # If the file completion was successful, we should get the "completed file" message in the logger
+        mock_logger.debug.assert_called_with("Completed file example_video.webm")
+
+    @patch("studies.tasks.logger")
+    @patch("studies.tasks.S3_CLIENT")
+    def test_complete_multipart_upload_none_resp(self, mock_s3_client, mock_logger):
+        # If S3 response is None, log the error and the value of the response.
+        mock_s3_client.complete_multipart_upload.return_value = None
+
+        complete_multipart_upload(
+            "example_video.webm",
+            "upload-id-123",
+            [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
+        )
+
+        # complete_multipart_upload should log the error and S3 response.
+        mock_logger.debug.assert_called_with(
+            "Error completing file example_video.webm. S3 response: None"
+        )
+
+    @patch("studies.tasks.logger")
+    @patch("studies.tasks.S3_CLIENT")
+    def test_complete_multipart_upload_resp_no_httpstatuscode(
+        self, mock_s3_client, mock_logger
+    ):
+        # If S3 response is returned with ResponseMetadata but there is no HTTPStatusCode, log the error and the value of the response.
+        mock_s3_client.complete_multipart_upload.return_value = {"ResponseMetadata": {}}
+
+        complete_multipart_upload(
+            "example_video.webm",
+            "upload-id-123",
+            [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
+        )
+
+        # complete_multipart_upload should log the error and S3 response.
+        mock_logger.debug.assert_called_with(
+            "Error completing file example_video.webm. S3 response: {'ResponseMetadata': {}}"
+        )
+
+    @patch("studies.tasks.logger")
+    @patch("studies.tasks.S3_CLIENT")
+    def test_complete_multipart_upload_resp_no_responsemetadata(
+        self, mock_s3_client, mock_logger
+    ):
+        # If S3 response is returned without ResponseMetadata, log the error and the value of the response.
+        mock_s3_client.complete_multipart_upload.return_value = {}
+
+        complete_multipart_upload(
+            "example_video.webm",
+            "upload-id-123",
+            [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
+        )
+
+        # complete_multipart_upload should log the error and S3 response.
+        mock_logger.debug.assert_called_with(
+            "Error completing file example_video.webm. S3 response: {}"
+        )
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_complete_multipart_upload_with_client_error(self, mock_s3_client):
+        # If S3 produces a Client Error in repsonse to the complete_multipart_upload request, and the error code is not listed in our "ignore" list, then complete_multipart_upload should raise it.
+        mock_s3_client.complete_multipart_upload.side_effect = ClientError(
+            {
+                "Error": {
+                    "Code": "SomeOtherError",
+                    "Message": "This is some other client error.",
+                }
+            },
+            "CompleteMultipartUpload",
+        )
+
+        # complete_multipart_upload should raise this ClientError
+        with self.assertRaises(ClientError):
+            complete_multipart_upload(
+                "example_video.webm",
+                "upload-id-123",
+                [{"PartNumber": 1, "ETag": "etag1"}],
+            )
+
+    @patch("studies.tasks.logger")
+    @patch("studies.tasks.S3_CLIENT")
+    def test_complete_multipart_upload_with_client_error_ignore(
+        self, mock_s3_client, mock_logger
+    ):
+        # If S3 produces a Client Error in repsonse to the complete_multipart_upload request, and the error code is listed in our "ignore" list, then complete_multipart_upload should log the error but not raise it.
+        mock_s3_client.complete_multipart_upload.side_effect = ClientError(
+            {
+                "Error": {
+                    "Code": "EntityTooSmall",
+                    "Message": "Your proposed upload is smaller than the minimum allowed size",
+                }
+            },
+            "CompleteMultipartUpload",
+        )
+
+        complete_multipart_upload(
+            "example_video.webm", "upload-id-123", [{"PartNumber": 1, "ETag": "etag1"}]
+        )
+
+        # complete_multipart_upload should log this error but not raise it
+        mock_logger.debug.assert_called_with(
+            "Error completing file example_video.webm: An error occurred (EntityTooSmall) when calling the CompleteMultipartUpload operation: Your proposed upload is smaller than the minimum allowed size"
+        )
