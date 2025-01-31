@@ -522,10 +522,10 @@ def get_all_incomplete_video_files():
             Bucket=settings.S3_BUCKET_NAME
         )
     except ClientError as error:
-        logger.error(f"Failed to list multipart uploads: {error}")
+        logger.error(f"Failed to list multipart uploads due to a ClientError: {error}")
         raise error
     except ParamValidationError as error:
-        logger.error("Failed to list multipart uploads")
+        logger.error("Failed to list multipart uploads due to a ParamValidationError")
         raise ValueError(f"The parameters you provided are incorrect: {error}")
 
     if uploads_response is not None and "Uploads" in uploads_response:
