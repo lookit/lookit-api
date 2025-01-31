@@ -527,6 +527,9 @@ def get_all_incomplete_video_files():
     except ParamValidationError as error:
         logger.error("Failed to list multipart uploads due to a ParamValidationError")
         raise ValueError(f"The parameters you provided are incorrect: {error}")
+    except Exception as error:
+        logger.error("Failed to list multipart uploads: Unknown error type")
+        raise error
 
     if uploads_response is not None and "Uploads" in uploads_response:
         # Filter out incomplete uploads that might still be actively recording - started in last 24 hours.
