@@ -522,11 +522,13 @@ def get_all_incomplete_video_files():
             Bucket=settings.S3_BUCKET_NAME
         )
     except ClientError as error:
+        logger.error(f"Failed to list multipart uploads: {error}")
         raise error
     except ParamValidationError as error:
+        logger.error("Failed to list multipart uploads")
         raise ValueError(f"The parameters you provided are incorrect: {error}")
 
-    if "Uploads" in uploads_response:
+    if uploads_response is not None and "Uploads" in uploads_response:
         # Filter out incomplete uploads that might still be actively recording - started in last 24 hours.
         # The upload's 'Initiated' value is a datetime in UTC timezone.
         uploads_list = uploads_response["Uploads"]
