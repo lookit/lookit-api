@@ -1,10 +1,13 @@
 import json
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timedelta
+from unittest.mock import patch
 
+from botocore.exceptions import ClientError, ParamValidationError
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django_dynamic_fixture import G, N
 from guardian.shortcuts import assign_perm
@@ -17,6 +20,7 @@ from studies.permissions import StudyPermission
 from studies.tasks import (
     MessageTarget,
     acquire_potential_announcement_email_targets,
+    get_all_incomplete_video_files,
     limit_email_targets,
     potential_message_targets,
 )
@@ -1451,3 +1455,147 @@ class ResponseEligibilityTestCase(TestCase):
             [ResponseEligibility.INELIGIBLE_PARTICIPATION.value],
             "If the child makes additional responses to a study that blacklists itself, those responses are ineligible due to participation criteria.",
         )
+
+
+class TestListIncompleteVideoUploads(TestCase):
+    # Patch the S3_CLIENT directly (instead of boto3) because it has already been created globally in the module
+    @patch("studies.tasks.S3_CLIENT")
+    def test_with_valid_s3_response(self, mock_s3_client):
+        # get_all_incomplete_video_files should return an array with all file uploads (older than 24 hrs) from the list multipart uploads response.
+
+        # Set up the return value for list_multipart_uploads
+        intiated = datetime.now(timezone.utc) - timedelta(days=2)
+        intiated_utc = intiated.astimezone(timezone.utc)
+        mock_s3_client.list_multipart_uploads.return_value = {
+            "Uploads": [
+                {"Key": "file1", "UploadId": "uploadid1", "Initiated": intiated_utc},
+                {"Key": "file2", "UploadId": "uploadid2", "Initiated": intiated_utc},
+            ]
+        }
+
+        result = get_all_incomplete_video_files()
+
+        # Assert that list_multipart_uploads mock was called
+        mock_s3_client.list_multipart_uploads.assert_called_once()
+        # get_all_incomplete_video_files should return the Uploads array
+        self.assertEqual(
+            result,
+            [
+                {"Key": "file1", "UploadId": "uploadid1", "Initiated": intiated_utc},
+                {"Key": "file2", "UploadId": "uploadid2", "Initiated": intiated_utc},
+            ],
+        )
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_with_uploads_that_are_too_recent(self, mock_s3_client):
+        # get_all_incomplete_video_files should only return the file uploads that were created at least 24 hours ago.
+
+        intiated_2_days_go = datetime.now(timezone.utc) - timedelta(days=2)
+        intiated_5_min_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
+        intiated_23_hours_ago = datetime.now(timezone.utc) - timedelta(hours=23)
+        intiated_2_days_ago_utc = intiated_2_days_go.astimezone(timezone.utc)
+        intiated_5_min_ago_utc = intiated_5_min_ago.astimezone(timezone.utc)
+        intiated_23_hours_ago_utc = intiated_23_hours_ago.astimezone(timezone.utc)
+        mock_s3_client.list_multipart_uploads.return_value = {
+            "Uploads": [
+                {
+                    "Key": "file1",
+                    "UploadId": "uploadid1",
+                    "Initiated": intiated_2_days_ago_utc,
+                },
+                {
+                    "Key": "file2",
+                    "UploadId": "uploadid2",
+                    "Initiated": intiated_5_min_ago_utc,
+                },
+                {
+                    "Key": "file3",
+                    "UploadId": "uploadid3",
+                    "Initiated": intiated_23_hours_ago_utc,
+                },
+            ]
+        }
+
+        result = get_all_incomplete_video_files()
+
+        mock_s3_client.list_multipart_uploads.assert_called_once()
+        # Only uploads that were created more than 24 hrs ago are returned
+        self.assertEqual(
+            result,
+            [
+                {
+                    "Key": "file1",
+                    "UploadId": "uploadid1",
+                    "Initiated": intiated_2_days_ago_utc,
+                }
+            ],
+        )
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_s3_response_is_none(self, mock_s3_client):
+        # get_all_incomplete_video_files should return an empty array if S3 does not return a valid response for the list multipart uploads request.
+
+        mock_s3_client.list_multipart_uploads.return_value = None
+
+        result = get_all_incomplete_video_files()
+
+        mock_s3_client.list_multipart_uploads.assert_called_once()
+        # get_all_incomplete_video_files should return an empty array
+        self.assertEqual(result, [])
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_no_uploads_key_in_s3_response(self, mock_s3_client):
+        # get_all_incomplete_video_files should return an empty array if the S3 response exists but there is no "Uploads" key in the response.
+
+        mock_s3_client.list_multipart_uploads.return_value = {"SomeOtherKey": "Value"}
+
+        result = get_all_incomplete_video_files()
+
+        mock_s3_client.list_multipart_uploads.assert_called_once()
+        # get_all_incomplete_video_files should return an empty array
+        self.assertEqual(result, [])
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_no_incomplete_video_uploads(self, mock_s3_client):
+        # get_all_incomplete_video_files should return an empty array if the S3 response exists with an "Uploads" key, but the list is empty.
+
+        mock_s3_client.list_multipart_uploads.return_value = {"Uploads": []}
+
+        result = get_all_incomplete_video_files()
+
+        mock_s3_client.list_multipart_uploads.assert_called_once()
+        # get_all_incomplete_video_files should return an empty array
+        self.assertEqual(result, [])
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_s3_response_is_client_error(self, mock_s3_client):
+        # get_all_incomplete_video_files should raise a ClientError if S3 produces a Client Error in repsonse to the list multipart uploads request.
+
+        # Set up the mock to raise a ClientError and error response when list_multipart_uploads is called
+        error_response = {
+            "Error": {
+                "Code": "AccessDenied",
+                "Message": "Access denied for the requested S3 operation.",
+            }
+        }
+        mock_s3_client.list_multipart_uploads.side_effect = ClientError(
+            error_response, "ListMultipartUploads"
+        )
+
+        # Test that the ClientError is raised
+        with self.assertRaises(ClientError):
+            get_all_incomplete_video_files()
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_s3_response_is_validation_error(self, mock_s3_client):
+        # get_all_incomplete_video_files should raise a ValueError if S3 produces a parameter validation error in repsonse to the list multipart uploads request.
+
+        # Set up the mock to raise a ParamValidationError when list_multipart_uploads is called
+        error_message = "The parameters you provided are incorrect."
+        mock_s3_client.list_multipart_uploads.side_effect = ParamValidationError(
+            report=error_message
+        )
+
+        # Test that the ValueError is raised
+        with self.assertRaises(ValueError):
+            get_all_incomplete_video_files()
