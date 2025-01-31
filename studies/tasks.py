@@ -602,16 +602,23 @@ def complete_multipart_upload(filename, id, parts):
             MultipartUpload={"Parts": parts},
             UploadId=id,
         )
-        if resp["ResponseMetadata"]["HTTPStatusCode"] == 200:
-            logger.debug(f"Completed file {filename}")
+        if (
+            resp is not None
+            and "ResponseMetadata" in resp
+            and "HTTPStatusCode" in resp["ResponseMetadata"]
+        ):
+            if resp["ResponseMetadata"]["HTTPStatusCode"] == 200:
+                logger.debug(f"Completed file {filename}")
+            else:
+                logger.debug(
+                    f"File {filename} returned HTTP Status Code {resp['ResponseMetadata']['HTTPStatusCode']}"
+                )
         else:
-            logger.debug(
-                f"File {filename} returned HTTP Status Code {resp['ResponseMetadata']['HTTPStatusCode']}"
-            )
+            logger.debug(f"Error completing file {filename}. S3 response: {resp}")
     except ClientError as error:
-        logger.debug(f"Error completing file {filename}: {error}")
-        # If the file cannot be completed because of a problem with size/parts,
+        # If the file cannot be completed because of a problem with size/parts, log it for our info but
         # ignore it and move on. It will be deleted via the S3 bucket's lifecycle rule.
+        logger.debug(f"Error completing file {filename}: {error}")
         ignore_errors = [
             "EntityTooSmall",
             "InvalidPart",
@@ -622,3 +629,6 @@ def complete_multipart_upload(filename, id, parts):
             raise error
     except ParamValidationError as error:
         raise ValueError(f"The parameters you provided are incorrect: {error}")
+    except Exception as error:
+        logger.error(f"Failed to complete file {filename}: Unknown error type")
+        raise error
