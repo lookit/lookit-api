@@ -1003,10 +1003,9 @@ class ResponseApiManager(models.Manager):
 
 class Response(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
-    study = models.ForeignKey(
-        Study, on_delete=models.PROTECT, related_name="responses"
-    )  # Integrity constraints will also prevent deleting study that has responses
-    completed = models.BooleanField(default=False)
+    # Integrity constraints will also prevent deleting study that has responses
+    study = models.ForeignKey(Study, on_delete=models.PROTECT, related_name="responses")
+    completed_exit_frame = models.BooleanField(default=False)
     completed_consent_frame = models.BooleanField(default=False)
     survey_consent = models.BooleanField(default=False)
     exp_data = models.JSONField(default=dict)
