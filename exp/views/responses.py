@@ -459,7 +459,7 @@ def get_framedata_for_psychds(paginator, study, truncate_uuids):
             sidecar_metadata = {
                 "response_uuid": resp.uuid.hex,
                 "eligibility": resp.eligibility,
-                "study_completed": resp.completed,
+                "study_completed": resp.completed_exit_frame,
             }
             sidecar_filename = keyword_filename(keywords, "json")
             response_data.append([data, filename, sidecar_metadata, sidecar_filename])
@@ -873,7 +873,7 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
             "response__uuid",
             "response__id",
             "response__status",
-            "response__completed",
+            "response__completed_exit_view",
             "response__is_preview",
         ]
 
@@ -1149,7 +1149,7 @@ class StudyResponsesConsentManager(
                             response.pop("global_event_timings")
                         ),
                         "sequence": json.dumps(response.pop("sequence")),
-                        "completed": json.dumps(response.pop("completed")),
+                        "completed": json.dumps(response.pop("completed_exit_frame")),
                         "date_created": str(response["date_created"]),
                     },
                     "participant": {

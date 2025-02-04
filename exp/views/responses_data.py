@@ -40,14 +40,14 @@ RESPONSE_COLUMNS = [
         name="Date created",
     ),
     ResponseDataColumn(
-        id="response__completed",
+        id="response__completed_exit_frame",
         description=(
             "Whether the participant submitted the exit survey; depending on study criteria, this may not align "
             "with whether the session is considered complete. E.g., participant may have left early but submitted "
             "exit survey, or may have completed all test trials but not exit survey."
         ),
-        extractor=lambda resp: resp.completed,
-        name="Completed",
+        extractor=lambda resp: resp.completed_exit_frame,
+        name="Completed Exit Frame",
     ),
     ResponseDataColumn(
         id="response__withdrawn",

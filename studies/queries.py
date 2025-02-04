@@ -106,7 +106,7 @@ def get_responses_with_current_rulings_and_videos(study_id, preview_only):
             "global_event_timings",
             "current_ruling",
             "ruling_comments",
-            "completed",
+            "completed_exit_frame",
             "survey_consent",
             "date_created",
             "is_preview",
@@ -276,7 +276,7 @@ def get_study_list_qs(user, query_dict):
     """
     annotated_responses_qs = get_annotated_responses_qs().only(
         "id",
-        "completed",
+        "completed_exit_frame",
         "completed_consent_frame",
         "date_created",
         "date_modified",
@@ -312,7 +312,7 @@ def get_study_list_qs(user, query_dict):
                     study=OuterRef("pk"),
                     is_preview=False,
                     completed_consent_frame=True,
-                    completed=True,
+                    completed_exit_frame=True,
                 ).values("id")
             ),
             incomplete_responses_count=SubqueryCount(
@@ -320,7 +320,7 @@ def get_study_list_qs(user, query_dict):
                     study=OuterRef("pk"),
                     is_preview=False,
                     completed_consent_frame=True,
-                    completed=False,
+                    completed_exit_frame=False,
                 ).values("id")
             ),
             valid_consent_count=SubqueryCount(

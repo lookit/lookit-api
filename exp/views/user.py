@@ -131,7 +131,7 @@ class ParticipantDetailView(
                 "created": resp.date_created,
                 "study": resp.study,
                 "name": resp.study.name,
-                "completed": resp.completed,
+                "completed": resp.completed_exit_frame,
                 "response": resp,
             }
             for resp in resps

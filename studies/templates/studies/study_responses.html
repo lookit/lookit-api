@@ -83,7 +83,7 @@
                                     <td>{{ response.child__hashed_id }}</td>
                                     <td>{{ response.response__uuid|truncatechars:9 }}</td>
                                     <td>
-                                        {% if response.response__completed %}
+                                        {% if response.response__completed_exit_frame %}
                                             Complete
                                         {% else %}
                                             Incomplete

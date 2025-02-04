@@ -870,7 +870,7 @@ class Study(models.Model):
                 "response__id",
                 "response__uuid",
                 "response__date_created",
-                "response__completed",
+                "response__completed_exit_frame",
                 "response__withdrawn",
                 "response__eligibility",
                 "response__parent_feedback",
