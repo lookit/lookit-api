@@ -44,7 +44,7 @@ class ResponseAdmin(GuardedModelAdmin):
         "uuid",
         "study",
         "child",
-        "completed",
+        "completed_exit_frame",
         "completed_consent_frame",
         "withdrawn",
         "is_preview",
