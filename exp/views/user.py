@@ -121,7 +121,7 @@ class ParticipantDetailView(
         if orderby:
             if "date_created" in orderby:
                 resps = resps.order_by(orderby)
-            elif "completed" in orderby:
+            elif "completed_exit_frame" in orderby:
                 resps = resps.order_by(
                     orderby.replace("-", "") if "-" in orderby else "-" + orderby
                 )
@@ -131,7 +131,7 @@ class ParticipantDetailView(
                 "created": resp.date_created,
                 "study": resp.study,
                 "name": resp.study.name,
-                "completed": resp.completed_exit_frame,
+                "completed_exit_frame": resp.completed_exit_frame,
                 "response": resp,
             }
             for resp in resps

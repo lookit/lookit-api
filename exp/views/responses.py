@@ -840,7 +840,9 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
         "in progress" and "completed"
         """
         orderby = self.request.GET.get("sort", "id")
-        return orderby.replace("id", "child__id").replace("status", "completed")
+        return orderby.replace("id", "child__id").replace(
+            "status", "completed_exit_frame"
+        )
 
     def get_queryset(self):
         return (
@@ -873,7 +875,7 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
             "response__uuid",
             "response__id",
             "response__status",
-            "response__completed_exit_view",
+            "response__completed_exit_frame",
             "response__is_preview",
         ]
 
@@ -1149,7 +1151,9 @@ class StudyResponsesConsentManager(
                             response.pop("global_event_timings")
                         ),
                         "sequence": json.dumps(response.pop("sequence")),
-                        "completed": json.dumps(response.pop("completed_exit_frame")),
+                        "completed_exit_frame": json.dumps(
+                            response.pop("completed_exit_frame")
+                        ),
                         "date_created": str(response["date_created"]),
                     },
                     "participant": {
