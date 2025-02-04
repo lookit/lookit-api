@@ -87,7 +87,7 @@ class ContactViewTestCase(TestCase):
                 Response,
                 child=self.children[i],
                 study=self.study,
-                completed=False,
+                completed_exit_frame=False,
                 completed_consent_frame=True,
             )
             for i in range(3)
@@ -98,7 +98,7 @@ class ContactViewTestCase(TestCase):
             Response,
             child=self.children[3],
             study=self.study,
-            completed=False,
+            completed_exit_frame=False,
             completed_consent_frame=False,
         )
 
@@ -107,7 +107,7 @@ class ContactViewTestCase(TestCase):
             Response,
             child=self.children[4],
             study=self.other_study,
-            completed=False,
+            completed_exit_frame=False,
             completed_consent_frame=True,
         )
 

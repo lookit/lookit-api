@@ -62,7 +62,9 @@ class VideoTestCase(APITestCase):
             lab=cls.lab,
             study_type=StudyType.get_ember_frame_player(),
         )
-        cls.response = G(Response, child=cls.child, study=cls.study, completed=False)
+        cls.response = G(
+            Response, child=cls.child, study=cls.study, completed_exit_frame=False
+        )
 
     def setUp(self):
         self.video_url = reverse("api:video-list", kwargs={"version": "v1"})

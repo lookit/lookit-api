@@ -31,12 +31,14 @@ class ResponseTestCase(APITestCase):
             lab=self.lab,
             study_type=StudyType.get_ember_frame_player(),
         )
-        self.response = G(Response, child=self.child, study=self.study, completed=False)
+        self.response = G(
+            Response, child=self.child, study=self.study, completed_exit_frame=False
+        )
         self.consented_response = G(
             Response,
             child=self.child,
             study=self.study,
-            completed=False,
+            completed_exit_frame=False,
             completed_consent_frame=True,
         )
         self.positive_consent_ruling = G(
@@ -55,7 +57,7 @@ class ResponseTestCase(APITestCase):
                     "global_event_timings": [],
                     "exp_data": {"first_frame": {}, "second_frame": {}},
                     "sequence": [],
-                    "completed": False,
+                    "completed_exit_frame": False,
                     "completed_consent_frame": False,
                 },
                 "relationships": {
@@ -71,7 +73,7 @@ class ResponseTestCase(APITestCase):
                     "global_event_timings": [],
                     "exp_data": {"first_frame": {}, "second_frame": {}},
                     "sequence": ["first_frame", "second_frame"],
-                    "completed": True,
+                    "completed_exit_frame": True,
                     "completed_consent_frame": True,
                 },
                 "type": "responses",
@@ -98,7 +100,7 @@ class ResponseTestCase(APITestCase):
             Response,
             child=self.child,
             study=self.study,
-            completed=False,
+            completed_exit_frame=False,
             completed_consent_frame=True,
         )
         self.positive_consent_ruling2 = G(
@@ -108,7 +110,7 @@ class ResponseTestCase(APITestCase):
             Response,
             child=self.child,
             study=self.study,
-            completed=False,
+            completed_exit_frame=False,
             completed_consent_frame=True,
         )
         self.positive_consent_ruling3 = G(
@@ -247,7 +249,7 @@ class ResponseTestCase(APITestCase):
             self.consented_response_detail_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["completed"], False)
+        self.assertEqual(api_response.data["completed_exit_frame"], False)
         self.assertEqual(api_response.data["completed_consent_frame"], True)
 
     def testGetResponseDetailLabwideViewStudyResponsesPermissionsAfterConsent(self):
@@ -263,7 +265,7 @@ class ResponseTestCase(APITestCase):
             self.consented_response_detail_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["completed"], False)
+        self.assertEqual(api_response.data["completed_exit_frame"], False)
         self.assertEqual(api_response.data["completed_consent_frame"], True)
 
     # POST Responses tests
@@ -273,7 +275,7 @@ class ResponseTestCase(APITestCase):
             self.url, json.dumps(self.data), content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(api_response.data["completed"], False)
+        self.assertEqual(api_response.data["completed_exit_frame"], False)
         self.assertEqual(Response.objects.count(), 3)
 
     def testPostResponseWithNotYourChild(self):
@@ -441,7 +443,7 @@ class ResponseTestCase(APITestCase):
                         "2-2-instructions",
                         "5-5-mood-survey",
                     ],
-                    "completed": "False",
+                    "completed_exit_frame": "False",
                     "completed_consent_frame": "true",
                 },
                 "type": "responses",

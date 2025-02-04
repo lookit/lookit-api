@@ -108,7 +108,7 @@ class ResponseViewsTestCase(TestCase):
                     child=child,
                     study=self.study,
                     study_type=self.study.study_type,
-                    completed=False,
+                    completed_exit_frame=False,
                     completed_consent_frame=True,
                     sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
                     exp_data={
@@ -126,7 +126,7 @@ class ResponseViewsTestCase(TestCase):
                     child=child,
                     study=self.study,
                     study_type=self.study.study_type,
-                    completed=False,
+                    completed_exit_frame=False,
                     is_preview=True,
                     completed_consent_frame=True,
                     sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
@@ -364,7 +364,7 @@ class ResponseDataDownloadTestCase(TestCase):
                     child=child,
                     study=self.study,
                     study_type=self.study.study_type,
-                    completed=False,
+                    completed_exit_frame=False,
                     completed_consent_frame=True,
                     sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
                     exp_data={
@@ -383,7 +383,7 @@ class ResponseDataDownloadTestCase(TestCase):
                     child=child,
                     study=self.study,
                     study_type=self.study.study_type,
-                    completed=False,
+                    completed_exit_frame=False,
                     completed_consent_frame=True,
                     sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
                     exp_data={
@@ -403,7 +403,7 @@ class ResponseDataDownloadTestCase(TestCase):
                     child=child,
                     study=self.study,
                     study_type=self.study.study_type,
-                    completed=False,
+                    completed_exit_frame=False,
                     is_preview=True,
                     completed_consent_frame=True,
                     sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
@@ -437,7 +437,7 @@ class ResponseDataDownloadTestCase(TestCase):
             child=self.non_preview_child,
             study=self.study,
             study_type=self.study.study_type,
-            completed=False,
+            completed_exit_frame=False,
             completed_consent_frame=True,
             sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
             exp_data={
@@ -457,7 +457,7 @@ class ResponseDataDownloadTestCase(TestCase):
             child=self.children_for_participants[0][0],
             study=self.other_study,
             study_type=self.other_study.study_type,
-            completed=True,
+            completed_exit_frame=True,
             completed_consent_frame=True,
             sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
             exp_data={
@@ -507,7 +507,7 @@ class ResponseDataDownloadTestCase(TestCase):
             child=self.non_preview_child,
             study=self.study,
             study_type=self.study.study_type,
-            completed=False,
+            completed_exit_frame=False,
             completed_consent_frame=True,
             sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
             exp_data={
@@ -744,7 +744,7 @@ class ResponseDataDownloadTestCase(TestCase):
             child=self.children_for_participants[0][0],
             study=self.study,
             study_type=self.study.study_type,
-            completed=False,
+            completed_exit_frame=False,
             completed_consent_frame=True,
             sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
             exp_data={
@@ -786,7 +786,7 @@ class ResponseDataDownloadTestCase(TestCase):
             child=self.children_for_participants[0][0],
             study=self.study,
             study_type=self.study.study_type,
-            completed=False,
+            completed_exit_frame=False,
             completed_consent_frame=True,
             sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
             exp_data={
@@ -925,7 +925,7 @@ class ResponseDataDownloadTestCase(TestCase):
             child=self.children_for_participants[0][0],
             study=self.study,
             study_type=self.study.study_type,
-            completed=False,
+            completed_exit_frame=False,
             completed_consent_frame=True,
             sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
             exp_data={

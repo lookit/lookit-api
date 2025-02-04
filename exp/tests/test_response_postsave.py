@@ -30,7 +30,7 @@ class ResponseSaveHandlingTestCase(TestCase):
             Response,
             child=self.child,
             study=self.study,
-            completed=False,
+            completed_exit_frame=False,
             completed_consent_frame=True,
             sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
             exp_data={
@@ -65,7 +65,7 @@ class ResponseSaveHandlingTestCase(TestCase):
             Response,
             child=self.child,
             study=self.study,
-            completed=False,
+            completed_exit_frame=False,
             completed_consent_frame=True,
             sequence=[
                 "0-video-config",
@@ -99,7 +99,7 @@ class ResponseSaveHandlingTestCase(TestCase):
             Response,
             child=self.child,
             study=self.study,
-            completed=False,
+            completed_exit_frame=False,
             completed_consent_frame=True,
             sequence=[
                 "0-video-config",
