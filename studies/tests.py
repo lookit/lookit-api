@@ -1536,15 +1536,13 @@ class TestListIncompleteVideoUploads(TestCase):
 
     @patch("studies.tasks.S3_CLIENT")
     def test_s3_response_is_none(self, mock_s3_client):
-        # get_all_incomplete_video_files should return an empty array if S3 does not return a valid response for the list multipart uploads request.
+        # get_all_incomplete_video_files should raise an error if S3 does not return a valid response for the list multipart uploads request.
 
         mock_s3_client.list_multipart_uploads.return_value = None
 
-        result = get_all_incomplete_video_files()
-
-        mock_s3_client.list_multipart_uploads.assert_called_once()
-        # get_all_incomplete_video_files should return an empty array
-        self.assertEqual(result, [])
+        # Test that an error is raised
+        with self.assertRaises(ValueError):
+            get_all_incomplete_video_files()
 
     @patch("studies.tasks.S3_CLIENT")
     def test_no_uploads_key_in_s3_response(self, mock_s3_client):
@@ -1569,6 +1567,48 @@ class TestListIncompleteVideoUploads(TestCase):
         mock_s3_client.list_multipart_uploads.assert_called_once()
         # get_all_incomplete_video_files should return an empty array
         self.assertEqual(result, [])
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_incomplete_video_uploads_is_none(self, mock_s3_client):
+        # get_all_incomplete_video_files should raise an error if the S3 response exists with an "Uploads" key, but value is None.
+
+        mock_s3_client.list_multipart_uploads.return_value = {"Uploads": None}
+
+        # Test that an error is raised
+        with self.assertRaises(TypeError):
+            get_all_incomplete_video_files()
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_incomplete_video_uploads_is_not_iterable(self, mock_s3_client):
+        # get_all_incomplete_video_files should raise an error if the S3 response exists with an "Uploads" key, but the value is not a list.
+
+        mock_s3_client.list_multipart_uploads.return_value = {"Uploads": 42}
+
+        # Test that an error is raised
+        with self.assertRaises(TypeError):
+            get_all_incomplete_video_files()
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_incomplete_video_uploads_missing_date_initiated(self, mock_s3_client):
+        # get_all_incomplete_video_files should omit any uploads objects if the Uploads object exists but the date initiated is missing.
+
+        intiated = datetime.now(timezone.utc) - timedelta(days=2)
+        intiated_utc = intiated.astimezone(timezone.utc)
+        mock_s3_client.list_multipart_uploads.return_value = {
+            "Uploads": [
+                {"Key": "file1", "UploadId": "uploadid1"},
+                {"Key": "file2", "UploadId": "uploadid2", "Initiated": intiated_utc},
+            ]
+        }
+
+        result = get_all_incomplete_video_files()
+
+        mock_s3_client.list_multipart_uploads.assert_called_once()
+        # get_all_incomplete_video_files should return all of the Upload objects with a valid "Initiated" datetime
+        self.assertEqual(
+            result,
+            [{"Key": "file2", "UploadId": "uploadid2", "Initiated": intiated_utc}],
+        )
 
     @patch("studies.tasks.S3_CLIENT")
     def test_s3_response_is_client_error(self, mock_s3_client):
