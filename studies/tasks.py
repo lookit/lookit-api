@@ -531,7 +531,15 @@ def get_all_incomplete_video_files():
         logger.error("Failed to list multipart uploads: Unknown error type")
         raise error
 
-    if uploads_response is not None and "Uploads" in uploads_response:
+    # Handle the case where uploads_response is None
+    if uploads_response is None:
+        logger.debug(
+            f"S3 response for multipart uploads for bucket {settings.S3_BUCKET_NAME} is None."
+        )
+        raise ValueError("Received invalid response from S3: None")
+
+    # Using try/except here because there are a number of other ways this could go wrong (Uploads is missing from response, Uploads value is None or not an array, etc.)
+    try:
         # Filter out incomplete uploads that might still be actively recording - started in last 24 hours.
         # The upload's 'Initiated' value is a datetime in UTC timezone.
         uploads_list = uploads_response["Uploads"]
@@ -539,14 +547,28 @@ def get_all_incomplete_video_files():
             upload
             for upload in uploads_list
             if (
-                (datetime.datetime.now(timezone.utc) - upload["Initiated"])
+                "Initiated" in upload
+                and isinstance(upload["Initiated"], datetime.datetime)
+                and (datetime.datetime.now(timezone.utc) - upload["Initiated"])
                 > datetime.timedelta(hours=24)
             )
         ]
-    else:
+    except KeyError as error:
+        if error.args[0] == "Uploads":
+            # This is expected and not a problem - no need to re-raise the error.
+            logger.debug(
+                f"No Uploads key found in the S3 response for multipart uploads for bucket {settings.S3_BUCKET_NAME}. Exception: {error}. S3 response: {uploads_response}."
+            )
+        else:
+            logger.debug(
+                f"A key error occurred when listing multipart uploads for bucket {settings.S3_BUCKET_NAME}. Exception: {error}. S3 response: {uploads_response}."
+            )
+            raise error
+    except Exception as error:
         logger.debug(
-            f"Uploads key not found in list of multipart uploads for bucket {settings.S3_BUCKET_NAME}: {uploads_response}"
+            f"An exception occurred when listing multipart uploads for bucket {settings.S3_BUCKET_NAME}. Exception: {error}. S3 response: {uploads_response}."
         )
+        raise error
 
     return incomplete_uploads
 
