@@ -1865,7 +1865,7 @@ class TestCompleteMultipartUpload(TestCase):
         )
 
         # complete_multipart_upload should log this error but not raise it
-        mock_logger.debug.assert_called_with(
+        mock_logger.error.assert_called_with(
             "Error completing file example_video.webm: An error occurred (EntityTooSmall) when calling the CompleteMultipartUpload operation: Your proposed upload is smaller than the minimum allowed size"
         )
 
