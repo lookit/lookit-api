@@ -566,7 +566,7 @@ def build_zip_for_psychds(
         )
         # save psychds-ignore file to avoid NOT_INCLUDED warnings
         zipped.writestr(
-            "/.psychdsignore",
+            "/.psychds-ignore",
             PSYCHDS_IGNORE_STR,
         )
         study_ad = {
