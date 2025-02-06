@@ -1670,30 +1670,27 @@ class TestListFilePartsFromIncompleteUpload(TestCase):
 
     @patch("studies.tasks.S3_CLIENT")
     def test_s3_response_is_none(self, mock_s3_client):
-        # get_file_parts should return an empty array if S3 does not return a valid response for the list parts request.
+        # get_file_parts should raise an error if S3 does not return a valid response for the list parts request.
 
         mock_s3_client.list_parts.return_value = None
 
-        result = get_file_parts("example_video.webm", "upload-id-123")
-
-        mock_s3_client.list_parts.assert_called_once()
-        # get_file_parts should return an empty array
-        self.assertEqual(result, [])
+        with self.assertRaises(ValueError):
+            get_file_parts("example_video.webm", "upload-id-123")
 
     @patch("studies.tasks.S3_CLIENT")
     def test_no_parts_key_in_s3_response(self, mock_s3_client):
-        # get_file_parts should return an empty array if the S3 response exists but there is no "Parts" key in the response.
-
+        # get_file_parts should return an empty array if the S3 response exists but doesn't contain a "Parts" key
         mock_s3_client.list_parts.return_value = {"SomeOtherKey": "Value"}
 
         result = get_file_parts("example_video.webm", "upload-id-123")
 
         mock_s3_client.list_parts.assert_called_once()
-        # get_file_parts should return an empty array
+        # get_file_parts should return an empty list
         self.assertEqual(result, [])
 
+    @patch("studies.tasks.logger")
     @patch("studies.tasks.S3_CLIENT")
-    def test_get_file_parts_with_no_parts(self, mock_s3_client):
+    def test_get_file_parts_with_no_parts(self, mock_s3_client, mock_logger):
         # get_file_parts should return an empty array if the S3 response exists and contains a "Parts" key, but the list is empty.
         mock_s3_client.list_parts.return_value = {"Parts": []}
 
@@ -1702,6 +1699,27 @@ class TestListFilePartsFromIncompleteUpload(TestCase):
         mock_s3_client.list_parts.assert_called_once()
         # get_file_parts should return an empty list
         self.assertEqual(result, [])
+
+        # We should get a message in the logger saying that there were no parts for this file
+        mock_logger.debug.assert_called_with(
+            "Unable to complete example_video.webm: Empty Parts array."
+        )
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_get_file_parts_with_missing_partnumber(self, mock_s3_client):
+        # get_file_parts should raise an error if the S3 response exists with a "Parts" array, but "PartNumber" is missing.
+        mock_s3_client.list_parts.return_value = {"Parts": [{"ETag": "etag1"}]}
+
+        with self.assertRaises(KeyError):
+            get_file_parts("example_video.webm", "upload-id-123")
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_get_file_parts_with_missing_etag(self, mock_s3_client):
+        # get_file_parts should raise an error if the S3 response exists with a "Parts" array, but "Etag" is missing.
+        mock_s3_client.list_parts.return_value = {"Parts": [{"PartNumber": 1}]}
+
+        with self.assertRaises(KeyError):
+            get_file_parts("example_video.webm", "upload-id-123")
 
     @patch("studies.tasks.S3_CLIENT")
     def test_get_file_parts_client_error(self, mock_s3_client):
