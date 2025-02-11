@@ -1,10 +1,13 @@
 import json
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timedelta
+from unittest.mock import patch
 
+from botocore.exceptions import ClientError, ParamValidationError
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django_dynamic_fixture import G, N
 from guardian.shortcuts import assign_perm
@@ -17,6 +20,10 @@ from studies.permissions import StudyPermission
 from studies.tasks import (
     MessageTarget,
     acquire_potential_announcement_email_targets,
+    cleanup_incomplete_video_uploads,
+    complete_multipart_upload,
+    get_all_incomplete_video_files,
+    get_file_parts,
     limit_email_targets,
     potential_message_targets,
 )
@@ -1451,3 +1458,528 @@ class ResponseEligibilityTestCase(TestCase):
             [ResponseEligibility.INELIGIBLE_PARTICIPATION.value],
             "If the child makes additional responses to a study that blacklists itself, those responses are ineligible due to participation criteria.",
         )
+
+
+class TestListIncompleteVideoUploads(TestCase):
+    # Patch the S3_CLIENT directly (instead of boto3) because it has already been created globally in the module
+    @patch("studies.tasks.S3_CLIENT")
+    def test_with_valid_s3_response(self, mock_s3_client):
+        # get_all_incomplete_video_files should return an array with all file uploads (older than 24 hrs) from the list multipart uploads response.
+
+        # Set up the return value for list_multipart_uploads
+        intiated = datetime.now(timezone.utc) - timedelta(days=2)
+        intiated_utc = intiated.astimezone(timezone.utc)
+        mock_s3_client.list_multipart_uploads.return_value = {
+            "Uploads": [
+                {"Key": "file1", "UploadId": "uploadid1", "Initiated": intiated_utc},
+                {"Key": "file2", "UploadId": "uploadid2", "Initiated": intiated_utc},
+            ]
+        }
+
+        result = get_all_incomplete_video_files()
+
+        # Assert that list_multipart_uploads mock was called
+        mock_s3_client.list_multipart_uploads.assert_called_once()
+        # get_all_incomplete_video_files should return the Uploads array
+        self.assertEqual(
+            result,
+            [
+                {"Key": "file1", "UploadId": "uploadid1", "Initiated": intiated_utc},
+                {"Key": "file2", "UploadId": "uploadid2", "Initiated": intiated_utc},
+            ],
+        )
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_with_uploads_that_are_too_recent(self, mock_s3_client):
+        # get_all_incomplete_video_files should only return the file uploads that were created at least 24 hours ago.
+
+        intiated_2_days_go = datetime.now(timezone.utc) - timedelta(days=2)
+        intiated_5_min_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
+        intiated_23_hours_ago = datetime.now(timezone.utc) - timedelta(hours=23)
+        intiated_2_days_ago_utc = intiated_2_days_go.astimezone(timezone.utc)
+        intiated_5_min_ago_utc = intiated_5_min_ago.astimezone(timezone.utc)
+        intiated_23_hours_ago_utc = intiated_23_hours_ago.astimezone(timezone.utc)
+        mock_s3_client.list_multipart_uploads.return_value = {
+            "Uploads": [
+                {
+                    "Key": "file1",
+                    "UploadId": "uploadid1",
+                    "Initiated": intiated_2_days_ago_utc,
+                },
+                {
+                    "Key": "file2",
+                    "UploadId": "uploadid2",
+                    "Initiated": intiated_5_min_ago_utc,
+                },
+                {
+                    "Key": "file3",
+                    "UploadId": "uploadid3",
+                    "Initiated": intiated_23_hours_ago_utc,
+                },
+            ]
+        }
+
+        result = get_all_incomplete_video_files()
+
+        mock_s3_client.list_multipart_uploads.assert_called_once()
+        # Only uploads that were created more than 24 hrs ago are returned
+        self.assertEqual(
+            result,
+            [
+                {
+                    "Key": "file1",
+                    "UploadId": "uploadid1",
+                    "Initiated": intiated_2_days_ago_utc,
+                }
+            ],
+        )
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_s3_response_is_none(self, mock_s3_client):
+        # get_all_incomplete_video_files should raise an error if S3 does not return a valid response for the list multipart uploads request.
+
+        mock_s3_client.list_multipart_uploads.return_value = None
+
+        # Test that an error is raised
+        with self.assertRaises(ValueError):
+            get_all_incomplete_video_files()
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_no_uploads_key_in_s3_response(self, mock_s3_client):
+        # get_all_incomplete_video_files should return an empty array if the S3 response exists but there is no "Uploads" key in the response.
+
+        mock_s3_client.list_multipart_uploads.return_value = {"SomeOtherKey": "Value"}
+
+        result = get_all_incomplete_video_files()
+
+        mock_s3_client.list_multipart_uploads.assert_called_once()
+        # get_all_incomplete_video_files should return an empty array
+        self.assertEqual(result, [])
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_no_incomplete_video_uploads(self, mock_s3_client):
+        # get_all_incomplete_video_files should return an empty array if the S3 response exists with an "Uploads" key, but the list is empty.
+
+        mock_s3_client.list_multipart_uploads.return_value = {"Uploads": []}
+
+        result = get_all_incomplete_video_files()
+
+        mock_s3_client.list_multipart_uploads.assert_called_once()
+        # get_all_incomplete_video_files should return an empty array
+        self.assertEqual(result, [])
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_incomplete_video_uploads_is_none(self, mock_s3_client):
+        # get_all_incomplete_video_files should raise an error if the S3 response exists with an "Uploads" key, but value is None.
+
+        mock_s3_client.list_multipart_uploads.return_value = {"Uploads": None}
+
+        # Test that an error is raised
+        with self.assertRaises(TypeError):
+            get_all_incomplete_video_files()
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_incomplete_video_uploads_is_not_iterable(self, mock_s3_client):
+        # get_all_incomplete_video_files should raise an error if the S3 response exists with an "Uploads" key, but the value is not a list.
+
+        mock_s3_client.list_multipart_uploads.return_value = {"Uploads": 42}
+
+        # Test that an error is raised
+        with self.assertRaises(TypeError):
+            get_all_incomplete_video_files()
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_incomplete_video_uploads_missing_date_initiated(self, mock_s3_client):
+        # get_all_incomplete_video_files should omit any uploads objects if the Uploads object exists but the date initiated is missing.
+
+        intiated = datetime.now(timezone.utc) - timedelta(days=2)
+        intiated_utc = intiated.astimezone(timezone.utc)
+        mock_s3_client.list_multipart_uploads.return_value = {
+            "Uploads": [
+                {"Key": "file1", "UploadId": "uploadid1"},
+                {"Key": "file2", "UploadId": "uploadid2", "Initiated": intiated_utc},
+            ]
+        }
+
+        result = get_all_incomplete_video_files()
+
+        mock_s3_client.list_multipart_uploads.assert_called_once()
+        # get_all_incomplete_video_files should return all of the Upload objects with a valid "Initiated" datetime
+        self.assertEqual(
+            result,
+            [{"Key": "file2", "UploadId": "uploadid2", "Initiated": intiated_utc}],
+        )
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_s3_response_is_client_error(self, mock_s3_client):
+        # get_all_incomplete_video_files should raise a ClientError if S3 produces a Client Error in repsonse to the list multipart uploads request.
+
+        # Set up the mock to raise a ClientError and error response when list_multipart_uploads is called
+        error_response = {
+            "Error": {
+                "Code": "AccessDenied",
+                "Message": "Access denied for the requested S3 operation.",
+            }
+        }
+        mock_s3_client.list_multipart_uploads.side_effect = ClientError(
+            error_response, "ListMultipartUploads"
+        )
+
+        # Test that the ClientError is raised
+        with self.assertRaises(ClientError):
+            get_all_incomplete_video_files()
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_s3_response_is_validation_error(self, mock_s3_client):
+        # get_all_incomplete_video_files should raise a ValueError if S3 produces a parameter validation error in repsonse to the list multipart uploads request.
+
+        # Set up the mock to raise a ParamValidationError when list_multipart_uploads is called
+        error_message = "The parameters you provided are incorrect."
+        mock_s3_client.list_multipart_uploads.side_effect = ParamValidationError(
+            report=error_message
+        )
+
+        # Test that the ValueError is raised (ParamValidationError is caught and re-raised as ValueError)
+        with self.assertRaises(ValueError):
+            get_all_incomplete_video_files()
+
+
+class TestListFilePartsFromIncompleteUpload(TestCase):
+    # Patch the S3_CLIENT directly (instead of boto3) because it has already been created globally in the module
+    @patch("studies.tasks.S3_CLIENT")
+    def test_with_valid_s3_response(self, mock_s3_client):
+        # get_file_parts should return an array with all file parts from the S3 list_parts request for that file.
+
+        # Set up a successful S3 response from list_parts
+        mock_s3_client.list_parts.return_value = {
+            "Parts": [
+                {"PartNumber": 1, "ETag": '"etag1"'},
+                {"PartNumber": 2, "ETag": '"etag2"'},
+            ]
+        }
+
+        result = get_file_parts("example_video.webm", "upload-id-123")
+
+        # Assert that list_parts mock was called
+        mock_s3_client.list_parts.assert_called_once()
+        # get_file_parts should return the list of file parts
+        self.assertEqual(
+            result,
+            [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
+        )
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_s3_response_is_none(self, mock_s3_client):
+        # get_file_parts should raise an error if S3 does not return a valid response for the list parts request.
+
+        mock_s3_client.list_parts.return_value = None
+
+        with self.assertRaises(ValueError):
+            get_file_parts("example_video.webm", "upload-id-123")
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_no_parts_key_in_s3_response(self, mock_s3_client):
+        # get_file_parts should return an empty array if the S3 response exists but doesn't contain a "Parts" key
+        mock_s3_client.list_parts.return_value = {"SomeOtherKey": "Value"}
+
+        result = get_file_parts("example_video.webm", "upload-id-123")
+
+        mock_s3_client.list_parts.assert_called_once()
+        # get_file_parts should return an empty list
+        self.assertEqual(result, [])
+
+    @patch("studies.tasks.logger")
+    @patch("studies.tasks.S3_CLIENT")
+    def test_get_file_parts_with_no_parts(self, mock_s3_client, mock_logger):
+        # get_file_parts should return an empty array if the S3 response exists and contains a "Parts" key, but the list is empty.
+        mock_s3_client.list_parts.return_value = {"Parts": []}
+
+        result = get_file_parts("example_video.webm", "upload-id-123")
+
+        mock_s3_client.list_parts.assert_called_once()
+        # get_file_parts should return an empty list
+        self.assertEqual(result, [])
+
+        # We should get a message in the logger saying that there were no parts for this file
+        mock_logger.debug.assert_called_with(
+            "Unable to complete example_video.webm: Empty Parts array."
+        )
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_get_file_parts_with_missing_partnumber(self, mock_s3_client):
+        # get_file_parts should raise an error if the S3 response exists with a "Parts" array, but "PartNumber" is missing.
+        mock_s3_client.list_parts.return_value = {"Parts": [{"ETag": "etag1"}]}
+
+        with self.assertRaises(KeyError):
+            get_file_parts("example_video.webm", "upload-id-123")
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_get_file_parts_with_missing_etag(self, mock_s3_client):
+        # get_file_parts should raise an error if the S3 response exists with a "Parts" array, but "Etag" is missing.
+        mock_s3_client.list_parts.return_value = {"Parts": [{"PartNumber": 1}]}
+
+        with self.assertRaises(KeyError):
+            get_file_parts("example_video.webm", "upload-id-123")
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_get_file_parts_client_error(self, mock_s3_client):
+        # get_file_parts should raise a ClientError if S3 produces a Client Error in repsonse to the list parts request.
+        error_response = {
+            "Error": {
+                "Code": "AccessDenied",
+                "Message": "Access denied for the requested S3 operation.",
+            }
+        }
+        mock_s3_client.list_parts.side_effect = ClientError(error_response, "ListParts")
+        # get_file_parts should raise a ClientError
+        with self.assertRaises(ClientError):
+            get_file_parts("example_video.webm", "upload-id-123")
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_get_file_parts_param_validation_error(self, mock_s3_client):
+        # get_file_parts should raise a ValueError if S3 produces a Parameter Validation Error in repsonse to the list parts request.
+        error_message = "The parameters you provided are incorrect."
+        mock_s3_client.list_parts.side_effect = ParamValidationError(
+            report=error_message
+        )
+
+        # get_file_parts should raise a ValueError (since ParamValidationError is caught and re-raised as ValueError)
+        with self.assertRaises(ValueError):
+            get_file_parts("example_video.webm", "upload-id-123")
+
+
+class TestCompleteMultipartUpload(TestCase):
+    # Patch the logger from studies.tasks to test execution in logs, because this function doesn't return anything
+    @patch("studies.tasks.logger")
+    # Patch the S3_CLIENT directly (instead of boto3) because it has already been created globally in the module
+    @patch("studies.tasks.S3_CLIENT")
+    def test_complete_multipart_upload_success(self, mock_s3_client, mock_logger):
+        # Mock a successful response from S3 complete_multipart_upload request
+        mock_s3_client.complete_multipart_upload.return_value = {
+            "ResponseMetadata": {"HTTPStatusCode": 200}
+        }
+
+        complete_multipart_upload(
+            "example_video.webm",
+            "upload-id-123",
+            [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
+        )
+
+        # If the file completion was successful, we should get the "completed file" message in the logger
+        mock_logger.debug.assert_called_with("Completed file example_video.webm")
+
+    @patch("studies.tasks.logger")
+    @patch("studies.tasks.S3_CLIENT")
+    def test_complete_multipart_upload_none_resp(self, mock_s3_client, mock_logger):
+        # If S3 response is None, log the error and the value of the response.
+        mock_s3_client.complete_multipart_upload.return_value = None
+
+        complete_multipart_upload(
+            "example_video.webm",
+            "upload-id-123",
+            [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
+        )
+
+        # complete_multipart_upload should log the error and S3 response.
+        mock_logger.debug.assert_called_with(
+            "Error completing file example_video.webm. S3 response: None"
+        )
+
+    @patch("studies.tasks.logger")
+    @patch("studies.tasks.S3_CLIENT")
+    def test_complete_multipart_upload_resp_no_httpstatuscode(
+        self, mock_s3_client, mock_logger
+    ):
+        # If S3 response is returned with ResponseMetadata but there is no HTTPStatusCode, log the error and the value of the response.
+        mock_s3_client.complete_multipart_upload.return_value = {"ResponseMetadata": {}}
+
+        complete_multipart_upload(
+            "example_video.webm",
+            "upload-id-123",
+            [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
+        )
+
+        # complete_multipart_upload should log the error and S3 response.
+        mock_logger.debug.assert_called_with(
+            "Error completing file example_video.webm. S3 response: {'ResponseMetadata': {}}"
+        )
+
+    @patch("studies.tasks.logger")
+    @patch("studies.tasks.S3_CLIENT")
+    def test_complete_multipart_upload_resp_no_responsemetadata(
+        self, mock_s3_client, mock_logger
+    ):
+        # If S3 response is returned without ResponseMetadata, log the error and the value of the response.
+        mock_s3_client.complete_multipart_upload.return_value = {}
+
+        complete_multipart_upload(
+            "example_video.webm",
+            "upload-id-123",
+            [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
+        )
+
+        # complete_multipart_upload should log the error and S3 response.
+        mock_logger.debug.assert_called_with(
+            "Error completing file example_video.webm. S3 response: {}"
+        )
+
+    @patch("studies.tasks.S3_CLIENT")
+    def test_complete_multipart_upload_with_client_error(self, mock_s3_client):
+        # If S3 produces a Client Error in repsonse to the complete_multipart_upload request, and the error code is not listed in our "ignore" list, then complete_multipart_upload should raise it.
+        mock_s3_client.complete_multipart_upload.side_effect = ClientError(
+            {
+                "Error": {
+                    "Code": "SomeOtherError",
+                    "Message": "This is some other client error.",
+                }
+            },
+            "CompleteMultipartUpload",
+        )
+
+        # complete_multipart_upload should raise this ClientError
+        with self.assertRaises(ClientError):
+            complete_multipart_upload(
+                "example_video.webm",
+                "upload-id-123",
+                [{"PartNumber": 1, "ETag": "etag1"}],
+            )
+
+    @patch("studies.tasks.logger")
+    @patch("studies.tasks.S3_CLIENT")
+    def test_complete_multipart_upload_with_client_error_ignore(
+        self, mock_s3_client, mock_logger
+    ):
+        # If S3 produces a Client Error in repsonse to the complete_multipart_upload request, and the error code is listed in our "ignore" list, then complete_multipart_upload should log the error but not raise it.
+        mock_s3_client.complete_multipart_upload.side_effect = ClientError(
+            {
+                "Error": {
+                    "Code": "EntityTooSmall",
+                    "Message": "Your proposed upload is smaller than the minimum allowed size",
+                }
+            },
+            "CompleteMultipartUpload",
+        )
+
+        complete_multipart_upload(
+            "example_video.webm", "upload-id-123", [{"PartNumber": 1, "ETag": "etag1"}]
+        )
+
+        # complete_multipart_upload should log this error but not raise it
+        mock_logger.error.assert_called_with(
+            "Error completing file example_video.webm: An error occurred (EntityTooSmall) when calling the CompleteMultipartUpload operation: Your proposed upload is smaller than the minimum allowed size"
+        )
+
+
+class TestCleanupIncompleteVideoUploadsTask(TestCase):
+    @patch("studies.tasks.complete_multipart_upload")
+    @patch("studies.tasks.get_file_parts")
+    @patch("studies.tasks.get_all_incomplete_video_files")
+    @patch("studies.tasks.logger")
+    def test_cleanup_incomplete_video_uploads(
+        self,
+        mock_logger,
+        mock_get_all_incomplete_video_files,
+        mock_get_file_parts,
+        mock_complete_multipart_upload,
+    ):
+        # If there are any incomplete uploads, and those uploads have associated parts, this task should attempt to complete the upload for each file.
+        mock_get_all_incomplete_video_files.return_value = [
+            {"Key": "example_video.webm", "UploadId": "upload-id-123"},
+            {"Key": "another_video.webm", "UploadId": "upload-id-456"},
+        ]
+        mock_get_file_parts.return_value = [
+            {"PartNumber": 1, "ETag": "etag1"},
+            {"PartNumber": 2, "ETag": "etag2"},
+        ]
+        mock_complete_multipart_upload.return_value = {
+            "ResponseMetadata": {"HTTPStatusCode": 200}
+        }
+
+        cleanup_incomplete_video_uploads()
+
+        # Check that all mocked functions were called
+        mock_get_all_incomplete_video_files.assert_called_once()
+        mock_get_file_parts.assert_any_call("example_video.webm", "upload-id-123")
+        mock_get_file_parts.assert_any_call("another_video.webm", "upload-id-456")
+        mock_complete_multipart_upload.assert_any_call(
+            "example_video.webm",
+            "upload-id-123",
+            [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
+        )
+        mock_complete_multipart_upload.assert_any_call(
+            "another_video.webm",
+            "upload-id-456",
+            [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
+        )
+
+        # Logger should show the initial log message, and the "handling incomplete file" message for each file in the list.
+        mock_logger.debug.assert_any_call("Cleaning up incomplete video uploads...")
+        mock_logger.debug.assert_any_call(
+            "Handling incomplete file: example_video.webm"
+        )
+        mock_logger.debug.assert_any_call(
+            "Handling incomplete file: another_video.webm"
+        )
+
+    @patch("studies.tasks.complete_multipart_upload")
+    @patch("studies.tasks.get_file_parts")
+    @patch("studies.tasks.get_all_incomplete_video_files")
+    @patch("studies.tasks.logger")
+    def test_cleanup_incomplete_files_with_no_parts(
+        self,
+        mock_logger,
+        mock_get_all_incomplete_video_files,
+        mock_get_file_parts,
+        mock_complete_multipart_upload,
+    ):
+        # If there are incomplete uploads that do not have associated parts, this task should not attempt to complete those uploads.
+        mock_get_all_incomplete_video_files.return_value = [
+            {"Key": "example_video.webm", "UploadId": "upload-id-123"},
+            {"Key": "another_video.webm", "UploadId": "upload-id-456"},
+        ]
+        mock_get_file_parts.return_value = []
+
+        cleanup_incomplete_video_uploads()
+
+        # The mock function for getting incomplete files and their parts should have been called
+        mock_get_all_incomplete_video_files.assert_called_once()
+        mock_get_file_parts.assert_any_call("example_video.webm", "upload-id-123")
+        mock_get_file_parts.assert_any_call("another_video.webm", "upload-id-456")
+
+        # The complete multipart upload function should not have been called since there were no uploads with associated parts
+        mock_complete_multipart_upload.assert_not_called()
+
+        # Logger should show the initial log message, and the "handling incomplete file" message for each file in the list.
+        mock_logger.debug.assert_any_call("Cleaning up incomplete video uploads...")
+        mock_logger.debug.assert_any_call(
+            "Handling incomplete file: example_video.webm"
+        )
+        mock_logger.debug.assert_any_call(
+            "Handling incomplete file: another_video.webm"
+        )
+
+    @patch("studies.tasks.complete_multipart_upload")
+    @patch("studies.tasks.get_file_parts")
+    @patch("studies.tasks.get_all_incomplete_video_files")
+    @patch("studies.tasks.logger")
+    def test_cleanup_incomplete_files_with_no_files(
+        self,
+        mock_logger,
+        mock_get_all_incomplete_video_files,
+        mock_get_file_parts,
+        mock_complete_multipart_upload,
+    ):
+        # If there are no incomplete uploads, this task should just log the initial message. It should not attempt to get any file parts or complete any files.
+        mock_get_all_incomplete_video_files.return_value = []
+
+        cleanup_incomplete_video_uploads()
+
+        # The mock function for getting incomplete files should have been called
+        mock_get_all_incomplete_video_files.assert_called_once()
+
+        # The other helper functions should not have been called since no incomplete uploads were found
+        mock_get_file_parts.assert_not_called()
+        mock_complete_multipart_upload.assert_not_called()
+
+        # If there are no files, the cleanup incomplete videos task just produces the initial log message
+        mock_logger.debug.assert_any_call("Cleaning up incomplete video uploads...")

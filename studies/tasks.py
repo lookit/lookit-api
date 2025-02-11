@@ -522,11 +522,24 @@ def get_all_incomplete_video_files():
             Bucket=settings.S3_BUCKET_NAME
         )
     except ClientError as error:
+        logger.error(f"Failed to list multipart uploads due to a ClientError: {error}")
         raise error
     except ParamValidationError as error:
+        logger.error("Failed to list multipart uploads due to a ParamValidationError")
         raise ValueError(f"The parameters you provided are incorrect: {error}")
+    except Exception as error:
+        logger.error("Failed to list multipart uploads: Unknown error type")
+        raise error
 
-    if uploads_response["Uploads"]:
+    # Handle the case where uploads_response is None
+    if uploads_response is None:
+        logger.error(
+            f"S3 response for multipart uploads for bucket {settings.S3_BUCKET_NAME} is None."
+        )
+        raise ValueError("Received invalid response from S3: None")
+
+    # Using try/except here because there are a number of other ways this could go wrong (Uploads is missing from response, Uploads value is None or not an array, etc.)
+    try:
         # Filter out incomplete uploads that might still be actively recording - started in last 24 hours.
         # The upload's 'Initiated' value is a datetime in UTC timezone.
         uploads_list = uploads_response["Uploads"]
@@ -534,10 +547,28 @@ def get_all_incomplete_video_files():
             upload
             for upload in uploads_list
             if (
-                (datetime.datetime.now(timezone.utc) - upload["Initiated"])
+                "Initiated" in upload
+                and isinstance(upload["Initiated"], datetime.datetime)
+                and (datetime.datetime.now(timezone.utc) - upload["Initiated"])
                 > datetime.timedelta(hours=24)
             )
         ]
+    except KeyError as error:
+        if error.args[0] == "Uploads":
+            # This is expected and not a problem - no need to re-raise the error.
+            logger.debug(
+                f"No Uploads key found in the S3 response for multipart uploads for bucket {settings.S3_BUCKET_NAME}. Exception: {error}. S3 response: {uploads_response}."
+            )
+        else:
+            logger.error(
+                f"A key error occurred when listing multipart uploads for bucket {settings.S3_BUCKET_NAME}. Exception: {error}. S3 response: {uploads_response}."
+            )
+            raise error
+    except Exception as error:
+        logger.error(
+            f"An exception occurred when listing multipart uploads for bucket {settings.S3_BUCKET_NAME}. Exception: {error}. S3 response: {uploads_response}."
+        )
+        raise error
 
     return incomplete_uploads
 
@@ -552,18 +583,51 @@ def get_file_parts(filename, id):
             Bucket=settings.S3_BUCKET_NAME, Key=filename, UploadId=id
         )
     except ClientError as error:
-        logger.debug(f"Error completing file {filename}: {error}")
+        logger.error(
+            f"Failed to list file parts for file {filename} due to a ClientError: {error}"
+        )
         raise error
     except ParamValidationError as error:
+        logger.error(
+            f"Failed to list file parts for file {filename} ParamValidationError"
+        )
         raise ValueError(f"The parameters you provided are incorrect: {error}")
+    except Exception as error:
+        logger.error(
+            f"Failed to list file parts for file {filename}: Unknown error type"
+        )
+        raise error
 
-    if "Parts" in file_parts_response and file_parts_response["Parts"]:
+    if file_parts_response is None:
+        logger.error(
+            f"S3 response for upload parts for file {filename} in bucket {settings.S3_BUCKET_NAME} is None."
+        )
+        raise ValueError("Received invalid response from S3: None")
+
+    # Using try/except here because there are a few other ways this could go wrong ("Parts" is None or not an array, no "PartNumber" or "Etag" keys, etc.)
+    try:
         parts = [
             {"PartNumber": part["PartNumber"], "ETag": eval(part["ETag"])}
             for part in file_parts_response["Parts"]
         ]
-    else:
-        logger.debug(f"Unable to complete {filename}: no parts uploaded")
+        if parts == []:
+            logger.debug(f"Unable to complete {filename}: Empty Parts array.")
+    except KeyError as error:
+        if error.args[0] == "Parts":
+            # This is expected and not a problem - no need to re-raise the error.
+            logger.debug(
+                f"Unable to complete {filename} in bucket {settings.S3_BUCKET_NAME}. No Parts found for this upload. Exception: {error}."
+            )
+        else:
+            logger.error(
+                f"A key error occurred when when creating the parts list for file {filename} in bucket {settings.S3_BUCKET_NAME}. Exception: {error}."
+            )
+            raise error
+    except Exception as error:
+        logger.error(
+            f"Failed to create the parts list from S3 response for file {filename} in bucket {settings.S3_BUCKET_NAME}: {error}."
+        )
+        raise error
 
     return parts
 
@@ -579,16 +643,23 @@ def complete_multipart_upload(filename, id, parts):
             MultipartUpload={"Parts": parts},
             UploadId=id,
         )
-        if resp["ResponseMetadata"]["HTTPStatusCode"] == 200:
-            logger.debug(f"Completed file {filename}")
+        if (
+            resp is not None
+            and "ResponseMetadata" in resp
+            and "HTTPStatusCode" in resp["ResponseMetadata"]
+        ):
+            if resp["ResponseMetadata"]["HTTPStatusCode"] == 200:
+                logger.debug(f"Completed file {filename}")
+            else:
+                logger.debug(
+                    f"File {filename} returned HTTP Status Code {resp['ResponseMetadata']['HTTPStatusCode']}"
+                )
         else:
-            logger.debug(
-                f"File {filename} returned HTTP Status Code {resp['ResponseMetadata']['HTTPStatusCode']}"
-            )
+            logger.debug(f"Error completing file {filename}. S3 response: {resp}")
     except ClientError as error:
-        logger.debug(f"Error completing file {filename}: {error}")
-        # If the file cannot be completed because of a problem with size/parts,
+        # If the file cannot be completed because of a problem with size/parts, log it for our info but
         # ignore it and move on. It will be deleted via the S3 bucket's lifecycle rule.
+        logger.error(f"Error completing file {filename}: {error}")
         ignore_errors = [
             "EntityTooSmall",
             "InvalidPart",
@@ -599,3 +670,6 @@ def complete_multipart_upload(filename, id, parts):
             raise error
     except ParamValidationError as error:
         raise ValueError(f"The parameters you provided are incorrect: {error}")
+    except Exception as error:
+        logger.error(f"Failed to complete file {filename}: Unknown error type")
+        raise error
