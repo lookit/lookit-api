@@ -1,15 +1,15 @@
-$(".selectable-participant").first().addClass('selected');
-let currentResponseId = $(".selectable-participant").first().data("response-id");
+$(".selectable-response").first().addClass('selected');
+let currentResponseId = $(".selectable-response").first().data("response-id");
 showResponse(1);
 showFeedbackList(currentResponseId);
 $('form.download [name=response_id]').val(currentResponseId);
 showAttachments(1);
 
-$('.selectable-participant').click(function () {
+$('.selectable-response').click(function () {
     // Shows selected individual's response data
     const id = $(this)[0].id;
     const index = extractIdNumber(id);
-    $('.selectable-participant').removeClass('selected');
+    $('.selectable-response').removeClass('selected');
     $('#' + id).addClass('selected');
     showResponse(index);
     showAttachments(index);
