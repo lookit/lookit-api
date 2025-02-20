@@ -38,3 +38,29 @@ function showResponse(index) {
     $('.response-summary').hide();
     $('#response-summary-' + index).show();
 }
+
+// Datatable init/config for responses table
+const resp_table = $("#individualResponsesTable").DataTable({
+    order: [[4, 'desc']], // Sort on "Date" column
+    columnDefs: [
+        { className: "column-text-search", targets: [1,2,3] }, // add class to text search columns
+        { className: "dt-nowrap", "targets": 4 }, // don't wrap "Date" column
+        { type: "date", targets: 4 } // set type for "Date" column
+    ],
+    initComplete: function () {
+        // Apply the text search to any column with the class "column-text-search"
+        this.api()
+            .columns(".column-text-search")
+            .every(function () {
+                let column = this;
+                // Select input element for this column and apply search
+                $('input', this.footer()).on('keyup change', function () {
+                    if (column.search() !== this.value) {
+                        column
+                            .search(this.value)
+                            .draw();
+                        }
+                    });
+            });
+    },
+});
