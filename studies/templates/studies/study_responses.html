@@ -3,7 +3,6 @@
 {% load exp_extras %}
 {% load web_extras %}
 {% load static %}
-{% load bootstrap_icons %}
 {% block title %}
     Responses | {{ study.name }}
 {% endblock title %}
@@ -27,13 +26,6 @@
     </nav>
 {% endblock breadcrumb %}
 {% block content %}
-    {% bs_icon "chevron-up" as bs_icon_up %}
-    {% bs_icon "chevron-down" as bs_icon_down %}
-    {% url 'exp:study-responses-list' study.id as url_responses_list %}
-    {% query_transform request sort='status' as sort_status_up %}
-    {% query_transform request sort='-status' as sort_status_down %}
-    {% query_transform request sort='date_created' as sort_date_up %}
-    {% query_transform request sort='-date_created' as sort_date_down %}
     {% button_primary_classes as btn_primary_classes %}
     {% button_primary_classes "float-end my-3" as btn_primary_classes_create %}
     {% page_title "Individual Responses" %}
