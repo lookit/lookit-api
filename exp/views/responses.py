@@ -833,22 +833,12 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
 
     template_name = "studies/study_responses.html"
     model = Response
-    ordering = "id"
-
-    def get_ordering(self):
-        """
-        Determine sort field and order. Sorting on id actually sorts on child id, not response id.
-        Sorting on status, actually sorts on 'completed' field, where we are alphabetizing
-        "in progress" and "completed"
-        """
-        orderby = self.request.GET.get("sort", "id")
-        return orderby.replace("id", "child__id").replace("status", "completed")
 
     def get_queryset(self):
         study = self.study
         return (
             study.responses_for_researcher(self.request.user)
-            .order_by(self.get_ordering())
+            .order_by("-date_created")
             .prefetch_related(
                 "consent_rulings__arbiter",
                 Prefetch(
