@@ -39,4 +39,7 @@ const setupDataTableDates = (tableId, dateColumnIndex, dateFilterId) => {
         $(`#${tableId}`).DataTable().draw();
     });
 
+    // Initialize with no date range filter
+    $(`#${dateFilterId}`).val('');
+
 }
