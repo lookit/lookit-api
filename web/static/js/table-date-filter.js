@@ -25,7 +25,13 @@ const setupDataTableDates = (tableId, dateColumnIndex, dateFilterId) => {
     $.fn.dataTable.ext.search.push(
         function (_settings, data, _dataIndex) {
             const target = new moment(data[dateColumnIndex]);
+            if (!$(`#${dateFilterId}`).val()) {
+                return true;
+            }
             const [start, end] = $(`#${dateFilterId}`).val().split(' - ').map(value => { return new moment(value) });
+            if (!start.isValid() || !end.isValid()) {
+                return true;
+            }
             return target.isSameOrAfter(start) && target.isSameOrBefore(end);
         }
     );
