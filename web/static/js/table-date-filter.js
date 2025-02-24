@@ -16,9 +16,7 @@ const setupDataTableDates = (tableId, dateColumnIndex, dateFilterId) => {
         timePicker: true,
         locale: {
             format: 'M/DD/YY hh:mm:ss A'
-        },
-        startDate: moment().subtract(3, 'years'),
-        endDate: moment(),
+        }
     })
 
     // Add search for "Date" column filter
