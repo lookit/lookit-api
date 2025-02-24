@@ -64,3 +64,6 @@ const resp_table = $("#individualResponsesTable").DataTable({
             });
     },
 });
+
+// Date Range UI and filter for "Date" column
+setupDataTableDates("individualResponsesTable", 4, "dateRangeFilter");
