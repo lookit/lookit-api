@@ -40,15 +40,29 @@
     <div class="row">
         <div class="col">{% include "studies/_response_nav_tabs.html" with active="individual" %}</div>
     </div>
-    <div>
-        <div>
-            Data about {{ summary_statistics.responses.accepted }} responses are
-            available. {{ summary_statistics.responses.pending }} additional
-            responses awaiting consent judgement;
-            {{ summary_statistics.responses.rejected }} consents rejected.
+    <div class="row my-4">
+        <div class="col">
+            <p>
+                Data about {{ summary_statistics.responses.accepted }} responses are
+                available. {{ summary_statistics.responses.pending }} additional
+                responses awaiting consent judgement;
+                {{ summary_statistics.responses.rejected }} consents rejected.
+            </p>
+            <p>
+                <a href="{% url 'exp:study-responses-consent-manager' pk=study.pk %}">Goto consent manager</a>
+            </p>
         </div>
-        <div>
-            <a href="{% url 'exp:study-responses-consent-manager' pk=study.pk %}">Goto consent manager</a>
+        <div class="col">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <div>Selected response SHORTID (1/31/2025 2:24 PM).</div>
+                    <div>
+                        Parent/guardian feedback: had trouble hearing. I wrote a
+                        really long message but it's only to be allowed to go...
+                    </div>
+                    <div>Send a message to this family (EHJEC-kaitlin)</div>
+                </div>
+            </div>
         </div>
     </div>
     {% if response_data %}
