@@ -40,6 +40,17 @@
     <div class="row">
         <div class="col">{% include "studies/_response_nav_tabs.html" with active="individual" %}</div>
     </div>
+    <div>
+        <div>
+            Data about {{ summary_statistics.responses.accepted }} responses are
+            available. {{ summary_statistics.responses.pending }} additional
+            responses awaiting consent judgement;
+            {{ summary_statistics.responses.rejected }} consents rejected.
+        </div>
+        <div>
+            <a href="{% url 'exp:study-responses-consent-manager' pk=study.pk %}">Goto consent manager</a>
+        </div>
+    </div>
     {% if response_data %}
         <div class="row my-4">
             <div class="col">
