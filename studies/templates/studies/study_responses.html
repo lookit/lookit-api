@@ -43,10 +43,17 @@
     <div class="row my-4">
         <div class="col">
             <p>
-                Data about {{ summary_statistics.responses.accepted }} responses are
-                available. {{ summary_statistics.responses.pending }} additional
-                responses awaiting consent judgement;
-                {{ summary_statistics.responses.rejected }} consents rejected.
+                Data about
+                {{ summary_statistics.responses.accepted }}
+                {{ summary_statistics.responses.accepted|pluralize:"response is,responses are" }}
+                available.
+                {{ summary_statistics.responses.pending }}
+                additional
+                {{ summary_statistics.responses.pending|pluralize:"response,responses" }}
+                awaiting consent judgement;
+                {{ summary_statistics.responses.rejected }}
+                {{ summary_statistics.responses.rejected|pluralize:"consent,consents" }}
+                rejected.
             </p>
             <p>
                 <a href="{% url 'exp:study-responses-consent-manager' pk=study.pk %}">Goto consent manager</a>
