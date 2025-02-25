@@ -145,6 +145,67 @@
         </div>
         <div class="row my-4">
             <div class="col">
+                {% if study.show_videos %}
+                    <div class="card bg-light my-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Download videos</h5>
+                            <p class="card-text fst-italic text-muted mt-2">
+                                <em class="my-2">Video recordings usually become available for download after a few minutes, but may take as long as 24 hours to appear.
+                                    <br>
+                                    <br>
+                                Note: In rare cases, video uploads can be damaged or lost, e.g. because the participant left the study early, there was an internet connection problem, etc. We automatically attempt to restore any incomplete video files that reach the servers. If video files do not appear here after 24 hours, they unfortunately can't be recovered.</em>
+                            </p>
+                            {% for response in response_data %}
+                                <div class="response-attachments"
+                                     id="resp-attachment-{{ forloop.counter }}"
+                                     style="display:none">
+                                    {% for video in response.videos %}
+                                        <div class="row pt-1">
+                                            <div class="col-12 col-md-8">{{ video.display_name|wordwrap:45 }}</div>
+                                            <div class="col-12 col-md-4">
+                                                <a target="_blank"
+                                                   rel="noreferrer noopener"
+                                                   href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=view"
+                                                   class="{% button_primary_classes %} btn-sm">View</a>
+                                                <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
+                                                   class="{% button_primary_classes %} btn-sm">Download</a>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                <form class="download"
+                      method="get"
+                      action="{% url "exp:study-responses-single-download" pk=study.pk %}">
+                    {% csrf_token %}
+                    <div class="card bg-light my-4">
+                        <div class="card-body">
+                            <input type="hidden" name="response_id" />
+                            <h5 class="card-title">Download response</h5>
+                            <p class="card-text">Include with response download:</p>
+                            <div class="two-column-list mb-3">{% include "studies/_data_options.html" with data_options=data_options %}</div>
+                            <p class="card-text">
+                                <label for="data-type-selector">Data Type</label>
+                            </p>
+                            <div class="input-group">
+                                <select class="form-select"
+                                        id="data-type-selector"
+                                        name="data-type-selector"
+                                        aria-label="Select data type">
+                                    <option value="json">JSON</option>
+                                    <option value="csv">CSV summary</option>
+                                    <option value="framedata">CSV frame data</option>
+                                </select>
+                                <span class="input-group-btn">
+                                    {% bootstrap_button "Download response" button_type="submit" button_class=btn_primary_classes name="download-individual-data" %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
                 <div class="card bg-light my-4">
                     <div class="card-body">
                         {% if can_edit_feedback %}
@@ -152,7 +213,7 @@
                                   method="post"
                                   action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">
                                 {% csrf_token %}
-                                <h5 class="card-title">New Feedback</h5>
+                                <h5 class="card-title">Give new feedback</h5>
                                 <section class="form-group">
                                     <label class="visually-hidden" for="response-feedback">Response feedback:</label>
                                     <textarea id="response-feedback"
@@ -168,7 +229,7 @@
                             </form>
                         {% endif %}
                         <section class="my-3">
-                            <h5 class="card-title">Existing Feedback:</h5>
+                            <h5 class="card-title">Existing feedback:</h5>
                             {% for response in response_list %}
                                 <div id="feedback-list-for-{{ response.id }}" class="feedback-list">
                                     {% for feedback in response.feedback.all %}
@@ -207,69 +268,8 @@
                         </section>
                     </div>
                 </div>
-                {% if study.show_videos %}
-                    <div class="card bg-light my-4">
-                        <div class="card-body">
-                            <h5 class="card-title">Videos</h5>
-                            <p class="card-text fst-italic text-muted mt-2">
-                                <em class="my-2">Video recordings usually become available for download after a few minutes, but may take as long as 24 hours to appear.
-                                    <br>
-                                    <br>
-                                Note: In rare cases, video uploads can be damaged or lost, e.g. because the participant left the study early, there was an internet connection problem, etc. We automatically attempt to restore any incomplete video files that reach the servers. If video files do not appear here after 24 hours, they unfortunately can't be recovered.</em>
-                            </p>
-                            {% for response in response_data %}
-                                <div class="response-attachments"
-                                     id="resp-attachment-{{ forloop.counter }}"
-                                     style="display:none">
-                                    {% for video in response.videos %}
-                                        <div class="row pt-1">
-                                            <div class="col-12 col-md-8">{{ video.display_name|wordwrap:45 }}</div>
-                                            <div class="col-12 col-md-4">
-                                                <a target="_blank"
-                                                   rel="noreferrer noopener"
-                                                   href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=view"
-                                                   class="{% button_primary_classes %} btn-sm">View</a>
-                                                <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
-                                                   class="{% button_primary_classes %} btn-sm">Download</a>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
             </div>
             <div class="col">
-                <form class="download"
-                      method="get"
-                      action="{% url "exp:study-responses-single-download" pk=study.pk %}">
-                    {% csrf_token %}
-                    <div class="card bg-light my-4">
-                        <div class="card-body">
-                            <input type="hidden" name="response_id" />
-                            <h5 class="card-title">Download response</h5>
-                            <p class="card-text">Include with response download:</p>
-                            <div class="two-column-list mb-3">{% include "studies/_data_options.html" with data_options=data_options %}</div>
-                            <p class="card-text">
-                                <label for="data-type-selector">Data Type</label>
-                            </p>
-                            <div class="input-group">
-                                <select class="form-select"
-                                        id="data-type-selector"
-                                        name="data-type-selector"
-                                        aria-label="Select data type">
-                                    <option value="json">JSON</option>
-                                    <option value="csv">CSV summary</option>
-                                    <option value="framedata">CSV frame data</option>
-                                </select>
-                                <span class="input-group-btn">
-                                    {% bootstrap_button "Download response" button_type="submit" button_class=btn_primary_classes name="download-individual-data" %}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </form>
                 {% for response in response_data %}
                     <div class="card bg-light my-4 response-summary"
                          id="response-summary-{{ forloop.counter }}"
