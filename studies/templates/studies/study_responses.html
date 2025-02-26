@@ -78,7 +78,7 @@
                                 <tr>
                                     <th scope="col"></th>
                                     <th scope="col">Child ID</th>
-                                    <th scope="col">Response UUID</th>
+                                    <th scope="col">Response ID</th>
                                     <th scope="col">Status</th>
                                     <th scope="col">Date</th>
                                 </tr>
@@ -93,7 +93,7 @@
                                             {% if response.response__is_preview %}P{% endif %}
                                         </td>
                                         <td>{{ response.child__hashed_id }}</td>
-                                        <td>{{ response.response__uuid }}</td>
+                                        <td>{{ response.response__id }}</td>
                                         <td>
                                             {% if response.response__completed %}
                                                 Complete
@@ -112,7 +112,7 @@
                                         <input type="text" class="form-control" placeholder="Filter Child ID" />
                                     </th>
                                     <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Response UUID" />
+                                        <input type="text" class="form-control" placeholder="Filter Response ID" />
                                     </th>
                                     <th scope="col">
                                         <input type="text" class="form-control" placeholder="Filter Status" />
