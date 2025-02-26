@@ -28,7 +28,7 @@ const setupDataTableDates = (tableId, dateColumnIndex, dateFilterId) => {
                 return true;
             }
             const [start, end] = $(`#${dateFilterId}`).val().split(' - ').map(value => { return new moment(value) });
-            if (!start.isValid() || !end.isValid()) {
+            if (!start.isValid() || !end || !end.isValid()) {
                 return true;
             }
             return target.isSameOrAfter(start) && target.isSameOrBefore(end);
