@@ -15,6 +15,7 @@ const setupDataTableDates = (tableId, dateColumnIndex, dateFilterId) => {
         },
         timePicker: true,
         locale: {
+            cancelLabel: 'Clear',
             format: 'M/DD/YY hh:mm:ss A'
         }
     })
@@ -36,6 +37,16 @@ const setupDataTableDates = (tableId, dateColumnIndex, dateFilterId) => {
 
     // Redraw table on setting "Date" column filter
     $(`#${dateFilterId}`).on('keyup change clear', function () {
+        // If the date range was fully deleted in the text input, clear the selected date range
+        if ($(this).val() === '') {
+            document.querySelector('div.drp-buttons button.cancelBtn')?.click();
+        }
+        $(`#${tableId}`).DataTable().draw();
+    });
+
+    // Clear date range filter on cancel
+    $(`#${dateFilterId}`).on('cancel.daterangepicker', function(ev, picker) {
+        $(`#${dateFilterId}`).val('');
         $(`#${tableId}`).DataTable().draw();
     });
 
