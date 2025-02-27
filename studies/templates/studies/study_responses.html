@@ -231,7 +231,7 @@
                             </form>
                         {% endif %}
                         <section class="my-3">
-                            <h5 class="card-title">Existing feedback:</h5>
+                            <h5 class="card-title">Existing feedback</h5>
                             {% for response in response_list %}
                                 <div id="feedback-list-for-{{ response.id }}" class="feedback-list">
                                     {% for feedback in response.feedback.all %}
