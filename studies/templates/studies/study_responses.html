@@ -80,7 +80,22 @@
                                     <th scope="col">Child ID</th>
                                     <th scope="col">Response ID</th>
                                     <th scope="col">Date</th>
-                                    <th scope="col">Exit Frame Status</th>
+                                    <th scope="col">
+                                        Exit Frame
+                                        <br>
+                                        Status
+                                    </th>
+                                    <th scope="col">
+                                        Payment
+                                        <br>
+                                        Status
+                                    </th>
+                                    <th scope="col">
+                                        Response
+                                        <br>
+                                        Status
+                                    </th>
+                                    <th scope="col">Star</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -102,6 +117,9 @@
                                                 Incomplete
                                             {% endif %}
                                         </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -121,7 +139,18 @@
                                                name="daterange" />
                                     </th>
                                     <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Status" />
+                                        <input type="text"
+                                               class="form-control"
+                                               placeholder="Filter Exit Frame Status" />
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control" placeholder="Filter Payment Status" />
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control" placeholder="Filter Response Status" />
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control" placeholder="Filter Star" />
                                     </th>
                                 </tr>
                             </tfoot>
