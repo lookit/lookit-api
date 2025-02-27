@@ -79,8 +79,8 @@
                                     <th scope="col"></th>
                                     <th scope="col">Child ID</th>
                                     <th scope="col">Response ID</th>
-                                    <th scope="col">Exit Frame Status</th>
                                     <th scope="col">Date</th>
+                                    <th scope="col">Exit Frame Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -94,6 +94,7 @@
                                         </td>
                                         <td>{{ response.child_id_slug }}</td>
                                         <td>{{ response.response__id }}</td>
+                                        <td>{{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
                                         <td>
                                             {% if response.response__completed %}
                                                 Complete
@@ -101,7 +102,6 @@
                                                 Incomplete
                                             {% endif %}
                                         </td>
-                                        <td>{{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -115,13 +115,13 @@
                                         <input type="text" class="form-control" placeholder="Filter Response ID" />
                                     </th>
                                     <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Status" />
-                                    </th>
-                                    <th scope="col">
                                         <input type="text"
                                                id="dateRangeFilter"
                                                class="form-control"
                                                name="daterange" />
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control" placeholder="Filter Status" />
                                     </th>
                                 </tr>
                             </tfoot>
