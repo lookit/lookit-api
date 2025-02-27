@@ -503,10 +503,10 @@ def build_zip_for_psychds(
     with zipfile.ZipFile(zipped_file, "w", zipfile.ZIP_DEFLATED) as zipped:
         for data, filename, sidecar_metadata, sidecar_filename in response_data:
             # write data file for response
-            zipped.writestr(f"/data/framedata-per-response/{filename}", data)
+            zipped.writestr(f"data/framedata-per-response/{filename}", data)
             # write metadata sidecar for response
             zipped.writestr(
-                f"/data/framedata-per-response/{sidecar_filename}",
+                f"data/framedata-per-response/{sidecar_filename}",
                 json.dumps(sidecar_metadata, indent=4),
             )
 
@@ -519,28 +519,28 @@ def build_zip_for_psychds(
 
         # save response overview
         zipped.writestr(
-            f"/data/overview/study-{study_uuid}_{all_responses}_data.csv",
+            f"data/overview/study-{study_uuid}_{all_responses}_data.csv",
             overview_str,
         )
         # save children overview
         zipped.writestr(
-            f"/data/overview/study-{study_uuid}_{all_children}_data.csv",
+            f"data/overview/study-{study_uuid}_{all_children}_data.csv",
             child_overview_str,
         )
         if not study.use_generator:
             # save study protocol
             zipped.writestr(
-                "/materials/study_protocol.json", json.dumps(study.structure, indent=4)
+                "materials/study_protocol.json", json.dumps(study.structure, indent=4)
             )
         else:
             # save protocol generator
             zipped.writestr(
-                "/materials/protocol_generator.js",
+                "materials/protocol_generator.js",
                 json.dumps(study.generator, indent=4),
             )
         # save informative README
         zipped.writestr(
-            "/README.md",
+            "README.md",
             PSYCHDS_README_STR.format(
                 study_title=study.name,
                 study_url=f'"https://childrenhelpingscience.com/exp/studies/{study.id}/responses/all/"',
@@ -551,22 +551,22 @@ def build_zip_for_psychds(
         )
         # save readme to use as an instructive filler for the demographics directory
         zipped.writestr(
-            "/data/demographic/README.md",
+            "data/demographic/README.md",
             DEMOGRAPHICS_README_STR,
         )
         # save readme to use as instructive filler for the videos directory
         zipped.writestr(
-            "/data/raw/video/README.md",
+            "data/raw/video/README.md",
             VIDEOS_README_STR,
         )
         # save all responses json
         zipped.writestr(
-            f"/data/raw/{all_response_filename}",
+            f"data/raw/{all_response_filename}",
             all_response_json_str,
         )
         # save psychds-ignore file to avoid NOT_INCLUDED warnings
         zipped.writestr(
-            "/.psychds-ignore",
+            ".psychds-ignore",
             PSYCHDS_IGNORE_STR,
         )
         study_ad = {
@@ -906,6 +906,11 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
         context["can_edit_feedback"] = self.request.user.has_study_perms(
             StudyPermission.EDIT_STUDY_FEEDBACK, context["study"]
         )
+
+        preview_only = not self.request.user.has_study_perms(
+            StudyPermission.CODE_STUDY_CONSENT, study
+        )
+        context["summary_statistics"] = get_consent_statistics(study.id, preview_only)
 
         return context
 
