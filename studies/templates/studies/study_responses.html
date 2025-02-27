@@ -181,7 +181,7 @@
                 {% endif %}
                 <form class="download"
                       method="get"
-                      action="{% url "exp:study-responses-single-download" pk=study.pk %}">
+                      action="{% url 'exp:study-responses-single-download' pk=study.pk %}">
                     {% csrf_token %}
                     <div class="card bg-light my-4">
                         <div class="card-body">
