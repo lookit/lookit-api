@@ -41,11 +41,11 @@ function showResponse(index) {
 
 // Datatable init/config for responses table
 const resp_table = $("#individualResponsesTable").DataTable({
-    order: [[4, 'desc']], // Sort on "Date" column
+    order: [[3, 'desc']], // Sort on "Date" column
     columnDefs: [
-        { className: "column-text-search", targets: [1,2,3] }, // add class to text search columns
-        { className: "dt-nowrap", "targets": 4 }, // don't wrap "Date" column
-        { type: "date", targets: 4 } // set type for "Date" column
+        { className: "column-text-search", targets: [1,2,4] }, // add class to text search columns
+        { className: "dt-nowrap", "targets": 3 }, // don't wrap "Date" column
+        { type: "date", targets: 3 } // set type for "Date" column
     ],
     initComplete: function () {
         // Apply the text search to any column with the class "column-text-search"
@@ -66,4 +66,4 @@ const resp_table = $("#individualResponsesTable").DataTable({
 });
 
 // Date Range UI and filter for "Date" column
-setupDataTableDates("individualResponsesTable", 4, "dateRangeFilter");
+setupDataTableDates("individualResponsesTable", 3, "dateRangeFilter");
