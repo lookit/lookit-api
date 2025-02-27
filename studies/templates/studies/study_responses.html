@@ -40,77 +40,172 @@
     <div class="row">
         <div class="col">{% include "studies/_response_nav_tabs.html" with active="individual" %}</div>
     </div>
+    <div class="row my-4">
+        <div class="col">
+            <p>
+                Data about
+                {{ summary_statistics.responses.accepted }}
+                {{ summary_statistics.responses.accepted|pluralize:"response is,responses are" }}
+                available.
+                {{ summary_statistics.responses.pending }}
+                additional
+                {{ summary_statistics.responses.pending|pluralize:"response,responses" }}
+                awaiting consent judgement;
+                {{ summary_statistics.responses.rejected }}
+                {{ summary_statistics.responses.rejected|pluralize:"consent,consents" }}
+                rejected.
+            </p>
+            <p>
+                <a href="{% url 'exp:study-responses-consent-manager' pk=study.pk %}">Go to consent manager</a>
+            </p>
+        </div>
+        <div class="col">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <div>Selected response SHORTID (1/31/2025 2:24 PM).</div>
+                    <div>
+                        Parent/guardian feedback: had trouble hearing. I wrote a
+                        really long message but it's only to be allowed to go...
+                    </div>
+                    <div>Send a message to this family (EHJEC-kaitlin)</div>
+                </div>
+            </div>
+        </div>
+    </div>
     {% if response_data %}
         <div class="row my-4">
-            <div class="col">
-                <div class="table-responsive my-4">
-                    <table class="table table-striped table-hover caption-top study-responses">
-                        <caption class="visually-hidden">Study Responses</caption>
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Child ID</th>
-                                <th>Response UUID</th>
-                                <th>
-                                    Status
-                                    {% with url_responses_list|add:"?"|add:sort_status_up as url_sort_status_up %}
-                                        {% bootstrap_button bs_icon_up button_class="btn btn-link ps-1 pe-0" button_type="link" href=url_sort_status_up %}
-                                    {% endwith %}
-                                    {% with url_responses_list|add:"?"|add:sort_status_down as url_sort_status_down %}
-                                        {% bootstrap_button bs_icon_down button_class="btn btn-link px-0" button_type="link" href=url_sort_status_down %}
-                                    {% endwith %}
-                                </th>
-                                <th>
-                                    Date
-                                    {% with url_responses_list|add:"?"|add:sort_date_up as url_sort_date_up %}
-                                        {% bootstrap_button bs_icon_up button_class="btn btn-link ps-1 pe-0" button_type="link" href=url_sort_date_up %}
-                                    {% endwith %}
-                                    {% with url_responses_list|add:"?"|add:sort_date_down as url_sort_date_down %}
-                                        {% bootstrap_button bs_icon_down button_class="btn btn-link px-0" button_type="link" href=url_sort_date_down %}
-                                    {% endwith %}
-                                </th>
+            <div class="table-responsive my-4">
+                <table class="table table-striped table-hover caption-top study-responses">
+                    <caption class="visually-hidden">Study Responses</caption>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Child ID</th>
+                            <th>Response UUID</th>
+                            <th>
+                                Status
+                                {% with url_responses_list|add:"?"|add:sort_status_up as url_sort_status_up %}
+                                    {% bootstrap_button bs_icon_up button_class="btn btn-link ps-1 pe-0" button_type="link" href=url_sort_status_up %}
+                                {% endwith %}
+                                {% with url_responses_list|add:"?"|add:sort_status_down as url_sort_status_down %}
+                                    {% bootstrap_button bs_icon_down button_class="btn btn-link px-0" button_type="link" href=url_sort_status_down %}
+                                {% endwith %}
+                            </th>
+                            <th>
+                                Date
+                                {% with url_responses_list|add:"?"|add:sort_date_up as url_sort_date_up %}
+                                    {% bootstrap_button bs_icon_up button_class="btn btn-link ps-1 pe-0" button_type="link" href=url_sort_date_up %}
+                                {% endwith %}
+                                {% with url_responses_list|add:"?"|add:sort_date_down as url_sort_date_down %}
+                                    {% bootstrap_button bs_icon_down button_class="btn btn-link px-0" button_type="link" href=url_sort_date_down %}
+                                {% endwith %}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for response in response_data %}
+                            <tr class="selectable-participant {% if response.response__is_preview %}preview-row{% endif %}"
+                                id="response-participant-{{ forloop.counter }}"
+                                data-response-id="{{ response.response__id }}"
+                                data-response-uuid="{{ response.response__uuid }}">
+                                <td>
+                                    {% if response.response__is_preview %}P{% endif %}
+                                </td>
+                                <td>{{ response.child__hashed_id }}</td>
+                                <td>{{ response.response__uuid|truncatechars:9 }}</td>
+                                <td>
+                                    {% if response.response__completed %}
+                                        Complete
+                                    {% else %}
+                                        Incomplete
+                                    {% endif %}
+                                </td>
+                                <td>{{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
                             </tr>
-                        </thead>
-                        <tbody>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if can_view_regular_responses and not can_view_preview_responses %}
+                    <p class="text-center">
+                        <em>Based on your permissions, no preview responses are shown.</em>
+                    </p>
+                {% endif %}
+                {% if not can_view_regular_responses and can_view_preview_responses %}
+                    <p class="text-center">
+                        <em>Based on your permissions, only preview responses are shown.</em>
+                    </p>
+                {% endif %}
+                {% if not can_view_regular_responses and not can_view_preview_responses %}
+                    <p class="text-center">
+                        <em>You do not have permission to view responses.</em>
+                    </p>
+                {% endif %}
+                <div class="text-end">{% include "studies/_paginator.html" with page=page_obj %}</div>
+            </div>
+        </div>
+        <div class="row my-4">
+            <div class="col">
+                {% if study.show_videos %}
+                    <div class="card bg-light my-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Download videos</h5>
+                            <p class="card-text fst-italic text-muted mt-2">
+                                <em class="my-2">Video recordings usually become available for download after a few minutes, but may take as long as 24 hours to appear.
+                                    <br>
+                                    <br>
+                                Note: In rare cases, video uploads can be damaged or lost, e.g. because the participant left the study early, there was an internet connection problem, etc. We automatically attempt to restore any incomplete video files that reach the servers. If video files do not appear here after 24 hours, they unfortunately can't be recovered.</em>
+                            </p>
                             {% for response in response_data %}
-                                <tr class="selectable-participant {% if response.response__is_preview %}preview-row{% endif %}"
-                                    id="response-participant-{{ forloop.counter }}"
-                                    data-response-id="{{ response.response__id }}"
-                                    data-response-uuid="{{ response.response__uuid }}">
-                                    <td>
-                                        {% if response.response__is_preview %}P{% endif %}
-                                    </td>
-                                    <td>{{ response.child__hashed_id }}</td>
-                                    <td>{{ response.response__uuid|truncatechars:9 }}</td>
-                                    <td>
-                                        {% if response.response__completed %}
-                                            Complete
-                                        {% else %}
-                                            Incomplete
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
-                                </tr>
+                                <div class="response-attachments"
+                                     id="resp-attachment-{{ forloop.counter }}"
+                                     style="display:none">
+                                    {% for video in response.videos %}
+                                        <div class="row pt-1">
+                                            <div class="col-12 col-md-8">{{ video.display_name|wordwrap:45 }}</div>
+                                            <div class="col-12 col-md-4">
+                                                <a target="_blank"
+                                                   rel="noreferrer noopener"
+                                                   href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=view"
+                                                   class="{% button_primary_classes %} btn-sm">View</a>
+                                                <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
+                                                   class="{% button_primary_classes %} btn-sm">Download</a>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
                             {% endfor %}
-                        </tbody>
-                    </table>
-                    {% if can_view_regular_responses and not can_view_preview_responses %}
-                        <p class="text-center">
-                            <em>Based on your permissions, no preview responses are shown.</em>
-                        </p>
-                    {% endif %}
-                    {% if not can_view_regular_responses and can_view_preview_responses %}
-                        <p class="text-center">
-                            <em>Based on your permissions, only preview responses are shown.</em>
-                        </p>
-                    {% endif %}
-                    {% if not can_view_regular_responses and not can_view_preview_responses %}
-                        <p class="text-center">
-                            <em>You do not have permission to view responses.</em>
-                        </p>
-                    {% endif %}
-                    <div class="text-end">{% include "studies/_paginator.html" with page=page_obj %}</div>
-                </div>
+                        </div>
+                    </div>
+                {% endif %}
+                <form class="download"
+                      method="get"
+                      action="{% url "exp:study-responses-single-download" pk=study.pk %}">
+                    {% csrf_token %}
+                    <div class="card bg-light my-4">
+                        <div class="card-body">
+                            <input type="hidden" name="response_id" />
+                            <h5 class="card-title">Download response</h5>
+                            <p class="card-text">Include with response download:</p>
+                            <div class="two-column-list mb-3">{% include "studies/_data_options.html" with data_options=data_options %}</div>
+                            <p class="card-text">
+                                <label for="data-type-selector">Data Type</label>
+                            </p>
+                            <div class="input-group">
+                                <select class="form-select"
+                                        id="data-type-selector"
+                                        name="data-type-selector"
+                                        aria-label="Select data type">
+                                    <option value="json">JSON</option>
+                                    <option value="csv">CSV summary</option>
+                                    <option value="framedata">CSV frame data</option>
+                                </select>
+                                <span class="input-group-btn">
+                                    {% bootstrap_button "Download response" button_type="submit" button_class=btn_primary_classes name="download-individual-data" %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
                 <div class="card bg-light my-4">
                     <div class="card-body">
                         {% if can_edit_feedback %}
@@ -118,7 +213,7 @@
                                   method="post"
                                   action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">
                                 {% csrf_token %}
-                                <h5 class="card-title">New Feedback</h5>
+                                <h5 class="card-title">Give new feedback</h5>
                                 <section class="form-group">
                                     <label class="visually-hidden" for="response-feedback">Response feedback:</label>
                                     <textarea id="response-feedback"
@@ -134,7 +229,7 @@
                             </form>
                         {% endif %}
                         <section class="my-3">
-                            <h5 class="card-title">Existing Feedback:</h5>
+                            <h5 class="card-title">Existing feedback:</h5>
                             {% for response in response_list %}
                                 <div id="feedback-list-for-{{ response.id }}" class="feedback-list">
                                     {% for feedback in response.feedback.all %}
@@ -173,69 +268,8 @@
                         </section>
                     </div>
                 </div>
-                {% if study.show_videos %}
-                    <div class="card bg-light my-4">
-                        <div class="card-body">
-                            <h5 class="card-title">Videos</h5>
-                            <p class="card-text fst-italic text-muted mt-2">
-                                <em class="my-2">Video recordings usually become available for download after a few minutes, but may take as long as 24 hours to appear.
-                                    <br>
-                                    <br>
-                                Note: In rare cases, video uploads can be damaged or lost, e.g. because the participant left the study early, there was an internet connection problem, etc. We automatically attempt to restore any incomplete video files that reach the servers. If video files do not appear here after 24 hours, they unfortunately can't be recovered.</em>
-                            </p>
-                            {% for response in response_data %}
-                                <div class="response-attachments"
-                                     id="resp-attachment-{{ forloop.counter }}"
-                                     style="display:none">
-                                    {% for video in response.videos %}
-                                        <div class="row pt-1">
-                                            <div class="col-12 col-md-8">{{ video.display_name|wordwrap:45 }}</div>
-                                            <div class="col-12 col-md-4">
-                                                <a target="_blank"
-                                                   rel="noreferrer noopener"
-                                                   href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=view"
-                                                   class="{% button_primary_classes %} btn-sm">View</a>
-                                                <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
-                                                   class="{% button_primary_classes %} btn-sm">Download</a>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
             </div>
             <div class="col">
-                <form class="download"
-                      method="get"
-                      action="{% url "exp:study-responses-single-download" pk=study.pk %}">
-                    {% csrf_token %}
-                    <div class="card bg-light my-4">
-                        <div class="card-body">
-                            <input type="hidden" name="response_id" />
-                            <h5 class="card-title">Download response</h5>
-                            <p class="card-text">Include with response download:</p>
-                            <div class="two-column-list mb-3">{% include "studies/_data_options.html" with data_options=data_options %}</div>
-                            <p class="card-text">
-                                <label for="data-type-selector">Data Type</label>
-                            </p>
-                            <div class="input-group">
-                                <select class="form-select"
-                                        id="data-type-selector"
-                                        name="data-type-selector"
-                                        aria-label="Select data type">
-                                    <option value="json">JSON</option>
-                                    <option value="csv">CSV summary</option>
-                                    <option value="framedata">CSV frame data</option>
-                                </select>
-                                <span class="input-group-btn">
-                                    {% bootstrap_button "Download response" button_type="submit" button_class=btn_primary_classes name="download-individual-data" %}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </form>
                 {% for response in response_data %}
                     <div class="card bg-light my-4 response-summary"
                          id="response-summary-{{ forloop.counter }}"

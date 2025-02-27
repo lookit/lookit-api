@@ -917,6 +917,11 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
             StudyPermission.EDIT_STUDY_FEEDBACK, context["study"]
         )
 
+        preview_only = not self.request.user.has_study_perms(
+            StudyPermission.CODE_STUDY_CONSENT, study
+        )
+        context["summary_statistics"] = get_consent_statistics(study.id, preview_only)
+
         return context
 
     def build_video_display_name(self, study_uuid, response_uuid, vid_name):
