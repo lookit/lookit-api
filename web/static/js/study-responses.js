@@ -44,7 +44,6 @@ const resp_table = $("#individualResponsesTable").DataTable({
     order: [[3, 'desc']], // Sort on "Date" column
     columnDefs: [
         { className: "column-text-search", targets: [1,2,4] }, // add class to text search columns
-        { className: "dt-nowrap", "targets": 3 }, // don't wrap "Date" column
         { type: "date", targets: 3 } // set type for "Date" column
     ],
     initComplete: function () {
