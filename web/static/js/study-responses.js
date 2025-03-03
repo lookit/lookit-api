@@ -71,21 +71,32 @@ const resp_table = $("#individualResponsesTable").DataTable({
 setupDataTableDates("individualResponsesTable", 4, "dateRangeFilter");
 
 function updateInfoBox(index) {
-    // Select table rows of response details table.
-    const rows = document
-      .querySelector(`#response-summary-${index}`)
-      .querySelectorAll('table tbody tr');
+  // Select table rows of response details table.
+  const rows = document
+    .querySelector(`#response-summary-${index}`)
+    .querySelectorAll('table tbody tr');
+
+  // construct parent ID
+  const parentId = `${rows[12].children[1].textContent}-${rows[13].children[1].textContent || "anonymous"}`;
   
-    // Short ID for child
-    document.querySelector('.short-child-id').textContent =
-      rows[15].children[1].textContent;
-  
-    // Create date for response with formatted date
-    document.querySelector('.response-date').textContent = moment(
-      rows[2].children[1].textContent
-    ).format('M/D/YYYY h:m A');
-  
-    // Parent Feedback
-    document.querySelector('.parent-feedback').textContent =
-      rows[6].children[1].textContent;
-  }
+  // Recipient ID for sending message URL
+  const url = new URL(document.querySelector('.contact-family').href);
+  url.searchParams.set("recipientId",parentId);
+
+  // Short ID for child
+  document.querySelector('.short-child-id').textContent =
+    rows[15].children[1].textContent;
+
+  // Create date for response with formatted date
+  document.querySelector('.response-date').textContent = moment(
+    rows[2].children[1].textContent
+  ).format('M/D/YYYY h:m A');
+
+  // Parent Feedback
+  document.querySelector('.parent-feedback').textContent =
+    rows[6].children[1].textContent;
+
+  // Send message to family URL
+  document.querySelector('.parent-id').textContent = parentId;
+  document.querySelector('.contact-family').href = url.toString();
+}
