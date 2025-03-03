@@ -1,6 +1,7 @@
 $(".selectable-response").first().addClass('selected');
 let currentResponseId = $(".selectable-response").first().data("response-id");
 showResponse(1);
+updateInfoBox(1)
 showFeedbackList(currentResponseId);
 $('form.download [name=response_id]').val(currentResponseId);
 showAttachments(1);
@@ -12,6 +13,7 @@ $('.selectable-response').click(function () {
     $('.selectable-response').removeClass('selected');
     $('#' + id).addClass('selected');
     showResponse(index);
+    updateInfoBox(index);
     showAttachments(index);
     const responseId = $(this).data("response-id");
     $('form.download [name=response_id]').val(responseId);
@@ -67,3 +69,23 @@ const resp_table = $("#individualResponsesTable").DataTable({
 
 // Date Range UI and filter for "Date" column
 setupDataTableDates("individualResponsesTable", 4, "dateRangeFilter");
+
+function updateInfoBox(index) {
+    // Select table rows of response details table.
+    const rows = document
+      .querySelector(`#response-summary-${index}`)
+      .querySelectorAll('table tbody tr');
+  
+    // Short ID for child
+    document.querySelector('.short-child-id').textContent =
+      rows[15].children[1].textContent;
+  
+    // Create date for response with formatted date
+    document.querySelector('.response-date').textContent = moment(
+      rows[2].children[1].textContent
+    ).format('M/D/YYYY h:m A');
+  
+    // Parent Feedback
+    document.querySelector('.parent-feedback').textContent =
+      rows[6].children[1].textContent;
+  }
