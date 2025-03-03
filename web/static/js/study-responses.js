@@ -77,7 +77,14 @@ function updateInfoBox(index) {
     .querySelectorAll('table tbody tr');
 
   // construct parent ID
-  const parentId = `${rows[12].children[1].textContent}-${rows[13].children[1].textContent || "anonymous"}`;
+  const parentName = rows[13].children[1].textContent
+    .toLowerCase()
+    .split(" ")
+    .map(el => ([...el]
+      .filter(v => /[a-z\-]/.test(v)))
+      .join(""))
+    .join("-");
+  const parentId = `${rows[12].children[1].textContent}-${parentName || "anonymous"}`;
   
   // Recipient ID for sending message URL
   const url = new URL(document.querySelector('.contact-family').href);
