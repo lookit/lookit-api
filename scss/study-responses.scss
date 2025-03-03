@@ -11,3 +11,11 @@ tr.preview-row {
 .list-group-hover .list-group-item:hover:not(.active) {
     background-color: $hovergray;
 }
+
+.truncate-parent-feedback {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical
+}
