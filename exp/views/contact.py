@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.forms import ValidationError
 from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.utils.text import slugify
@@ -170,3 +171,22 @@ class StudyParticipantContactView(
         return HttpResponseRedirect(
             reverse("exp:study-participant-contact", kwargs=dict(pk=study.pk))
         )
+
+    def get(self, request, *args, **kwargs):
+        recipient_uuid = request.GET.get("recipient")
+
+        try:
+            user = User.objects.get(uuid=recipient_uuid)
+
+            if not user.email_next_session:
+                messages.warning(
+                    request,
+                    f"""User "{user.nickname or user.username}" has opted out of 
+                    these types of emails.  If you wish to send another type of 
+                    email, update the selection in the Recipients Filter and 
+                    re-select the family ID.""",
+                )
+        except ValidationError:
+            pass
+
+        return super().get(request, *args, **kwargs)
