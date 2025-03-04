@@ -367,6 +367,32 @@ RESPONSE_COLUMNS = [
     ),
 ]
 
+# Columns to display in the Individual Responses table that are not included in the Response downloads (i.e. the RESPONSE_COLUMNS list)
+RESPONSE_TABLE_COLUMNS = [
+    ResponseDataColumn(
+        id="response__researcher_payment_status",
+        description="Researcher-assigned payment status",
+        extractor=lambda resp: Response.PAYMENT_STATUS_CHOICES[
+            resp.researcher_payment_status
+        ],
+        name="Payment Status",
+    ),
+    ResponseDataColumn(
+        id="response__researcher_response_status",
+        description="Researcher-assigned response status",
+        extractor=lambda resp: Response.RESPONSE_STATUS_CHOICES[
+            resp.researcher_response_status
+        ],
+        name="Response Status",
+    ),
+    ResponseDataColumn(
+        id="response__researcher_star",
+        description="Researcher-assigned star",
+        extractor=lambda resp: resp.researcher_star,
+        name="Star",
+    ),
+]
+
 # Columns for demographic data downloads. Extractor functions expect Response values dict,
 # rather than instance.
 DEMOGRAPHIC_COLUMNS = [
