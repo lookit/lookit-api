@@ -85,10 +85,11 @@ function updateInfoBox(index) {
       .join(""))
     .join("-");
   const parentId = `${rows[12].children[1].textContent}-${parentName || "anonymous"}`;
+  const parentUUID = rows[11].children[1].textContent
   
   // Recipient ID for sending message URL
   const url = new URL(document.querySelector('.contact-family').href);
-  url.searchParams.set("recipientId",parentId);
+  url.searchParams.set("recipient",parentUUID);
 
   // Short ID for child
   document.querySelector('.short-child-id').textContent =

@@ -134,6 +134,14 @@ class StudyParticipantContactView(
 
         return ctx
 
+    def get_initial(self):
+        initial = super().get_initial()
+        recipient = self.request.GET.get("recipient", "")
+
+        initial.update({"recipients": [recipient]})
+
+        return initial
+
     def post(self, request, *args, **kwargs):
         """Handles saving message and sending email.
 

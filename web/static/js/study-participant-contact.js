@@ -50,22 +50,22 @@ $('#id_recipients').select2({
 });
 
 // 
-document.querySelectorAll("#recipientFilter input").forEach(el =>
-    el.addEventListener("click", event => {
-        $('#id_recipients').val(null).trigger('change');  // Clear recipients field
+// document.querySelectorAll("#recipientFilter input").forEach(el =>
+//     el.addEventListener("click", event => {
+//         $('#id_recipients').val(null).trigger('change');  // Clear recipients field
 
-        // Show appropriate message for filter selected
-        document.querySelectorAll(".msg").forEach(el => el.classList.add('d-none'));
-        document.querySelectorAll(`.msg.${event.target.dataset.filter}`).forEach(el => el.classList.remove('d-none'));
+//         // Show appropriate message for filter selected
+//         document.querySelectorAll(".msg").forEach(el => el.classList.add('d-none'));
+//         document.querySelectorAll(`.msg.${event.target.dataset.filter}`).forEach(el => el.classList.remove('d-none'));
 
-        // Disable recipient if they've opted out of email type
-        document.querySelectorAll(`#id_recipients option:disabled`).forEach(el => el.disabled = false);
-        document.querySelectorAll(`#id_recipients option:not([data-${event.target.dataset.filter}=""])`).forEach(el => el.disabled = true);
+//         // Disable recipient if they've opted out of email type
+//         document.querySelectorAll(`#id_recipients option:disabled`).forEach(el => el.disabled = false);
+//         document.querySelectorAll(`#id_recipients option:not([data-${event.target.dataset.filter}=""])`).forEach(el => el.disabled = true);
 
-    })
-);
-// Initial recipient filter click on page load
-document.querySelector("#recipientFilter input:checked").click();
+//     })
+// );
+// // Initial recipient filter click on page load
+// document.querySelector("#recipientFilter input:checked").click();
 
 // Summernote init/config for email body field
 $('#id_body').summernote({
