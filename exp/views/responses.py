@@ -38,7 +38,11 @@ from exp.views.mixins import (
     SingleObjectFetchProtocol,
     StudyLookupMixin,
 )
-from exp.views.responses_data import DEMOGRAPHIC_COLUMNS, RESPONSE_COLUMNS
+from exp.views.responses_data import (
+    DEMOGRAPHIC_COLUMNS,
+    RESPONSE_COLUMNS,
+    RESPONSE_TABLE_COLUMNS,
+)
 from studies.models import Feedback, Response, Study, Video
 from studies.permissions import StudyPermission
 from studies.queries import (
@@ -867,14 +871,22 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
             "response__status",
             "response__completed",
             "response__is_preview",
+            "response__researcher_payment_status",
+            "response__researcher_response_status",
+            "response__researcher_star",
         ]
+
+        ALL_RESPONSE_TABLE_COLUMNS = RESPONSE_COLUMNS + RESPONSE_TABLE_COLUMNS
+
+        context["response_status_options"] = list(Response.RESPONSE_STATUS_CHOICES)
+        context["payment_status_options"] = list(Response.PAYMENT_STATUS_CHOICES)
 
         response_data = []
         for resp in context["object_list"]:
             # Info needed for table display of individual responses
             this_resp_data = {
                 col.id: col.extractor(resp)
-                for col in RESPONSE_COLUMNS
+                for col in ALL_RESPONSE_TABLE_COLUMNS
                 if col.id in columns_included_in_table
             }
             # Exception - store actual date object for date created
