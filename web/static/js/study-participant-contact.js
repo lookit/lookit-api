@@ -49,23 +49,29 @@ $('#id_recipients').select2({
     placeholder: "Select Email Recipients",
 });
 
-// 
-// document.querySelectorAll("#recipientFilter input").forEach(el =>
-//     el.addEventListener("click", event => {
-//         $('#id_recipients').val(null).trigger('change');  // Clear recipients field
+// Remove users based on email filter preferences
+document.querySelectorAll("#recipientFilter input").forEach(el =>
+    el.addEventListener("click", event => {
+        // Show appropriate message for filter selected
+        document.querySelectorAll(".msg").forEach(el => el.classList.add('d-none'));
+        document.querySelectorAll(`.msg.${event.target.dataset.filter}`).forEach(el => el.classList.remove('d-none'));
 
-//         // Show appropriate message for filter selected
-//         document.querySelectorAll(".msg").forEach(el => el.classList.add('d-none'));
-//         document.querySelectorAll(`.msg.${event.target.dataset.filter}`).forEach(el => el.classList.remove('d-none'));
+        // Disable recipient if they've opted out of email type
+        document.querySelectorAll(`#id_recipients option:disabled`).forEach(el => el.disabled = false);
+        document.querySelectorAll(`#id_recipients option:not([data-${event.target.dataset.filter}=""])`).forEach(el => el.disabled = true);
 
-//         // Disable recipient if they've opted out of email type
-//         document.querySelectorAll(`#id_recipients option:disabled`).forEach(el => el.disabled = false);
-//         document.querySelectorAll(`#id_recipients option:not([data-${event.target.dataset.filter}=""])`).forEach(el => el.disabled = true);
-
-//     })
-// );
-// // Initial recipient filter click on page load
-// document.querySelector("#recipientFilter input:checked").click();
+        // Get values of selected recipient who aren't disabled from email filter
+        const values = $('#id_recipients').val()
+            .map(s => document.querySelector(`#id_recipients option[value="${s}"]`))
+            .filter(s => !s.disabled)
+            .map(s =>s.value)
+        
+        // Trigger select2 to redraw recipients field
+        $('#id_recipients').val(values).trigger('change');
+    })
+);
+// Initial recipient filter click on page load
+document.querySelector("#recipientFilter input:checked").click();
 
 // Summernote init/config for email body field
 $('#id_body').summernote({
