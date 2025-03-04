@@ -210,7 +210,7 @@
                 {% endif %}
                 <form class="download"
                       method="get"
-                      action="{% url "exp:study-responses-single-download" pk=study.pk %}">
+                      action="{% url 'exp:study-responses-single-download' pk=study.pk %}">
                     {% csrf_token %}
                     <div class="card bg-light my-4">
                         <div class="card-body">
@@ -260,7 +260,7 @@
                             </form>
                         {% endif %}
                         <section class="my-3">
-                            <h5 class="card-title">Existing feedback:</h5>
+                            <h5 class="card-title">Existing feedback</h5>
                             {% for response in response_list %}
                                 <div id="feedback-list-for-{{ response.id }}" class="feedback-list">
                                     {% for feedback in response.feedback.all %}
