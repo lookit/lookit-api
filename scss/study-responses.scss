@@ -11,3 +11,15 @@ tr.preview-row {
 .list-group-hover .list-group-item:hover:not(.active) {
     background-color: $hovergray;
 }
+
+input[type="checkbox"].input-checkbox-hidden {
+    display: none;
+}
+
+.icon-star-filled {
+    color: darkorange;
+}
+
+.icon-hidden {
+    display: none;
+}
