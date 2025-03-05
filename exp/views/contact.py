@@ -186,7 +186,7 @@ class StudyParticipantContactView(
                     email, update the selection in the Recipients Filter and 
                     re-select the family ID.""",
                 )
-        except ValidationError:
+        except (ValidationError, User.DoesNotExist):
             pass
 
         return super().get(request, *args, **kwargs)
