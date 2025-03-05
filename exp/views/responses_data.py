@@ -365,10 +365,6 @@ RESPONSE_COLUMNS = [
             for (cond_frame, conds) in resp.conditions.items()
         ],
     ),
-]
-
-# Columns to display in the Individual Responses table that are not included in the Response downloads (i.e. the RESPONSE_COLUMNS list)
-RESPONSE_TABLE_COLUMNS = [
     ResponseDataColumn(
         id="response__researcher_payment_status",
         description="Researcher-assigned payment status",
