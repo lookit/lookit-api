@@ -178,7 +178,7 @@ class StudyParticipantContactView(
         try:
             user = User.objects.get(uuid=recipient_uuid)
 
-            if not user.email_next_session:
+            if not user.email_response_questions:
                 messages.warning(
                     request,
                     f"""User "{user.nickname or user.username}" has opted out of 
