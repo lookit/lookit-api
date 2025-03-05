@@ -1,4 +1,5 @@
 import datetime
+import uuid
 from unittest.mock import patch
 
 from django.contrib.sites.models import Site
@@ -303,4 +304,45 @@ class ContactViewTestCase(TestCase):
         self.assertEqual(
             {participant for participant in new_message.recipients.all()},
             {self.participants[3]},
+        )
+
+    def test_initial_form_data(self):
+        self.client.force_login(self.researcher_with_perm)
+        recipient_uuid = str(uuid.uuid4())
+        response = self.client.get(self.contact_url + f"?recipient={recipient_uuid}")
+
+        self.assertEqual(
+            response.context["form"].initial["recipients"], [recipient_uuid]
+        )
+
+    def test_recipient_optout_warning(self):
+        self.client.force_login(self.researcher_with_perm)
+        user = G(
+            User, is_active=True, nickname="NICKNAME", email_response_questions=False
+        )
+        # User has opted out of response questions
+        self.assertFalse(user.email_response_questions)
+
+        response = self.client.get(self.contact_url + f"?recipient={user.uuid}")
+        messages = list(map(str, response.context["messages"]))
+
+        # Message contains user's nickname
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(
+            " ".join(messages[0].split()),
+            f'User "{user.nickname}" has opted out of these types of emails. If you wish to send another type of email, update the selection in the Recipients Filter and re-select the family ID.',
+        )
+
+        #  User doesn't have a nickname...
+        user.nickname = ""
+        user.save()
+
+        response = self.client.get(self.contact_url + f"?recipient={user.uuid}")
+        messages = list(map(str, response.context["messages"]))
+
+        # ...then message should contain user's username
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(
+            " ".join(messages[0].split()),
+            f'User "{user.username}" has opted out of these types of emails. If you wish to send another type of email, update the selection in the Recipients Filter and re-select the family ID.',
         )
