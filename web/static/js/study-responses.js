@@ -66,3 +66,8 @@ const resp_table = $("#individualResponsesTable").DataTable({
 
 // Date Range UI and filter for "Date" column
 setupDataTableDates("individualResponsesTable", 3, "dateRangeFilter");
+
+// Toggle the filled/unfilled star image visibility on input checkbox state change
+$('.star-checkbox').change(function () {
+    $(this).labels().children('.icon-star').toggleClass('icon-hidden');
+});
