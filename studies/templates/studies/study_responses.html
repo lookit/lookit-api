@@ -3,12 +3,14 @@
 {% load exp_extras %}
 {% load web_extras %}
 {% load static %}
-{% load bootstrap_icons %}
 {% block title %}
     Responses | {{ study.name }}
 {% endblock title %}
 {% block head %}
     {{ block.super }}
+    <script src="{% static 'js/table-date-filter.js' %}"
+            type="application/javascript"
+            defer></script>
     <script src="{% static 'js/study-responses.js' %}"
             type="application/javascript"
             defer></script>
@@ -27,13 +29,6 @@
     </nav>
 {% endblock breadcrumb %}
 {% block content %}
-    {% bs_icon "chevron-up" as bs_icon_up %}
-    {% bs_icon "chevron-down" as bs_icon_down %}
-    {% url 'exp:study-responses-list' study.id as url_responses_list %}
-    {% query_transform request sort='status' as sort_status_up %}
-    {% query_transform request sort='-status' as sort_status_down %}
-    {% query_transform request sort='date_created' as sort_date_up %}
-    {% query_transform request sort='-date_created' as sort_date_down %}
     {% button_primary_classes as btn_primary_classes %}
     {% button_primary_classes "float-end my-3" as btn_primary_classes_create %}
     {% page_title "Individual Responses" %}
@@ -74,73 +69,80 @@
     </div>
     {% if response_data %}
         <div class="row my-4">
-            <div class="table-responsive my-4">
-                <table class="table table-striped table-hover caption-top study-responses">
-                    <caption class="visually-hidden">Study Responses</caption>
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Child ID</th>
-                            <th>Response UUID</th>
-                            <th>
-                                Status
-                                {% with url_responses_list|add:"?"|add:sort_status_up as url_sort_status_up %}
-                                    {% bootstrap_button bs_icon_up button_class="btn btn-link ps-1 pe-0" button_type="link" href=url_sort_status_up %}
-                                {% endwith %}
-                                {% with url_responses_list|add:"?"|add:sort_status_down as url_sort_status_down %}
-                                    {% bootstrap_button bs_icon_down button_class="btn btn-link px-0" button_type="link" href=url_sort_status_down %}
-                                {% endwith %}
-                            </th>
-                            <th>
-                                Date
-                                {% with url_responses_list|add:"?"|add:sort_date_up as url_sort_date_up %}
-                                    {% bootstrap_button bs_icon_up button_class="btn btn-link ps-1 pe-0" button_type="link" href=url_sort_date_up %}
-                                {% endwith %}
-                                {% with url_responses_list|add:"?"|add:sort_date_down as url_sort_date_down %}
-                                    {% bootstrap_button bs_icon_down button_class="btn btn-link px-0" button_type="link" href=url_sort_date_down %}
-                                {% endwith %}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for response in response_data %}
-                            <tr class="selectable-participant {% if response.response__is_preview %}preview-row{% endif %}"
-                                id="response-participant-{{ forloop.counter }}"
-                                data-response-id="{{ response.response__id }}"
-                                data-response-uuid="{{ response.response__uuid }}">
-                                <td>
-                                    {% if response.response__is_preview %}P{% endif %}
-                                </td>
-                                <td>{{ response.child__hashed_id }}</td>
-                                <td>{{ response.response__uuid|truncatechars:9 }}</td>
-                                <td>
-                                    {% if response.response__completed %}
-                                        Complete
-                                    {% else %}
-                                        Incomplete
-                                    {% endif %}
-                                </td>
-                                <td>{{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% if can_view_regular_responses and not can_view_preview_responses %}
-                    <p class="text-center">
-                        <em>Based on your permissions, no preview responses are shown.</em>
-                    </p>
-                {% endif %}
-                {% if not can_view_regular_responses and can_view_preview_responses %}
-                    <p class="text-center">
-                        <em>Based on your permissions, only preview responses are shown.</em>
-                    </p>
-                {% endif %}
-                {% if not can_view_regular_responses and not can_view_preview_responses %}
-                    <p class="text-center">
-                        <em>You do not have permission to view responses.</em>
-                    </p>
-                {% endif %}
-                <div class="text-end">{% include "studies/_paginator.html" with page=page_obj %}</div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-body table-responsive">
+                        <table id="individualResponsesTable" class="table">
+                            <caption class="d-none">Study Responses</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col">Child ID</th>
+                                    <th scope="col">Response UUID</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for response in response_data %}
+                                    <tr class="selectable-response {% if response.response__is_preview %}preview-row{% endif %}"
+                                        id="response-{{ forloop.counter }}"
+                                        data-response-id="{{ response.response__id }}"
+                                        data-response-uuid="{{ response.response__uuid }}">
+                                        <td>
+                                            {% if response.response__is_preview %}P{% endif %}
+                                        </td>
+                                        <td>{{ response.child__hashed_id }}</td>
+                                        <td>{{ response.response__uuid }}</td>
+                                        <td>
+                                            {% if response.response__completed %}
+                                                Complete
+                                            {% else %}
+                                                Incomplete
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control" placeholder="Filter Child ID" />
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control" placeholder="Filter Response UUID" />
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control" placeholder="Filter Status" />
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text"
+                                               id="dateRangeFilter"
+                                               class="form-control"
+                                               name="daterange" />
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        {% if can_view_regular_responses and not can_view_preview_responses %}
+                            <p class="text-center">
+                                <em>Based on your permissions, no preview responses are shown.</em>
+                            </p>
+                        {% endif %}
+                        {% if not can_view_regular_responses and can_view_preview_responses %}
+                            <p class="text-center">
+                                <em>Based on your permissions, only preview responses are shown.</em>
+                            </p>
+                        {% endif %}
+                        {% if not can_view_regular_responses and not can_view_preview_responses %}
+                            <p class="text-center">
+                                <em>You do not have permission to view responses.</em>
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row my-4">
@@ -179,7 +181,7 @@
                 {% endif %}
                 <form class="download"
                       method="get"
-                      action="{% url "exp:study-responses-single-download" pk=study.pk %}">
+                      action="{% url 'exp:study-responses-single-download' pk=study.pk %}">
                     {% csrf_token %}
                     <div class="card bg-light my-4">
                         <div class="card-body">
@@ -229,7 +231,7 @@
                             </form>
                         {% endif %}
                         <section class="my-3">
-                            <h5 class="card-title">Existing feedback:</h5>
+                            <h5 class="card-title">Existing feedback</h5>
                             {% for response in response_list %}
                                 <div id="feedback-list-for-{{ response.id }}" class="feedback-list">
                                     {% for feedback in response.feedback.all %}

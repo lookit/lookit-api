@@ -1,15 +1,15 @@
-$(".selectable-participant").first().addClass('selected');
-let currentResponseId = $(".selectable-participant").first().data("response-id");
+$(".selectable-response").first().addClass('selected');
+let currentResponseId = $(".selectable-response").first().data("response-id");
 showResponse(1);
 showFeedbackList(currentResponseId);
 $('form.download [name=response_id]').val(currentResponseId);
 showAttachments(1);
 
-$('.selectable-participant').click(function () {
+$('.selectable-response').click(function () {
     // Shows selected individual's response data
     const id = $(this)[0].id;
     const index = extractIdNumber(id);
-    $('.selectable-participant').removeClass('selected');
+    $('.selectable-response').removeClass('selected');
     $('#' + id).addClass('selected');
     showResponse(index);
     showAttachments(index);
@@ -38,3 +38,32 @@ function showResponse(index) {
     $('.response-summary').hide();
     $('#response-summary-' + index).show();
 }
+
+// Datatable init/config for responses table
+const resp_table = $("#individualResponsesTable").DataTable({
+    order: [[4, 'desc']], // Sort on "Date" column
+    columnDefs: [
+        { className: "column-text-search", targets: [1,2,3] }, // add class to text search columns
+        { className: "dt-nowrap", "targets": 4 }, // don't wrap "Date" column
+        { type: "date", targets: 4 } // set type for "Date" column
+    ],
+    initComplete: function () {
+        // Apply the text search to any column with the class "column-text-search"
+        this.api()
+            .columns(".column-text-search")
+            .every(function () {
+                let column = this;
+                // Select input element for this column and apply search
+                $('input', this.footer()).on('keyup change', function () {
+                    if (column.search() !== this.value) {
+                        column
+                            .search(this.value)
+                            .draw();
+                        }
+                    });
+            });
+    },
+});
+
+// Date Range UI and filter for "Date" column
+setupDataTableDates("individualResponsesTable", 4, "dateRangeFilter");

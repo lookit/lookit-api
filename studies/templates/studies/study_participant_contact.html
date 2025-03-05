@@ -8,6 +8,9 @@
 {% load tz %}
 {% block head %}
     {{ block.super }}
+    <script src="{% static 'js/table-date-filter.js' %}"
+            type="application/javascript"
+            defer></script>
     <script src="{% static 'js/study-participant-contact.js' %}" defer></script>
 {% endblock head %}
 {% block title %}

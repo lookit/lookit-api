@@ -1,7 +1,7 @@
 {% load exp_extras %}
 <ul class="nav nav-tabs mt-2">
     <li class="nav-item">
-        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_created' %}"
+        <a href="{% url 'exp:study-responses-list' study.id %}"
            {% if active == 'individual' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>
             Individual <span class="d-none d-md-inline">Responses</span>
         </a>

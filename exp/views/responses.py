@@ -826,26 +826,19 @@ class DemographicDownloadMixin(CanViewStudyResponsesMixin, MultipleObjectMixin):
         )
 
 
-class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
+class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
     """
     View to display a list of study responses.
     """
 
     template_name = "studies/study_responses.html"
-
-    def get_ordering(self):
-        """
-        Determine sort field and order. Sorting on id actually sorts on child id, not response id.
-        Sorting on status, actually sorts on 'completed' field, where we are alphabetizing
-        "in progress" and "completed"
-        """
-        orderby = self.request.GET.get("sort", "id")
-        return orderby.replace("id", "child__id").replace("status", "completed")
+    model = Response
 
     def get_queryset(self):
+        study = self.study
         return (
-            super()
-            .get_queryset()
+            study.responses_for_researcher(self.request.user)
+            .order_by("-date_created")
             .prefetch_related(
                 "consent_rulings__arbiter",
                 Prefetch(
@@ -859,13 +852,10 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
 
     def get_context_data(self, **kwargs):
         """
-        In addition to the study, adds several items to the context dictionary.  Study results
-        are paginated.
+        In addition to the study, adds several items to the context dictionary.
         """
         context = super().get_context_data(**kwargs)
         context["study"] = study = self.study
-        paginated_responses = context["object_list"]
-
         columns_included_in_summary = study.columns_included_in_summary()
 
         columns_included_in_table = [
@@ -878,7 +868,7 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
         ]
 
         response_data = []
-        for resp in paginated_responses:
+        for resp in context["object_list"]:
             # Info needed for table display of individual responses
             this_resp_data = {
                 col.id: col.extractor(resp)
