@@ -40,6 +40,13 @@ input[type="checkbox"].input-checkbox-hidden {
 .icon-hidden {
   display: none; }
 
+.truncate-parent-feedback {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; }
+
 /*!
    * Bootstrap  v5.2.0 (https://getbootstrap.com/)
    * Copyright 2011-2022 The Bootstrap Authors
