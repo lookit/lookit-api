@@ -110,207 +110,212 @@
                                                 Incomplete
                                             {% endif %}
                                         </td>
-                                        <td>{{ response.response__date_created|localtime|date:"n/j/Y g:i A"|default:"N/A" }}</td>
-                                        <td>{{ response.response__date_created|timesince }}</td>
+                                        <td>
+                                            <!-- This turns off the converstion from UTC to the project TIME_ZONE (America/NY) -->
+                                            {% localtime off %}
+                                            {{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}
+                                        {% endlocaltime %}
+                                    </td>
+                                    <td>{{ response.response__date_created|timesince }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">
+                                    <input type="text" class="form-control" placeholder="Filter Child ID" />
+                                </th>
+                                <th scope="col">
+                                    <input type="text" class="form-control" placeholder="Filter Response UUID" />
+                                </th>
+                                <th scope="col">
+                                    <input type="text" class="form-control" placeholder="Filter Status" />
+                                </th>
+                                <th scope="col">
+                                    <input type="text"
+                                           id="dateRangeFilter"
+                                           class="form-control"
+                                           name="daterange" />
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    {% if can_view_regular_responses and not can_view_preview_responses %}
+                        <p class="text-center">
+                            <em>Based on your permissions, no preview responses are shown.</em>
+                        </p>
+                    {% endif %}
+                    {% if not can_view_regular_responses and can_view_preview_responses %}
+                        <p class="text-center">
+                            <em>Based on your permissions, only preview responses are shown.</em>
+                        </p>
+                    {% endif %}
+                    {% if not can_view_regular_responses and not can_view_preview_responses %}
+                        <p class="text-center">
+                            <em>You do not have permission to view responses.</em>
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row my-4">
+        <div class="col">
+            {% if study.show_videos %}
+                <div class="card bg-light my-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Download videos</h5>
+                        <p class="card-text fst-italic text-muted mt-2">
+                            <em class="my-2">Video recordings usually become available for download after a few minutes, but may take as long as 24 hours to appear.
+                                <br>
+                                <br>
+                            Note: In rare cases, video uploads can be damaged or lost, e.g. because the participant left the study early, there was an internet connection problem, etc. We automatically attempt to restore any incomplete video files that reach the servers. If video files do not appear here after 24 hours, they unfortunately can't be recovered.</em>
+                        </p>
+                        {% for response in response_data %}
+                            <div class="response-attachments"
+                                 id="resp-attachment-{{ forloop.counter }}"
+                                 style="display:none">
+                                {% for video in response.videos %}
+                                    <div class="row pt-1">
+                                        <div class="col-12 col-md-8">{{ video.display_name|wordwrap:45 }}</div>
+                                        <div class="col-12 col-md-4">
+                                            <a target="_blank"
+                                               rel="noreferrer noopener"
+                                               href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=view"
+                                               class="{% button_primary_classes %} btn-sm">View</a>
+                                            <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
+                                               class="{% button_primary_classes %} btn-sm">Download</a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            <form class="download"
+                  method="get"
+                  action="{% url 'exp:study-responses-single-download' pk=study.pk %}">
+                {% csrf_token %}
+                <div class="card bg-light my-4">
+                    <div class="card-body">
+                        <input type="hidden" name="response_id" />
+                        <h5 class="card-title">Download response</h5>
+                        <p class="card-text">Include with response download:</p>
+                        <div class="two-column-list mb-3">{% include "studies/_data_options.html" with data_options=data_options %}</div>
+                        <p class="card-text">
+                            <label for="data-type-selector">Data Type</label>
+                        </p>
+                        <div class="input-group">
+                            <select class="form-select"
+                                    id="data-type-selector"
+                                    name="data-type-selector"
+                                    aria-label="Select data type">
+                                <option value="json">JSON</option>
+                                <option value="csv">CSV summary</option>
+                                <option value="framedata">CSV frame data</option>
+                            </select>
+                            <span class="input-group-btn">
+                                {% bootstrap_button "Download response" button_type="submit" button_class=btn_primary_classes name="download-individual-data" %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="card bg-light my-4">
+                <div class="card-body">
+                    {% if can_edit_feedback %}
+                        <form class="feedback"
+                              method="post"
+                              action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">
+                            {% csrf_token %}
+                            <h5 class="card-title">Give new feedback</h5>
+                            <section class="form-group">
+                                <label class="visually-hidden" for="response-feedback">Response feedback:</label>
+                                <textarea id="response-feedback"
+                                          class="form-control"
+                                          name="comment"
+                                          placeholder="Give feedback directly to the family/child here. This feedback will appear alongside the other session information in the family's study history."
+                                          rows="4"
+                                          cols="50"></textarea>
+                                <input type="hidden" name="response_id" />
+                                {% bootstrap_button "Create" button_type="submit" button_class=btn_primary_classes_create %}
+                                <br />
+                            </section>
+                        </form>
+                    {% endif %}
+                    <section class="my-3">
+                        <h5 class="card-title">Existing feedback</h5>
+                        {% for response in response_list %}
+                            <div id="feedback-list-for-{{ response.id }}" class="feedback-list">
+                                {% for feedback in response.feedback.all %}
+                                    {% if can_edit_feedback %}
+                                        <form method="post"
+                                              class="small"
+                                              action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">
+                                            {% csrf_token %}
+                                            <div class="form-group">
+                                                <label class="visually-hidden" for="feedback-edit-{{ feedback.id }}">
+                                                    <strong>Edit Feedback</strong>
+                                                </label>
+                                                <textarea id="feedback-edit-{{ feedback.id }}"
+                                                          class="form-control"
+                                                          name="comment"
+                                                          rows="2"
+                                                          cols="50">{{ feedback.comment }}</textarea>
+                                                <input type="hidden" name="feedback_id" value="{{ feedback.id }}" />
+                                                {% bootstrap_button "Update" button_type="submit" button_class="btn btn-warning float-end mt-3" %}
+                                                <footer class="py-2">
+                                                    Added by: {{ feedback.researcher.get_full_name }}
+                                                </footer>
+                                            </div>
+                                        </form>
+                                    {% else %}
+                                        <p class="card-text">{{ feedback.comment }}</p>
+                                        <footer class="py-2">
+                                            {{ feedback.researcher.get_full_name }}
+                                        </footer>
+                                    {% endif %}
+                                {% empty %}
+                                    <div class="empty-text">No feedback</div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </section>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            {% for response in response_data %}
+                <div class="card bg-light my-4 response-summary"
+                     id="response-summary-{{ forloop.counter }}"
+                     style="display:none">
+                    <div class="card-body">
+                        <h5 class="card-title">Response details</h5>
+                        <table class="table table-sm table-hover response-details">
+                            <caption class="visually-hidden">Response Details</caption>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pair in response.summary %}
+                                    <tr class="{% if pair.name == 'Video privacy level' %} {% if pair.value == 'public' %} list-group-item-success {% elif pair.value == 'scientific' %} list-group-item-warning {% else %} list-group-item-danger {% endif %} {% endif %}">
+                                        <td tabindex="0" title="{{ pair.description }}">{{ pair.name }}</td>
+                                        <td>{{ pair.value }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th scope="col"></th>
-                                    <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Child ID" />
-                                    </th>
-                                    <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Response UUID" />
-                                    </th>
-                                    <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Status" />
-                                    </th>
-                                    <th scope="col">
-                                        <input type="text"
-                                               id="dateRangeFilter"
-                                               class="form-control"
-                                               name="daterange" />
-                                    </th>
-                                </tr>
-                            </tfoot>
                         </table>
-                        {% if can_view_regular_responses and not can_view_preview_responses %}
-                            <p class="text-center">
-                                <em>Based on your permissions, no preview responses are shown.</em>
-                            </p>
-                        {% endif %}
-                        {% if not can_view_regular_responses and can_view_preview_responses %}
-                            <p class="text-center">
-                                <em>Based on your permissions, only preview responses are shown.</em>
-                            </p>
-                        {% endif %}
-                        {% if not can_view_regular_responses and not can_view_preview_responses %}
-                            <p class="text-center">
-                                <em>You do not have permission to view responses.</em>
-                            </p>
-                        {% endif %}
                     </div>
                 </div>
-            </div>
+            {% endfor %}
         </div>
-        <div class="row my-4">
-            <div class="col">
-                {% if study.show_videos %}
-                    <div class="card bg-light my-4">
-                        <div class="card-body">
-                            <h5 class="card-title">Download videos</h5>
-                            <p class="card-text fst-italic text-muted mt-2">
-                                <em class="my-2">Video recordings usually become available for download after a few minutes, but may take as long as 24 hours to appear.
-                                    <br>
-                                    <br>
-                                Note: In rare cases, video uploads can be damaged or lost, e.g. because the participant left the study early, there was an internet connection problem, etc. We automatically attempt to restore any incomplete video files that reach the servers. If video files do not appear here after 24 hours, they unfortunately can't be recovered.</em>
-                            </p>
-                            {% for response in response_data %}
-                                <div class="response-attachments"
-                                     id="resp-attachment-{{ forloop.counter }}"
-                                     style="display:none">
-                                    {% for video in response.videos %}
-                                        <div class="row pt-1">
-                                            <div class="col-12 col-md-8">{{ video.display_name|wordwrap:45 }}</div>
-                                            <div class="col-12 col-md-4">
-                                                <a target="_blank"
-                                                   rel="noreferrer noopener"
-                                                   href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=view"
-                                                   class="{% button_primary_classes %} btn-sm">View</a>
-                                                <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
-                                                   class="{% button_primary_classes %} btn-sm">Download</a>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
-                <form class="download"
-                      method="get"
-                      action="{% url 'exp:study-responses-single-download' pk=study.pk %}">
-                    {% csrf_token %}
-                    <div class="card bg-light my-4">
-                        <div class="card-body">
-                            <input type="hidden" name="response_id" />
-                            <h5 class="card-title">Download response</h5>
-                            <p class="card-text">Include with response download:</p>
-                            <div class="two-column-list mb-3">{% include "studies/_data_options.html" with data_options=data_options %}</div>
-                            <p class="card-text">
-                                <label for="data-type-selector">Data Type</label>
-                            </p>
-                            <div class="input-group">
-                                <select class="form-select"
-                                        id="data-type-selector"
-                                        name="data-type-selector"
-                                        aria-label="Select data type">
-                                    <option value="json">JSON</option>
-                                    <option value="csv">CSV summary</option>
-                                    <option value="framedata">CSV frame data</option>
-                                </select>
-                                <span class="input-group-btn">
-                                    {% bootstrap_button "Download response" button_type="submit" button_class=btn_primary_classes name="download-individual-data" %}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-                <div class="card bg-light my-4">
-                    <div class="card-body">
-                        {% if can_edit_feedback %}
-                            <form class="feedback"
-                                  method="post"
-                                  action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">
-                                {% csrf_token %}
-                                <h5 class="card-title">Give new feedback</h5>
-                                <section class="form-group">
-                                    <label class="visually-hidden" for="response-feedback">Response feedback:</label>
-                                    <textarea id="response-feedback"
-                                              class="form-control"
-                                              name="comment"
-                                              placeholder="Give feedback directly to the family/child here. This feedback will appear alongside the other session information in the family's study history."
-                                              rows="4"
-                                              cols="50"></textarea>
-                                    <input type="hidden" name="response_id" />
-                                    {% bootstrap_button "Create" button_type="submit" button_class=btn_primary_classes_create %}
-                                    <br />
-                                </section>
-                            </form>
-                        {% endif %}
-                        <section class="my-3">
-                            <h5 class="card-title">Existing feedback</h5>
-                            {% for response in response_list %}
-                                <div id="feedback-list-for-{{ response.id }}" class="feedback-list">
-                                    {% for feedback in response.feedback.all %}
-                                        {% if can_edit_feedback %}
-                                            <form method="post"
-                                                  class="small"
-                                                  action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">
-                                                {% csrf_token %}
-                                                <div class="form-group">
-                                                    <label class="visually-hidden" for="feedback-edit-{{ feedback.id }}">
-                                                        <strong>Edit Feedback</strong>
-                                                    </label>
-                                                    <textarea id="feedback-edit-{{ feedback.id }}"
-                                                              class="form-control"
-                                                              name="comment"
-                                                              rows="2"
-                                                              cols="50">{{ feedback.comment }}</textarea>
-                                                    <input type="hidden" name="feedback_id" value="{{ feedback.id }}" />
-                                                    {% bootstrap_button "Update" button_type="submit" button_class="btn btn-warning float-end mt-3" %}
-                                                    <footer class="py-2">
-                                                        Added by: {{ feedback.researcher.get_full_name }}
-                                                    </footer>
-                                                </div>
-                                            </form>
-                                        {% else %}
-                                            <p class="card-text">{{ feedback.comment }}</p>
-                                            <footer class="py-2">
-                                                {{ feedback.researcher.get_full_name }}
-                                            </footer>
-                                        {% endif %}
-                                    {% empty %}
-                                        <div class="empty-text">No feedback</div>
-                                    {% endfor %}
-                                </div>
-                            {% endfor %}
-                        </section>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                {% for response in response_data %}
-                    <div class="card bg-light my-4 response-summary"
-                         id="response-summary-{{ forloop.counter }}"
-                         style="display:none">
-                        <div class="card-body">
-                            <h5 class="card-title">Response details</h5>
-                            <table class="table table-sm table-hover response-details">
-                                <caption class="visually-hidden">Response Details</caption>
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Value</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for pair in response.summary %}
-                                        <tr class="{% if pair.name == 'Video privacy level' %} {% if pair.value == 'public' %} list-group-item-success {% elif pair.value == 'scientific' %} list-group-item-warning {% else %} list-group-item-danger {% endif %} {% endif %}">
-                                            <td tabindex="0" title="{{ pair.description }}">{{ pair.name }}</td>
-                                            <td>{{ pair.value }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    {% else %}
-        <div class="empty-text">No responses with confirmed consent.</div>
-    {% endif %}
+    </div>
+{% else %}
+    <div class="empty-text">No responses with confirmed consent.</div>
+{% endif %}
 {% endblock content %}
