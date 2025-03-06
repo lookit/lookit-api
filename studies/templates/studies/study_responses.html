@@ -81,6 +81,7 @@
                                     <th scope="col">Response UUID</th>
                                     <th scope="col">Status</th>
                                     <th scope="col">Date</th>
+                                    <th scope="col">Time Elapsed</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -102,6 +103,7 @@
                                             {% endif %}
                                         </td>
                                         <td>{{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
+                                        <td>{{ response.response__date_created|timesince }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
