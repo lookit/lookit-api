@@ -43,7 +43,7 @@ function showResponse(index) {
 
 function showHideColumns() {
     // Elements containing links 
-    const show_hide_columns = [{ col: 4, name: "Date" }]
+    const show_hide_columns = [{ col: 4, name: "Date" }, { col: 5, name: "Time Elapsed" }]
     const hide_show_elements = show_hide_columns.map(el => {
         return `<a href class="toggle-vis" data-column="${el.col}">${el.name}</a>`
     })
@@ -70,7 +70,7 @@ const resp_table = $("#individualResponsesTable").DataTable({
         // For "Date" column, set type and don't wrap "Date" column. For "Time Elapsed" column, sort by "Date" column's data.
         { className: "dt-nowrap", type: "date", orderData: 4, targets: [4, 5] },
     ],
-    bAutoWidth: false, // prevents hide/show cols from growing table
+    autoWidth: false, // prevents hide/show cols from growing table
     dom: "<'row'<'col-sm-12 col-md-4'l><'show-hide-cols col-sm-12 col-md-4'><'col-sm-12 col-md-4'f>><'row dt-row'<'col-sm-12'tr>><'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
     initComplete: function () {
         // Apply the text search to any column with the class "column-text-search"
