@@ -45,9 +45,10 @@ function showResponse(index) {
 const resp_table = $("#individualResponsesTable").DataTable({
     order: [[4, 'desc']], // Sort on "Date" column
     columnDefs: [
-        { className: "column-text-search", targets: [1,2,3] }, // add class to text search columns
-        { className: "dt-nowrap", "targets": 4 }, // don't wrap "Date" column
-        { type: "date", targets: 4 } // set type for "Date" column
+        // add class to text search columns
+        { className: "column-text-search", targets: [1,2,3] }, 
+        // For "Date" column, set type and don't wrap "Date" column. For "Time Elapsed" column, sort by "Date" column's data.
+        { className: "dt-nowrap", type: "date", orderData: 4, targets: [4,5] }, 
     ],
     initComplete: function () {
         // Apply the text search to any column with the class "column-text-search"
