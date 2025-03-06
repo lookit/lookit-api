@@ -365,6 +365,28 @@ RESPONSE_COLUMNS = [
             for (cond_frame, conds) in resp.conditions.items()
         ],
     ),
+    ResponseDataColumn(
+        id="response__researcher_payment_status",
+        description="Researcher-assigned payment status",
+        extractor=lambda resp: Response.PAYMENT_STATUS_CHOICES[
+            resp.researcher_payment_status
+        ],
+        name="Payment Status",
+    ),
+    ResponseDataColumn(
+        id="response__researcher_session_status",
+        description="Researcher-assigned session status",
+        extractor=lambda resp: Response.SESSION_STATUS_CHOICES[
+            resp.researcher_session_status
+        ],
+        name="Session Status",
+    ),
+    ResponseDataColumn(
+        id="response__researcher_star",
+        description="Researcher-assigned star",
+        extractor=lambda resp: resp.researcher_star,
+        name="Star",
+    ),
 ]
 
 # Columns for demographic data downloads. Extractor functions expect Response values dict,

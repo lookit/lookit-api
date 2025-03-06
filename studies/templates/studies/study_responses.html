@@ -1,5 +1,6 @@
 {% extends "exp/base.html" %}
 {% load django_bootstrap5 %}
+{% load bootstrap_icons %}
 {% load exp_extras %}
 {% load web_extras %}
 {% load static %}
@@ -85,10 +86,25 @@
                                 <tr>
                                     <th scope="col"></th>
                                     <th scope="col">Child ID</th>
-                                    <th scope="col">Response UUID</th>
-                                    <th scope="col">Status</th>
+                                    <th scope="col">Response ID</th>
                                     <th scope="col">Date</th>
                                     <th scope="col">Time Elapsed</th>
+                                    <th scope="col">
+                                        Exit Frame
+                                        <br>
+                                        Status
+                                    </th>
+                                    <th scope="col">
+                                        Payment
+                                        <br>
+                                        Status
+                                    </th>
+                                    <th scope="col">
+                                        Session
+                                        <br>
+                                        Status
+                                    </th>
+                                    <th scope="col">Star</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -100,8 +116,10 @@
                                         <td>
                                             {% if response.response__is_preview %}P{% endif %}
                                         </td>
-                                        <td>{{ response.child__hashed_id }}</td>
-                                        <td>{{ response.response__uuid }}</td>
+                                        <td>{{ response.child_id_slug }}</td>
+                                        <td>{{ response.response__id }}</td>
+                                        <td>{{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
+                                        <td>{{ response.response__date_created|timesince }}</td>
                                         <td>
                                             {% if response.response__completed %}
                                                 Complete
@@ -109,8 +127,48 @@
                                                 Incomplete
                                             {% endif %}
                                         </td>
-                                        <td>{{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
-                                        <td>{{ response.response__date_created|timesince }}</td>
+                                        <td>
+                                            <select name="payment-status"
+                                                    id="payment-status-{{ forloop.counter }}"
+                                                    class="researcher-editable"
+                                                    autocomplete="off"
+                                                    aria-label="Set optional payment status for this response">
+                                                {% for pstatus in payment_status_options %}
+                                                    <option value="{{ pstatus.0 }}"
+                                                            {% if response.response__researcher_payment_status == pstatus.1 %}selected{% endif %}>
+                                                        {{ pstatus.1 }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select name="response-status"
+                                                    id="response-status-{{ forloop.counter }}"
+                                                    class="researcher-editable"
+                                                    autocomplete="off"
+                                                    aria-label="Set optional session status for this response">
+                                                {% for sstatus in session_status_options %}
+                                                    <option value="{{ sstatus.0 }}"
+                                                            {% if response.response__researcher_session_status == sstatus.1 %}selected{% endif %}>
+                                                        {{ sstatus.1 }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="checkbox"
+                                                   name="toggle_star"
+                                                   id="star-checkbox-{{ forloop.counter }}"
+                                                   class="researcher-editable input-checkbox-hidden star-checkbox"
+                                                   aria-label="Toggle optional Star selection for this response" />
+                                            <label for="star-checkbox-{{ forloop.counter }}">
+                                                {% if response.response__researcher_star %}
+                                                    {% bs_icon "star" extra_classes="icon-star icon-hidden" size='1.5em' %}{% bs_icon "star-fill" extra_classes="icon-star icon-star-filled" size='1.5em' %}
+                                                {% else %}
+                                                    {% bs_icon "star" extra_classes="icon-star" size='1.5em' %}{% bs_icon "star-fill" extra_classes="icon-star icon-star-filled icon-hidden" size='1.5em' %}
+                                                {% endif %}
+                                            </label>
+                                        </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -121,16 +179,27 @@
                                         <input type="text" class="form-control" placeholder="Filter Child ID" />
                                     </th>
                                     <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Response UUID" />
-                                    </th>
-                                    <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Status" />
+                                        <input type="text" class="form-control" placeholder="Filter Response ID" />
                                     </th>
                                     <th scope="col">
                                         <input type="text"
                                                id="dateRangeFilter"
                                                class="form-control"
                                                name="daterange" />
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text"
+                                               class="form-control"
+                                               placeholder="Filter Exit Frame Status" />
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control" placeholder="Filter Payment Status" />
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control" placeholder="Filter Session Status" />
+                                    </th>
+                                    <th scope="col">
+                                        <input type="text" class="form-control" placeholder="Filter Star" />
                                     </th>
                                 </tr>
                             </tfoot>

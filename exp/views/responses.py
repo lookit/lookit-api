@@ -18,6 +18,7 @@ from django.http import (
     StreamingHttpResponse,
 )
 from django.shortcuts import redirect, reverse
+from django.utils.text import slugify
 from django.views import generic
 from django.views.generic.base import View
 from django.views.generic.detail import SingleObjectMixin
@@ -860,12 +861,19 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
 
         columns_included_in_table = [
             "child__hashed_id",
+            "child__name",
             "response__uuid",
             "response__id",
             "response__status",
             "response__completed",
             "response__is_preview",
+            "response__researcher_payment_status",
+            "response__researcher_session_status",
+            "response__researcher_star",
         ]
+
+        context["session_status_options"] = list(Response.SESSION_STATUS_CHOICES)
+        context["payment_status_options"] = list(Response.PAYMENT_STATUS_CHOICES)
 
         response_data = []
         for resp in context["object_list"]:
@@ -877,6 +885,9 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
             }
             # Exception - store actual date object for date created
             this_resp_data["response__date_created"] = resp.date_created
+            this_resp_data["child_id_slug"] = (
+                f'{this_resp_data["child__hashed_id"]}-{slugify(this_resp_data["child__name"] or "")}'
+            )
             # info needed for summary table shown at right
             this_resp_data["summary"] = [
                 {

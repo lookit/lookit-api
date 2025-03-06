@@ -21,7 +21,7 @@ body.superuser {
   background-size: 400px 400px; }
 
 tr.preview-row {
-  background: url("../images/preview.svg") repeat transparent; }
+  background: url("/static/images/preview.svg") repeat transparent; }
 
 .two-column-list {
   column-count: 2;
@@ -30,6 +30,15 @@ tr.preview-row {
 
 .list-group-hover .list-group-item:hover:not(.active) {
   background-color: #f5f5f5; }
+
+input[type="checkbox"].input-checkbox-hidden {
+  display: none; }
+
+.icon-star-filled {
+  color: #f3c90f; }
+
+.icon-hidden {
+  display: none; }
 
 .truncate-parent-feedback {
   overflow: hidden;
