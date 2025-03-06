@@ -88,7 +88,7 @@
                                     <th scope="col">Child ID</th>
                                     <th scope="col">Response UUID</th>
                                     <th scope="col">Status</th>
-                                    <th scope="col">Date</th>
+                                    <th scope="col">Date (UTC)</th>
                                     <th scope="col">Time Elapsed</th>
                                 </tr>
                             </thead>
@@ -305,7 +305,9 @@
                                 {% for pair in response.summary %}
                                     <tr class="{% if pair.name == 'Video privacy level' %} {% if pair.value == 'public' %} list-group-item-success {% elif pair.value == 'scientific' %} list-group-item-warning {% else %} list-group-item-danger {% endif %} {% endif %}">
                                         <td tabindex="0" title="{{ pair.description }}">{{ pair.name }}</td>
-                                        <td>{{ pair.value }}</td>
+                                        {# djlint:off #}
+                                        <td>{{ pair.value }}{% if pair.name == 'Date created' %}UTC{% endif %}</td>
+                                        {# djlint:on #}
                                     </tr>
                                 {% endfor %}
                             </tbody>
