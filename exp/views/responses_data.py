@@ -374,12 +374,12 @@ RESPONSE_COLUMNS = [
         name="Payment Status",
     ),
     ResponseDataColumn(
-        id="response__researcher_response_status",
-        description="Researcher-assigned response status",
-        extractor=lambda resp: Response.RESPONSE_STATUS_CHOICES[
-            resp.researcher_response_status
+        id="response__researcher_session_status",
+        description="Researcher-assigned session status",
+        extractor=lambda resp: Response.SESSION_STATUS_CHOICES[
+            resp.researcher_session_status
         ],
-        name="Response Status",
+        name="Session Status",
     ),
     ResponseDataColumn(
         id="response__researcher_star",

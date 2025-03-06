@@ -1004,15 +1004,20 @@ class ResponseApiManager(models.Manager):
 class Response(models.Model):
     PAYMENT_STATUS_CHOICES = Choices(
         ("", _("")),
+        ("review", _("Needs review")),
+        ("to_pay", _("To pay")),
+        ("do_not_pay", _("Do not pay")),
         ("paid", _("Paid")),
-        ("nopay", _("Do Not Pay")),
     )
-    RESPONSE_STATUS_CHOICES = Choices(
+    SESSION_STATUS_CHOICES = Choices(
         ("", _("")),
-        ("pending", _("Pending")),
-        ("underrev", _("Under Review")),
-        ("rejected", _("Rejected")),
-        ("accepted", _("Accepted")),
+        ("to_schedule", _("To schedule")),
+        ("scheduled", _("Scheduled")),
+        ("session_attended", _("Session attended")),
+        ("session_complete", _("Session complete")),
+        ("follow_up", _("Follow up")),
+        ("communication_complete", _("Communication complete")),
+        ("withdrawn_closed", _("Withdrawn or closed")),
     )
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
@@ -1050,10 +1055,10 @@ class Response(models.Model):
     )
     # Researcher-editable fields
     researcher_payment_status = models.CharField(
-        choices=PAYMENT_STATUS_CHOICES, max_length=5, blank=True
+        choices=PAYMENT_STATUS_CHOICES, max_length=10, blank=True
     )
-    researcher_response_status = models.CharField(
-        choices=RESPONSE_STATUS_CHOICES, max_length=8, blank=True
+    researcher_session_status = models.CharField(
+        choices=SESSION_STATUS_CHOICES, max_length=22, blank=True
     )
     researcher_star = models.BooleanField(default=False)
 

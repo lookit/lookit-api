@@ -868,11 +868,11 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
             "response__completed",
             "response__is_preview",
             "response__researcher_payment_status",
-            "response__researcher_response_status",
+            "response__researcher_session_status",
             "response__researcher_star",
         ]
 
-        context["response_status_options"] = list(Response.RESPONSE_STATUS_CHOICES)
+        context["session_status_options"] = list(Response.SESSION_STATUS_CHOICES)
         context["payment_status_options"] = list(Response.PAYMENT_STATUS_CHOICES)
 
         response_data = []

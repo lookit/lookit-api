@@ -92,7 +92,7 @@
                                         Status
                                     </th>
                                     <th scope="col">
-                                        Response
+                                        Session
                                         <br>
                                         Status
                                     </th>
@@ -137,11 +137,11 @@
                                                     id="response-status-{{ forloop.counter }}"
                                                     class="researcher-editable"
                                                     autocomplete="off"
-                                                    aria-label="Set optional response status for this response">
-                                                {% for rstatus in response_status_options %}
-                                                    <option value="{{ rstatus.0 }}"
-                                                            {% if response.response__researcher_response_status == rstatus.1 %}selected{% endif %}>
-                                                        {{ rstatus.1 }}
+                                                    aria-label="Set optional session status for this response">
+                                                {% for sstatus in session_status_options %}
+                                                    <option value="{{ sstatus.0 }}"
+                                                            {% if response.response__researcher_session_status == sstatus.1 %}selected{% endif %}>
+                                                        {{ sstatus.1 }}
                                                     </option>
                                                 {% endfor %}
                                             </select>
@@ -187,7 +187,7 @@
                                         <input type="text" class="form-control" placeholder="Filter Payment Status" />
                                     </th>
                                     <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Response Status" />
+                                        <input type="text" class="form-control" placeholder="Filter Session Status" />
                                     </th>
                                     <th scope="col">
                                         <input type="text" class="form-control" placeholder="Filter Star" />
