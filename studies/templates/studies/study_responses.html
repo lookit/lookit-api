@@ -306,7 +306,7 @@
                                     <tr class="{% if pair.name == 'Video privacy level' %} {% if pair.value == 'public' %} list-group-item-success {% elif pair.value == 'scientific' %} list-group-item-warning {% else %} list-group-item-danger {% endif %} {% endif %}">
                                         <td tabindex="0" title="{{ pair.description }}">{{ pair.name }}</td>
                                         {# djlint:off #}
-                                        <td>{{ pair.value }}{% if pair.name == 'Date created' %}UTC{% endif %}</td>
+                                        <td>{{ pair.value }}{% if pair.name == 'Date created' %} UTC{% endif %}</td>
                                         {# djlint:on #}
                                     </tr>
                                 {% endfor %}
