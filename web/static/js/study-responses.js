@@ -43,7 +43,7 @@ function showResponse(index) {
 
 function showHideColumns() {
     // Elements containing links 
-    const show_hide_columns = [{ col: 3, name: "Date" }, { col: 4, name: "Time Elapsed" }]
+    const show_hide_columns = [{ col: 3, name: "Date" }, { col: 4, name: "Time Elapsed" }, { col: 5, name: "Exit Frame Status" }, { col: 6, name: "Payment Status" }, { col: 7, name: "Session Status" }, { col: 8, name: "Star" }]
     const hide_show_elements = show_hide_columns.map(el => {
         return `<a href class="toggle-vis" data-column="${el.col}">${el.name}</a>`
     })
