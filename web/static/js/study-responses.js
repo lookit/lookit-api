@@ -122,7 +122,7 @@ function updateInfoBox(index) {
     // Create date for response with formatted date
     document.querySelector('.response-date').textContent = moment(
         rows[2].children[1].textContent
-    ).format('M/D/YYYY h:m A');
+    ).format('M/D/YYYY h:mm A');
 
     // Parent Feedback
     document.querySelector('.parent-feedback').textContent =

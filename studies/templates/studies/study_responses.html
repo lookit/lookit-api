@@ -2,6 +2,7 @@
 {% load django_bootstrap5 %}
 {% load exp_extras %}
 {% load web_extras %}
+{% load tz %}
 {% load static %}
 {% block title %}
     Responses | {{ study.name }}
@@ -109,7 +110,7 @@
                                                 Incomplete
                                             {% endif %}
                                         </td>
-                                        <td>{{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
+                                        <td>{{ response.response__date_created|localtime|date:"n/j/Y g:i A"|default:"N/A" }}</td>
                                         <td>{{ response.response__date_created|timesince }}</td>
                                     </tr>
                                 {% endfor %}
