@@ -120,12 +120,10 @@
                                         <td>{{ response.child_id_slug }}</td>
                                         <td>{{ response.response__id }}</td>
                                         <td>
-                                            {# djlint:off #}
                                             <!-- This turns off the converstion from UTC to the project TIME_ZONE (America/NY). -->
                                             {% localtime off %}
                                                 {{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}
                                             {% endlocaltime %}
-                                            {# djlint:on #}
                                         </td>
                                         <td>{{ response.response__date_created|timesince }}</td>
                                         <td>
@@ -376,9 +374,7 @@
                                     {% for pair in response.summary %}
                                         <tr class="{% if pair.name == 'Video privacy level' %} {% if pair.value == 'public' %} list-group-item-success {% elif pair.value == 'scientific' %} list-group-item-warning {% else %} list-group-item-danger {% endif %} {% endif %}">
                                             <td tabindex="0" title="{{ pair.description }}">{{ pair.name }}</td>
-                                            {# djlint:off #}
                                         <td>{{ pair.value }}{% if pair.name == 'Date created' %} UTC{% endif %}</td>
-                                            {# djlint:on #}
                                         </tr>
                                     {% endfor %}
                                 </tbody>

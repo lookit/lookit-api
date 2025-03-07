@@ -62,16 +62,11 @@ django-dynamic-fixture = "^4.0.1"
 beautifulsoup4 = "^4.10.0"
 pre-commit = "2.18.1"
 libsass = "^0.22.0"
-djlint = "1.36.4"
 ruff = "0.6.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.djlint]
-ignore = "H006,H021,T027"
-extend_exclude = "bootstrap,ember_build"
 
 [tool.ruff]
 lint.select = ["F", "I", "TID"]
