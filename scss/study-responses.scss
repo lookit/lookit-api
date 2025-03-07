@@ -24,6 +24,16 @@ input[type="checkbox"].input-checkbox-hidden {
     display: none;
 }
 
+select.researcher-editable:disabled {
+    background-color: lightgray;
+    cursor: not-allowed;
+}
+
+input[type="checkbox"].researcher-editable:disabled+label .icon-star {
+    color: lightgray;
+    cursor: not-allowed;
+}
+
 .truncate-parent-feedback {
     overflow: hidden;
     text-overflow: ellipsis;
