@@ -135,3 +135,57 @@ function updateInfoBox(index) {
     document.querySelector('.parent-id').textContent = parentId;
     document.querySelector('.contact-family').href = url.toString();
 }
+
+// For updating the researcher-editable input elements in response table
+function getCsrfTokenAndUrl() {
+    const csrfTokenEl = document.querySelector('#csrftokenurl');
+    const token = csrfTokenEl.value;
+    const url = csrfTokenEl.dataset.updateUrl;
+    return { token, url };
+}
+
+// Send the researcher-editable field/value to the server when the user changes those input elements
+$('.researcher-editable').change(
+    function (event) {
+        const target = event.target;
+        target.disabled = true;
+        const currentResponseId = target.closest('tr').dataset.responseId;
+        const fieldName = 'researcher_' + target.name.replace("-", "_");
+        // The Star element's value is "on"/"off" but the database needs a boolean
+        const fieldValue = (target.name == "star") ? target.checked : target.value;
+        const data = {
+            responseId: currentResponseId,
+            field: fieldName,
+            value: fieldValue
+        };
+
+        const { token, url } = getCsrfTokenAndUrl();
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': token
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                // If the response is not successful then parse the JSON for the error message and re-throw
+                return response.json().then(errorData => {
+                    throw new Error(errorData.error);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            target.disabled = false;
+            if (data.success) console.log(data.success);
+        })
+        .catch(error => {
+            target.disabled = false;
+            // If the update fails, log the reason to the console and revert to the previous value
+            console.error(error);
+        });
+    }
+);
