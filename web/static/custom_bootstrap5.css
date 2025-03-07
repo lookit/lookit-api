@@ -31,7 +31,7 @@ tr.preview-row {
 .list-group-hover .list-group-item:hover:not(.active) {
   background-color: #f5f5f5; }
 
-input[type="checkbox"].input-checkbox-hidden {
+input[type="checkbox"].researcher-editable.input-checkbox-hidden {
   display: none; }
 
 .icon-star-filled {
@@ -39,6 +39,14 @@ input[type="checkbox"].input-checkbox-hidden {
 
 .icon-hidden {
   display: none; }
+
+select.researcher-editable:disabled {
+  background-color: lightgray;
+  cursor: not-allowed; }
+
+input[type="checkbox"].researcher-editable:disabled + label .icon-star {
+  color: lightgray;
+  cursor: not-allowed; }
 
 .truncate-parent-feedback {
   overflow: hidden;
