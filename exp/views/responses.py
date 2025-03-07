@@ -1,6 +1,7 @@
 import datetime
 import io
 import json
+import logging
 import zipfile
 from functools import cached_property
 from typing import Dict, KeysView, List, NamedTuple, Set, Text, Union
@@ -46,6 +47,8 @@ from studies.queries import (
     get_responses_with_current_rulings_and_videos,
 )
 from studies.tasks import build_framedata_dict, build_zipfile_of_videos
+
+logger = logging.getLogger(__name__)
 
 CONTENT_TYPE = "text/csv"
 
@@ -1092,6 +1095,112 @@ class StudyResponseSubmitFeedback(StudyLookupMixin, UserPassesTestMixin, View):
 
         return HttpResponseRedirect(
             reverse("exp:study-responses-list", kwargs=dict(pk=study.pk))
+        )
+
+
+class StudyResponseSetResearcherFields(
+    ResearcherLoginRequiredMixin, StudyLookupMixin, UserPassesTestMixin, View
+):
+    """
+    View to edit researcher-editable fields in Responses: session status, payment status, star.
+    """
+
+    EDITABLE_FIELDS = [
+        "researcher_session_status",
+        "researcher_payment_status",
+        "researcher_star",
+    ]
+
+    def user_can_edit_response(self):
+        user = self.request.user
+        study = self.study
+        # First check user has permission to be editing response from this study - use same permissions as editing feedback
+        if not user.is_researcher and user.has_study_perms(
+            StudyPermission.EDIT_STUDY_FEEDBACK, study
+        ):
+            return False
+
+        return True
+
+    test_func = user_can_edit_response
+
+    def post(self, request, *args, **kwargs):
+        """
+        Edit the researcher-editable fields in the Individual Responses table. Pass field and response_id to edit that response field.
+        """
+        data = json.loads(request.body)
+        response_id = data.get("responseId", None)
+        field_id = data.get("field", None)
+        value = data.get("value", None)
+
+        # Data validation checks
+        if response_id is None or field_id is None or value is None:
+            return JsonResponse(
+                {
+                    "error": f"""Invalid request: One or more of the required arguments is missing. Response ID {response_id}, field {field_id}, and/or value {value}."""
+                },
+                status=400,
+            )
+
+        try:
+            response_obj = Response.objects.get(id=response_id)
+        except ObjectDoesNotExist:
+            return JsonResponse(
+                {
+                    "error": f"""Invalid request: Response object {response_id} does not exist"""
+                },
+                status=400,
+            )
+
+        if response_obj.study_id != self.study.pk:
+            return JsonResponse(
+                {
+                    "error": f"""Invalid request: Response object {response_id} is not from this study."""
+                },
+                status=400,
+            )
+
+        if field_id not in self.EDITABLE_FIELDS:
+            return JsonResponse(
+                {"error": f"""Invalid request: Invalid field {field_id}"""}, status=400
+            )
+
+        if field_id == self.EDITABLE_FIELDS[0]:
+            if value not in Response.SESSION_STATUS_CHOICES:
+                return JsonResponse(
+                    {
+                        "error": f"""Invalid request: Session Status must be one of {Response.SESSION_STATUS_CHOICES}."""
+                    },
+                    status=400,
+                )
+        elif field_id == self.EDITABLE_FIELDS[1]:
+            if value not in Response.PAYMENT_STATUS_CHOICES:
+                return JsonResponse(
+                    {
+                        "error": f"""Invalid request: Payment Status must be one of {Response.PAYMENT_STATUS_CHOICES}."""
+                    },
+                    status=400,
+                )
+        elif field_id == self.EDITABLE_FIELDS[2]:
+            if not isinstance(value, bool):
+                return JsonResponse(
+                    {"error": "Invalid request: Star field must be a boolean value."},
+                    status=400,
+                )
+
+        # Try updating the Response object
+        try:
+            setattr(response_obj, field_id, value)
+            response_obj.save()
+        except Exception as e:
+            logger.error(f"""An error occurred: {e}""")
+            raise
+
+        return JsonResponse(
+            {
+                "success": f"""Response {response_id} field {field_id} updated to {value}"""
+            },
+            status=200,
         )
 
 
