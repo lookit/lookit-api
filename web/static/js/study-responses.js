@@ -43,7 +43,7 @@ function showResponse(index) {
 
 function showHideColumns() {
     // Elements containing links 
-    const show_hide_columns = [{ col: 4, name: "Date" }, { col: 5, name: "Time Elapsed" }]
+    const show_hide_columns = [{ col: 3, name: "Date" }, { col: 4, name: "Time Elapsed" }, { col: 5, name: "Exit Frame Status" }, { col: 6, name: "Payment Status" }, { col: 7, name: "Session Status" }, { col: 8, name: "Star" }]
     const hide_show_elements = show_hide_columns.map(el => {
         return `<a href class="toggle-vis" data-column="${el.col}">${el.name}</a>`
     })
@@ -63,12 +63,10 @@ function showHideColumns() {
 
 // Datatable init/config for responses table
 const resp_table = $("#individualResponsesTable").DataTable({
-    order: [[4, 'desc']], // Sort on "Date" column
+    order: [[3, 'desc']], // Sort on "Date" column
     columnDefs: [
-        // add class to text search columns
-        { className: "column-text-search", targets: [1, 2, 3] },
-        // For "Date" column, set type and don't wrap "Date" column. For "Time Elapsed" column, sort by "Date" column's data.
-        { className: "dt-nowrap", type: "date", orderData: 4, targets: [4, 5] },
+        { className: "column-text-search", targets: [1,2,4] }, // add class to text search columns
+        { type: "date", orderData: 3, targets: [3,4] } // set type for "Date" column and sort "Time Elapsed" by "Date" column's data.
     ],
     autoWidth: false, // prevents hide/show cols from growing table
     dom: "<'row'<'col-sm-12 col-md-4'l><'show-hide-cols col-sm-12 col-md-4'><'col-sm-12 col-md-4'f>><'row dt-row'<'col-sm-12'tr>><'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
@@ -92,7 +90,12 @@ const resp_table = $("#individualResponsesTable").DataTable({
 });
 
 // Date Range UI and filter for "Date" column
-setupDataTableDates("individualResponsesTable", 4, "dateRangeFilter");
+setupDataTableDates("individualResponsesTable", 3, "dateRangeFilter");
+
+// Toggle the filled/unfilled star image visibility on input checkbox state change
+$('.star-checkbox').change(function () {
+    $(this).labels().children('.icon-star').toggleClass('icon-hidden');
+});
 
 function updateInfoBox(index) {
     // Select table rows of response details table.

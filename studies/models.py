@@ -1002,6 +1002,24 @@ class ResponseApiManager(models.Manager):
 
 
 class Response(models.Model):
+    PAYMENT_STATUS_CHOICES = Choices(
+        ("", _("")),
+        ("review", _("Needs review")),
+        ("to_pay", _("To pay")),
+        ("do_not_pay", _("Do not pay")),
+        ("paid", _("Paid")),
+    )
+    SESSION_STATUS_CHOICES = Choices(
+        ("", _("")),
+        ("to_schedule", _("To schedule")),
+        ("scheduled", _("Scheduled")),
+        ("session_attended", _("Session attended")),
+        ("session_complete", _("Session complete")),
+        ("follow_up", _("Follow up")),
+        ("communication_complete", _("Communication complete")),
+        ("withdrawn_closed", _("Withdrawn or closed")),
+    )
+
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     study = models.ForeignKey(
         Study, on_delete=models.PROTECT, related_name="responses"
@@ -1035,6 +1053,14 @@ class Response(models.Model):
         blank=True,
         default=list,
     )
+    # Researcher-editable fields
+    researcher_payment_status = models.CharField(
+        choices=PAYMENT_STATUS_CHOICES, max_length=10, blank=True
+    )
+    researcher_session_status = models.CharField(
+        choices=SESSION_STATUS_CHOICES, max_length=22, blank=True
+    )
+    researcher_star = models.BooleanField(default=False)
 
     def __str__(self):
         return self.display_name
