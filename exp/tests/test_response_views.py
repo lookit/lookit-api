@@ -1205,14 +1205,10 @@ class ResponseDataDownloadTestCase(TestCase):
             )
             self.assertIn(f"<td>{hashed_child_id}</td>", content)
             self.assertIn(f"<td>{str(this_response_uuid)[:8]}", content)
-            response_date = response.date_created.astimezone()
+            response_date = response.date_created
             # Generate start of date representation matching Django template tag usage
-            formatted_date = (
-                f"{response_date.strftime('%m').lstrip('0')}/"
-                f"{response_date.strftime('%d/%Y').lstrip('0')} "
-                f"{response_date.strftime('%I:%M').lstrip('0')}"
-            )
-            self.assertIn(f"<td>{formatted_date}", content)
+            formatted_date = response_date.strftime("%-m/%-d/%Y %-I:%M %p")
+            self.assertIn(f"{formatted_date}", content)
         self.assertNotIn(self.poison_string, content)
 
         self.assertEqual(n_matches, self.n_responses + self.n_previews)
