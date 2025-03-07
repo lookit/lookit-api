@@ -80,6 +80,11 @@
             <div class="col">
                 <div class="card">
                     <div class="card-body table-responsive">
+                        <input type="hidden"
+                               id="csrftokenurl"
+                               name="csrfmiddlewaretoken"
+                               value="{{ csrf_token }}"
+                               data-update-url="{% url 'exp:study-responses-researcher-update' pk=study.id %}" />
                         <table id="individualResponsesTable" class="table">
                             <caption class="d-none">Study Responses</caption>
                             <thead>
