@@ -61,6 +61,38 @@ function showHideColumns() {
 
 }
 
+function filterText(table) {
+    // Apply the text search to any column with the class "column-text-search"
+    table.api()
+        .columns(".column-text-search")
+        .every(function () {
+            let column = this;
+            // Select input element for this column and apply search
+            $('input', this.footer()).on('keyup change', function () {
+                if (column.search() !== this.value) {
+                    column
+                        .search(this.value)
+                        .draw();
+                }
+            });
+        });
+}
+
+function filterDropdown(table) {
+    table.api()
+        .columns(".column-dropdown-search")
+        .every(function () {
+            const column = this;
+            // Select input element for this column and apply search
+            $('select', this.footer()).on('change', function () {
+                // console.log(column.search(), this.value)
+                if (column.search() !== this.value) {
+                    column.search(this.value).draw();
+                }
+            });
+        });
+}
+
 // Datatable init/config for responses table
 const resp_table = $("#individualResponsesTable").DataTable({
     layout: {
@@ -73,6 +105,7 @@ const resp_table = $("#individualResponsesTable").DataTable({
     order: [[3, 'desc']], // Sort on "Date" column
     columnDefs: [
         { className: "column-text-search", targets: [1, 2, 4] }, // add class to text search columns
+        { className: "column-dropdown-search", target: [5, 6, 7] }, // add class to dropdown search columns
         { type: "date", orderData: 3, targets: [3, 4] }, // set type for "Date" column and sort "Time Elapsed" by "Date" column's data.
         {
             targets: 3,
@@ -84,20 +117,8 @@ const resp_table = $("#individualResponsesTable").DataTable({
     ],
     autoWidth: false, // prevents hide/show cols from growing table
     initComplete: function () {
-        // Apply the text search to any column with the class "column-text-search"
-        this.api()
-            .columns(".column-text-search")
-            .every(function () {
-                let column = this;
-                // Select input element for this column and apply search
-                $('input', this.footer()).on('keyup change', function () {
-                    if (column.search() !== this.value) {
-                        column
-                            .search(this.value)
-                            .draw();
-                    }
-                });
-            });
+        filterText(this);
+        filterDropdown(this);
         showHideColumns();
     },
 });
