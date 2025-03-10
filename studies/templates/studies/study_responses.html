@@ -3,6 +3,7 @@
 {% load bootstrap_icons %}
 {% load exp_extras %}
 {% load web_extras %}
+{% load tz %}
 {% load static %}
 {% block title %}
     Responses | {{ study.name }}
@@ -87,7 +88,7 @@
                                     <th scope="col"></th>
                                     <th scope="col">Child ID</th>
                                     <th scope="col">Response ID</th>
-                                    <th scope="col">Date</th>
+                                    <th scope="col">Date UTC</th>
                                     <th scope="col">Time Elapsed</th>
                                     <th scope="col">
                                         Exit Frame
@@ -118,7 +119,12 @@
                                         </td>
                                         <td>{{ response.child_id_slug }}</td>
                                         <td>{{ response.response__id }}</td>
-                                        <td>{{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
+                                        <td>
+                                            <!-- This turns off the converstion from UTC to the project TIME_ZONE (America/NY). -->
+                                            {% localtime off %}
+                                                {{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}
+                                            {% endlocaltime %}
+                                        </td>
                                         <td>{{ response.response__date_created|timesince }}</td>
                                         <td>
                                             {% if response.response__completed %}
@@ -368,7 +374,7 @@
                                     {% for pair in response.summary %}
                                         <tr class="{% if pair.name == 'Video privacy level' %} {% if pair.value == 'public' %} list-group-item-success {% elif pair.value == 'scientific' %} list-group-item-warning {% else %} list-group-item-danger {% endif %} {% endif %}">
                                             <td tabindex="0" title="{{ pair.description }}">{{ pair.name }}</td>
-                                            <td>{{ pair.value }}</td>
+                                        <td>{{ pair.value }}{% if pair.name == 'Date created' %} UTC{% endif %}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
