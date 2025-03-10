@@ -1115,12 +1115,9 @@ class StudyResponseSetResearcherFields(
         user = self.request.user
         study = self.study
         # First check user has permission to be editing response from this study - use same permissions as editing feedback
-        if not user.is_researcher and user.has_study_perms(
+        return user.is_researcher and user.has_study_perms(
             StudyPermission.EDIT_STUDY_FEEDBACK, study
-        ):
-            return False
-
-        return True
+        )
 
     test_func = user_can_edit_response
 
