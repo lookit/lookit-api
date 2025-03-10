@@ -136,7 +136,7 @@
                                         <td>
                                             <select name="payment-status"
                                                     id="payment-status-{{ forloop.counter }}"
-                                                    class="researcher-editable"
+                                                    class="researcher-editable form-select"
                                                     autocomplete="off"
                                                     aria-label="Set optional payment status for this response">
                                                 {% for pstatus in payment_status_options %}
@@ -150,7 +150,7 @@
                                         <td>
                                             <select name="response-status"
                                                     id="response-status-{{ forloop.counter }}"
-                                                    class="researcher-editable"
+                                                    class="researcher-editable form-select"
                                                     autocomplete="off"
                                                     aria-label="Set optional session status for this response">
                                                 {% for sstatus in session_status_options %}
