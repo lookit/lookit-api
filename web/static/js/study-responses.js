@@ -173,7 +173,8 @@ $('.researcher-editable').change(
             if (!response.ok) {
                 // If the response is not successful then parse the JSON for the error message and re-throw
                 return response.json().then(errorData => {
-                    throw new Error(errorData.error);
+                    const errMsg = (errorData && errorData.error) ? errorData.error : "Request to update a response field has failed.";
+                    throw new Error(errMsg);
                 });
             }
             return response.json();
