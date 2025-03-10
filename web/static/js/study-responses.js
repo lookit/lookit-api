@@ -183,9 +183,9 @@ $('.researcher-editable').change(
             if (data.success) console.log(data.success);
         })
         .catch(error => {
-            target.disabled = false;
-            // If the update fails, log the reason to the console and revert to the previous value
+            // If the update fails, log the reason to the console and revert to the previous value by reloading the page.
             console.error(error);
+            location.reload();
         });
     }
 );
