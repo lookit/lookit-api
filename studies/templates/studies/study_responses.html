@@ -204,15 +204,41 @@
                                                placeholder="Filter Time Elapsed" />
                                     </th>
                                     <th scope="col">
-                                        <input type="text"
-                                               class="form-control"
-                                               placeholder="Filter Exit Frame Status" />
+                                        <select name="filter-exit-status" 
+                                            id="filter-exit-status" 
+                                            class="researcher-editable form-select" 
+                                            autocomplete="off" 
+                                            aria-label="Filter on whether the exit frame was marked complete">
+                                            <option value="" selected=""></option>
+                                            <option value="true">Complete</option>
+                                            <option value="false">Incomplete</option>
+                                        </select>
                                     </th>
                                     <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Payment Status" />
+                                        <select name="filter-payment-status"
+                                            id="filter-payment-status"
+                                            class="researcher-editable form-select"
+                                            autocomplete="off"
+                                            aria-label="Filter on optional payment status for this response">
+                                            {% for value, option in payment_status_options %}
+                                            <option value="{{ value }}">
+                                                {{ option }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
                                     </th>
                                     <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Session Status" />
+                                        <select name="filter-response-status"
+                                            id="filter-response-status"
+                                            class="researcher-editable form-select"
+                                            autocomplete="off"
+                                            aria-label="Filter on optional session status for this response">
+                                            {% for value, option in session_status_options %}
+                                            <option value="{{ value }}">
+                                                {{ option }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
                                     </th>
                                     <th scope="col">
                                         <input type="text" class="form-control" placeholder="Filter Star" />
