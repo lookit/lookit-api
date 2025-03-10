@@ -65,8 +65,15 @@ function showHideColumns() {
 const resp_table = $("#individualResponsesTable").DataTable({
     order: [[3, 'desc']], // Sort on "Date" column
     columnDefs: [
-        { className: "column-text-search", targets: [1,2,4] }, // add class to text search columns
-        { type: "date", orderData: 3, targets: [3,4] } // set type for "Date" column and sort "Time Elapsed" by "Date" column's data.
+        { className: "column-text-search", targets: [1, 2, 4] }, // add class to text search columns
+        { type: "date", orderData: 3, targets: [3, 4] }, // set type for "Date" column and sort "Time Elapsed" by "Date" column's data.
+        {
+            targets: 3,
+            createdCell: (td, cellData) => {
+                const [date, time, amPm] = cellData.split(" ");
+                td.innerHTML = `<div>${date}</div><div>${time} ${amPm}</div>`;
+            }
+        }
     ],
     autoWidth: false, // prevents hide/show cols from growing table
     dom: "<'row'<'col-sm-12 col-md-4'l><'show-hide-cols col-sm-12 col-md-4'><'col-sm-12 col-md-4'f>><'row dt-row'<'col-sm-12'tr>><'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
@@ -123,9 +130,9 @@ function updateInfoBox(index) {
         rows[15].children[1].textContent;
 
     // Create date for response with formatted date
-    document.querySelector('.response-date').textContent = moment(
+    document.querySelector('.response-date').textContent = moment.utc(
         rows[2].children[1].textContent
-    ).format('M/D/YYYY h:m A');
+    ).format('M/D/YYYY h:mm A z');
 
     // Parent Feedback
     document.querySelector('.parent-feedback').textContent =
