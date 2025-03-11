@@ -206,7 +206,11 @@ class ResponseViewsTestCase(TestCase):
         ]
         # For testing researcher-editable response fields: researcher_session_status, researcher_payment_status, researcher_star
         self.editable_fields = StudyResponseSetResearcherFields.EDITABLE_FIELDS
-        default_values = ["", "", False]
+        default_values = [
+            "",
+            "",
+            False,
+        ]  # These correspond to session status, payment status, and star
         new_values = ["follow_up", "to_pay", True]
         self.fields_default_values = {
             self.editable_fields[i]: default_values[i]
@@ -668,6 +672,17 @@ class ResponseDataDownloadTestCase(TestCase):
         self.response_summary_json_url = reverse(
             "exp:study-responses-download-json", kwargs={"pk": self.study.pk}
         )
+        # For testing presence of researcher-editable fields/values
+        self.editable_fields = StudyResponseSetResearcherFields.EDITABLE_FIELDS
+        default_values = [
+            "",
+            "",
+            False,
+        ]  # These correspond to session status, payment status, and star
+        self.fields_default_values = {
+            self.editable_fields[i]: default_values[i]
+            for i in range(len(self.editable_fields))
+        }
 
     def test_get_appropriate_fields_in_csv_downloads_set1(self):
         self.client.force_login(self.study_reader)
@@ -1086,6 +1101,34 @@ class ResponseDataDownloadTestCase(TestCase):
         self.assertEqual(this_response["response"]["databrary"], "yes")
         self.assertEqual(this_response["response"]["birthdate_difference"], 17)
         self.assertEqual(this_response["consent"]["ruling"], "accepted")
+
+    def test_get_researcher_editable_fields_in_csv_downloads(self):
+        self.client.force_login(self.study_reader)
+        query_string = urlencode({"data_options": self.optionset_1}, doseq=True)
+        response = self.client.get(f"{self.response_summary_url}?{query_string}")
+        content = response.content.decode("utf-8")
+        csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
+        csv_body = list(csv_reader)
+        csv_headers = csv_body.pop(0)
+        self.assertEqual(True, True)
+        researcher_editable_field_headers = [
+            "response__" + field for field in self.editable_fields
+        ]
+        for field in researcher_editable_field_headers:
+            self.assertIn(field, csv_headers)
+
+    def test_get_researcher_editable_fields_in_json_downloads(self):
+        self.client.force_login(self.study_reader)
+        query_string = urlencode({"data_options": self.optionset_1}, doseq=True)
+        response = self.client.get(f"{self.response_summary_json_url}?{query_string}")
+        content = b"".join(response.streaming_content).decode("utf-8")
+        data = json.loads(content)
+        for row in data:
+            for field in self.editable_fields:
+                self.assertEqual(
+                    row["response"][field],
+                    self.fields_default_values[field],
+                )
 
     def test_get_appropriate_children_in_child_csv_as_previewer(self):
         self.client.force_login(self.study_previewer)
