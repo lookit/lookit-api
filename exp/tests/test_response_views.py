@@ -384,10 +384,14 @@ class ResponseViewsTestCase(TestCase):
                 self.assertEqual(response.status_code, 200)
                 success_str = f"Response {resp.id} field {field} updated to {self.fields_new_values[field]}"
                 self.assertIn(success_str, response.json().get("success"))
+                updated_resp = Response.objects.get(id=resp.id)
                 self.assertEqual(
-                    getattr(Response.objects.get(id=resp.id), field),
+                    getattr(updated_resp, field),
                     self.fields_new_values[field],
                 )
+                # Reset the response object to default values
+                setattr(updated_resp, field, self.fields_default_values[field])
+                updated_resp.save()
 
 
 class ResponseDataDownloadTestCase(TestCase):
