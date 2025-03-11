@@ -70,9 +70,7 @@ function filterText(table) {
             // Select input element for this column and apply search
             $('input', this.footer()).on('keyup change', function () {
                 if (column.search() !== this.value) {
-                    column
-                        .search(this.value)
-                        .draw();
+                    column.search(this.value).draw();
                 }
             });
         });
@@ -85,12 +83,34 @@ function filterDropdown(table) {
             const column = this;
             // Select input element for this column and apply search
             $('select', this.footer()).on('change', function () {
-                // console.log(column.search(), this.value)
+
                 if (column.search() !== this.value) {
                     column.search(this.value).draw();
                 }
             });
         });
+}
+
+function filterSelect(table) {
+    table.api()
+        .columns(".column-select-search")
+        .every(function () {
+            const column = this;
+            // Select input element for this column and apply search
+            $('select', this.footer()).on('change', function () {
+                if (column.search() !== this.value) {
+                    column.search(this.value).draw();
+                }
+            });
+        });
+}
+
+function getSelectValue(data) {
+    const r = data.match(/id="([0-9a-z-]+)"/i)
+    if (r) {
+        return document.querySelector(`#${r[1]}`).value
+    }
+    return ""
 }
 
 // Datatable init/config for responses table
@@ -105,7 +125,44 @@ const resp_table = $("#individualResponsesTable").DataTable({
     order: [[3, 'desc']], // Sort on "Date" column
     columnDefs: [
         { className: "column-text-search", targets: [1, 2, 4] }, // add class to text search columns
-        { className: "column-dropdown-search", target: [5, 6, 7] }, // add class to dropdown search columns
+        { className: "column-dropdown-search", targets: [5] }, // add class to dropdown search columns
+        {
+            className: "column-select-search", targets: [6],
+            render: function (data, type, row, meta) {
+                if (type === 'filter') {
+                    return getSelectValue(data)
+                }
+                if (type === 'display') {
+                    return data
+                }
+                if (type === 'type') {
+                    return 'string'
+                }
+
+                console.error(data, type)
+            },
+            // data: null,
+            data: function (row, type, set, meta) {
+                console.log(type)
+                if (type === 'set') {
+                    row["6"] = set;
+                    return
+                }
+                if (type === 'display') {
+                    return row["6"]
+                }
+                if (type === 'filter') {
+                    console.log(getSelectValue(row["6"]), set)
+                    return getSelectValue(row["6"])
+                }
+                if (type === 'type') {
+                    return 'string'
+                }
+                console.log(type)
+                return row["6"]
+
+            }
+        },
         { type: "date", orderData: 3, targets: [3, 4] }, // set type for "Date" column and sort "Time Elapsed" by "Date" column's data.
         {
             targets: 3,
@@ -113,12 +170,14 @@ const resp_table = $("#individualResponsesTable").DataTable({
                 const [date, time, amPm] = cellData.split(" ");
                 td.innerHTML = `<div>${date}</div><div>${time} ${amPm}</div>`;
             }
-        }
+        },
+        {}
     ],
     autoWidth: false, // prevents hide/show cols from growing table
     initComplete: function () {
         filterText(this);
         filterDropdown(this);
+        filterSelect(this);
         showHideColumns();
     },
 });
