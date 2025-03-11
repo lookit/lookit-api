@@ -165,7 +165,7 @@ function filterText(table) {
             // Select input element for this column and apply search
             $('input', this.footer()).on('keyup change', function () {
                 if (column.search() !== this.value) {
-                    column.search(this.value).draw(false);
+                    column.search(this.value).draw();
                 }
             });
         });
