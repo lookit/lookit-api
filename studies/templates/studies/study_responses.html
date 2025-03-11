@@ -120,7 +120,7 @@
                                         <td>{{ response.child_id_slug }}</td>
                                         <td>{{ response.response__id }}</td>
                                         <td>
-                                            <!-- This turns off the converstion from UTC to the project TIME_ZONE (America/NY). -->
+                                            {# "This turns off the converstion from UTC to the project TIME_ZONE (America/NY). #}
                                             {% localtime off %}
                                                 {{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}
                                             {% endlocaltime %}
