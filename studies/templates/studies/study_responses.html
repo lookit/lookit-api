@@ -168,7 +168,7 @@
                                                 {% endfor %}
                                             </select>
                                         </td>
-                                        <td>
+                                        <td data-sort="{{response.response__researcher_star}}">
                                             <input type="checkbox"
                                                    name="star"
                                                    id="star-checkbox-{{ forloop.counter }}"
@@ -243,7 +243,7 @@
                                         </select>
                                     </th>
                                     <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Star" />
+                                        {% comment %} Empty footer element for the star column {% endcomment %}
                                     </th>
                                 </tr>
                             </tfoot>

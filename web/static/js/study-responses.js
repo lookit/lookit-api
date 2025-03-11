@@ -225,6 +225,11 @@ setupDataTableDates("individualResponsesTable", 3, "dateRangeFilter");
 // Toggle the filled/unfilled star image visibility on input checkbox state change
 $('.star-checkbox').change(function () {
     $(this).labels().children('.icon-star').toggleClass('icon-hidden');
+    $(this).each((_idx, el) => {
+        const td = el.parentElement;
+        td.dataset.sort = "False" == td.dataset.sort ? "True" : "False"
+        resp_table.rows().invalidate("dom").draw();
+    })
 });
 
 // Update the sort/filter data values on td
