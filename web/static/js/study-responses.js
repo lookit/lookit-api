@@ -63,6 +63,13 @@ function showHideColumns() {
 
 // Datatable init/config for responses table
 const resp_table = $("#individualResponsesTable").DataTable({
+    layout: {
+        topStart: null,
+        topEnd: null,
+        top: ['pageLength',
+            { features: [{ div: { className: 'show-hide-cols mx-3' } }] },
+            'search'],
+    },
     order: [[3, 'desc']], // Sort on "Date" column
     columnDefs: [
         { className: "column-text-search", targets: [1, 2, 4] }, // add class to text search columns
@@ -76,7 +83,6 @@ const resp_table = $("#individualResponsesTable").DataTable({
         }
     ],
     autoWidth: false, // prevents hide/show cols from growing table
-    dom: "<'row'<'col-sm-12 col-md-4'l><'show-hide-cols col-sm-12 col-md-4'><'col-sm-12 col-md-4'f>><'row dt-row'<'col-sm-12'tr>><'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
     initComplete: function () {
         // Apply the text search to any column with the class "column-text-search"
         this.api()
