@@ -12,6 +12,7 @@ from django_dynamic_fixture import G
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, DemographicData, User
 from accounts.utils import hash_id
+from exp.views.responses import StudyResponseSetResearcherFields
 from studies.models import ConsentRuling, Lab, Response, Study, StudyType, Video
 
 
@@ -39,6 +40,9 @@ class ResponseViewsTestCase(TestCase):
         )
         self.study_reader = G(
             User, is_active=True, is_researcher=True, given_name="Researcher 2"
+        )
+        self.study_previewer = G(
+            User, is_active=True, is_researcher=True, given_name="Researcher 4"
         )
         self.other_researcher = G(
             User, is_active=True, is_researcher=True, given_name="Researcher 3"
@@ -70,6 +74,7 @@ class ResponseViewsTestCase(TestCase):
 
         self.study.admin_group.user_set.add(self.study_admin)
         self.study.researcher_group.user_set.add(self.study_reader)
+        self.study.preview_group.user_set.add(self.study_previewer)
 
         self.study_reader_child = G(
             Child,
@@ -199,6 +204,18 @@ class ResponseViewsTestCase(TestCase):
             ),
             reverse("exp:study-attachments", kwargs={"pk": self.study.pk}),
         ]
+        # For testing researcher-editable response fields: researcher_session_status, researcher_payment_status, researcher_star
+        self.editable_fields = StudyResponseSetResearcherFields.EDITABLE_FIELDS
+        default_values = ["", "", False]
+        new_values = ["follow_up", "to_pay", True]
+        self.fields_default_values = {
+            self.editable_fields[i]: default_values[i]
+            for i in range(len(self.editable_fields))
+        }
+        self.fields_new_values = {
+            self.editable_fields[i]: new_values[i]
+            for i in range(len(self.editable_fields))
+        }
 
     def test_cannot_see_any_responses_views_unauthenticated(self):
         for url in self.all_response_urls:
@@ -295,6 +312,82 @@ class ResponseViewsTestCase(TestCase):
         )
         self.client.post(url, {})
         self.assertEqual(self.study.responses.filter(is_preview=True).count(), 0)
+
+    def test_unassociated_researcher_cannot_edit_modifiable_fields_in_response(self):
+        self.client.force_login(self.other_researcher)
+        url = reverse(
+            "exp:study-responses-researcher-update", kwargs={"pk": self.study.pk}
+        )
+        for resp in self.responses:
+            for field in self.editable_fields:
+                self.assertEqual(
+                    getattr(resp, field), self.fields_default_values[field]
+                )
+                data = {
+                    "responseId": resp.id,
+                    "field": field,
+                    "value": self.fields_new_values[field],
+                }
+                response = self.client.post(
+                    url, json.dumps(data), content_type="application/json"
+                )
+                self.assertEqual(response.status_code, 403)
+                self.assertIn("Forbidden", response.content.decode("utf-8"))
+                self.assertEqual(
+                    getattr(Response.objects.get(id=resp.id), field),
+                    self.fields_default_values[field],
+                )
+
+    def test_previewer_researcher_cannot_edit_modifiable_fields_in_response(self):
+        self.client.force_login(self.study_previewer)
+        url = reverse(
+            "exp:study-responses-researcher-update", kwargs={"pk": self.study.pk}
+        )
+        for resp in self.responses:
+            for field in self.editable_fields:
+                self.assertEqual(
+                    getattr(resp, field), self.fields_default_values[field]
+                )
+                data = {
+                    "responseId": resp.id,
+                    "field": field,
+                    "value": self.fields_new_values[field],
+                }
+                response = self.client.post(
+                    url, json.dumps(data), content_type="application/json"
+                )
+                self.assertEqual(response.status_code, 403)
+                self.assertIn("Forbidden", response.content.decode("utf-8"))
+                self.assertEqual(
+                    getattr(Response.objects.get(id=resp.id), field),
+                    self.fields_default_values[field],
+                )
+
+    def test_edit_modifiable_fields_in_response(self):
+        self.client.force_login(self.study_admin)
+        url = reverse(
+            "exp:study-responses-researcher-update", kwargs={"pk": self.study.pk}
+        )
+        for resp in self.responses:
+            for field in self.editable_fields:
+                self.assertEqual(
+                    getattr(resp, field), self.fields_default_values[field]
+                )
+                data = {
+                    "responseId": resp.id,
+                    "field": field,
+                    "value": self.fields_new_values[field],
+                }
+                response = self.client.post(
+                    url, json.dumps(data), content_type="application/json"
+                )
+                self.assertEqual(response.status_code, 200)
+                success_str = f"Response {resp.id} field {field} updated to {self.fields_new_values[field]}"
+                self.assertIn(success_str, response.json().get("success"))
+                self.assertEqual(
+                    getattr(Response.objects.get(id=resp.id), field),
+                    self.fields_new_values[field],
+                )
 
 
 class ResponseDataDownloadTestCase(TestCase):
