@@ -51,19 +51,18 @@
               crossorigin="anonymous"
               referrerpolicy="no-referrer" />
         {# datatables #}
-        <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"
-                integrity="sha384-Oz2u38d0ZnNWE1m+AIMNNmk9a0EJEto9y2D3kXTaczVZucXieLf798xkusldWrLs"
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"></script>
-        <script src="https://cdn.datatables.net/1.13.3/js/dataTables.bootstrap5.min.js"
-                integrity="sha384-vs+hZVo+dfG9yLWBmBqUYEnAy7NLQ0j3gmCP+2tx31n5HZGlRBlxlkxYkWOtVmoT"
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"></script>
-        <link rel="stylesheet"
-              href="https://cdn.datatables.net/1.13.3/css/dataTables.bootstrap5.min.css"
-              integrity="sha384-8Sp4pLrNlpSBSRuh6y4YI5cH07vvn6DIoUiAAEezYUzdqbTfBNXlP0dJmcVzZjQx"
-              crossorigin="anonymous"
-              referrerpolicy="no-referrer" />
+        {% comment %}
+                From the Datatable's download (https://datatables.net/download/), 
+                select Bootstrap 5 for styling, Datatables core, minify, and 
+                concatenate.
+        {% endcomment %}
+        <link href="https://cdn.datatables.net/v/dt/dt-2.2.2/datatables.min.css" 
+                rel="stylesheet" 
+                integrity="sha384-2vMryTPZxTZDZ3GnMBDVQV8OtmoutdrfJxnDTg0bVam9mZhi7Zr3J1+lkVFRr71f" 
+                crossorigin="anonymous">
+        <script src="https://cdn.datatables.net/v/dt/dt-2.2.2/datatables.min.js" 
+                integrity="sha384-2Ul6oqy3mEjM7dBJzKOck1Qb/mzlO+k/0BQv3D3C7u+Ri9+7OBINGa24AeOv5rgu" 
+                crossorigin="anonymous"></script>
         {# date range picker #}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js"
                 integrity="sha512-mh+AjlD3nxImTUGisMpHXW03gE6F4WdQyvuFRkjecwuWLwD2yCijw4tKA3NsEFpA1C3neiKhGXPSIGSfCYPMlQ=="
