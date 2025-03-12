@@ -143,7 +143,8 @@
                                                     id="payment-status-{{ forloop.counter }}"
                                                     class="researcher-editable form-select"
                                                     autocomplete="off"
-                                                    aria-label="Set optional payment status for this response">
+                                                    aria-label="Set optional payment status for this response"
+                                                    {% if not can_edit_feedback %}disabled{% endif %}>
                                                 {% for pstatus in payment_status_options %}
                                                     <option value="{{ pstatus.0 }}"
                                                             {% if response.response__researcher_payment_status == pstatus.1 %}selected{% endif %}>
@@ -157,7 +158,8 @@
                                                     id="session-status-{{ forloop.counter }}"
                                                     class="researcher-editable form-select"
                                                     autocomplete="off"
-                                                    aria-label="Set optional session status for this response">
+                                                    aria-label="Set optional session status for this response"
+                                                    {% if not can_edit_feedback %}disabled{% endif %}>
                                                 {% for sstatus in session_status_options %}
                                                     <option value="{{ sstatus.0 }}"
                                                             {% if response.response__researcher_session_status == sstatus.1 %}selected{% endif %}>
@@ -171,7 +173,8 @@
                                                    name="star"
                                                    id="star-checkbox-{{ forloop.counter }}"
                                                    class="researcher-editable input-checkbox-hidden star-checkbox"
-                                                   aria-label="Toggle optional Star selection for this response" />
+                                                   aria-label="Toggle optional Star selection for this response"
+                                                   {% if not can_edit_feedback %}disabled{% endif %} />
                                             <label for="star-checkbox-{{ forloop.counter }}">
                                                 {% if response.response__researcher_star %}
                                                     {% bs_icon "star" extra_classes="icon-star icon-hidden" size='1.5em' %}{% bs_icon "star-fill" extra_classes="icon-star icon-star-filled" size='1.5em' %}
