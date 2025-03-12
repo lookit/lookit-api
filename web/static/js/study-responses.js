@@ -104,7 +104,7 @@ $('.researcher-editable').change(
             })
             .then(data => {
                 target.disabled = false;
-                updateCellData(target);
+                updateAJAXCellData(target);
                 if (data.success) console.log(data.success);
             })
             .catch(error => {
@@ -222,23 +222,20 @@ const resp_table = $("#individualResponsesTable").DataTable({
 // Date Range UI and filter for "Date" column
 setupDataTableDates("individualResponsesTable", 3, "dateRangeFilter");
 
-// Toggle the filled/unfilled star image visibility on input checkbox state change
-$('.star-checkbox').change(function () {
-    $(this).labels().children('.icon-star').toggleClass('icon-hidden');
-    $(this).each((_idx, el) => {
-        const td = el.parentElement;
+function updateAJAXCellData(target) {
+    const classes = target.classList
+    const td = target.parentElement
+
+    if (classes.contains("dropdown-cell")) {
+        const text = target.options[target.selectedIndex].text;
+        td.dataset.sort = text;
+        td.dataset.filter = text;
+    } else if (classes.contains("star-checkbox")) {
+        td.querySelectorAll('.icon-star').forEach(el => {
+            el.classList.toggle('icon-hidden')
+        })
         td.dataset.sort = "False" == td.dataset.sort ? "True" : "False"
-        resp_table.rows().invalidate("dom").draw();
-    })
-});
-
-// Update the sort/filter data values on td
-function updateCellData(select) {
-    const td = select.parentElement;
-    const text = select.options[select.selectedIndex].text;
-
-    td.dataset.sort = text;
-    td.dataset.filter = text;
+    }
 
     resp_table.rows().invalidate("dom").draw(false);
 }

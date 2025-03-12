@@ -142,7 +142,7 @@
                                             data-sort="{{response.response__researcher_payment_status}}">
                                             <select name="payment-status"
                                                     id="payment-status-{{ forloop.counter }}"
-                                                    class="researcher-editable form-select dropdown-cells"
+                                                    class="researcher-editable form-select dropdown-cell"
                                                     autocomplete="off"
                                                     aria-label="Set optional payment status for this response">
                                                 {% for pstatus in payment_status_options %}
@@ -157,7 +157,7 @@
                                             data-sort="{{response.response__researcher_session_status}}" >
                                             <select name="session-status"
                                                     id="session-status-{{ forloop.counter }}"
-                                                    class="researcher-editable form-select dropdown-cells"
+                                                    class="researcher-editable form-select dropdown-cell"
                                                     autocomplete="off"
                                                     aria-label="Set optional session status for this response">
                                                 {% for sstatus in session_status_options %}
