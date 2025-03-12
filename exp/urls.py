@@ -49,6 +49,7 @@ from exp.views import (
     StudyResponsesConsentManager,
     StudyResponsesCSV,
     StudyResponsesDictCSV,
+    StudyResponseSetResearcherFields,
     StudyResponsesFrameDataCSV,
     StudyResponsesFrameDataDictCSV,
     StudyResponsesFrameDataPsychDS,
@@ -287,5 +288,10 @@ urlpatterns = [
         "studies/<int:pk>/design/jspsych/",
         JSPsychEditView.as_view(),
         name="jspsych-study-edit-design",
+    ),
+    path(
+        "studies/<int:pk>/responses/researcher_update/",
+        StudyResponseSetResearcherFields.as_view(),
+        name="study-responses-researcher-update",
     ),
 ]
