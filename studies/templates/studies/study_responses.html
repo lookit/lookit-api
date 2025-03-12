@@ -223,6 +223,11 @@
                                 </tr>
                             </tfoot>
                         </table>
+                        {% if not can_edit_feedback %}
+                            <p class="text-center">
+                                <em>Based on your permissions, you are unable to update responses</em>
+                            </p>
+                        {% endif %}
                         {% if can_view_regular_responses and not can_view_preview_responses %}
                             <p class="text-center">
                                 <em>Based on your permissions, no preview responses are shown.</em>
