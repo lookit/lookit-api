@@ -164,7 +164,7 @@ function filterText(table) {
             // Select input element for this column and apply search
             $('input', this.footer()).on('keyup change', function () {
                 if (column.search() !== this.value) {
-                    column.search(this.value).draw();
+                    column.search(this.value).draw(false);
                 }
             });
         });
@@ -177,7 +177,7 @@ function filterDropdown(table) {
             const column = this;
             $('select', this.footer()).on('change', function () {
                 if (column.search() !== this.value) {
-                    column.search(this.value, { exact: true }).draw();
+                    column.search(this.value, { exact: true }).draw(false);
                 }
             });
         });
@@ -225,15 +225,14 @@ $('.star-checkbox').change(function () {
     $(this).labels().children('.icon-star').toggleClass('icon-hidden');
 });
 
-document.querySelectorAll('.dropdown-cells')
-    .forEach(el => {
-        el.addEventListener('change', (event) => {
-            const td = event.target.parentElement;
-            const value = event.target.value
+// On dropdown cell change, update their td's sort and filter values.
+resp_table.on('change', '.dropdown-cell', function () {
+    const td = this.parentElement;
+    const value = this.value
 
-            td.dataset.sort = value
-            td.dataset.filter = value
+    // jQuery's $.data() doesn't seem to work, using JS instead
+    td.dataset.sort = value
+    td.dataset.filter = value
 
-            resp_table.rows().invalidate("dom").draw();
-        })
-    })
+    resp_table.rows().invalidate("dom").draw(false);
+})
