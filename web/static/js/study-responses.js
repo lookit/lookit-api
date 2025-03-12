@@ -178,7 +178,7 @@ function filterDropdown(table) {
             $('select', this.footer()).on('change', function () {
                 const text = this.options[this.selectedIndex].text
                 if (column.search() !== text) {
-                    column.search(text, { exact: true }).draw(false);
+                    column.search(text, { exact: true }).draw();
                 }
             });
         });
