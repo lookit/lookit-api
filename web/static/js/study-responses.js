@@ -104,6 +104,7 @@ $('.researcher-editable').change(
             })
             .then(data => {
                 target.disabled = false;
+                updateCellData(target);
                 if (data.success) console.log(data.success);
             })
             .catch(error => {
@@ -226,14 +227,13 @@ $('.star-checkbox').change(function () {
     $(this).labels().children('.icon-star').toggleClass('icon-hidden');
 });
 
-// On dropdown cell change, update their td's sort and filter values.
-resp_table.on('change', '.dropdown-cell', function () {
-    const td = this.parentElement;
-    const text = this.options[this.selectedIndex].text
+// Update the sort/filter data values on td
+function updateCellData(select) {
+    const td = select.parentElement;
+    const text = select.options[select.selectedIndex].text;
 
-    // jQuery's $.data() doesn't seem to work, using JS instead
-    td.dataset.sort = text
-    td.dataset.filter = text
+    td.dataset.sort = text;
+    td.dataset.filter = text;
 
     resp_table.rows().invalidate("dom").draw(false);
-})
+}
