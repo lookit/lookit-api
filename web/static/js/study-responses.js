@@ -176,8 +176,9 @@ function filterDropdown(table) {
         .every(function () {
             const column = this;
             $('select', this.footer()).on('change', function () {
-                if (column.search() !== this.value) {
-                    column.search(this.value, { exact: true }).draw(false);
+                const text = this.options[this.selectedIndex].text
+                if (column.search() !== text) {
+                    column.search(text, { exact: true }).draw(false);
                 }
             });
         });
@@ -228,11 +229,11 @@ $('.star-checkbox').change(function () {
 // On dropdown cell change, update their td's sort and filter values.
 resp_table.on('change', '.dropdown-cell', function () {
     const td = this.parentElement;
-    const value = this.value
+    const text = this.options[this.selectedIndex].text
 
     // jQuery's $.data() doesn't seem to work, using JS instead
-    td.dataset.sort = value
-    td.dataset.filter = value
+    td.dataset.sort = text
+    td.dataset.filter = text
 
     resp_table.rows().invalidate("dom").draw(false);
 })
