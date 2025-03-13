@@ -1,31 +1,3 @@
-// Date Range UI for "Date Sent" column filter
-$('input[name="daterange"]').daterangepicker({
-    ranges: {
-        'Today': [moment().startOf('day'), moment()],
-        'Yesterday': [moment().subtract(1, 'day').startOf('day'), moment().subtract(1, 'days').endOf('day')],
-        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-        'This Month': [moment().startOf('month'), moment().endOf('month')],
-        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-        'Last Year': [moment().subtract(1, 'year')]
-    },
-    timePicker: true,
-    locale: {
-        format: 'M/DD/YY hh:mm:ss A'
-    },
-    startDate: moment().subtract(3, 'years'),
-    endDate: moment(),
-})
-
-// Add search for "Date Sent" column filter
-$.fn.dataTable.ext.search.push(
-    function (_settings, data, _dataIndex) {
-        const target = new moment(data[3]);
-        const [start, end] = $('#dateRangeFilter').val().split(' - ').map(value => { return new moment(value) });
-        return target.isSameOrAfter(start) && target.isSameOrBefore(end);
-    }
-);
-
 // Datatable init/config
 const table = $("#previousMessagesTable").DataTable({
     order: [[3, 'desc']], // Sort on "Date sent" column
@@ -49,11 +21,6 @@ const table = $("#previousMessagesTable").DataTable({
                 });
             });
     },
-});
-
-// Redraw table on setting "Date Sent" column filter
-$('#dateRangeFilter').on('keyup change clear', function () {
-    table.draw();
 });
 
 // Show email body when row is clicked
@@ -82,11 +49,9 @@ $('#id_recipients').select2({
     placeholder: "Select Email Recipients",
 });
 
-// 
+// Remove users based on email filter preferences
 document.querySelectorAll("#recipientFilter input").forEach(el =>
     el.addEventListener("click", event => {
-        $('#id_recipients').val(null).trigger('change');  // Clear recipients field
-
         // Show appropriate message for filter selected
         document.querySelectorAll(".msg").forEach(el => el.classList.add('d-none'));
         document.querySelectorAll(`.msg.${event.target.dataset.filter}`).forEach(el => el.classList.remove('d-none'));
@@ -95,12 +60,20 @@ document.querySelectorAll("#recipientFilter input").forEach(el =>
         document.querySelectorAll(`#id_recipients option:disabled`).forEach(el => el.disabled = false);
         document.querySelectorAll(`#id_recipients option:not([data-${event.target.dataset.filter}=""])`).forEach(el => el.disabled = true);
 
+        // Get values of selected recipient who aren't disabled from email filter
+        const values = $('#id_recipients').val()
+            .map(s => document.querySelector(`#id_recipients option[value="${s}"]`))
+            .filter(s => !s.disabled)
+            .map(s =>s.value)
+        
+        // Trigger select2 to redraw recipients field
+        $('#id_recipients').val(values).trigger('change');
     })
 );
 // Initial recipient filter click on page load
 document.querySelector("#recipientFilter input:checked").click();
 
-// Summernot init/config for email body field
+// Summernote init/config for email body field
 $('#id_body').summernote({
     codeviewFilter: false, // Prevent XSS
     codeviewIframeFilter: true, // Prevent XSS
@@ -108,3 +81,6 @@ $('#id_body').summernote({
     tabsize: 2,
     height: 150,
 });
+
+// Date Range UI and filter for "Date" column
+setupDataTableDates("previousMessagesTable", 3, "dateRangeFilter");

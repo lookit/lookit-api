@@ -1,5 +1,5 @@
 tr.preview-row {
-    background: url('../images/preview.svg') repeat transparent;
+    background: url('/static/images/preview.svg') repeat transparent;
 }
 
 .two-column-list {
@@ -10,4 +10,36 @@ tr.preview-row {
 
 .list-group-hover .list-group-item:hover:not(.active) {
     background-color: $hovergray;
+}
+
+// Input elements in the responses table
+input[type="checkbox"].researcher-editable.input-checkbox-hidden {
+    display: none;
+}
+
+.icon-star-filled {
+    color: $yellow;
+}
+
+.icon-hidden {
+    display: none;
+}
+
+select.researcher-editable:disabled {
+    background-color: lightgray;
+    cursor: not-allowed;
+}
+
+input[type="checkbox"].researcher-editable:disabled+label .icon-star {
+    color: lightgray;
+    cursor: not-allowed;
+}
+
+// Response info box
+.truncate-parent-feedback {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical
 }

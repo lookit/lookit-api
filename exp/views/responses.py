@@ -1,6 +1,7 @@
 import datetime
 import io
 import json
+import logging
 import zipfile
 from functools import cached_property
 from typing import Dict, KeysView, List, NamedTuple, Set, Text, Union
@@ -18,6 +19,7 @@ from django.http import (
     StreamingHttpResponse,
 )
 from django.shortcuts import redirect, reverse
+from django.utils.text import slugify
 from django.views import generic
 from django.views.generic.base import View
 from django.views.generic.detail import SingleObjectMixin
@@ -45,6 +47,8 @@ from studies.queries import (
     get_responses_with_current_rulings_and_videos,
 )
 from studies.tasks import build_framedata_dict, build_zipfile_of_videos
+
+logger = logging.getLogger(__name__)
 
 CONTENT_TYPE = "text/csv"
 
@@ -503,10 +507,10 @@ def build_zip_for_psychds(
     with zipfile.ZipFile(zipped_file, "w", zipfile.ZIP_DEFLATED) as zipped:
         for data, filename, sidecar_metadata, sidecar_filename in response_data:
             # write data file for response
-            zipped.writestr(f"/data/framedata-per-response/{filename}", data)
+            zipped.writestr(f"data/framedata-per-response/{filename}", data)
             # write metadata sidecar for response
             zipped.writestr(
-                f"/data/framedata-per-response/{sidecar_filename}",
+                f"data/framedata-per-response/{sidecar_filename}",
                 json.dumps(sidecar_metadata, indent=4),
             )
 
@@ -519,28 +523,28 @@ def build_zip_for_psychds(
 
         # save response overview
         zipped.writestr(
-            f"/data/overview/study-{study_uuid}_{all_responses}_data.csv",
+            f"data/overview/study-{study_uuid}_{all_responses}_data.csv",
             overview_str,
         )
         # save children overview
         zipped.writestr(
-            f"/data/overview/study-{study_uuid}_{all_children}_data.csv",
+            f"data/overview/study-{study_uuid}_{all_children}_data.csv",
             child_overview_str,
         )
         if not study.use_generator:
             # save study protocol
             zipped.writestr(
-                "/materials/study_protocol.json", json.dumps(study.structure, indent=4)
+                "materials/study_protocol.json", json.dumps(study.structure, indent=4)
             )
         else:
             # save protocol generator
             zipped.writestr(
-                "/materials/protocol_generator.js",
+                "materials/protocol_generator.js",
                 json.dumps(study.generator, indent=4),
             )
         # save informative README
         zipped.writestr(
-            "/README.md",
+            "README.md",
             PSYCHDS_README_STR.format(
                 study_title=study.name,
                 study_url=f'"https://childrenhelpingscience.com/exp/studies/{study.id}/responses/all/"',
@@ -551,22 +555,22 @@ def build_zip_for_psychds(
         )
         # save readme to use as an instructive filler for the demographics directory
         zipped.writestr(
-            "/data/demographic/README.md",
+            "data/demographic/README.md",
             DEMOGRAPHICS_README_STR,
         )
         # save readme to use as instructive filler for the videos directory
         zipped.writestr(
-            "/data/raw/video/README.md",
+            "data/raw/video/README.md",
             VIDEOS_README_STR,
         )
         # save all responses json
         zipped.writestr(
-            f"/data/raw/{all_response_filename}",
+            f"data/raw/{all_response_filename}",
             all_response_json_str,
         )
         # save psychds-ignore file to avoid NOT_INCLUDED warnings
         zipped.writestr(
-            "/.psychdsignore",
+            ".psychds-ignore",
             PSYCHDS_IGNORE_STR,
         )
         study_ad = {
@@ -826,26 +830,19 @@ class DemographicDownloadMixin(CanViewStudyResponsesMixin, MultipleObjectMixin):
         )
 
 
-class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
+class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
     """
     View to display a list of study responses.
     """
 
     template_name = "studies/study_responses.html"
-
-    def get_ordering(self):
-        """
-        Determine sort field and order. Sorting on id actually sorts on child id, not response id.
-        Sorting on status, actually sorts on 'completed' field, where we are alphabetizing
-        "in progress" and "completed"
-        """
-        orderby = self.request.GET.get("sort", "id")
-        return orderby.replace("id", "child__id").replace("status", "completed")
+    model = Response
 
     def get_queryset(self):
+        study = self.study
         return (
-            super()
-            .get_queryset()
+            study.responses_for_researcher(self.request.user)
+            .order_by("-date_created")
             .prefetch_related(
                 "consent_rulings__arbiter",
                 Prefetch(
@@ -859,26 +856,30 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
 
     def get_context_data(self, **kwargs):
         """
-        In addition to the study, adds several items to the context dictionary.  Study results
-        are paginated.
+        In addition to the study, adds several items to the context dictionary.
         """
         context = super().get_context_data(**kwargs)
         context["study"] = study = self.study
-        paginated_responses = context["object_list"]
-
         columns_included_in_summary = study.columns_included_in_summary()
 
         columns_included_in_table = [
             "child__hashed_id",
+            "child__name",
             "response__uuid",
             "response__id",
             "response__status",
             "response__completed",
             "response__is_preview",
+            "response__researcher_payment_status",
+            "response__researcher_session_status",
+            "response__researcher_star",
         ]
 
+        context["session_status_options"] = list(Response.SESSION_STATUS_CHOICES)
+        context["payment_status_options"] = list(Response.PAYMENT_STATUS_CHOICES)
+
         response_data = []
-        for resp in paginated_responses:
+        for resp in context["object_list"]:
             # Info needed for table display of individual responses
             this_resp_data = {
                 col.id: col.extractor(resp)
@@ -887,6 +888,9 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
             }
             # Exception - store actual date object for date created
             this_resp_data["response__date_created"] = resp.date_created
+            this_resp_data["child_id_slug"] = (
+                f'{this_resp_data["child__hashed_id"]}-{slugify(this_resp_data["child__name"] or "")}'
+            )
             # info needed for summary table shown at right
             this_resp_data["summary"] = [
                 {
@@ -916,6 +920,11 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
         context["can_edit_feedback"] = self.request.user.has_study_perms(
             StudyPermission.EDIT_STUDY_FEEDBACK, context["study"]
         )
+
+        preview_only = not self.request.user.has_study_perms(
+            StudyPermission.CODE_STUDY_CONSENT, study
+        )
+        context["summary_statistics"] = get_consent_statistics(study.id, preview_only)
 
         return context
 
@@ -1086,6 +1095,109 @@ class StudyResponseSubmitFeedback(StudyLookupMixin, UserPassesTestMixin, View):
 
         return HttpResponseRedirect(
             reverse("exp:study-responses-list", kwargs=dict(pk=study.pk))
+        )
+
+
+class StudyResponseSetResearcherFields(
+    ResearcherLoginRequiredMixin, StudyLookupMixin, UserPassesTestMixin, View
+):
+    """
+    View to edit researcher-editable fields in Responses: session status, payment status, star.
+    """
+
+    EDITABLE_FIELDS = [
+        "researcher_session_status",
+        "researcher_payment_status",
+        "researcher_star",
+    ]
+
+    def user_can_edit_response(self):
+        user = self.request.user
+        study = self.study
+        # First check user has permission to be editing response from this study - use same permissions as editing feedback
+        return user.is_researcher and user.has_study_perms(
+            StudyPermission.EDIT_STUDY_FEEDBACK, study
+        )
+
+    test_func = user_can_edit_response
+
+    def post(self, request, *args, **kwargs):
+        """
+        Edit the researcher-editable fields in the Individual Responses table. Pass field and response_id to edit that response field.
+        """
+        data = json.loads(request.body)
+        response_id = data.get("responseId", None)
+        field_id = data.get("field", None)
+        value = data.get("value", None)
+
+        # Data validation checks
+        if response_id is None or field_id is None or value is None:
+            return JsonResponse(
+                {
+                    "error": f"""Invalid request: One or more of the required arguments is missing. Response ID {response_id}, field {field_id}, and/or value {value}."""
+                },
+                status=400,
+            )
+
+        try:
+            response_obj = Response.objects.get(id=response_id)
+        except ObjectDoesNotExist:
+            return JsonResponse(
+                {
+                    "error": f"""Invalid request: Response object {response_id} does not exist"""
+                },
+                status=400,
+            )
+
+        if response_obj.study_id != self.study.pk:
+            return JsonResponse(
+                {
+                    "error": f"""Invalid request: Response object {response_id} is not from this study."""
+                },
+                status=400,
+            )
+
+        if field_id not in self.EDITABLE_FIELDS:
+            return JsonResponse(
+                {"error": f"""Invalid request: Invalid field {field_id}"""}, status=400
+            )
+
+        if field_id == self.EDITABLE_FIELDS[0]:
+            if value not in Response.SESSION_STATUS_CHOICES:
+                return JsonResponse(
+                    {
+                        "error": f"""Invalid request: Session Status must be one of {Response.SESSION_STATUS_CHOICES}."""
+                    },
+                    status=400,
+                )
+        elif field_id == self.EDITABLE_FIELDS[1]:
+            if value not in Response.PAYMENT_STATUS_CHOICES:
+                return JsonResponse(
+                    {
+                        "error": f"""Invalid request: Payment Status must be one of {Response.PAYMENT_STATUS_CHOICES}."""
+                    },
+                    status=400,
+                )
+        elif field_id == self.EDITABLE_FIELDS[2]:
+            if not isinstance(value, bool):
+                return JsonResponse(
+                    {"error": "Invalid request: Star field must be a boolean value."},
+                    status=400,
+                )
+
+        # Try updating the Response object
+        try:
+            setattr(response_obj, field_id, value)
+            response_obj.save()
+        except Exception as e:
+            logger.error(f"""An error occurred: {e}""")
+            raise
+
+        return JsonResponse(
+            {
+                "success": f"""Response {response_id} field {field_id} updated to {value}"""
+            },
+            status=200,
         )
 
 

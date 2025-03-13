@@ -1184,39 +1184,32 @@ class ResponseDataDownloadTestCase(TestCase):
         self.client.force_login(self.study_reader)
         n_matches = 0
 
-        n_pages = (self.n_responses + self.n_previews) // 10 + 1
+        response = self.client.get(
+            f"{reverse('exp:study-responses-list', kwargs={'pk': self.study.pk})}"
+        )
+        content = response.content.decode("utf-8")
+        matches = re.finditer('data-response-uuid="(.*)"', content)
+        for m in matches:
+            n_matches += 1
+            this_response_uuid = m.group(1)
+            response = Response.objects.get(uuid=this_response_uuid)
+            self.assertEqual(response.study.pk, self.study.pk)
+            self.assertTrue(response.has_valid_consent)
 
-        for page_number in range(1, n_pages + 1):
-            response = self.client.get(
-                f"{reverse('exp:study-responses-list', kwargs={'pk': self.study.pk})}?page={page_number}"
+            # Also check values are displayed in table
+            hashed_child_id = hash_id(
+                response.child.uuid,
+                self.study.uuid,
+                self.study.salt,
+                self.study.hash_digits,
             )
-            content = response.content.decode("utf-8")
-            matches = re.finditer('data-response-uuid="(.*)"', content)
-            for m in matches:
-                n_matches += 1
-                this_response_uuid = m.group(1)
-                response = Response.objects.get(uuid=this_response_uuid)
-                self.assertEqual(response.study.pk, self.study.pk)
-                self.assertTrue(response.has_valid_consent)
-
-                # Also check values are displayed in table
-                hashed_child_id = hash_id(
-                    response.child.uuid,
-                    self.study.uuid,
-                    self.study.salt,
-                    self.study.hash_digits,
-                )
-                self.assertIn(f"<td>{hashed_child_id}</td>", content)
-                self.assertIn(f"<td>{str(this_response_uuid)[:8]}", content)
-                response_date = response.date_created.astimezone()
-                # Generate start of date representation matching Django template tag usage
-                formatted_date = (
-                    f"{response_date.strftime('%m').lstrip('0')}/"
-                    f"{response_date.strftime('%d/%Y').lstrip('0')} "
-                    f"{response_date.strftime('%I:%M').lstrip('0')}"
-                )
-                self.assertIn(f"<td>{formatted_date}", content)
-            self.assertNotIn(self.poison_string, content)
+            self.assertIn(f"<td>{hashed_child_id}</td>", content)
+            self.assertIn(f"<td>{str(this_response_uuid)[:8]}", content)
+            response_date = response.date_created
+            # Generate start of date representation matching Django template tag usage
+            formatted_date = response_date.strftime("%-m/%-d/%Y %-I:%M %p")
+            self.assertIn(f"{formatted_date}", content)
+        self.assertNotIn(self.poison_string, content)
 
         self.assertEqual(n_matches, self.n_responses + self.n_previews)
 

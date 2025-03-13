@@ -8,6 +8,9 @@
 {% load tz %}
 {% block head %}
     {{ block.super }}
+    <script src="{% static 'js/table-date-filter.js' %}"
+            type="application/javascript"
+            defer></script>
     <script src="{% static 'js/study-participant-contact.js' %}" defer></script>
 {% endblock head %}
 {% block title %}
@@ -95,8 +98,7 @@
                                    name="btnradio"
                                    id="btnradio1"
                                    autocomplete="off"
-                                   data-filter="next-session"
-                                   checked />
+                                   data-filter="next-session" />
                             <label class="btn btn-outline-secondary" for="btnradio1">{% bs_icon "calendar2-check" %}</label>
                             <input type="radio"
                                    class="btn-check"
@@ -117,7 +119,8 @@
                                    name="btnradio"
                                    id="btnradio4"
                                    autocomplete="off"
-                                   data-filter="response-questions" />
+                                   data-filter="response-questions"
+                                   checked />
                             <label class="btn btn-outline-secondary" for="btnradio4">{% bs_icon "chat" %}</label>
                             <input type="radio"
                                    class="btn-check"
