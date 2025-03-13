@@ -138,12 +138,14 @@
                                                 Incomplete
                                             {% endif %}
                                         </td>
-                                        <td>
+                                        <td data-filter="{{response.response__researcher_payment_status}}"
+                                            data-sort="{{response.response__researcher_payment_status}}">
                                             <select name="payment-status"
                                                     id="payment-status-{{ forloop.counter }}"
-                                                    class="researcher-editable form-select"
+                                                    class="researcher-editable form-select dropdown-cell"
                                                     autocomplete="off"
-                                                    aria-label="Set optional payment status for this response">
+                                                    aria-label="Set optional payment status for this response"
+                                                    {% if not can_edit_feedback %}disabled{% endif %}>
                                                 {% for pstatus in payment_status_options %}
                                                     <option value="{{ pstatus.0 }}"
                                                             {% if response.response__researcher_payment_status == pstatus.1 %}selected{% endif %}>
@@ -152,12 +154,14 @@
                                                 {% endfor %}
                                             </select>
                                         </td>
-                                        <td>
+                                        <td data-filter="{{response.response__researcher_session_status}}"
+                                            data-sort="{{response.response__researcher_session_status}}" >
                                             <select name="session-status"
                                                     id="session-status-{{ forloop.counter }}"
-                                                    class="researcher-editable form-select"
+                                                    class="researcher-editable form-select dropdown-cell"
                                                     autocomplete="off"
-                                                    aria-label="Set optional session status for this response">
+                                                    aria-label="Set optional session status for this response"
+                                                    {% if not can_edit_feedback %}disabled{% endif %}>
                                                 {% for sstatus in session_status_options %}
                                                     <option value="{{ sstatus.0 }}"
                                                             {% if response.response__researcher_session_status == sstatus.1 %}selected{% endif %}>
@@ -166,12 +170,14 @@
                                                 {% endfor %}
                                             </select>
                                         </td>
-                                        <td>
+                                        <td data-sort="{{response.response__researcher_star}}">
                                             <input type="checkbox"
                                                    name="star"
                                                    id="star-checkbox-{{ forloop.counter }}"
                                                    class="researcher-editable input-checkbox-hidden star-checkbox"
-                                                   aria-label="Toggle optional Star selection for this response" />
+                                                   aria-label="Toggle optional Star selection for this response"
+                                                   {% if response.response__researcher_star %}checked{% endif %} 
+                                                   {% if not can_edit_feedback %}disabled{% endif %} />
                                             <label for="star-checkbox-{{ forloop.counter }}">
                                                 {% if response.response__researcher_star %}
                                                     {% bs_icon "star" extra_classes="icon-star icon-hidden" size='1.5em' %}{% bs_icon "star-fill" extra_classes="icon-star icon-star-filled" size='1.5em' %}
@@ -204,22 +210,53 @@
                                                placeholder="Filter Time Elapsed" />
                                     </th>
                                     <th scope="col">
-                                        <input type="text"
-                                               class="form-control"
-                                               placeholder="Filter Exit Frame Status" />
+                                        <select name="filter-exit-status" 
+                                            id="filter-exit-status" 
+                                            class="form-select" 
+                                            autocomplete="off" 
+                                            aria-label="Filter on whether the exit frame was marked complete">
+                                            <option value="" selected=""></option>
+                                            <option value="complete">Complete</option>
+                                            <option value="incomplete">Incomplete</option>
+                                        </select>
                                     </th>
                                     <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Payment Status" />
+                                        <select name="filter-payment-status"
+                                            id="filter-payment-status"
+                                            class="form-select"
+                                            autocomplete="off"
+                                            aria-label="Filter on optional payment status for this response">
+                                            {% for value, option in payment_status_options %}
+                                            <option value="{{ value }}">
+                                                {{ option }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
                                     </th>
                                     <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Session Status" />
+                                        <select name="filter-session-status"
+                                            id="filter-response-status"
+                                            class="form-select"
+                                            autocomplete="off"
+                                            aria-label="Filter on optional session status for this response">
+                                            {% for value, option in session_status_options %}
+                                            <option value="{{ value }}">
+                                                {{ option }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
                                     </th>
                                     <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Star" />
+                                        {% comment %} Empty footer element for the star column {% endcomment %}
                                     </th>
                                 </tr>
                             </tfoot>
                         </table>
+                        {% if not can_edit_feedback %}
+                            <p class="text-center">
+                                <em>Based on your permissions, you are unable to modify responses.</em>
+                            </p>
+                        {% endif %}
                         {% if can_view_regular_responses and not can_view_preview_responses %}
                             <p class="text-center">
                                 <em>Based on your permissions, no preview responses are shown.</em>
