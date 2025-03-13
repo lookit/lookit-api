@@ -212,7 +212,7 @@ const resp_table = $("#individualResponsesTable").DataTable({
         { className: "column-text-search", targets: [1, 2, 4] }, // add class to text search columns
         { className: "column-dropdown-search", targets: [5, 6, 7] }, // add class to dropdown search columns
         { orderData: 3, targets: [3, 4] }, // Sort "Time Elapsed" by "Date" column's data.
-        { targets: 3, render: dateColRender }
+        { targets: 3, type: 'date', render: dateColRender}
     ],
     initComplete: function () {
         filterText(this);
