@@ -104,7 +104,9 @@ $('.researcher-editable').change(
             })
             .then(data => {
                 target.disabled = false;
-                updateCellData(target);
+                if (target.matches('select.researcher-editable.dropdown-cells')) {
+                    updateCellData(target);
+                }
                 if (data.success) console.log(data.success);
             })
             .catch(error => {
@@ -227,7 +229,7 @@ $('.star-checkbox').change(function () {
     $(this).labels().children('.icon-star').toggleClass('icon-hidden');
 });
 
-// Update the sort/filter data values on td
+// Update the sort/filter data values on td for select elements
 function updateCellData(select) {
     const td = select.parentElement;
     const text = select.options[select.selectedIndex].text;
