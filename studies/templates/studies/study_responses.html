@@ -176,6 +176,7 @@
                                                    id="star-checkbox-{{ forloop.counter }}"
                                                    class="researcher-editable input-checkbox-hidden star-checkbox"
                                                    aria-label="Toggle optional Star selection for this response"
+                                                   {% if response.response__researcher_star %}checked{% endif %} 
                                                    {% if not can_edit_feedback %}disabled{% endif %} />
                                             <label for="star-checkbox-{{ forloop.counter }}">
                                                 {% if response.response__researcher_star %}
