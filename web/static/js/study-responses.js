@@ -24,7 +24,9 @@ function updateInfoBox(index) {
     // Select table rows of response details table.
     const rows = document
         .querySelector(`#response-summary-${index}`)
-        .querySelectorAll('table tbody tr');
+        ?.querySelectorAll('table tbody tr');
+
+    if (!rows) return
 
     // construct parent ID
     const parentName = rows[13].children[1].textContent
