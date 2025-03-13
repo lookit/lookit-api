@@ -193,7 +193,10 @@ def get_consent_statistics(study_id, preview_only):
     Returns:
         A dict containing the summary stats.
     """
-    statistics = {"responses": {"total": 0}, "children": {}}
+    statistics = {
+        "responses": {"total": 0, "rejected": 0, "pending": 0, "accepted": 0},
+        "children": {},
+    }
     response_stats = statistics["responses"]
     child_stats = statistics["children"]
 
