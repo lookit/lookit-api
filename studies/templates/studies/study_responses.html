@@ -138,10 +138,11 @@
                                                 Incomplete
                                             {% endif %}
                                         </td>
-                                        <td>
+                                        <td data-filter="{{response.response__researcher_payment_status}}"
+                                            data-sort="{{response.response__researcher_payment_status}}">
                                             <select name="payment-status"
                                                     id="payment-status-{{ forloop.counter }}"
-                                                    class="researcher-editable form-select"
+                                                    class="researcher-editable form-select dropdown-cells"
                                                     autocomplete="off"
                                                     aria-label="Set optional payment status for this response"
                                                     {% if not can_edit_feedback %}disabled{% endif %}>
@@ -153,10 +154,11 @@
                                                 {% endfor %}
                                             </select>
                                         </td>
-                                        <td>
+                                        <td data-filter="{{response.response__researcher_session_status}}"
+                                            data-sort="{{response.response__researcher_session_status}}" >
                                             <select name="session-status"
                                                     id="session-status-{{ forloop.counter }}"
-                                                    class="researcher-editable form-select"
+                                                    class="researcher-editable form-select dropdown-cells"
                                                     autocomplete="off"
                                                     aria-label="Set optional session status for this response"
                                                     {% if not can_edit_feedback %}disabled{% endif %}>
@@ -207,15 +209,41 @@
                                                placeholder="Filter Time Elapsed" />
                                     </th>
                                     <th scope="col">
-                                        <input type="text"
-                                               class="form-control"
-                                               placeholder="Filter Exit Frame Status" />
+                                        <select name="filter-exit-status" 
+                                            id="filter-exit-status" 
+                                            class="form-select" 
+                                            autocomplete="off" 
+                                            aria-label="Filter on whether the exit frame was marked complete">
+                                            <option value="" selected=""></option>
+                                            <option value="complete">Complete</option>
+                                            <option value="incomplete">Incomplete</option>
+                                        </select>
                                     </th>
                                     <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Payment Status" />
+                                        <select name="filter-payment-status"
+                                            id="filter-payment-status"
+                                            class="form-select"
+                                            autocomplete="off"
+                                            aria-label="Filter on optional payment status for this response">
+                                            {% for value, option in payment_status_options %}
+                                            <option value="{{ value }}">
+                                                {{ option }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
                                     </th>
                                     <th scope="col">
-                                        <input type="text" class="form-control" placeholder="Filter Session Status" />
+                                        <select name="filter-session-status"
+                                            id="filter-response-status"
+                                            class="form-select"
+                                            autocomplete="off"
+                                            aria-label="Filter on optional session status for this response">
+                                            {% for value, option in session_status_options %}
+                                            <option value="{{ value }}">
+                                                {{ option }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
                                     </th>
                                     <th scope="col">
                                         <input type="text" class="form-control" placeholder="Filter Star" />

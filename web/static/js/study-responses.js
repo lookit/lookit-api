@@ -20,96 +20,6 @@ $('.selectable-response').click(function () {
     showFeedbackList(responseId);
 });
 
-function showAttachments(index) {
-    $('.response-attachments').hide();
-    $('#resp-attachment-' + index).show();
-}
-
-function showFeedbackList(responseId) {
-    $('.feedback-list').hide();
-    $('form.feedback [name=response_id]').val(responseId);
-    $(`#feedback-list-for-${responseId}`).show();
-}
-
-function extractIdNumber(id) {
-    return id.split('-').slice(-1)[0];
-}
-
-function showResponse(index) {
-    // Shows individual response summary
-    $('.response-summary').hide();
-    $('#response-summary-' + index).show();
-}
-
-function showHideColumns() {
-    // Elements containing links 
-    const show_hide_columns = [{ col: 3, name: "Date" }, { col: 4, name: "Time Elapsed" }, { col: 5, name: "Exit Frame Status" }, { col: 6, name: "Payment Status" }, { col: 7, name: "Session Status" }, { col: 8, name: "Star" }]
-    const hide_show_elements = show_hide_columns.map(el => {
-        return `<a href class="toggle-vis" data-column="${el.col}">${el.name}</a>`
-    })
-    document.querySelector('.show-hide-cols').innerHTML = `<div class="text-center py-sm-2">Show/Hide: ${hide_show_elements.join(" | ")}</div>`
-
-    // Click event listener on the above links
-    document.querySelectorAll('a.toggle-vis').forEach(el => {
-        el.addEventListener('click', e => {
-            e.preventDefault();
-            const columnIdx = e.target.dataset.column;
-            const column = resp_table.column(columnIdx);
-            column.visible(!column.visible());
-        });
-    })
-
-}
-
-// Datatable init/config for responses table
-const resp_table = $("#individualResponsesTable").DataTable({
-    layout: {
-        topStart: null,
-        topEnd: null,
-        top: ['pageLength',
-            { features: [{ div: { className: 'show-hide-cols mx-3' } }] },
-            'search'],
-    },
-    order: [[3, 'desc']], // Sort on "Date" column
-    columnDefs: [
-        { className: "column-text-search", targets: [1, 2, 4] }, // add class to text search columns
-        { type: "date", orderData: 3, targets: [3, 4] }, // set type for "Date" column and sort "Time Elapsed" by "Date" column's data.
-        {
-            targets: 3,
-            createdCell: (td, cellData) => {
-                const [date, time, amPm] = cellData.split(" ");
-                td.innerHTML = `<div>${date}</div><div>${time} ${amPm}</div>`;
-            }
-        }
-    ],
-    autoWidth: false, // prevents hide/show cols from growing table
-    initComplete: function () {
-        // Apply the text search to any column with the class "column-text-search"
-        this.api()
-            .columns(".column-text-search")
-            .every(function () {
-                let column = this;
-                // Select input element for this column and apply search
-                $('input', this.footer()).on('keyup change', function () {
-                    if (column.search() !== this.value) {
-                        column
-                            .search(this.value)
-                            .draw();
-                    }
-                });
-            });
-        showHideColumns();
-    },
-});
-
-// Date Range UI and filter for "Date" column
-setupDataTableDates("individualResponsesTable", 3, "dateRangeFilter");
-
-// Toggle the filled/unfilled star image visibility on input checkbox state change
-$('.star-checkbox').change(function () {
-    $(this).labels().children('.icon-star').toggleClass('icon-hidden');
-});
-
 function updateInfoBox(index) {
     // Select table rows of response details table.
     const rows = document
@@ -182,24 +92,148 @@ $('.researcher-editable').change(
             },
             body: JSON.stringify(data)
         })
-        .then(response => {
-            if (!response.ok) {
-                // If the response is not successful then parse the JSON for the error message and re-throw
-                return response.json().then(errorData => {
-                    const errMsg = (errorData && errorData.error) ? errorData.error : "Request to update a response field has failed.";
-                    throw new Error(errMsg);
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            target.disabled = false;
-            if (data.success) console.log(data.success);
-        })
-        .catch(error => {
-            // If the update fails, log the reason to the console and revert to the previous value by reloading the page.
-            console.error(error);
-            location.reload();
-        });
+            .then(response => {
+                if (!response.ok) {
+                    // If the response is not successful then parse the JSON for the error message and re-throw
+                    return response.json().then(errorData => {
+                        const errMsg = (errorData && errorData.error) ? errorData.error : "Request to update a response field has failed.";
+                        throw new Error(errMsg);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                target.disabled = false;
+                updateCellData(target);
+                if (data.success) console.log(data.success);
+            })
+            .catch(error => {
+                // If the update fails, log the reason to the console and revert to the previous value by reloading the page.
+                console.error(error);
+                location.reload();
+            });
     }
 );
+
+function showAttachments(index) {
+    $('.response-attachments').hide();
+    $('#resp-attachment-' + index).show();
+}
+
+function showFeedbackList(responseId) {
+    $('.feedback-list').hide();
+    $('form.feedback [name=response_id]').val(responseId);
+    $(`#feedback-list-for-${responseId}`).show();
+}
+
+function extractIdNumber(id) {
+    return id.split('-').slice(-1)[0];
+}
+
+function showResponse(index) {
+    // Shows individual response summary
+    $('.response-summary').hide();
+    $('#response-summary-' + index).show();
+}
+
+function showHideColumns() {
+    // Elements containing links 
+    const show_hide_columns = [{ col: 3, name: "Date" }, { col: 4, name: "Time Elapsed" }, { col: 5, name: "Exit Frame Status" }, { col: 6, name: "Payment Status" }, { col: 7, name: "Session Status" }, { col: 8, name: "Star" }]
+    const hide_show_elements = show_hide_columns.map(el => {
+        return `<a href class="toggle-vis" data-column="${el.col}">${el.name}</a>`
+    })
+    document.querySelector('.show-hide-cols').innerHTML = `Show/Hide: ${hide_show_elements.join(" | ")}`
+
+    // Click event listener on the above links
+    document.querySelectorAll('a.toggle-vis').forEach(el => {
+        el.addEventListener('click', e => {
+            e.preventDefault();
+            const columnIdx = e.target.dataset.column;
+            const column = resp_table.column(columnIdx);
+            column.visible(!column.visible());
+        });
+    })
+
+}
+
+function filterText(table) {
+    // Apply the text search to any column with the class "column-text-search"
+    table.api()
+        .columns(".column-text-search")
+        .every(function () {
+            let column = this;
+            // Select input element for this column and apply search
+            $('input', this.footer()).on('keyup change', function () {
+                if (column.search() !== this.value) {
+                    column.search(this.value).draw(false);
+                }
+            });
+        });
+}
+
+function filterDropdown(table) {
+    table.api()
+        .columns(".column-dropdown-search")
+        .every(function () {
+            const column = this;
+            $('select', this.footer()).on('change', function () {
+                const text = this.options[this.selectedIndex].text
+                if (column.search() !== text) {
+                    column.search(text, { exact: true }).draw();
+                }
+            });
+        });
+}
+
+function dateColRender(data, type) {
+    switch (type) {
+        case "display":
+            const [date, time, amPm] = data.split(" ");
+            return `<div>${date}</div><div>${time} ${amPm}</div>`;
+        default:
+            return data
+
+    }
+}
+
+// Datatable init/config for responses table
+const resp_table = $("#individualResponsesTable").DataTable({
+    layout: {
+        topStart: null,
+        topEnd: null,
+        top: ['pageLength',
+            { features: [{ div: { className: 'show-hide-cols text-center mx-3' } }] },
+            'search'],
+    },
+    order: [[3, 'desc']], // Sort on "Date" column
+    columnDefs: [
+        { className: "column-text-search", targets: [1, 2, 4] }, // add class to text search columns
+        { className: "column-dropdown-search", targets: [5, 6, 7] }, // add class to dropdown search columns
+        { orderData: 3, targets: [3, 4] }, // Sort "Time Elapsed" by "Date" column's data.
+        { targets: 3, render: dateColRender }
+    ],
+    initComplete: function () {
+        filterText(this);
+        filterDropdown(this);
+        showHideColumns();
+    },
+});
+
+// Date Range UI and filter for "Date" column
+setupDataTableDates("individualResponsesTable", 3, "dateRangeFilter");
+
+// Toggle the filled/unfilled star image visibility on input checkbox state change
+$('.star-checkbox').change(function () {
+    $(this).labels().children('.icon-star').toggleClass('icon-hidden');
+});
+
+// Update the sort/filter data values on td
+function updateCellData(select) {
+    const td = select.parentElement;
+    const text = select.options[select.selectedIndex].text;
+
+    td.dataset.sort = text;
+    td.dataset.filter = text;
+
+    resp_table.rows().invalidate("dom").draw(false);
+}
