@@ -11,5 +11,5 @@ WORKDIR /code
 
 COPY pyproject.toml uv.lock /code/
 
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
+RUN curl --proto "=https" --tlsv1.2 -LsSf https://astral.sh/uv/install.sh | sh \
     && uv sync --frozen
