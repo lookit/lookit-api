@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.contrib.staticfiles.storage import ManifestFilesMixin
 from storages.backends.gcloud import GoogleCloudStorage
 
 
@@ -19,7 +18,7 @@ class LookitGoogleCloudStorage(GoogleCloudStorage):
         return f"/{name.lstrip('/')}"
 
 
-class LookitStaticStorage(ManifestFilesMixin, LookitGoogleCloudStorage):
+class LookitStaticStorage(LookitGoogleCloudStorage):
     location = settings.STATICFILES_LOCATION
 
 
