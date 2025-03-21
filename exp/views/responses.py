@@ -839,6 +839,8 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
     model = Response
 
     def get_queryset(self):
+        video_queryset = Video.objects.only("full_name")
+
         study = self.study
         return (
             study.responses_for_researcher(self.request.user)
@@ -850,6 +852,11 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
                     queryset=Feedback.objects.select_related("researcher").order_by(
                         "-id"
                     ),
+                ),
+                Prefetch(
+                    "videos",
+                    queryset=video_queryset,
+                    to_attr="prefetched_videos",
                 ),
             )
         )
@@ -901,13 +908,19 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
                 for col in RESPONSE_COLUMNS
                 if col.id in columns_included_in_summary
             ]
-            this_resp_data["videos"] = resp.videos.values("pk", "full_name")
-            for v in this_resp_data["videos"]:
-                v["display_name"] = (
-                    v["full_name"]
-                    .replace("videoStream_{}_".format(study.uuid), "...")
-                    .replace("_{}_".format(resp.uuid), "...")
-                )
+
+            video_info = [
+                {
+                    "pk": v.pk,
+                    "display_name": (
+                        v.full_name.replace(
+                            "videoStream_{}_".format(study.uuid), "..."
+                        ).replace("_{}_".format(resp.uuid), "...")
+                    ),
+                }
+                for v in resp.prefetched_videos
+            ]
+            this_resp_data["videos"] = video_info
             response_data.append(this_resp_data)
         context["response_data"] = response_data
         context["data_options"] = [col for col in RESPONSE_COLUMNS if col.optional]
