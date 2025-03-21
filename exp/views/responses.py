@@ -845,6 +845,7 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
         return (
             study.responses_for_researcher(self.request.user)
             .order_by("-date_created")
+            .select_related("study_type", "child", "demographic_snapshot")
             .prefetch_related(
                 "consent_rulings__arbiter",
                 Prefetch(
