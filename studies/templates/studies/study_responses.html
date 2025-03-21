@@ -1,6 +1,5 @@
 {% extends "exp/base.html" %}
 {% load django_bootstrap5 %}
-{% load bootstrap_icons %}
 {% load exp_extras %}
 {% load web_extras %}
 {% load tz %}
@@ -10,6 +9,7 @@
 {% endblock title %}
 {% block head %}
     {{ block.super }}
+    <script src="https://kit.fontawesome.com/a54f9a117d.js" crossorigin="anonymous"></script>
     <script src="{% static 'js/table-date-filter.js' %}"
             type="application/javascript"
             defer></script>
@@ -180,9 +180,9 @@
                                                    {% if not can_edit_feedback %}disabled{% endif %} />
                                             <label for="star-checkbox-{{ forloop.counter }}">
                                                 {% if response.response__researcher_star %}
-                                                    {% bs_icon "star" extra_classes="icon-star icon-hidden" size='1.5em' %}{% bs_icon "star-fill" extra_classes="icon-star icon-star-filled" size='1.5em' %}
+                                                    <span class="icon-star icon-hidden"><i class="fa-regular fa-star"></i></span><span class="icon-star icon-star-filled"><i class="fa-solid fa-star"></i></span>
                                                 {% else %}
-                                                    {% bs_icon "star" extra_classes="icon-star" size='1.5em' %}{% bs_icon "star-fill" extra_classes="icon-star icon-star-filled icon-hidden" size='1.5em' %}
+                                                    <span class="icon-star"><i class="fa-regular fa-star"></i></span><span class="icon-star icon-star-filled icon-hidden"><i class="fa-solid fa-star"></i></span>
                                                 {% endif %}
                                             </label>
                                         </td>
