@@ -234,7 +234,7 @@ function updateAJAXCellData(target) {
         td.dataset.filter = text;
     } else if (classes.contains("star-checkbox")) {
         td.querySelectorAll('.icon-star').forEach(el => {
-            el.classList.toggle('icon-hidden')
+            el.classList.toggle('icon-star-filled')
         })
         td.dataset.sort = "False" == td.dataset.sort ? "True" : "False"
     }
