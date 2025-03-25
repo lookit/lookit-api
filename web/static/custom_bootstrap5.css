@@ -35,13 +35,11 @@ input[type="checkbox"].researcher-editable.input-checkbox-hidden {
   display: none; }
 
 .icon-star {
-  font-size: 1.5em; }
+  fill: lightgray; }
 
 .icon-star-filled {
-  color: #f3c90f; }
-
-.icon-hidden {
-  display: none; }
+  color: #f3c90f;
+  fill: #f3c90f; }
 
 select.researcher-editable:disabled {
   background-color: lightgray;
