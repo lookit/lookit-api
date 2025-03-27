@@ -207,11 +207,12 @@ const resp_table = $("#individualResponsesTable").DataTable({
             { features: [{ div: { className: 'show-hide-cols text-center mx-3' } }] },
             'search'],
     },
-    order: [[3, 'desc']], // Sort on "Date" column
+    order: [[2, 'desc']], // Sort on "Response ID" column (most recent first). Sorting on Date doesn't work as expected.
     columnDefs: [
         { className: "column-text-search", targets: [1, 2, 4] }, // add class to text search columns
         { className: "column-dropdown-search", targets: [5, 6, 7] }, // add class to dropdown search columns
-        { orderData: 3, targets: [3, 4] }, // Sort "Time Elapsed" by "Date" column's data.
+        // This tells datatables to sort "Time Elapsed" and "Date" by "Response ID" column's data. Date sorting isn't working (it doesn't take the full timestamp into account). The right way to do this is to pass the full timestamp into the template and tell datatables how to parse and display it, but I couldn't get that to work (docs https://datatables.net/examples/datetime/.)
+        { orderData: 2, targets: [2, 3, 4] },
         { targets: 3, type: 'date', render: dateColRender}
     ],
     initComplete: function () {
