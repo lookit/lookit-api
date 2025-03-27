@@ -17,12 +17,13 @@ input[type="checkbox"].researcher-editable.input-checkbox-hidden {
     display: none;
 }
 
-.icon-star-filled {
-    color: $yellow;
+.icon-star {
+    fill: lightgray;
 }
 
-.icon-hidden {
-    display: none;
+.icon-star-filled {
+    color: $yellow;
+    fill: $yellow;
 }
 
 select.researcher-editable:disabled {
