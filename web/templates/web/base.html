@@ -5,6 +5,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}" />
         <meta name="description" content="" />
         <meta name="keywords" content="" />
         <meta charset="UTF-8" />
@@ -104,7 +105,7 @@
                 crossorigin="anonymous"></script>
         {# bootstrap 5 #}
         {% bootstrap_javascript %}
-        {% bootstrap_css %}
+        <link rel="stylesheet" href="{% static 'custom_bootstrap5.css' %}"/>
         {# others... #}
         {% block head %}
         {% endblock head %}

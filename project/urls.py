@@ -22,7 +22,6 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.urls import urlpatterns as auth_urls
 from django.urls import path
-from django.views.generic.base import RedirectView
 from more_itertools import locate
 
 from accounts import urls as accounts_urls
@@ -31,8 +30,6 @@ from api import urls as api_urls
 from exp import urls as exp_urls
 from project import settings
 from web import urls as web_urls
-
-favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
 
 # Don't want to depend on the login always being the first view...
 # plus we REALLY should be using more_itertools :)
@@ -55,7 +52,6 @@ auth_urls[pass_reset_path_index] = path(
 
 
 urlpatterns = i18n_patterns(
-    path("favicon.ico", favicon_view),
     path("__CTRL__/", admin.site.urls),
     path("api/", include((api_urls, "api"))),
     path("exp/", include(exp_urls)),
