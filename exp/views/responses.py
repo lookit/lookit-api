@@ -839,8 +839,6 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
     model = Response
 
     def get_queryset(self):
-        video_queryset = Video.objects.only("full_name")
-
         study = self.study
         return (
             study.responses_for_researcher(self.request.user)
@@ -856,7 +854,7 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
                 ),
                 Prefetch(
                     "videos",
-                    queryset=video_queryset,
+                    queryset=Video.objects.only("id", "full_name", "response_id"),
                     to_attr="prefetched_videos",
                 ),
             )
@@ -912,7 +910,7 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
 
             video_info = [
                 {
-                    "pk": v.pk,
+                    "pk": v.id,
                     "display_name": (
                         v.full_name.replace(
                             "videoStream_{}_".format(study.uuid), "..."
