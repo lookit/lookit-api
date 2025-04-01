@@ -300,6 +300,8 @@ if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     GS_PROJECT_ID = os.environ.get("GS_PROJECT_ID", "")
 
     GS_PRIVATE_BUCKET_NAME = os.environ.get("GS_PRIVATE_BUCKET_NAME", "")
+    GS_QUERYSTRING_AUTH = False
+
 else:
     # we know nothing about cloud storage
     print(
@@ -374,8 +376,6 @@ CELERY_BROKER_POOL_LIMIT = 0
 LOCALE_PATHS = (os.path.join(BASE_DIR, "../locale"),)
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
-
-BOOTSTRAP5 = {"css_url": ("/static/custom_bootstrap5.css")}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
