@@ -908,7 +908,7 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
                 if col.id in columns_included_in_summary
             ]
 
-            video_info = [
+            this_resp_data["videos"] = [
                 {
                     "pk": v.id,
                     "display_name": (
@@ -917,9 +917,8 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
                         ).replace("_{}_".format(resp.uuid), "...")
                     ),
                 }
-                for v in resp.prefetched_videos
+                for v in getattr(resp, "prefetched_videos", [])
             ]
-            this_resp_data["videos"] = video_info
             response_data.append(this_resp_data)
         context["response_data"] = response_data
         context["data_options"] = [col for col in RESPONSE_COLUMNS if col.optional]
