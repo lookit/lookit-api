@@ -1,42 +1,56 @@
 version: 2.1
+
 orbs:
   python: circleci/python@2.1.1
+
 jobs:
-  build-and-test: 
+  test: 
     docker:
       - image: cimg/python:3.9
       - image: cimg/postgres:9.6
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: poetry
+      - run:
+          name: Install uv
+          command: pip install uv
+      - run:
+          name: Install dependencies with uv
+          command: uv sync --frozen
       - run:
           name: Run tests
-          command: poetry run ./manage.py test -v 2 --failfast
-  build-and-lint: 
+          command: uv run ./manage.py test -v 2 --failfast
+  lint: 
     docker:
       - image: cimg/python:3.9
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: poetry
+      - run:
+          name: Install uv
+          command: pip install uv
+      - run:
+          name: Install dependencies with uv
+          command: uv sync --frozen
       - run:
           name: Run linters
-          command: poetry run pre-commit run --all-files
-  build-and-css: 
+          command: uv run pre-commit run --all-files
+  css: 
     docker:
       - image: cimg/python:3.9
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: poetry
+      - run:
+          name: Install uv
+          command: pip install uv
+      - run:
+          name: Install dependencies with uv
+          command: uv sync --frozen
       - run:
           name: Compile css
-          command: poetry run ./manage.py custom_bootstrap5
+          command: uv run ./manage.py custom_bootstrap5
 
 workflows:
-  sample: 
+  ci: 
     jobs:
-      - build-and-test
-      - build-and-lint
-      - build-and-css
+      - test
+      - lint
+      - css
