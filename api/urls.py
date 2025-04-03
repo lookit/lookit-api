@@ -1,4 +1,5 @@
-from django.conf.urls import include, url
+from django.conf.urls import include
+from django.urls import re_path
 from rest_framework_nested import routers
 
 from api import views as api_views
@@ -39,10 +40,10 @@ feedback_router = routers.NestedSimpleRouter(router, r"feedback", lookup="feedba
 
 pattern = r"^(?P<version>(v1|v2))/"
 urlpatterns = [
-    url(pattern, include(user_router.urls)),
-    url(pattern, include(study_router.urls)),
-    url(pattern, include(child_router.urls)),
-    url(pattern, include(response_router.urls)),
-    url(pattern, include(feedback_router.urls)),
-    url(pattern, include(router.urls)),
+    re_path(pattern, include(user_router.urls)),
+    re_path(pattern, include(study_router.urls)),
+    re_path(pattern, include(child_router.urls)),
+    re_path(pattern, include(response_router.urls)),
+    re_path(pattern, include(feedback_router.urls)),
+    re_path(pattern, include(router.urls)),
 ]
