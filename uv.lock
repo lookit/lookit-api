@@ -948,7 +948,7 @@ requires-dist = [
 dev = [
     { name = "beautifulsoup4", specifier = "==4.13.3" },
     { name = "coverage", specifier = "==7.6.12" },
-    { name = "django-dynamic-fixture", specifier = "==4.0.1" },
+    { name = "django-dynamic-fixture", specifier = ">=4.0.1" },
     { name = "django-sslserver", specifier = "==0.22" },
     { name = "libsass", specifier = "==0.23.0" },
     { name = "parameterized", specifier = "==0.9.0" },
