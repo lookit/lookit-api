@@ -61,7 +61,7 @@ class EFPFormTestCase(TestCase):
             form.errors,
             {
                 "player_repo_url": [
-                    f'Frameplayer repo url {data["player_repo_url"]} does not work.'
+                    f"Frameplayer repo url {data['player_repo_url']} does not work."
                 ]
             },
         )
@@ -74,7 +74,7 @@ class EFPFormTestCase(TestCase):
             form.errors,
             {
                 "player_repo_url": [
-                    f'Frameplayer repo url {data["player_repo_url"]} does not work.'
+                    f"Frameplayer repo url {data['player_repo_url']} does not work."
                 ]
             },
         )
@@ -91,7 +91,7 @@ class EFPFormTestCase(TestCase):
             form.errors,
             {
                 "last_known_player_sha": [
-                    f'Frameplayer commit {data["last_known_player_sha"]} does not exist.'
+                    f"Frameplayer commit {data['last_known_player_sha']} does not exist."
                 ]
             },
         )
