@@ -27,7 +27,7 @@ steps:
     '--network=cloudbuild',
     '-e',
     'POSTGRES_PASSWORD=password',
-    'postgres:9.6',
+    'postgres:17',
   ]
 
 # Use dockerize per suggestion here:
