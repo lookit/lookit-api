@@ -1,21 +1,21 @@
-serve: uv
+serve: poetry
 	docker compose up --pull always --build
 
-clean: 
+clean:
 	docker rm -f lookit-api-web lookit-api-db lookit-api-broker lookit-api-worker
 	docker image rm lookit-api_worker lookit-api_web
 
 clean-translations:
 	find ./locale -name *.mo -exec rm {} \; 
 
-migrate: uv
-	docker compose run --rm web uv run ./manage.py migrate
+migrate:
+	docker compose run --rm web poetry run ./manage.py migrate
 
-superuser: uv
-	docker compose run --rm web uv run ./manage.py createsuperuser
+superuser:
+	docker compose run --rm web poetry run ./manage.py createsuperuser
 
 site: migrate
-	docker compose run --rm web uv run python -c \
+	docker compose run --rm web poetry run python -c \
 		"import os; \
 		import django; \
 		os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings'); \
@@ -51,27 +51,29 @@ media:
 media-prod:
 	gsutil -m cp -r "gs://lookit-production/media" ./project
 
-test: uv
-	docker compose run --rm -e ENVIRONMENT= web uv run ./manage.py test --failfast --verbosity 2
+test: poetry
+	docker compose run --rm -e ENVIRONMENT= web poetry run ./manage.py test --failfast --verbosity 2
 
-collectstatic: uv
-	docker compose run --rm web uv run ./manage.py collectstatic --clear --noinput
+collectstatic: 
+	docker compose run --rm web poetry run ./manage.py collectstatic --clear --noinput
 
-uv:
-	uv self update
-	uv sync
+poetry:
+	poetry self update 1.8.4
+	poetry check 
+	poetry env use 3.9
+	poetry install --sync --no-root
 
-lint: 
-	uv run pre-commit run --all-files
+lint: poetry 
+	poetry run pre-commit run --all-files
 
-css: uv
-	uv run ./manage.py custom_bootstrap5
+css: poetry 
+	poetry run ./manage.py custom_bootstrap5
 
-makemigrations: uv
-	uv run ./manage.py makemigrations
+makemigrations:
+	poetry run ./manage.py makemigrations
 
-makemessages: uv 
-	uv run ./manage.py makemessages --all
+makemessages:
+	poetry run ./manage.py makemessages --all
 
-compilemessages: uv
-	uv run ./manage.py compilemessages
+compilemessages:
+	poetry run ./manage.py compilemessages

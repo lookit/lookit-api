@@ -12,9 +12,8 @@ class ParticipantDetailViewTestCase(TestCase):
     def test_get_context_data_all_children(
         self, mock_super_get_context_data, mock_valid_responses
     ):
-        with (
-            patch.object(ParticipantDetailView, "object", create=True),
-            patch.object(ParticipantDetailView, "get_study_info"),
+        with patch.object(ParticipantDetailView, "object", create=True), patch.object(
+            ParticipantDetailView, "get_study_info"
         ):
             participant_detail_view = ParticipantDetailView()
             participant_detail_view.get_context_data()

@@ -21,10 +21,9 @@ services:
       dockerfile: Dockerfile.web
     container_name: lookit-api-web
     restart: on-failure
-    command: uv run python ./manage.py runsslserver --certificate ./certs/local_lookit.mit.edu.pem --key ./certs/local_lookit.mit.edu-key.pem 0.0.0.0:8000
+    command: poetry run python ./manage.py runsslserver --certificate ./certs/local_lookit.mit.edu.pem --key ./certs/local_lookit.mit.edu-key.pem 0.0.0.0:8000
     volumes:
       - .:/code
-      - /code/.venv
     ports:
       - "8000:8000"
     env_file:
@@ -51,11 +50,10 @@ services:
     build:
       dockerfile: Dockerfile.web
     container_name: lookit-api-worker
-    command: uv run celery worker --app=project --loglevel=INFO -Q builds,email,cleanup
+    command: poetry run celery worker --app=project --loglevel=INFO -Q builds,email,cleanup
     volumes:
       - .:/code
       - ./certs/dind/client:/certs/client
-      - /code/.venv
     env_file:
       - .env
     environment:
