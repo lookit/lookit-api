@@ -653,20 +653,19 @@ wheels = [
 
 [[package]]
 name = "greenlet"
-version = "3.0.3"
+version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/17/14/3bddb1298b9a6786539ac609ba4b7c9c0842e12aa73aaa4d8d73ec8f8185/greenlet-3.0.3.tar.gz", hash = "sha256:43374442353259554ce33599da8b692d5aa96f8976d567d4badf263371fbe491", size = 182013 }
+sdist = { url = "https://files.pythonhosted.org/packages/23/6f/f72865c589d0c79f03b51520a4cdd65647de0513e9ad107a5731df89c235/greenlet-2.0.0.tar.gz", hash = "sha256:6c66f0da8049ee3c126b762768179820d4c0ae0ca46ae489039e4da2fae39a52", size = 161272 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0b/8a/f5140c8713f919af0e98e6aaa40cb20edaaf3739d18c4a077581e2422ac4/greenlet-3.0.3-cp39-cp39-macosx_11_0_universal2.whl", hash = "sha256:da70d4d51c8b306bb7a031d5cff6cc25ad253affe89b70352af5f1cb68e74b53", size = 269242 },
-    { url = "https://files.pythonhosted.org/packages/cf/5b/2de4a398840d3b4d99c4a3476cda0d82badfa349f3f89846ada2e32e9500/greenlet-3.0.3-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:086152f8fbc5955df88382e8a75984e2bb1c892ad2e3c80a2508954e52295257", size = 650174 },
-    { url = "https://files.pythonhosted.org/packages/dc/c3/06ca5f34b01af6d6e2fd2f97c0ad3673123a442bf4a3add548d374b1cc7c/greenlet-3.0.3-cp39-cp39-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:d73a9fe764d77f87f8ec26a0c85144d6a951a6c438dfe50487df5595c6373eac", size = 666285 },
-    { url = "https://files.pythonhosted.org/packages/a2/92/f11dbbcf33809421447b24d2eefee0575c59c8569d6d03f7ca4d2b34d56f/greenlet-3.0.3-cp39-cp39-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:b7dcbe92cc99f08c8dd11f930de4d99ef756c3591a5377d1d9cd7dd5e896da71", size = 658521 },
-    { url = "https://files.pythonhosted.org/packages/9d/ea/8bc7ed08ba274bdaff08f2cb546d832b8f44af267e03ca6e449840486915/greenlet-3.0.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1551a8195c0d4a68fac7a4325efac0d541b48def35feb49d803674ac32582f61", size = 660753 },
-    { url = "https://files.pythonhosted.org/packages/af/05/b7e068070a6c143f34dfcd7e9144684271b8067e310f6da68269580db1d8/greenlet-3.0.3-cp39-cp39-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:64d7675ad83578e3fc149b617a444fab8efdafc9385471f868eb5ff83e446b8b", size = 614348 },
-    { url = "https://files.pythonhosted.org/packages/74/82/9737e7dee4ccb9e1be2a8f17cf760458be2c36c6ff7bbaef55cbe279e729/greenlet-3.0.3-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:b37eef18ea55f2ffd8f00ff8fe7c8d3818abd3e25fb73fae2ca3b672e333a7a6", size = 1149569 },
-    { url = "https://files.pythonhosted.org/packages/54/4b/965a542baf157f23912e466b50fa9c49dd66132d9495d201e6c607ea16f2/greenlet-3.0.3-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:77457465d89b8263bca14759d7c1684df840b6811b2499838cc5b040a8b5b113", size = 1176361 },
-    { url = "https://files.pythonhosted.org/packages/20/70/2f99bdcb4e3912d844dee279e077ee670ec43161d96670a9dfad16b89dd1/greenlet-3.0.3-cp39-cp39-win32.whl", hash = "sha256:57e8974f23e47dac22b83436bdcf23080ade568ce77df33159e019d161ce1d1e", size = 272960 },
-    { url = "https://files.pythonhosted.org/packages/c3/80/01ff837bc7122d049971960123d749ed16adbd43cbc008afdb780a40e3fa/greenlet-3.0.3-cp39-cp39-win_amd64.whl", hash = "sha256:c5ee858cfe08f34712f548c3c363e807e7186f03ad7a5039ebadb29e8c6be067", size = 290843 },
+    { url = "https://files.pythonhosted.org/packages/26/74/5acabb08ff6c8c8a77111ce98477a922cdec5a647a779895537747a97083/greenlet-2.0.0-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:e7ec3f2465ba9b7d25895307abe1c1c101a257c54b9ea1522bbcbe8ca8793735", size = 200619 },
+    { url = "https://files.pythonhosted.org/packages/95/f8/a0eb1dc3d03e8a28f7b2d0fe0f34523c2672ae5162c3cdbd45360473f804/greenlet-2.0.0-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:99e9851e40150504474915605649edcde259a4cd9bce2fcdeb4cf33ad0b5c293", size = 550472 },
+    { url = "https://files.pythonhosted.org/packages/bb/c5/63af587c72d79d61873374a49394671cabfe9c3cf3e73a2dae5256303a33/greenlet-2.0.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:20bf68672ae14ef2e2e6d3ac1f308834db1d0b920b3b0674eef48b2dce0498dd", size = 523255 },
+    { url = "https://files.pythonhosted.org/packages/40/26/b5463da35ea95fb1f3eaf2d26fcc959c71e73a6f2a5d069bb1809dbec48c/greenlet-2.0.0-cp39-cp39-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:30198bccd774f9b6b1ba7564a0d02a79dd1fe926cfeb4107856fe16c9dfb441c", size = 535855 },
+    { url = "https://files.pythonhosted.org/packages/86/a9/1733b6f1432147afcfe6e0e98160775c91053c3a835ae7779b9e922196cb/greenlet-2.0.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d65d7d1ff64fb300127d2ffd27db909de4d21712a5dde59a3ad241fb65ee83d7", size = 532953 },
+    { url = "https://files.pythonhosted.org/packages/a4/66/c017f3db3df59ed8a78736fbced77c1fbefebd57ad154a578308788e5991/greenlet-2.0.0-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:2f5d396a5457458460b0c28f738fc8ab2738ee61b00c3f845c7047a333acd96c", size = 1038641 },
+    { url = "https://files.pythonhosted.org/packages/1d/38/4483fd00e2dfdc1b87a76d25853b3b706fc66060274abbac7d5a9024911b/greenlet-2.0.0-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:09f00f9938eb5ae1fe203558b56081feb0ca34a2895f8374cd01129ddf4d111c", size = 1062278 },
+    { url = "https://files.pythonhosted.org/packages/96/1f/3e97a9bd8daa8139a4a0e9442a775e231be02504f7e35d4d25df777567f7/greenlet-2.0.0-cp39-cp39-win32.whl", hash = "sha256:089e123d80dbc6f61fff1ff0eae547b02c343d50968832716a7b0a33bea5f792", size = 184653 },
+    { url = "https://files.pythonhosted.org/packages/7f/1a/cf6f11c92dac40d685e89a2610a33e3415c5a1c03dc7e8d3c110f9f07cd1/greenlet-2.0.0-cp39-cp39-win_amd64.whl", hash = "sha256:bc283f99a4815ef70cad537110e3e03abcef56ab7d005ba9a8c6ec33054ce9c0", size = 187864 },
 ]
 
 [[package]]
@@ -834,7 +833,7 @@ requires-dist = [
     { name = "fleep", specifier = "==1.0.1" },
     { name = "gevent", specifier = "==23.9.1" },
     { name = "google-cloud-storage", specifier = "==2.1.0" },
-    { name = "greenlet", specifier = "==3.0.3" },
+    { name = "greenlet", specifier = "==2.0.0" },
     { name = "kombu", specifier = "==4.6.11" },
     { name = "lark-parser", specifier = "==0.12.0" },
     { name = "more-itertools", specifier = "==8.8.0" },
