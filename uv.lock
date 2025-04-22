@@ -230,7 +230,7 @@ wheels = [
 
 [[package]]
 name = "django"
-version = "4.1.13"
+version = "4.2.20"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref" },
@@ -461,7 +461,7 @@ wheels = [
 
 [[package]]
 name = "djangorestframework"
-version = "3.12.4"
+version = "3.16.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
@@ -473,7 +473,7 @@ wheels = [
 
 [[package]]
 name = "djangorestframework-jsonapi"
-version = "3.1.0"
+version = "7.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
@@ -502,7 +502,7 @@ wheels = [
 
 [[package]]
 name = "drf-nested-routers"
-version = "0.93.3"
+version = "0.94.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
@@ -805,7 +805,7 @@ requires-dist = [
     { name = "boto3", specifier = "==1.20.50" },
     { name = "celery", specifier = "==4.4.7" },
     { name = "ciso8601", specifier = "==2.1.3" },
-    { name = "django", specifier = "==4.1.13" },
+    { name = "django", specifier = "==4.2.20" },
     { name = "django-ace-overlay", git = "https://github.com/lookit/django-ace-overlay.git?rev=master" },
     { name = "django-bitfield", specifier = "==2.2.0" },
     { name = "django-bootstrap-icons", specifier = "==0.8.2" },
@@ -822,10 +822,10 @@ requires-dist = [
     { name = "django-prettyjson", specifier = "==0.4.1" },
     { name = "django-revproxy", git = "https://github.com/Innovativity/django-revproxy.git?rev=b9fa8375d03fd68747dcb7273a97c19d788aa51b" },
     { name = "django-storages", specifier = "==1.14.2" },
-    { name = "djangorestframework", specifier = "==3.12.4" },
-    { name = "djangorestframework-jsonapi", specifier = "==3.1.0" },
+    { name = "djangorestframework", specifier = "==3.16.0" },
+    { name = "djangorestframework-jsonapi", specifier = "==7.1.0" },
     { name = "docker", specifier = "==4.2.1" },
-    { name = "drf-nested-routers", specifier = "==0.93.3" },
+    { name = "drf-nested-routers", specifier = ">=0.94.1" },
     { name = "fleep", specifier = "==1.0.1" },
     { name = "gevent", specifier = "==24.2.1" },
     { name = "google-cloud-storage", specifier = "==2.1.0" },
@@ -851,7 +851,7 @@ requires-dist = [
 dev = [
     { name = "beautifulsoup4", specifier = "==4.13.3" },
     { name = "coverage", specifier = "==7.6.12" },
-    { name = "django-dynamic-fixture", specifier = "==4.0.1" },
+    { name = "django-dynamic-fixture", specifier = ">=4.0.1" },
     { name = "django-sslserver", specifier = "==0.22" },
     { name = "libsass", specifier = "==0.23.0" },
     { name = "parameterized", specifier = "==0.9.0" },
