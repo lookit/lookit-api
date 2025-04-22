@@ -29,7 +29,7 @@ dependencies = [
     "djangorestframework==3.16.0",
     "djangorestframework-jsonapi==7.1.0",
     "docker==4.2.1",
-    "drf-nested-routers>=0.94.1",
+    "drf-nested-routers==0.94.1",
     "fleep==1.0.1",
     "gevent==24.2.1",
     "google-cloud-storage==2.1.0",
@@ -55,7 +55,7 @@ dependencies = [
 dev = [
     "beautifulsoup4==4.13.3",
     "coverage==7.6.12",
-    "django-dynamic-fixture>=4.0.1",
+    "django-dynamic-fixture==4.0.1",
     "django-sslserver==0.22",
     "libsass==0.23.0",
     "parameterized==0.9.0",
