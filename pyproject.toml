@@ -48,7 +48,7 @@ dependencies = [
     "sendgrid-django==4.2.0",
     "sentry-sdk==1.17.0",
     "transitions==0.9.1",
-    "uwsgi==2.0.22",
+    "uwsgi>=2.0.29",
 ]
 
 [dependency-groups]

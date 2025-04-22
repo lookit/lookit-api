@@ -849,7 +849,7 @@ requires-dist = [
     { name = "sendgrid-django", specifier = "==4.2.0" },
     { name = "sentry-sdk", specifier = "==1.17.0" },
     { name = "transitions", specifier = "==0.9.1" },
-    { name = "uwsgi", specifier = "==2.0.22" },
+    { name = "uwsgi", specifier = ">=2.0.29" },
 ]
 
 [package.metadata.requires-dev]
@@ -1350,9 +1350,9 @@ wheels = [
 
 [[package]]
 name = "uwsgi"
-version = "2.0.22"
+version = "2.0.29"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a7/4e/c4d5559b3504bb65175a759392b03cac04b8771e9a9b14811adf1151f02f/uwsgi-2.0.22.tar.gz", hash = "sha256:4cc4727258671ac5fa17ab422155e9aaef8a2008ebb86e4404b66deaae965db2", size = 809747 }
+sdist = { url = "https://files.pythonhosted.org/packages/af/74/34f5411f1c1dc55cbcba3d817d1723b920484d2aeede4663bbaa5be7ee22/uwsgi-2.0.29.tar.gz", hash = "sha256:6bd150ae60d0d9947429ea7dc8e5f868de027e5eb38355fb613b9413732c432f", size = 822515 }
 
 [[package]]
 name = "vine"
