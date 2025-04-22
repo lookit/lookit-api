@@ -858,7 +858,7 @@ dev = [
     { name = "pre-commit", specifier = "==4.2.0" },
     { name = "pyinstrument", specifier = "==5.0.1" },
     { name = "python-dotenv", specifier = "==1.0.1" },
-    { name = "ruff", specifier = "==0.11.4" },
+    { name = "ruff", specifier = "==0.11.6" },
 ]
 
 [[package]]
@@ -1198,7 +1198,7 @@ wheels = [
 
 [[package]]
 name = "ruff"
-version = "0.11.4"
+version = "0.11.6"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/e8/5b/3ae20f89777115944e89c2d8c2e795dcc5b9e04052f76d5347e35e0da66e/ruff-0.11.4.tar.gz", hash = "sha256:f45bd2fb1a56a5a85fae3b95add03fb185a0b30cf47f5edc92aa0355ca1d7407", size = 3933063, upload_time = "2025-04-04T18:24:52.197Z" }
 wheels = [
