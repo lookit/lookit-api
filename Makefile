@@ -64,6 +64,9 @@ uv:
 hooks:
 	uv run pre-commit install --install-hooks
 
+hooks:
+	uv run pre-commit install --install-hooks
+
 lint: 
 	uv run pre-commit run --all-files
 
