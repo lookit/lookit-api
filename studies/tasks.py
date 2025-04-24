@@ -549,7 +549,7 @@ def get_all_incomplete_video_files():
             if (
                 "Initiated" in upload
                 and isinstance(upload["Initiated"], datetime.datetime)
-                and (datetime.datetime.now(timezone.utc) - upload["Initiated"])
+                and (datetime.datetime.now(datetime.timezone.utc) - upload["Initiated"])
                 > datetime.timedelta(hours=24)
             )
         ]
