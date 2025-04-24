@@ -15,13 +15,12 @@ Including another URLconf
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 
-from django.conf.urls import include
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.urls import urlpatterns as auth_urls
-from django.urls import path
+from django.urls import include, path
 from more_itertools import locate
 
 from accounts import urls as accounts_urls

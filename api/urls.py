@@ -1,5 +1,4 @@
-from django.conf.urls import include
-from django.urls import re_path
+from django.urls import include, re_path
 from rest_framework_nested import routers
 
 from api import views as api_views
