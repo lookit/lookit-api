@@ -59,7 +59,7 @@ collectstatic: uv
 
 uv:
 	uv self update
-	uv sync
+	uv sync --no-managed-python --no-python-downloads
 
 hooks:
 	uv run pre-commit install --install-hooks
