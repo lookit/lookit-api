@@ -3,7 +3,7 @@ name = "lookit-api"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = "==3.12.*"
+requires-python = "==3.13.*"
 dependencies = [
     "boto3==1.38.1",
     "ciso8601==2.3.2",

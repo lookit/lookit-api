@@ -1,4 +1,4 @@
-FROM python:3.12-slim-bookworm
+FROM python:3.13-slim-bookworm
 
 ARG GIT_TAG
 ARG GIT_COMMIT
@@ -21,7 +21,7 @@ RUN apt-get update \
         wget=1.21.3-1+deb12u1 \
         libc6-dev=2.36-9+deb12u10 \
     && rm -rf /var/lib/apt/lists/*  
-    
+
 RUN gosu nobody true  
 RUN update-ca-certificates  
 RUN sh /uv-installer.sh  
