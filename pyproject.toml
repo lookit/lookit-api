@@ -27,7 +27,7 @@ dependencies = [
     "django-revproxy",
     "django-storages==1.14.2",
     "djangorestframework==3.12.4",
-    "djangorestframework-jsonapi==3.1.0",
+    "djangorestframework-jsonapi==7.1.0",
     "docker==4.2.1",
     "drf-nested-routers==0.93.3",
     "fleep==1.0.1",
