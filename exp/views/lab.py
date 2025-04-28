@@ -454,7 +454,7 @@ class LabMembershipRequestView(
     test_func = can_request_lab_membership
 
     def get_redirect_url(self, *args, **kwargs):
-        return self.request.META.get("HTTP_REFERER", reverse("exp:lab-list"))
+        return self.request.headers.get("referer", reverse("exp:lab-list"))
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
