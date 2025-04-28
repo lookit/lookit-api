@@ -37,7 +37,7 @@ class RenameVideoView(View):
         # Authenticate the webhook (see https://addpipe.com/docs#authenticating-webhooks)
         key = settings.PIPE_WEBHOOK_KEY
         # Append the JSON POST data received via webhook to the URL string.
-        thisURL = request.scheme + "://" + request.headers["host"] + request.path
+        thisURL = request.scheme + "://" + request.META["HTTP_HOST"] + request.path
         message = thisURL + postbody["payload"][0]  # TODO
         key = bytes(key, "UTF-8")
         message = bytes(message, "UTF-8")
@@ -47,7 +47,7 @@ class RenameVideoView(View):
         # Base64 encode the binary signature.
         signatureComputed = base64.b64encode(signatureBinary)
         # Compare to the one in the header
-        signatureSent = bytes(request.headers["x-pipe-signature"], "UTF-8")
+        signatureSent = bytes(request.META["HTTP_X_PIPE_SIGNATURE"], "UTF-8")
         authenticated = signatureComputed == signatureSent
 
         d = ast.literal_eval(

@@ -52,7 +52,7 @@ class VideoFromS3Permissions:
         """
         if request.method == "POST":
             try:
-                signature_received = request.headers["x-aws-lambda-hmac-sig"]
+                signature_received = request.META["HTTP_X_AWS_LAMBDA_HMAC_SIG"]
             except KeyError:
                 try:
                     signature_received = request.META["headers"][

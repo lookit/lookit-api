@@ -9,10 +9,10 @@ from functools import partial
 import ciso8601
 import pytz
 from django.contrib.postgres import lookups
+from django.contrib.postgres.fields.jsonb import JSONField
+from django.contrib.postgres.forms.jsonb import JSONField as JSONFormField
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import JSONField
-from django.forms import JSONField as JSONFormField
 from psycopg2.extras import Json
 
 

@@ -13,7 +13,6 @@ from accounts.models import (
 )
 
 
-@admin.register(Child)
 class ChildAdmin(GuardedModelAdmin):
     list_display = ("id", "uuid", "given_name", "birthday", "user")
     # list_filter = (
@@ -27,7 +26,6 @@ class ChildAdmin(GuardedModelAdmin):
     raw_id_fields = ("user",)
 
 
-@admin.register(User)
 class UserAdmin(GuardedModelAdmin):
     list_display = (
         "id",
@@ -46,13 +44,11 @@ class UserAdmin(GuardedModelAdmin):
     actions = (set_selected_as_spam,)
 
 
-@admin.register(DemographicData)
 class DemographicDataAdmin(GuardedModelAdmin):
     list_display = ("uuid", "created_at", "user", "lookit_referrer")
     raw_id_fields = ("user",)
 
 
-@admin.register(Message)
 class MessageAdmin(GuardedModelAdmin):
     list_display = ("date_created", "sender", "subject")
     list_filter = ("related_study",)
@@ -61,10 +57,16 @@ class MessageAdmin(GuardedModelAdmin):
     search_fields = ["subject", "body"]
 
 
-@admin.register(GoogleAuthenticatorTOTP)
 class TOTPAdmin(GuardedModelAdmin):
     list_display = ("user",)
     search_fields = ("user__username", "user__family_name")
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("user")
+
+
+admin.site.register(User, UserAdmin)
+admin.site.register(DemographicData, DemographicDataAdmin)
+admin.site.register(Child, ChildAdmin)
+admin.site.register(Message, MessageAdmin)
+admin.site.register(GoogleAuthenticatorTOTP, TOTPAdmin)

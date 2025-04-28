@@ -13,7 +13,6 @@ from studies.models import (
 )
 
 
-@admin.register(Study)
 class StudyAdmin(GuardedModelAdmin):
     list_display = ("uuid", "name", "state", "public", "creator", "built")
     list_filter = ("state", "lab")
@@ -31,7 +30,6 @@ class StudyAdmin(GuardedModelAdmin):
     )
 
 
-@admin.register(Lab)
 class LabAdmin(GuardedModelAdmin):
     list_display = ("uuid", "name", "institution", "principal_investigator_name")
     search_fields = ["name", "institution", "principal_investigator_name"]
@@ -40,7 +38,6 @@ class LabAdmin(GuardedModelAdmin):
     filter_horizontal = ("researchers", "requested_researchers")
 
 
-@admin.register(Response)
 class ResponseAdmin(GuardedModelAdmin):
     list_display = (
         "date_created",
@@ -59,7 +56,6 @@ class ResponseAdmin(GuardedModelAdmin):
     date_hierarchy = "date_created"
 
 
-@admin.register(Feedback)
 class FeedbackAdmin(GuardedModelAdmin):
     list_display = ("uuid", "researcher", "response", "comment")
     search_fields = (
@@ -72,18 +68,15 @@ class FeedbackAdmin(GuardedModelAdmin):
     raw_id_fields = ("researcher", "response")
 
 
-@admin.register(StudyLog)
 class StudyLogAdmin(GuardedModelAdmin):
     list_filter = ("study",)
     raw_id_fields = ("study", "user")
 
 
-@admin.register(StudyType)
 class StudyTypeAdmin(GuardedModelAdmin):
     pass
 
 
-@admin.register(Video)
 class VideoAdmin(GuardedModelAdmin):
     list_display = (
         "uuid",
@@ -102,9 +95,18 @@ class VideoAdmin(GuardedModelAdmin):
     search_fields = ["uuid", "full_name"]
 
 
-@admin.register(ConsentRuling)
 class ConsentRulingAdmin(GuardedModelAdmin):
     list_display = ("uuid", "created_at", "action", "arbiter")
     list_filter = ("response__study", "arbiter")
     date_hierarchy = "created_at"
     raw_id_fields = ("arbiter", "response")
+
+
+admin.site.register(Study, StudyAdmin)
+admin.site.register(Response, ResponseAdmin)
+admin.site.register(StudyLog, StudyLogAdmin)
+admin.site.register(Feedback, FeedbackAdmin)
+admin.site.register(StudyType, StudyTypeAdmin)
+admin.site.register(Video, VideoAdmin)
+admin.site.register(ConsentRuling, ConsentRulingAdmin)
+admin.site.register(Lab, LabAdmin)
