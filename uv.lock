@@ -320,16 +320,16 @@ wheels = [
 
 [[package]]
 name = "django"
-version = "4.2.20"
+version = "5.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref" },
     { name = "sqlparse" },
     { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/0a/dd/33d2a11713f6b78493273a32d99bb449f2d93663ed4ec15a8b890d44ba04/Django-4.2.20.tar.gz", hash = "sha256:92bac5b4432a64532abb73b2ac27203f485e40225d2640a7fbef2b62b876e789", size = 10432686, upload_time = "2025-03-06T12:58:52.569Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/4c/1b/c6da718c65228eb3a7ff7ba6a32d8e80fa840ca9057490504e099e4dd1ef/Django-5.2.tar.gz", hash = "sha256:1a47f7a7a3d43ce64570d350e008d2949abe8c7e21737b351b6a1611277c6d89", size = 10824891, upload_time = "2025-04-02T13:08:06.874Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b3/5d/7571ba1c288ead056dda7adad46b25cbf64790576f095565282e996138b1/Django-4.2.20-py3-none-any.whl", hash = "sha256:213381b6e4405f5c8703fffc29cd719efdf189dec60c67c04f76272b3dc845b9", size = 7993584, upload_time = "2025-03-06T12:58:44.863Z" },
+    { url = "https://files.pythonhosted.org/packages/63/e0/6a5b5ea350c5bd63fe94b05e4c146c18facb51229d9dee42aa39f9fc2214/Django-5.2-py3-none-any.whl", hash = "sha256:91ceed4e3a6db5aedced65e3c8f963118ea9ba753fc620831c77074e620e7d83", size = 8301361, upload_time = "2025-04-02T13:08:01.465Z" },
 ]
 
 [[package]]
@@ -404,11 +404,15 @@ wheels = [
 
 [[package]]
 name = "django-countries"
-version = "7.2.1"
+version = "7.6.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ec/26/9bdf4384ee75e9056f3eabf9e8dbbbc7681612043dc1365a327b46e4edb8/django-countries-7.2.1.tar.gz", hash = "sha256:26878b54d36bedff30b4535ceefcb8af6784741a8b30b1b8a662fb14a936a4ab", size = 649955, upload_time = "2021-05-11T10:54:31.443Z" }
+dependencies = [
+    { name = "asgiref" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/0b/c3/ddb94bb50455ae80ff90ddb5affcc28f7e7a48f9c9852cf8bb8fe712fec0/django-countries-7.6.1.tar.gz", hash = "sha256:c772d4e3e54afcc5f97a018544e96f246c6d9f1db51898ab0c15cd57e19437cf", size = 675623, upload_time = "2024-04-01T21:01:09.414Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/00/b3/e9148a3f8394b090dc961eb97ae549e22d8185645a6b3e8c31d5f6932d45/django_countries-7.2.1-py3-none-any.whl", hash = "sha256:adc965f1d348124274b7d918fc1aad5e29609758af999e1822baa9f2cc06d1b8", size = 825377, upload_time = "2021-05-11T10:54:27.155Z" },
+    { url = "https://files.pythonhosted.org/packages/7e/46/b6931858e5161e5d9166bfcfde3af0b7d60ba89e4f7dd8f033e591c68794/django_countries-7.6.1-py3-none-any.whl", hash = "sha256:1ed20842fe0f6194f91faca21076649513846a8787c9eb5aeec3cbe1656b8acc", size = 864507, upload_time = "2024-04-01T21:01:05.702Z" },
 ]
 
 [[package]]
@@ -875,7 +879,6 @@ dependencies = [
     { name = "pydenticon" },
     { name = "pyotp" },
     { name = "python-dateutil" },
-    { name = "pytz" },
     { name = "qrcode" },
     { name = "requests" },
     { name = "sendgrid-django" },
@@ -904,14 +907,14 @@ dev = [
 requires-dist = [
     { name = "boto3", specifier = "==1.38.1" },
     { name = "ciso8601", specifier = "==2.3.2" },
-    { name = "django", specifier = "==4.2.20" },
+    { name = "django", specifier = "==5.2" },
     { name = "django-ace-overlay", git = "https://github.com/lookit/django-ace-overlay.git?rev=master" },
     { name = "django-bitfield", specifier = "==2.2.0" },
     { name = "django-bootstrap-icons", specifier = "==0.9.0" },
     { name = "django-bootstrap5", specifier = "==22.2" },
     { name = "django-celery-beat", specifier = "==2.8.0" },
     { name = "django-cors-headers", specifier = "==3.13.0" },
-    { name = "django-countries", specifier = "==7.2.1" },
+    { name = "django-countries", specifier = "==7.6.1" },
     { name = "django-extensions", specifier = "==4.1" },
     { name = "django-filter", specifier = "==2.4.0" },
     { name = "django-guardian", specifier = "==2.3.0" },
@@ -935,7 +938,6 @@ requires-dist = [
     { name = "pydenticon", specifier = "==0.3.1" },
     { name = "pyotp", specifier = "==2.9.0" },
     { name = "python-dateutil", specifier = "==2.9.0.post0" },
-    { name = "pytz", specifier = "==2025.2" },
     { name = "qrcode", specifier = "==8.1" },
     { name = "requests", specifier = "==2.32.3" },
     { name = "sendgrid-django", specifier = "==4.2.0" },
@@ -1272,15 +1274,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/40/3f/dd322d9408e1850a8f0faab8e2a4bf2a55c0b722a72f7579362177dfad72/python-stdnum-1.20.tar.gz", hash = "sha256:ad2a2cf2eb025de408210235f36b4ae31252de3186240ccaa8126e117cb82690", size = 1191978, upload_time = "2024-03-17T21:50:28.807Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d6/0f/8639d60f6d7c169836694aa81504c4ee9a95dfb73ccdb16be66df4785f52/python_stdnum-1.20-py2.py3-none-any.whl", hash = "sha256:111008e10391d54fb2afad2a10df70d5cb0c6c0a7ec82fec6f022cb8712961d3", size = 1059803, upload_time = "2024-03-17T21:50:25.669Z" },
-]
-
-[[package]]
-name = "pytz"
-version = "2025.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/f8/bf/abbd3cdfb8fbc7fb3d4d38d320f2441b1e7cbe29be4f23797b4a2b5d8aac/pytz-2025.2.tar.gz", hash = "sha256:360b9e3dbb49a209c21ad61809c7fb453643e048b38924c765813546746e81c3", size = 320884, upload_time = "2025-03-25T02:25:00.538Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/81/c4/34e93fe5f5429d7570ec1fa436f1986fb1f00c3e0f43a589fe2bbcd22c3f/pytz-2025.2-py2.py3-none-any.whl", hash = "sha256:5ddf76296dd8c44c26eb8f4b6f35488f3ccbf6fbbd7adee0b7262d43f0ec2f00", size = 509225, upload_time = "2025-03-25T02:24:58.468Z" },
 ]
 
 [[package]]
