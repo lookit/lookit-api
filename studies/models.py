@@ -1,12 +1,11 @@
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 
 import boto3
 import dateutil
 import fleep
-import pytz
 from botocore.exceptions import ClientError
 from django.conf import settings
 from django.contrib.auth.models import Group, Permission
@@ -16,7 +15,6 @@ from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.shortcuts import reverse
-from django.utils import timezone
 from django.utils.translation import gettext as _
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from guardian.shortcuts import get_users_with_perms
@@ -1357,7 +1355,7 @@ class StudyLog(models.Model):
         lookup_field = "uuid"
 
     class Meta:
-        index_together = ("study", "action")
+        indexes = [models.Index(fields=("study", "action"))]
 
 
 class Video(models.Model):
@@ -1471,7 +1469,7 @@ class Video(models.Model):
         return cls.objects.create(
             pipe_name=old_pipe_name,
             pipe_numeric_id=data["id"],
-            s3_timestamp=datetime.fromtimestamp(int(timestamp) / 1000, tz=pytz.utc),
+            s3_timestamp=datetime.fromtimestamp(int(timestamp) / 1000, tz=timezone.utc),
             frame_id=frame_id,
             full_name=new_full_name,
             study=study,
@@ -1565,7 +1563,10 @@ class ConsentRuling(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        index_together = (("response", "action"), ("response", "arbiter"))
+        indexes = [
+            models.Index(fields=("response", "action")),
+            models.Index(fields=("response", "arbiter")),
+        ]
 
     def __str__(self):
         return f"<{self.arbiter.get_short_name()}: {self.action} {self.response} @ {self.created_at:%c}>"

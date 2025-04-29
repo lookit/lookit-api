@@ -6,7 +6,6 @@ import logging
 from decimal import Decimal
 
 import ciso8601
-import pytz
 from django.contrib.postgres import lookups
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
@@ -34,10 +33,12 @@ def coerce_nonnaive_datetimes(json_data):
             coerced_data[key] = coerce_nonnaive_datetimes(value)
     elif isinstance(json_data, dt.datetime):
         try:
-            json_data.astimezone(pytz.utc)  # aware object can be in any timezone # noqa
+            json_data.astimezone(
+                dt.timezone.utc
+            )  # aware object can be in any timezone # noqa
         except ValueError:  # naive
             coerced_data = json_data.replace(
-                tzinfo=pytz.utc
+                tzinfo=dt.timezone.utc
             )  # json_data must be in UTC
         else:
             coerced_data = json_data  # it's already aware
