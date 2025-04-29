@@ -195,7 +195,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         if self.nickname:
             return self.nickname
         else:
-            return f"{ self.given_name } { self.family_name }"
+            return f"{self.given_name} {self.family_name}"
 
     @property
     def latest_demographics(self):
@@ -705,7 +705,7 @@ class Message(models.Model):
         if token and username:
             return {
                 "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-                "List-Unsubscribe": f"<mailto:lookit-bot@mit.edu>, <{base_url}{reverse('web:email-unsubscribe-link', kwargs={'token':token,'username':username})}>",
+                "List-Unsubscribe": f"<mailto:lookit-bot@mit.edu>, <{base_url}{reverse('web:email-unsubscribe-link', kwargs={'token': token, 'username': username})}>",
             }
         else:
             return None

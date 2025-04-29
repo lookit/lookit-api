@@ -593,11 +593,11 @@ def build_zip_for_psychds(
         }
         # save study ad info
         zipped.writestr(
-            "materials/study_ad_info.json", f"{json.dumps(study_ad,indent=4)}"
+            "materials/study_ad_info.json", f"{json.dumps(study_ad, indent=4)}"
         )
         # save global metadata file
         zipped.writestr(
-            "dataset_description.json", f"{json.dumps(metadata_json,indent=4)}"
+            "dataset_description.json", f"{json.dumps(metadata_json, indent=4)}"
         )
 
     zipped_file.seek(0)
@@ -895,7 +895,7 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
             # Exception - store actual date object for date created
             this_resp_data["response__date_created"] = resp.date_created
             this_resp_data["child_id_slug"] = (
-                f'{this_resp_data["child__hashed_id"]}-{slugify(this_resp_data["child__name"] or "")}'
+                f"{this_resp_data['child__hashed_id']}-{slugify(this_resp_data['child__name'] or '')}"
             )
             # info needed for summary table shown at right
             this_resp_data["summary"] = [

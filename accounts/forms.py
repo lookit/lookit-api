@@ -295,6 +295,9 @@ class EmailPreferencesForm(forms.ModelForm):
 
 
 class DemographicDataForm(forms.ModelForm):
+    def clean_us_race_ethnicity_identification(self):
+        return list(self.cleaned_data["us_race_ethnicity_identification"])
+
     class Meta:
         model = DemographicData
         exclude = ("created_at", "previous", "user", "extra", "uuid")
