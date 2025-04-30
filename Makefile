@@ -61,6 +61,9 @@ uv:
 	uv self update
 	uv sync
 
+hooks:
+	uv run pre-commit install --install-hooks
+
 lint: 
 	uv run pre-commit run --all-files
 
