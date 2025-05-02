@@ -211,7 +211,7 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
         study.metadata["last_known_player_sha"] = player_sha
 
         container_checkout_directory = os.path.join("/checkouts/", checkout_directory)
-        container_destination_directory = os.path.join("/deployments/", study_uuid)
+        container_destination_directory = os.path.join("/deployments/", str(study_uuid))
 
         self.build_context["container_paths"] = DirectoryTargets(
             checkouts=container_checkout_directory,
