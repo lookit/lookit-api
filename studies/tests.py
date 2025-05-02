@@ -1,5 +1,5 @@
 import json
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from unittest.mock import patch
 
 from botocore.exceptions import ClientError, ParamValidationError
@@ -7,7 +7,6 @@ from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django_dynamic_fixture import G, N
 from guardian.shortcuts import assign_perm
