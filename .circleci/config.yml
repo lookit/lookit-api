@@ -6,7 +6,7 @@ orbs:
 jobs:
   test: 
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.13
       - image: cimg/postgres:17.4
     steps:
       - checkout
@@ -21,7 +21,7 @@ jobs:
           command: uv run ./manage.py test -v 2 --failfast
   lint: 
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.13
     steps:
       - checkout
       - run:
@@ -35,7 +35,7 @@ jobs:
           command: uv run pre-commit run --all-files
   css: 
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.13
     steps:
       - checkout
       - run:

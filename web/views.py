@@ -181,7 +181,7 @@ class ParticipantSignupView(generic.CreateView):
     def store_study_in_session(self) -> None:
         study_url = self.request.GET.get("next", "")
         if study_url:
-            p = re.compile("^/studies/([\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{12})")
+            p = re.compile(r"^/studies/([\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{12})")
             m = p.match(study_url)
             if m:
                 study_uuid = m.group(1)

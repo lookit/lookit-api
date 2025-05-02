@@ -12,7 +12,7 @@ def data(apps, schema_editor):
     studies = StudyModel.objects.using(db_alias).only("short_description").all()
 
     for study in studies:
-        sentences_and_delimiters = re.split("(\.\s|\?\s|!\s)", study.short_description)
+        sentences_and_delimiters = re.split(r"(\.\s|\?\s|!\s)", study.short_description)
         first_sentence_with_delimiter = ("").join(sentences_and_delimiters[:2])
 
         # limit the string to 500 chars as per the field's max length
