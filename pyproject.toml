@@ -42,7 +42,7 @@ dependencies = [
     "qrcode==8.1",
     "requests==2.32.3",
     "sendgrid-django==4.2.0",
-    "sentry-sdk==1.17.0",
+    "sentry-sdk==2.27.0",
     "transitions==0.9.2",
     "uwsgi==2.0.29",
 ]
