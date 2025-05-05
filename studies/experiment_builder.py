@@ -164,7 +164,7 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
     )
 
     def __init__(self, *args, **kwargs):
-        kwargs["destination_directory"] = kwargs["study_uuid"]
+        kwargs["destination_directory"] = str(kwargs["study_uuid"])
         super().__init__(*args, **kwargs)
 
     def get_study(self, study_uuid):
