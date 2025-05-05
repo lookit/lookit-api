@@ -164,7 +164,7 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
     )
 
     def __init__(self, *args, **kwargs):
-        kwargs["destination_directory"] = kwargs["study_uuid"]
+        kwargs["destination_directory"] = str(kwargs["study_uuid"])
         super().__init__(*args, **kwargs)
 
     def get_study(self, study_uuid):
@@ -211,7 +211,7 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
         study.metadata["last_known_player_sha"] = player_sha
 
         container_checkout_directory = os.path.join("/checkouts/", checkout_directory)
-        container_destination_directory = os.path.join("/deployments/", study_uuid)
+        container_destination_directory = os.path.join("/deployments/", str(study_uuid))
 
         self.build_context["container_paths"] = DirectoryTargets(
             checkouts=container_checkout_directory,
