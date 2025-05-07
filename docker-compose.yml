@@ -89,6 +89,27 @@ services:
       broker:
         condition: service_healthy
 
+  beat:
+    build:
+      dockerfile: Dockerfile.web
+    container_name: lookit-api-beat
+    command: uv run celery -A project beat -l DEBUG
+    volumes:
+      - .:/code
+      - ./certs/dind/client:/certs/client
+      - /code/.venv
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=db
+      - RABBITMQ_HOST=broker
+      - DOCKER_HOST=tcp://docker:2376
+      - DOCKER_TLS_VERIFY="1"
+      - DOCKER_CERT_PATH=/certs/client
+    depends_on:
+      broker:
+        condition: service_healthy
+
   docker:
     image: docker:dind
     privileged: true
