@@ -1,6 +1,6 @@
 FROM python:3.13
 
-# ENV VIRTUAL_ENV=/code/.venv
+ENV VIRTUAL_ENV=/code/.venv
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PATH="/root/.local/bin:$PATH"
@@ -15,4 +15,4 @@ ADD https://astral.sh/uv/install.sh /uv-installer.sh
 
 RUN sh /uv-installer.sh  
 RUN rm /uv-installer.sh 
-RUN uv sync
+RUN uv sync --link-mode=copy

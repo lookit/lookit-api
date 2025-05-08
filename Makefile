@@ -5,6 +5,9 @@ clean:
 	docker rm -f lookit-api-web lookit-api-db lookit-api-broker lookit-api-worker
 	docker image rm lookit-api_worker lookit-api_web
 
+restart:
+	docker compose restart db worker beat
+
 clean-translations:
 	find ./locale -name *.mo -exec rm {} \; 
 
