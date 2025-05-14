@@ -78,6 +78,8 @@ class VideoFromS3Permissions:
             except KeyError:
                 raise exceptions.ParseError("Missing required relationship: response")
 
+            request_data.pop("type")
+
             message = bytes(json.dumps(request_data, separators=(",", ":")), "UTF-8")
             signature_calculated = hmac.new(key, message, hashlib.sha256).hexdigest()
 

@@ -1,5 +1,5 @@
 import json
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from unittest.mock import patch
 
 from botocore.exceptions import ClientError, ParamValidationError
@@ -7,7 +7,6 @@ from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django_dynamic_fixture import G, N
 from guardian.shortcuts import assign_perm
@@ -665,7 +664,7 @@ class TestSendMail(TestCase):
             to_addresses="to_addresses",
             **self.context,
         )
-        self.assertEquals(email.reply_to, reply_to)
+        self.assertEqual(email.reply_to, reply_to)
 
     def test_one_reply_to(self):
         reply_to = ["email@mit.edu"]
@@ -676,7 +675,7 @@ class TestSendMail(TestCase):
             reply_to=reply_to,
             **self.context,
         )
-        self.assertEquals(email.reply_to, reply_to)
+        self.assertEqual(email.reply_to, reply_to)
 
     def test_couple_reply_to(self):
         reply_to = ["email@mit.edu", "email@smith.edu"]
@@ -687,7 +686,7 @@ class TestSendMail(TestCase):
             reply_to=reply_to,
             **self.context,
         )
-        self.assertEquals(email.reply_to, reply_to)
+        self.assertEqual(email.reply_to, reply_to)
 
     def test_no_custom_from_address(self):
         # We used to send certain emails with lab emails as the 'from' address - this is no longer allowed by email clients.
@@ -702,7 +701,7 @@ class TestSendMail(TestCase):
             from_email=different_from_address,
             **context,
         )
-        self.assertEquals(email.from_email, settings.EMAIL_FROM_ADDRESS)
+        self.assertEqual(email.from_email, settings.EMAIL_FROM_ADDRESS)
 
 
 class StudyTypeModelTestCase(TestCase):

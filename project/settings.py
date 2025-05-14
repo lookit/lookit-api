@@ -116,9 +116,8 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
-    # INSTALLED_APPS += ["sslserver"]
-    # MIDDLEWARE += ["pyinstrument.middleware.ProfilerMiddleware"]
-    pass
+    INSTALLED_APPS += ["sslserver"]
+    MIDDLEWARE += ["pyinstrument.middleware.ProfilerMiddleware"]
 else:
     import sentry_sdk
     from sentry_sdk.integrations.celery import CeleryIntegration

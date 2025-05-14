@@ -315,7 +315,7 @@ class ResponseTestCase(APITestCase):
         self.assertEqual(api_response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(api_response.data[0]["detail"].code, "required")
         self.assertEqual(
-            api_response.data[0]["source"]["pointer"], "/data/attributes/child"
+            api_response.data[0]["source"]["pointer"], "/data/relationships/child"
         )
 
     def testPostResponseNeedStudyRelationship(self):
@@ -329,7 +329,7 @@ class ResponseTestCase(APITestCase):
         self.assertEqual(api_response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(api_response.data[0]["detail"].code, "required")
         self.assertEqual(
-            api_response.data[0]["source"]["pointer"], "/data/attributes/study"
+            api_response.data[0]["source"]["pointer"], "/data/relationships/study"
         )
 
     def testPostResponseWithEmptyAttributes(self):

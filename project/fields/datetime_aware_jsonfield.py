@@ -4,16 +4,13 @@ import datetime as dt
 import json
 import logging
 from decimal import Decimal
-from functools import partial
 
 import ciso8601
-import pytz
 from django.contrib.postgres import lookups
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import JSONField
 from django.forms import JSONField as JSONFormField
-from psycopg2.extras import Json
 
 
 class NaiveDatetimeException(Exception):
@@ -36,10 +33,12 @@ def coerce_nonnaive_datetimes(json_data):
             coerced_data[key] = coerce_nonnaive_datetimes(value)
     elif isinstance(json_data, dt.datetime):
         try:
-            json_data.astimezone(pytz.utc)  # aware object can be in any timezone # noqa
+            json_data.astimezone(
+                dt.timezone.utc
+            )  # aware object can be in any timezone # noqa
         except ValueError:  # naive
             coerced_data = json_data.replace(
-                tzinfo=pytz.utc
+                tzinfo=dt.timezone.utc
             )  # json_data must be in UTC
         else:
             coerced_data = json_data  # it's already aware
@@ -94,10 +93,21 @@ class DateTimeAwareJSONField(JSONField):
         defaults.update(kwargs)
         return super(DateTimeAwareJSONField, self).formfield(**defaults)
 
-    def get_prep_value(self, value):
-        if value is not None:
-            return Json(value, dumps=partial(json.dumps, cls=DateTimeAwareJSONEncoder))
-        return value
+    """
+    Although this class is used in migrations, it is no longer used in everyday 
+    DB transactions.  To build the local development environment, this class 
+    will have to remain until the appropriate migration can be removed. During 
+    the work to increase the version of Django, two methods became problematic.  
+    I have left them commented below with their imports.  
+    """
+
+    # from functools import partial
+    # from psycopg2.extras import Json
+
+    # def get_prep_value(self, value):
+    #     if value is not None:
+    #         return Json(value, dumps=partial(json.dumps, cls=DateTimeAwareJSONEncoder))
+    #     return value
 
     def from_db_value(self, value, expression, connection):
         if value is None:
@@ -106,12 +116,12 @@ class DateTimeAwareJSONField(JSONField):
             decode_datetime_objects(value)
         )
 
-    def get_prep_lookup(self, lookup_type, value):
-        if lookup_type in ("has_key", "has_keys", "has_any_keys"):
-            return value
-        if isinstance(value, (dict, list)):
-            return Json(value, dumps=partial(json.dumps, cls=DateTimeAwareJSONEncoder))
-        return super(JSONField, self).get_prep_lookup(lookup_type, value)
+    # def get_prep_lookup(self, lookup_type, value):
+    #     if lookup_type in ("has_key", "has_keys", "has_any_keys"):
+    #         return value
+    #     if isinstance(value, (dict, list)):
+    #         return Json(value, dumps=partial(json.dumps, cls=DateTimeAwareJSONEncoder))
+    #     return super(JSONField, self).get_prep_lookup(lookup_type, value)
 
     def validate(self, value, model_instance):
         super(JSONField, self).validate(value, model_instance)

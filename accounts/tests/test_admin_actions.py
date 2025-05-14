@@ -48,7 +48,7 @@ class SetSpamActionTestCase(TestCase):
 
         user = User.objects.get(pk=user.id)
 
-        self.assertEquals(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertFalse(user.is_spam)
         self.assertTrue(
             all(
@@ -75,7 +75,7 @@ class SetSpamActionTestCase(TestCase):
 
         spammer = User.objects.get(pk=spammer.id)
 
-        self.assertEquals(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertTrue(spammer.is_spam)
         self.assertFalse(
             all(
@@ -106,7 +106,7 @@ class SetSpamActionTestCase(TestCase):
 
             spammer = User.objects.get(pk=spammers[idx].id)
 
-            self.assertEquals(response.status_code, HTTPStatus.OK)
+            self.assertEqual(response.status_code, HTTPStatus.OK)
             self.assertTrue(spammer.is_spam, idx)
             self.assertFalse(
                 all(

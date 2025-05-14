@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:17.2
+    image: postgres:17
     container_name: lookit-api-db
     volumes:
       - ./data:/var/lib/postgresql/data
@@ -12,8 +12,8 @@ services:
       - POSTGRES_PASSWORD=postgres
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 15s
-      timeout: 15s
+      interval: 5s
+      timeout: 5s
       retries: 5
 
   web:
@@ -21,7 +21,7 @@ services:
       dockerfile: Dockerfile.web
     container_name: lookit-api-web
     restart: on-failure
-    command: uv run python ./manage.py runsslserver --certificate ./certs/local_lookit.mit.edu.pem --key ./certs/local_lookit.mit.edu-key.pem 0.0.0.0:8000
+    command: uv run python ./manage.py runserver_plus --cert-file ./certs/local_lookit.mit.edu.pem --key-file ./certs/local_lookit.mit.edu-key.pem 0.0.0.0:8000
     volumes:
       - .:/code
       - /code/.venv
@@ -43,15 +43,36 @@ services:
       - .env
     healthcheck:
       test: rabbitmq-diagnostics -q ping
-      interval: 15s
-      timeout: 15s
+      interval: 5s
+      timeout: 5s
       retries: 5
 
   worker:
     build:
       dockerfile: Dockerfile.web
     container_name: lookit-api-worker
-    command: uv run celery worker --app=project --loglevel=INFO -Q builds,email,cleanup
+    command: uv run celery --app project worker -l INFO -Q builds,email,cleanup
+    volumes:
+      - .:/code
+      - ./certs/dind/client:/certs/client
+      - /code/.venv
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=db
+      - RABBITMQ_HOST=broker
+      - DOCKER_HOST=tcp://docker:2376
+      - DOCKER_TLS_VERIFY="1"
+      - DOCKER_CERT_PATH=/certs/client
+    depends_on:
+      broker:
+        condition: service_healthy
+
+  beat:
+    build:
+      dockerfile: Dockerfile.web
+    container_name: lookit-api-beat
+    command: uv run celery --app project beat -l DEBUG 
     volumes:
       - .:/code
       - ./certs/dind/client:/certs/client

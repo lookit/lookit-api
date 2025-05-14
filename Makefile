@@ -38,7 +38,7 @@ broker-perms:
 		rabbitmqadmin declare queue  --vhost=/ name=email; \
 		rabbitmqadmin declare queue  --vhost=/ name=builds; \
 		rabbitmqadmin declare queue  --vhost=/ name=cleanup;"
-	docker compose restart worker
+	docker compose restart worker beat
 
 local-certs:
 	mkdir -p certs 
@@ -59,7 +59,10 @@ collectstatic: uv
 
 uv:
 	uv self update
-	uv sync
+	uv sync --no-managed-python --no-python-downloads
+
+hooks:
+	uv run pre-commit install --install-hooks
 
 lint: 
 	uv run pre-commit run --all-files

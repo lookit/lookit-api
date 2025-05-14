@@ -469,7 +469,7 @@ class CloneStudyViewTestCase(TestCase):
     def test_add_creator_to_study_admin_group(self, mock_request):
         clone_study_view = CloneStudyView()
         mock_study = create_autospec(Study)
-        self.assertEquals(
+        self.assertEqual(
             clone_study_view.add_creator_to_study_admin_group(mock_study),
             mock_study.admin_group,
         )

@@ -191,7 +191,7 @@ class ResearcherRegistrationForm(LowercaseUsernameUserCreationForm):
         password = self.cleaned_data.get("password2")
         if len(password) < 16:
             raise ValidationError("Password must be at least 16 characters.")
-        return super().clean_password2()
+        return password
 
     class Meta(LowercaseUsernameUserCreationForm.Meta):
         model = User
