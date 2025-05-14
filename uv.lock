@@ -450,14 +450,14 @@ wheels = [
 
 [[package]]
 name = "django-guardian"
-version = "2.3.0"
+version = "2.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/23/64/def6c21454269d77469dae127cc9be252daf697859fe949c9da8fb5f02a6/django-guardian-2.3.0.tar.gz", hash = "sha256:ed2de26e4defb800919c5749fb1bbe370d72829fbd72895b6cf4f7f1a7607e1b", size = 159296, upload-time = "2020-06-07T23:52:53.432Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6f/4c/d1f6923a0ad7f16c403a54c09e94acb76ac6c3765e02523fb09b2b03e1a8/django-guardian-2.4.0.tar.gz", hash = "sha256:c58a68ae76922d33e6bdc0e69af1892097838de56e93e78a8361090bcd9f89a0", size = 159008, upload-time = "2021-05-23T22:11:26.23Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b7/96/4c74aaef85df5e7298afdd600f6e4382f675e5dac6a1a261372a9c177ebb/django_guardian-2.3.0-py3-none-any.whl", hash = "sha256:0e70706c6cda88ddaf8849bddb525b8df49de05ba0798d4b3506049f0d95cbc8", size = 106815, upload-time = "2020-06-07T23:52:17.996Z" },
+    { url = "https://files.pythonhosted.org/packages/a2/25/869df12e544b51f583254aadbba6c1a95e11d2d08edeb9e58dd715112db5/django_guardian-2.4.0-py3-none-any.whl", hash = "sha256:440ca61358427e575323648b25f8384739e54c38b3d655c81d75e0cd0d61b697", size = 106107, upload-time = "2021-05-23T22:11:22.75Z" },
 ]
 
 [[package]]
@@ -917,7 +917,7 @@ requires-dist = [
     { name = "django-countries", specifier = "==7.6.1" },
     { name = "django-extensions", specifier = "==4.1" },
     { name = "django-filter", specifier = "==2.4.0" },
-    { name = "django-guardian", specifier = "==2.3.0" },
+    { name = "django-guardian", specifier = "==2.4.0" },
     { name = "django-localflavor", specifier = "==4.0" },
     { name = "django-model-utils", specifier = "==4.0.0" },
     { name = "django-multiselectfield", specifier = "==0.1.13" },
