@@ -51,28 +51,7 @@ services:
     build:
       dockerfile: Dockerfile.web
     container_name: lookit-api-worker
-    command: uv run celery --app project worker -l INFO -Q builds,email,cleanup
-    volumes:
-      - .:/code
-      - ./certs/dind/client:/certs/client
-      - /code/.venv
-    env_file:
-      - .env
-    environment:
-      - DB_HOST=db
-      - RABBITMQ_HOST=broker
-      - DOCKER_HOST=tcp://docker:2376
-      - DOCKER_TLS_VERIFY="1"
-      - DOCKER_CERT_PATH=/certs/client
-    depends_on:
-      broker:
-        condition: service_healthy
-
-  beat:
-    build:
-      dockerfile: Dockerfile.web
-    container_name: lookit-api-beat
-    command: uv run celery --app project beat -l DEBUG 
+    command: uv run celery -A project worker -l INFO -Q builds,email,cleanup
     volumes:
       - .:/code
       - ./certs/dind/client:/certs/client
