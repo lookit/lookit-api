@@ -1,4 +1,5 @@
 import json
+from unittest.mock import Mock, patch
 
 from django.test import TestCase
 
@@ -7,37 +8,63 @@ from studies.models import default_study_structure
 
 
 class EFPFormTestCase(TestCase):
-    def test_successful_structure(self):
-        form = EFPForm(
-            data={
-                "last_known_player_sha": "862604874f7eeff8c9d72adcb8914b21bfb5427e",
-                "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
-                "use_generator": False,
-                "structure": json.dumps(default_study_structure()),
-            }
-        )
+    def setUp(self):
+        self.sha = "testsha"
+        self.repo_url = "https://testrepo.com"
+        self.data_structure = {
+            "last_known_player_sha": self.sha,
+            "player_repo_url": self.repo_url,
+            "use_generator": False,
+            "structure": json.dumps(default_study_structure()),
+        }
+        self.data_generator = {
+            "last_known_player_sha": self.sha,
+            "player_repo_url": self.repo_url,
+            "use_generator": True,
+        }
+        self.data_bad_structure = {
+            "last_known_player_sha": self.sha,
+            "player_repo_url": self.repo_url,
+            "structure": "{this is not valid json}",
+        }
+
+    def mock_get_side_effect(self, fail_commit=False, fail_repo=False):
+        def side_effect(url, *args, **kwargs):
+            if url == self.repo_url:
+                if fail_repo:
+                    return Mock(ok=False, status_code=404)
+                else:
+                    return Mock(ok=True, status_code=200)
+            if url == f"{self.repo_url}/commit/{self.sha}":
+                if fail_commit:
+                    return Mock(ok=False, status_code=404)
+                else:
+                    return Mock(ok=True, status_code=200)
+            return Mock(ok=False, status_code=404)
+
+        return side_effect
+
+    @patch("studies.forms.requests.get")
+    def test_successful_structure(self, mock_get):
+        mock_get.side_effect = self.mock_get_side_effect()
+
+        form = EFPForm(data=self.data_structure)
         self.assertDictEqual(form.errors, {})
         self.assertTrue(form.is_valid())
 
-    def test_successful_generator(self):
-        form = EFPForm(
-            data={
-                "last_known_player_sha": "862604874f7eeff8c9d72adcb8914b21bfb5427e",
-                "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
-                "use_generator": True,
-            }
-        )
+    @patch("studies.forms.requests.get")
+    def test_successful_generator(self, mock_get):
+        mock_get.side_effect = self.mock_get_side_effect()
+
+        form = EFPForm(data=self.data_generator)
         self.assertDictEqual(form.errors, {})
         self.assertTrue(form.is_valid())
 
-    def test_failed_structure(self):
-        form = EFPForm(
-            data={
-                "last_known_player_sha": "862604874f7eeff8c9d72adcb8914b21bfb5427e",
-                "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
-                "structure": "{this is not valid json}",
-            }
-        )
+    @patch("studies.forms.requests.get")
+    def test_failed_structure(self, mock_get):
+        mock_get.side_effect = self.mock_get_side_effect()
+
+        form = EFPForm(data=self.data_bad_structure)
         self.assertDictEqual(
             form.errors,
             {
@@ -48,50 +75,31 @@ class EFPFormTestCase(TestCase):
         )
         self.assertFalse(form.is_valid())
 
-    def test_failed_player_repo_url(self):
-        data = {
-            "last_known_player_sha": "862604874f7eeff8c9d72adcb8914b21bfb5427e",
-            "structure": json.dumps(default_study_structure()),
-        }
+    @patch("studies.forms.requests.get")
+    def test_failed_player_repo_url(self, mock_get):
+        mock_get.side_effect = self.mock_get_side_effect(fail_repo=True)
 
-        # Check completely invalid url
-        data.update(player_repo_url="https://not-a-valid.url")
-        form = EFPForm(data=data)
+        form = EFPForm(data=self.data_structure)
         self.assertDictEqual(
             form.errors,
             {
                 "player_repo_url": [
-                    f'Frameplayer repo url {data["player_repo_url"]} does not work.'
+                    f"Frameplayer repo url {self.data_structure['player_repo_url']} does not work."
                 ]
             },
         )
         self.assertFalse(form.is_valid())
 
-        # Check slightly off url
-        data.update(player_repo_url="https://github.com/lookit/not-a-valid-project")
-        form = EFPForm(data=data)
-        self.assertDictEqual(
-            form.errors,
-            {
-                "player_repo_url": [
-                    f'Frameplayer repo url {data["player_repo_url"]} does not work.'
-                ]
-            },
-        )
-        self.assertFalse(form.is_valid())
+    @patch("studies.forms.requests.get")
+    def test_failed_last_known_player_sha(self, mock_get):
+        mock_get.side_effect = self.mock_get_side_effect(fail_commit=True)
 
-    def test_failed_last_known_player_sha(self):
-        data = {
-            "last_known_player_sha": "not a valid sha",
-            "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
-            "structure": json.dumps(default_study_structure()),
-        }
-        form = EFPForm(data=data)
+        form = EFPForm(data=self.data_structure)
         self.assertDictEqual(
             form.errors,
             {
                 "last_known_player_sha": [
-                    f'Frameplayer commit {data["last_known_player_sha"]} does not exist.'
+                    f"Frameplayer commit {self.data_structure['last_known_player_sha']} does not exist."
                 ]
             },
         )

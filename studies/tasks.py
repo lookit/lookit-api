@@ -285,9 +285,9 @@ def cleanup_old_directories(root_path, older_than):
     if not older_than:
         older_than = timezone.now() - timezone.timedelta(days=1)
     else:
-        assert (
-            type(older_than) == timezone.datetime
-        ), "older_than must be an instance of datetime"
+        assert type(older_than) == timezone.datetime, (
+            "older_than must be an instance of datetime"
+        )
 
     with os.scandir(root_path) as sd:
         for entry in sd:
@@ -549,7 +549,7 @@ def get_all_incomplete_video_files():
             if (
                 "Initiated" in upload
                 and isinstance(upload["Initiated"], datetime.datetime)
-                and (datetime.datetime.now(timezone.utc) - upload["Initiated"])
+                and (datetime.datetime.now(datetime.timezone.utc) - upload["Initiated"])
                 > datetime.timedelta(hours=24)
             )
         ]

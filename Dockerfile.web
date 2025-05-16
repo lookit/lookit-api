@@ -1,22 +1,18 @@
-FROM python:3.9
+FROM python:3.13
 
+# ENV VIRTUAL_ENV=/code/.venv
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV PATH /root/.local/bin:$PATH
+ENV PATH="/root/.local/bin:$PATH"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 WORKDIR /code
 
-COPY pyproject.toml poetry.lock /code/
+COPY pyproject.toml uv.lock /code/
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends locales \
-    && echo "LC_ALL=en_US.UTF-8" >> /etc/environment \
-    && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
-    && echo "LANG=en_US.UTF-8" > /etc/locale.conf \
-    && locale-gen en_US.UTF-8 \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && curl -sSL --proto "=https" https://install.python-poetry.org | python3 - --version 1.8.4 \
-    && poetry install
+
+RUN sh /uv-installer.sh  
+RUN rm /uv-installer.sh 
+RUN uv sync

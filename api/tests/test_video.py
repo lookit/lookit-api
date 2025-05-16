@@ -3,9 +3,8 @@ import hmac
 import json
 import random
 import string
-from datetime import datetime
+from datetime import datetime, timezone
 
-import pytz
 from django.conf import settings
 from django.test import override_settings
 from django.urls import reverse
@@ -77,7 +76,7 @@ class VideoTestCase(APITestCase):
             "".join(random.choices(string.ascii_letters + string.digits, k=31)) + ".mp4"
         )
         pipe_id = "".join(random.choices(string.digits, k=8))
-        utc_tz = pytz.timezone("UTC")
+        utc_tz = timezone.utc
         date_obj = datetime.now().astimezone(utc_tz)
         date_str = date_obj.strftime("%Y-%m-%d %H:%M:%S.%f")
         self.video_data = {
@@ -138,7 +137,7 @@ class VideoTestCase(APITestCase):
             int(self.video_data["data"]["attributes"]["pipe_numeric_id"]),
         )
         timestamp_from_db = posted_video.s3_timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
-        utc_tz = pytz.timezone("UTC")
+        utc_tz = timezone.utc
         timestamp_sent = (
             datetime.strptime(
                 self.video_data["data"]["attributes"]["s3_timestamp"],

@@ -52,7 +52,7 @@ class VideoFromS3Permissions:
         """
         if request.method == "POST":
             try:
-                signature_received = request.META["HTTP_X_AWS_LAMBDA_HMAC_SIG"]
+                signature_received = request.headers["x-aws-lambda-hmac-sig"]
             except KeyError:
                 try:
                     signature_received = request.META["headers"][
@@ -77,6 +77,8 @@ class VideoFromS3Permissions:
                 request_data.pop("response")
             except KeyError:
                 raise exceptions.ParseError("Missing required relationship: response")
+
+            request_data.pop("type")
 
             message = bytes(json.dumps(request_data, separators=(",", ":")), "UTF-8")
             signature_calculated = hmac.new(key, message, hashlib.sha256).hexdigest()

@@ -593,11 +593,11 @@ def build_zip_for_psychds(
         }
         # save study ad info
         zipped.writestr(
-            "materials/study_ad_info.json", f"{json.dumps(study_ad,indent=4)}"
+            "materials/study_ad_info.json", f"{json.dumps(study_ad, indent=4)}"
         )
         # save global metadata file
         zipped.writestr(
-            "dataset_description.json", f"{json.dumps(metadata_json,indent=4)}"
+            "dataset_description.json", f"{json.dumps(metadata_json, indent=4)}"
         )
 
     zipped_file.seek(0)
@@ -839,8 +839,6 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
     model = Response
 
     def get_queryset(self):
-        video_queryset = Video.objects.only("full_name")
-
         study = self.study
         return (
             study.responses_for_researcher(self.request.user)
@@ -856,7 +854,7 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
                 ),
                 Prefetch(
                     "videos",
-                    queryset=video_queryset,
+                    queryset=Video.objects.only("id", "full_name", "response_id"),
                     to_attr="prefetched_videos",
                 ),
             )
@@ -897,7 +895,7 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
             # Exception - store actual date object for date created
             this_resp_data["response__date_created"] = resp.date_created
             this_resp_data["child_id_slug"] = (
-                f'{this_resp_data["child__hashed_id"]}-{slugify(this_resp_data["child__name"] or "")}'
+                f"{this_resp_data['child__hashed_id']}-{slugify(this_resp_data['child__name'] or '')}"
             )
             # info needed for summary table shown at right
             this_resp_data["summary"] = [
@@ -910,18 +908,17 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
                 if col.id in columns_included_in_summary
             ]
 
-            video_info = [
+            this_resp_data["videos"] = [
                 {
-                    "pk": v.pk,
+                    "pk": v.id,
                     "display_name": (
                         v.full_name.replace(
                             "videoStream_{}_".format(study.uuid), "..."
                         ).replace("_{}_".format(resp.uuid), "...")
                     ),
                 }
-                for v in resp.prefetched_videos
+                for v in getattr(resp, "prefetched_videos", [])
             ]
-            this_resp_data["videos"] = video_info
             response_data.append(this_resp_data)
         context["response_data"] = response_data
         context["data_options"] = [col for col in RESPONSE_COLUMNS if col.optional]

@@ -191,7 +191,7 @@ class ResearcherRegistrationForm(LowercaseUsernameUserCreationForm):
         password = self.cleaned_data.get("password2")
         if len(password) < 16:
             raise ValidationError("Password must be at least 16 characters.")
-        return super().clean_password2()
+        return password
 
     class Meta(LowercaseUsernameUserCreationForm.Meta):
         model = User
@@ -295,6 +295,9 @@ class EmailPreferencesForm(forms.ModelForm):
 
 
 class DemographicDataForm(forms.ModelForm):
+    def clean_us_race_ethnicity_identification(self):
+        return list(self.cleaned_data["us_race_ethnicity_identification"])
+
     class Meta:
         model = DemographicData
         exclude = ("created_at", "previous", "user", "extra", "uuid")
