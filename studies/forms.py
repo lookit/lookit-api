@@ -193,16 +193,16 @@ class StudyForm(ModelForm):
 
         return criteria_expression
 
-    def clean_image(self):
-        cleaned_image = self.cleaned_data["image"]
+    # def clean_image(self):
+    #     cleaned_image = self.cleaned_data["image"]
 
-        with Image.open(cleaned_image) as image:
-            if image.width != image.height:
-                raise forms.ValidationError(
-                    f"Study image is {image.width} x {image.height} and it must be square."
-                )
+    #     with Image.open(cleaned_image) as image:
+    #         if image.width != image.height:
+    #             raise forms.ValidationError(
+    #                 f"Study image is {image.width} x {image.height} and it must be square."
+    #             )
 
-        return cleaned_image
+    #     return cleaned_image
 
     class Meta:
         model = Study
