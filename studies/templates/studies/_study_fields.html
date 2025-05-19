@@ -14,7 +14,15 @@
         {% bootstrap_field form.shared_preview wrapper_class="" %}
     </div>
 </div>
-{% bootstrap_field form.image label_class="form-label fw-bold" wrapper_class="mb-4" %}
+{% comment %} {% bootstrap_field form.image label_class="form-label fw-bold" wrapper_class="mb-4" %} {% endcomment %}
+<div class="mb-4"><label class="form-label fw-bold" for="id_image">Study Image</label><input type="file" name="image" accept="image/*" class="form-control" aria-describedby="id_image_helptext" id="id_image">
+    <div class="row mt-1">
+        <div class="col-auto">
+            Currently:&nbsp;<a href="{{ form.instance.image.url | lower}}">{{ form.instance.image | lower}}</a>
+        </div>
+    </div>
+    <div class="form-text">{{form.image.help_text}}</div>
+</div>
 {% bootstrap_field form.preview_summary label_class="form-label fw-bold" wrapper_class="mb-4" %}
 {% bootstrap_field form.short_description label_class="form-label fw-bold" wrapper_class="mb-4" %}
 {% bootstrap_field form.purpose label_class="form-label fw-bold" wrapper_class="mb-4" %}

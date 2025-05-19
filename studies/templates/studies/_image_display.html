@@ -10,7 +10,7 @@
         <img class="study-detail-thumbnail"
              alt="{{ object.name }}"
              onerror="imgError(this)"
-             src="{{ object.image.url }}"
+             src="{{ object.image.url | lower}}"
              width="100%" />
     {% endif %}
     <div style="display:none"
