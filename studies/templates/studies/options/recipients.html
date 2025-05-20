@@ -1,9 +1,10 @@
-{% with widget.label as person %}
-    <option value="{{ widget.value|stringformat:'s' }}"
-            {% include "django/forms/widgets/attrs.html" %}
-            {% if person.email_next_session %}data-next-session{% endif %}
-            {% if person.email_new_studies %}data-new-studies{% endif %}
-            {% if person.email_study_updates %}data-study-updates{% endif %}
-            {% if person.email_response_questions %}data-response-questions{% endif %}
-            data-transactional-message>{{ person.slug }}</option>
-{% endwith %}
+<option value="{{ option.value }}"
+    {% for name, value in option.attrs.items %}
+        {% if value is not False %}{{ name }}
+            {% if value is not True %}
+                ="{{ value|stringformat:'s' }}"
+            {% endif %}
+        {% endif %}
+    {% endfor %}>
+    {{ option.label }}
+</option>
