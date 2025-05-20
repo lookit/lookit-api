@@ -289,11 +289,13 @@ if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     # if we're trying to use cloud storage
     STATICFILES_LOCATION = "static"
     STATICFILES_STORAGE = "project.storages.LookitStaticStorage"
-    STATIC_URL = os.environ.get("STATIC_URL", "/static/")
+    # STATIC_URL = os.environ.get("STATIC_URL", "/static/")
+    STATIC_URL = "/static/"
 
     MEDIAFILES_LOCATION = "media"
     DEFAULT_FILE_STORAGE = "project.storages.LookitMediaStorage"
-    MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
+    # MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
+    MEDIA_URL = "/media/"
 
     GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME", "")
     GS_PROJECT_ID = os.environ.get("GS_PROJECT_ID", "")
@@ -397,3 +399,17 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#std:setting-SESSION_COOKIE_HTTPONLY
 # Per the above documentation setting SESSION_COOKIE_HTTPONLY might break JavaScript.
 SESSION_COOKIE_HTTPONLY = True
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+}
