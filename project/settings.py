@@ -303,6 +303,17 @@ if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     GS_PRIVATE_BUCKET_NAME = os.environ.get("GS_PRIVATE_BUCKET_NAME", "")
     GS_QUERYSTRING_AUTH = False
 
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            "OPTIONS": {"location": "media"},
+        },
+        "staticfiles": {
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            "OPTIONS": {"location": "static"},
+        },
+    }
+
 else:
     # we know nothing about cloud storage
     print(
