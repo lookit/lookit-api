@@ -58,27 +58,6 @@ class StudyParticipantContactView(
     def get_context_data(self, **kwargs):
         """Gets the required data for emailing participants."""
         ctx = super().get_context_data(**kwargs)
-        study = ctx["study"]
-        participants = (
-            study.participants.order_by(
-                "-email_next_session"
-            )  # Just to get the grouping in the right order
-            .all()
-            .values(
-                "email_next_session",
-                "uuid",
-                "username",
-                "nickname",
-                "password",
-                "email_new_studies",
-                "email_study_updates",
-                "email_response_questions",
-            )
-        )
-        for par in participants:
-            par["hashed_id"] = self.participant_hash(par)
-            par["slug"] = self.participant_slug(par)
-        ctx["participants"] = participants
 
         previous_messages = (
             Message.objects.filter(related_study=self.object)
@@ -129,11 +108,54 @@ class StudyParticipantContactView(
             else []
         )
 
-        ctx["form"].fields["recipients"].choices = [
-            (p["uuid"], p) for p in participants
-        ]
-
         return ctx
+
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
+
+        study = self.object
+        participants = (
+            study.participants.order_by(
+                "-email_next_session"
+            )  # Just to get the grouping in the right order
+            .all()
+            .values(
+                "nickname",
+                "email_next_session",
+                "uuid",
+                "email_new_studies",
+                "email_study_updates",
+                "email_response_questions",
+            )
+        )
+
+        # Populate the "choices" attribute for the SelectMultiple widget used for the "Recipients" form field.
+        # Each choice must be a (value, label) tuple for the option element.
+        # The data attributes are stored separately and used by the EmailRecipientSelectMultiple class to set the choice-specific data attributes that will be passed into the template.
+        choices = []
+        data_attrs = {}
+        for p in participants:
+            uuid_str = str(p["uuid"])
+            p["slug"] = self.participant_slug(p)
+            choices.append((uuid_str, p["slug"]))
+            # The data attributes keys need to match the values expected by the JavaScript: no "email" prefix and hyphen as word separator
+            data_attrs[uuid_str] = {
+                "hashed-id": self.participant_hash(p),
+                "slug": p["slug"],
+                "next-session": p["email_next_session"],
+                "new-studies": p["email_new_studies"],
+                "study-updates": p["email_study_updates"],
+                "response-questions": p["email_response_questions"],
+                "transactional-message": True,
+            }
+
+        # Instantiate the form with the email dynamic recipients list and option-specific data attributes
+        return form_class(
+            **self.get_form_kwargs(),
+            data_attrs=data_attrs,
+            choices=choices,
+        )
 
     def get_initial(self):
         initial = super().get_initial()
