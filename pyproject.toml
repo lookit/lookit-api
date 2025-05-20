@@ -51,7 +51,6 @@ dev = [
     "beautifulsoup4==4.13.3",
     "coverage==7.6.12",
     "django-dynamic-fixture==4.0.1",
-    "django-sslserver==0.22",
     "libsass==0.23.0",
     "parameterized==0.9.0",
     "pre-commit==4.2.0",
