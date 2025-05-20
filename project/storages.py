@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib.staticfiles.storage import ManifestFilesMixin
 from storages.backends.gcloud import GoogleCloudStorage
 
@@ -20,14 +19,17 @@ class LookitGoogleCloudStorage(GoogleCloudStorage):
 
 
 class LookitStaticStorage(ManifestFilesMixin, LookitGoogleCloudStorage):
-    location = settings.STATICFILES_LOCATION
+    # location = settings.STATICFILES_LOCATION
+    pass
 
 
 class LookitMediaStorage(LookitGoogleCloudStorage):
-    location = settings.MEDIAFILES_LOCATION
+    # location = settings.MEDIAFILES_LOCATION
     # See https://github.com/lookit/lookit-api/issues/570
-    file_overwrite = False
+    # file_overwrite = False
+    pass
 
 
 class LookitExperimentStorage(LookitGoogleCloudStorage):
-    location = settings.EXPERIMENT_LOCATION
+    # location = settings.EXPERIMENT_LOCATION
+    pass
