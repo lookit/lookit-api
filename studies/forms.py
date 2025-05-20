@@ -1,4 +1,5 @@
 import json
+from collections import OrderedDict
 from enum import Enum
 
 import requests
@@ -392,9 +393,23 @@ class EmailRecipientSelectMultiple(forms.SelectMultiple):
 
 
 class EmailParticipantsForm(forms.Form):
-    recipients = forms.ChoiceField(widget=EmailRecipientSelectMultiple())
     subject = forms.CharField()
     body = forms.CharField(widget=forms.Textarea())
+
+    def __init__(self, *args, data_attrs=None, choices=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Set up the recipients field with the custom widget - this allows us to dynamically set the recipient choices and add data attributes to the option elements. We need to create the recipients field after the form has been instantiated so that the widget is set up correctly here and create_option is called on the choices.
+        self.fields["recipients"] = forms.MultipleChoiceField(
+            choices=choices or [],
+            widget=EmailRecipientSelectMultiple(data_attrs=data_attrs or {}),
+        )
+
+        # Need to reorder the fields here to put recipients before body
+        ordered_fields = OrderedDict()
+        for name in ["subject", "recipients", "body"]:
+            ordered_fields[name] = self.fields[name]
+        self.fields = ordered_fields
 
 
 class EFPForm(ModelForm):
