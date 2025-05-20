@@ -363,7 +363,32 @@ class StudyCreateForm(StudyForm):
 
 
 class EmailRecipientSelectMultiple(forms.SelectMultiple):
+    """
+    Extend forms.SelectMutliple for selecting multiple email recipients. forms.SelectMultiple lets you set attrs on the form field level, but not for individual choices. This custom class allows us to inject the data attributes for each specific choice (participant) with their individual email preferences so that these become available in the template and are added to the option element's data attributes.
+    """
+
     option_template_name = "studies/options/recipients.html"
+
+    def __init__(self, *args, **kwargs):
+        self.data_attrs = kwargs.pop("data_attrs", {})
+        super().__init__(*args, **kwargs)
+
+    def create_option(
+        self, name, value, label, selected, index, subindex=None, attrs=None
+    ):
+        option = super().create_option(
+            name, value, label, selected, index, subindex=subindex, attrs=attrs
+        )
+
+        # Merge global widget.attrs
+        option["attrs"].update(self.attrs or {})
+
+        # Merge option-specific data-attrs
+        data_attrs = self.data_attrs.get(str(value), {})
+        if data_attrs:
+            option["attrs"].update({f"data-{k}": v for k, v in data_attrs.items()})
+
+        return option
 
 
 class EmailParticipantsForm(forms.Form):
