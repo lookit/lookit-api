@@ -286,16 +286,16 @@ CORS_ORIGIN_WHITELIST = [
 EXPERIMENT_LOCATION = "experiments"
 
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-    # if we're trying to use cloud storage
-    STATICFILES_LOCATION = "static"
-    STATICFILES_STORAGE = "project.storages.LookitStaticStorage"
-    # STATIC_URL = os.environ.get("STATIC_URL", "/static/")
-    STATIC_URL = "/static/"
+    # # if we're trying to use cloud storage
+    # STATICFILES_LOCATION = "static"
+    # STATICFILES_STORAGE = "project.storages.LookitStaticStorage"
+    # # STATIC_URL = os.environ.get("STATIC_URL", "/static/")
+    # STATIC_URL = "static/"
 
-    MEDIAFILES_LOCATION = "media"
-    DEFAULT_FILE_STORAGE = "project.storages.LookitMediaStorage"
-    # MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
-    MEDIA_URL = "/media/"
+    # MEDIAFILES_LOCATION = "media"
+    # DEFAULT_FILE_STORAGE = "project.storages.LookitMediaStorage"
+    # # MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
+    # MEDIA_URL = "/media/"
 
     GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME", "")
     GS_PROJECT_ID = os.environ.get("GS_PROJECT_ID", "")
@@ -306,11 +306,18 @@ if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     STORAGES = {
         "default": {
             "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
-            "OPTIONS": {"location": "media"},
+            "OPTIONS": {
+                "location": "media",
+                "file_overwrite": False,
+                "custom_endpoint": os.environ.get("BASE_URL", "/media/"),
+            },
         },
         "staticfiles": {
             "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
-            "OPTIONS": {"location": "static"},
+            "OPTIONS": {
+                "location": "static",
+                "custom_endpoint": os.environ.get("BASE_URL", "/static/"),
+            },
         },
     }
 
