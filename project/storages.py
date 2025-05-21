@@ -19,17 +19,18 @@ class LookitGoogleCloudStorage(GoogleCloudStorage):
 
 
 class LookitStaticStorage(ManifestFilesMixin, LookitGoogleCloudStorage):
-    # location = settings.STATICFILES_LOCATION
     pass
 
 
 class LookitMediaStorage(LookitGoogleCloudStorage):
-    # location = settings.MEDIAFILES_LOCATION
-    # See https://github.com/lookit/lookit-api/issues/570
-    # file_overwrite = False
     pass
 
 
 class LookitExperimentStorage(LookitGoogleCloudStorage):
     # location = settings.EXPERIMENT_LOCATION
     pass
+
+
+class LowercaseGoogleCloudStorage(GoogleCloudStorage):
+    def get_available_name(self, name, max_length=None):
+        return super().get_available_name(name.lower(), max_length)

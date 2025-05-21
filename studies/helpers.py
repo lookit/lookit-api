@@ -44,7 +44,7 @@ def send_mail(
     :param str custom_message Custom email message - for use instead of a template
     :kwargs: Context vars for the email template
     """
-    context["base_url"] = BASE_URL
+    context["base_url"] = BASE_URL[-1] == "/" and BASE_URL[:-1] or BASE_URL
 
     # For text version: replace images with [IMAGE] so they're not removed entirely
     context_plain_text = copy.deepcopy(context)
