@@ -116,8 +116,7 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
-    # MIDDLEWARE += ["pyinstrument.middleware.ProfilerMiddleware"]
-    pass
+    MIDDLEWARE += ["pyinstrument.middleware.ProfilerMiddleware"]
 else:
     import sentry_sdk
     from sentry_sdk.integrations.celery import CeleryIntegration
@@ -306,7 +305,7 @@ if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
             },
         },
         "staticfiles": {
-            "BACKEND": "project.storages.LowercaseGoogleCloudStorage",
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
             "OPTIONS": {
                 "location": "static",
                 "custom_endpoint": os.environ.get("BASE_URL", "/static/")[:-1],
@@ -410,17 +409,3 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#std:setting-SESSION_COOKIE_HTTPONLY
 # Per the above documentation setting SESSION_COOKIE_HTTPONLY might break JavaScript.
 SESSION_COOKIE_HTTPONLY = True
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "WARNING",
-    },
-}
