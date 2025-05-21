@@ -269,7 +269,7 @@ SITE_NAME = os.environ.get("SITE_NAME", "Lookit")
 EXPERIMENT_BASE_URL = os.environ.get("EXPERIMENT_BASE_URL")
 
 BASE_URL = os.environ.get(
-    "BASE_URL", "https://localhost:8000"
+    "BASE_URL", "https://localhost:8000/"
 )  # default to ember base url
 
 LOGIN_REDIRECT_URL = "web:home"
@@ -294,17 +294,19 @@ if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     GS_PRIVATE_BUCKET_NAME = os.environ.get("GS_PRIVATE_BUCKET_NAME", "")
     GS_QUERYSTRING_AUTH = False
 
+    MEDIA_URL = os.environ.get("BASE_URL", "/media/")
+
     STORAGES = {
         "default": {
-            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            "BACKEND": "project.storages.LowercaseGoogleCloudStorage",
             "OPTIONS": {
                 "location": "media",
                 "file_overwrite": False,
-                "custom_endpoint": os.environ.get("BASE_URL", "/media/"),
+                "custom_endpoint": MEDIA_URL,
             },
         },
         "staticfiles": {
-            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            "BACKEND": "project.storages.LowercaseGoogleCloudStorage",
             "OPTIONS": {
                 "location": "static",
                 "custom_endpoint": os.environ.get("BASE_URL", "/static/"),
