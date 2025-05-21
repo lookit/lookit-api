@@ -47,12 +47,6 @@ class StudyParticipantContactView(
 
     test_func = can_contact_participants
 
-    def slug_from_user_object(self, user):
-        study = self.object
-        user_hash_id = hash_id(user.uuid, study.uuid, study.salt)
-        user_slug = slugify(user.nickname or "anonymous")
-        return f"{user_hash_id}-{user_slug}"
-
     def get_context_data(self, **kwargs):
         """Gets the required data for emailing participants."""
         ctx = super().get_context_data(**kwargs)
@@ -78,7 +72,7 @@ class StudyParticipantContactView(
                     {
                         "uuid": recipient.uuid,
                         "nickname": recipient.nickname,
-                        "slug": self.slug_from_user_object(recipient),
+                        "slug": participant_slug(recipient, ctx["study"]),
                     }
                     for recipient in message.recipients.all()
                 ],
