@@ -1,4 +1,5 @@
 import json
+from collections import OrderedDict
 from enum import Enum
 
 import requests
@@ -363,13 +364,52 @@ class StudyCreateForm(StudyForm):
 
 
 class EmailRecipientSelectMultiple(forms.SelectMultiple):
+    """
+    Extend forms.SelectMutliple for selecting multiple email recipients. forms.SelectMultiple lets you set attrs on the form field level, but not for individual choices. This custom class allows us to inject the data attributes for each specific choice (participant) with their individual email preferences so that these become available in the template and are added to the option element's data attributes.
+    """
+
     option_template_name = "studies/options/recipients.html"
+
+    def __init__(self, *args, **kwargs):
+        self.data_attrs = kwargs.pop("data_attrs", {})
+        super().__init__(*args, **kwargs)
+
+    def create_option(
+        self, name, value, label, selected, index, subindex=None, attrs=None
+    ):
+        option = super().create_option(
+            name, value, label, selected, index, subindex=subindex, attrs=attrs
+        )
+
+        # Merge global widget.attrs
+        option["attrs"].update(self.attrs or {})
+
+        # Merge option-specific data-attrs
+        data_attrs = self.data_attrs.get(str(value), {})
+        if data_attrs:
+            option["attrs"].update({f"data-{k}": v for k, v in data_attrs.items()})
+
+        return option
 
 
 class EmailParticipantsForm(forms.Form):
-    recipients = forms.ChoiceField(widget=EmailRecipientSelectMultiple())
     subject = forms.CharField()
     body = forms.CharField(widget=forms.Textarea())
+
+    def __init__(self, *args, data_attrs=None, choices=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Set up the recipients field with the custom widget - this allows us to dynamically set the recipient choices and add data attributes to the option elements. We need to create the recipients field after the form has been instantiated so that the widget is set up correctly here and create_option is called on the choices.
+        self.fields["recipients"] = forms.MultipleChoiceField(
+            choices=choices or [],
+            widget=EmailRecipientSelectMultiple(data_attrs=data_attrs or {}),
+        )
+
+        # Need to reorder the fields here to put recipients before body
+        ordered_fields = OrderedDict()
+        for name in ["subject", "recipients", "body"]:
+            ordered_fields[name] = self.fields[name]
+        self.fields = ordered_fields
 
 
 class EFPForm(ModelForm):

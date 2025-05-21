@@ -1,5 +1,6 @@
 import inspect
 import json
+import logging
 import os
 import re
 import zipfile
@@ -16,6 +17,8 @@ from project import storages
 from studies.helpers import send_mail
 
 DOCKER_CLIENT = docker.from_env()
+
+logger = logging.getLogger(__name__)
 
 
 class DirectoryTargets(NamedTuple):
@@ -333,7 +336,11 @@ def _upload_in_serial(local_path, storage):
                 full_path = os.path.join(root_directory, filename)
                 with open(full_path, mode="rb") as f:
                     remote_path = full_path.split("/ember_build/deployments/")[1]
-                    storage.save(remote_path, File(f))
+                    filename = storage.save(remote_path, File(f))
+    else:
+        logger.debug(
+            "*** WARNING ***: Debug is true, not uploading files to cloud storage."
+        )
 
 
 def download_repos(player_repo_url, player_sha=None):

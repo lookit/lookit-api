@@ -116,7 +116,6 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
-    INSTALLED_APPS += ["sslserver"]
     MIDDLEWARE += ["pyinstrument.middleware.ProfilerMiddleware"]
 else:
     import sentry_sdk
@@ -269,7 +268,7 @@ SITE_NAME = os.environ.get("SITE_NAME", "Lookit")
 EXPERIMENT_BASE_URL = os.environ.get("EXPERIMENT_BASE_URL")
 
 BASE_URL = os.environ.get(
-    "BASE_URL", "https://localhost:8000"
+    "BASE_URL", "https://localhost:8000/"
 )  # default to ember base url
 
 LOGIN_REDIRECT_URL = "web:home"
@@ -287,19 +286,32 @@ EXPERIMENT_LOCATION = "experiments"
 
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     # if we're trying to use cloud storage
-    STATICFILES_LOCATION = "static"
-    STATICFILES_STORAGE = "project.storages.LookitStaticStorage"
-    STATIC_URL = os.environ.get("STATIC_URL", "/static/")
-
-    MEDIAFILES_LOCATION = "media"
-    DEFAULT_FILE_STORAGE = "project.storages.LookitMediaStorage"
-    MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
 
     GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME", "")
     GS_PROJECT_ID = os.environ.get("GS_PROJECT_ID", "")
 
     GS_PRIVATE_BUCKET_NAME = os.environ.get("GS_PRIVATE_BUCKET_NAME", "")
     GS_QUERYSTRING_AUTH = False
+
+    MEDIA_URL = os.environ.get("BASE_URL", "/media/")
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "project.storages.LowercaseGoogleCloudStorage",
+            "OPTIONS": {
+                "location": "media",
+                "file_overwrite": False,
+                "custom_endpoint": MEDIA_URL[:-1],
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            "OPTIONS": {
+                "location": "static",
+                "custom_endpoint": os.environ.get("BASE_URL", "/static/")[:-1],
+            },
+        },
+    }
 
 else:
     # we know nothing about cloud storage

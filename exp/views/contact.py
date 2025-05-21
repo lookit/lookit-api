@@ -14,6 +14,14 @@ from studies.models import Study
 from studies.permissions import StudyPermission
 
 
+def participant_slug(participant, study):
+    return f"{participant_hash(participant, study)}-{slugify(participant.nickname or 'anonymous')}"
+
+
+def participant_hash(participant, study):
+    return hash_id(participant.uuid, study.uuid, study.salt)
+
+
 class StudyParticipantContactView(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
@@ -39,46 +47,9 @@ class StudyParticipantContactView(
 
     test_func = can_contact_participants
 
-    def participant_hash(self, participant):
-        return hash_id(participant["uuid"], self.object.uuid, self.object.salt)
-
-    def participant_slug(self, participant):
-        return (
-            self.participant_hash(participant)
-            + "-"
-            + slugify(participant["nickname"] or "anonymous")
-        )
-
-    def slug_from_user_object(self, user):
-        study = self.object
-        user_hash_id = hash_id(user.uuid, study.uuid, study.salt)
-        user_slug = slugify(user.nickname or "anonymous")
-        return f"{user_hash_id}-{user_slug}"
-
     def get_context_data(self, **kwargs):
         """Gets the required data for emailing participants."""
         ctx = super().get_context_data(**kwargs)
-        study = ctx["study"]
-        participants = (
-            study.participants.order_by(
-                "-email_next_session"
-            )  # Just to get the grouping in the right order
-            .all()
-            .values(
-                "email_next_session",
-                "uuid",
-                "username",
-                "nickname",
-                "password",
-                "email_new_studies",
-                "email_study_updates",
-                "email_response_questions",
-            )
-        )
-        for par in participants:
-            par["hashed_id"] = self.participant_hash(par)
-            par["slug"] = self.participant_slug(par)
-        ctx["participants"] = participants
 
         previous_messages = (
             Message.objects.filter(related_study=self.object)
@@ -101,7 +72,7 @@ class StudyParticipantContactView(
                     {
                         "uuid": recipient.uuid,
                         "nickname": recipient.nickname,
-                        "slug": self.slug_from_user_object(recipient),
+                        "slug": participant_slug(recipient, ctx["study"]),
                     }
                     for recipient in message.recipients.all()
                 ],
@@ -129,11 +100,50 @@ class StudyParticipantContactView(
             else []
         )
 
-        ctx["form"].fields["recipients"].choices = [
-            (p["uuid"], p) for p in participants
-        ]
-
         return ctx
+
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
+
+        study = self.object
+        participants = study.participants.order_by(
+            "-email_next_session"
+        ).only(  # Just to get the grouping in the right order
+            "nickname",
+            "email_next_session",
+            "uuid",
+            "email_new_studies",
+            "email_study_updates",
+            "email_response_questions",
+        )
+
+        # Populate the "choices" attribute for the SelectMultiple widget used for the "Recipients" form field.
+        # Each choice must be a (value, label) tuple for the option element.
+        # The data attributes are stored separately and used by the EmailRecipientSelectMultiple class to set the choice-specific data attributes that will be passed into the template.
+        choices = []
+        data_attrs = {}
+        for p in participants:
+            uuid_str = str(p.uuid)
+            pslug = participant_slug(p, study)
+            choices.append((uuid_str, pslug))
+            # The data attributes keys need to match the values expected by the JavaScript: no "email" prefix and hyphen as word separator
+            data_attrs[uuid_str] = {
+                "hashed-id": participant_hash(p, study),
+                "slug": pslug,
+                "next-session": p.email_next_session,
+                "new-studies": p.email_new_studies,
+                "study-updates": p.email_study_updates,
+                "response-questions": p.email_response_questions,
+                "transactional-message": True,
+            }
+
+        # Instantiate the form with the email dynamic recipients list and option-specific data attributes
+        return form_class(
+            **self.get_form_kwargs(),
+            data_attrs=data_attrs,
+            choices=choices,
+        )
 
     def get_initial(self):
         initial = super().get_initial()
