@@ -173,7 +173,6 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
     def get_study(self, study_uuid):
         from studies.models import Study
 
-        logger.error("get study")
         study = Study.objects.get(uuid=study_uuid)
         # Set this here (in addition to in view) in case re-trying
         study.is_building = True
@@ -183,12 +182,10 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
     def get_researcher(self, researcher_uuid):
         from accounts.models import User
 
-        logger.error("get researcher")
         self.build_context["researcher"] = User.objects.get(uuid=researcher_uuid)
 
     def get_player_sha(self, study):
         """Gets the player sha, if it's been explicitly declared. If not, mark metadata as an update field."""
-        logger.error("get player sha")
         self.build_context["player_sha"] = player_sha = study.metadata.get(
             "last_known_player_sha", None
         )
@@ -196,7 +193,6 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
             self.build_context["update_fields"] += ["metadata"]
 
     def build_docker_image(self):
-        logger.error("build docker image")
         image, _image_log_gen = DOCKER_CLIENT.images.build(
             path=settings.EMBER_BUILD_ROOT_PATH,
             pull=True,
@@ -206,7 +202,6 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
         self.build_context["docker_image"] = image
 
     def get_container_directories(self, study, study_uuid, player_sha):
-        logger.error("get container directories")
         player_repo_url = study.metadata.get(
             "player_repo_url", settings.EMBER_EXP_PLAYER_REPO
         )
@@ -227,7 +222,6 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
         )
 
     def run_docker_container(self, container_paths, study_uuid, local_paths):
-        logger.error("run docker container")
         stdout_and_stderr = DOCKER_CLIENT.containers.run(
             "ember_build",
             command="bash build.sh",
@@ -255,7 +249,6 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
         return {"success": True, "logs": stdout_and_stderr.decode("utf-8")}
 
     def deploy_study(self, local_paths, destination_directory):
-        logger.error("deploy study")
         storage = storages.LookitExperimentStorage()
 
         cloud_deployment_directory = os.path.join(
@@ -265,7 +258,6 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
         deploy_to_remote(cloud_deployment_directory, storage)
 
     def save_study_and_log_results(self, study, update_fields):
-        logger.error("save study and log results")
         # Only update field for particular build, in case we have parallel builds running
         study.built = True
         study.is_building = False
@@ -338,19 +330,17 @@ def deploy_to_remote(local_path, storage):
 def _upload_in_serial(local_path, storage):
     """Inner worker function for storage uploads in serial.  This should be skipped when
     developing locally."""
-    logger.error("upload in serial")
     if not settings.DEBUG:
-        logger.error(f"local path: {local_path}")
         for root_directory, dirs, files in os.walk(local_path, topdown=True):
             for filename in files:
                 full_path = os.path.join(root_directory, filename)
-                logger.error(f"filename: {filename}")
-                logger.error(f"file path: {full_path}")
                 with open(full_path, mode="rb") as f:
                     remote_path = full_path.split("/ember_build/deployments/")[1]
-                    logger.error(f"remote path: {remote_path}")
                     filename = storage.save(remote_path, File(f))
-                    logger.error(f"filename post save: {filename}")
+    else:
+        logger.debug(
+            "*** WARNING ***: Debug is true, not uploading files to cloud storage."
+        )
 
 
 def download_repos(player_repo_url, player_sha=None):
