@@ -16,6 +16,7 @@ Including another URLconf
 """
 
 from django.conf.urls.i18n import i18n_patterns
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.urls import urlpatterns as auth_urls
@@ -26,6 +27,7 @@ from accounts import urls as accounts_urls
 from accounts.views import LoginWithRedirectToTwoFactorAuthView
 from api import urls as api_urls
 from exp import urls as exp_urls
+from project import settings
 from web import urls as web_urls
 
 # Don't want to depend on the login always being the first view...
@@ -60,5 +62,5 @@ urlpatterns = i18n_patterns(
     prefix_default_language=False,
 )
 
-# if settings.DEBUG:
-#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
