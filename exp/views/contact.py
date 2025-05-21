@@ -14,6 +14,14 @@ from studies.models import Study
 from studies.permissions import StudyPermission
 
 
+def participant_slug(participant, study):
+    return f"{participant_hash(participant, study)}-{slugify(participant.nickname or 'anonymous')}"
+
+
+def participant_hash(participant, study):
+    return hash_id(participant.uuid, study.uuid, study.salt)
+
+
 class StudyParticipantContactView(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
@@ -38,16 +46,6 @@ class StudyParticipantContactView(
         )
 
     test_func = can_contact_participants
-
-    def participant_hash(self, participant):
-        return hash_id(participant["uuid"], self.object.uuid, self.object.salt)
-
-    def participant_slug(self, participant):
-        return (
-            self.participant_hash(participant)
-            + "-"
-            + slugify(participant["nickname"] or "anonymous")
-        )
 
     def slug_from_user_object(self, user):
         study = self.object
@@ -115,19 +113,15 @@ class StudyParticipantContactView(
             form_class = self.get_form_class()
 
         study = self.object
-        participants = (
-            study.participants.order_by(
-                "-email_next_session"
-            )  # Just to get the grouping in the right order
-            .all()
-            .values(
-                "nickname",
-                "email_next_session",
-                "uuid",
-                "email_new_studies",
-                "email_study_updates",
-                "email_response_questions",
-            )
+        participants = study.participants.order_by(
+            "-email_next_session"
+        ).only(  # Just to get the grouping in the right order
+            "nickname",
+            "email_next_session",
+            "uuid",
+            "email_new_studies",
+            "email_study_updates",
+            "email_response_questions",
         )
 
         # Populate the "choices" attribute for the SelectMultiple widget used for the "Recipients" form field.
@@ -136,17 +130,17 @@ class StudyParticipantContactView(
         choices = []
         data_attrs = {}
         for p in participants:
-            uuid_str = str(p["uuid"])
-            p["slug"] = self.participant_slug(p)
-            choices.append((uuid_str, p["slug"]))
+            uuid_str = str(p.uuid)
+            pslug = participant_slug(p, study)
+            choices.append((uuid_str, pslug))
             # The data attributes keys need to match the values expected by the JavaScript: no "email" prefix and hyphen as word separator
             data_attrs[uuid_str] = {
-                "hashed-id": self.participant_hash(p),
-                "slug": p["slug"],
-                "next-session": p["email_next_session"],
-                "new-studies": p["email_new_studies"],
-                "study-updates": p["email_study_updates"],
-                "response-questions": p["email_response_questions"],
+                "hashed-id": participant_hash(p, study),
+                "slug": pslug,
+                "next-session": p.email_next_session,
+                "new-studies": p.email_new_studies,
+                "study-updates": p.email_study_updates,
+                "response-questions": p.email_response_questions,
                 "transactional-message": True,
             }
 
