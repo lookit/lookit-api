@@ -10,6 +10,7 @@ from guardian.shortcuts import assign_perm
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, Message, User
+from exp.views import participant_slug
 from studies.models import Lab, Response, Study, StudyType
 from studies.permissions import StudyPermission
 
@@ -195,11 +196,15 @@ class ContactViewTestCase(TestCase):
     def test_appropriate_participants_available_to_contact(self):
         self.client.force_login(self.researcher_with_perm)
         response = self.client.get(self.contact_url)
-        participant_names = {
-            part["nickname"] for part in response.context["participants"]
-        }
-        expected_participant_names = {part.nickname for part in self.participants[0:4]}
-        self.assertEqual(participant_names, expected_participant_names)
+        recipients_field = response.context["form"].fields["recipients"]
+        # recipients choices is a list of (value, label) tuples where value is uuid and label is slug
+        participant_slugs = [choice[1] for choice in recipients_field.choices]
+        expected_participant_names = [
+            participant_slug(part, self.study) for part in self.participants[0:4]
+        ]
+        participant_slugs.sort()
+        expected_participant_names.sort()
+        self.assertListEqual(participant_slugs, expected_participant_names)
 
     def test_appropriate_senders_available_to_filter(self):
         self.client.force_login(self.researcher_with_perm)
