@@ -33,4 +33,6 @@ class LookitExperimentStorage(LookitGoogleCloudStorage):
 
 class LowercaseGoogleCloudStorage(GoogleCloudStorage):
     def get_available_name(self, name, max_length=None):
-        return super().get_available_name(name.lower(), max_length)
+        # Lowercase the file name and the additional text google adds when
+        # there's a name collision.
+        return super().get_available_name(name.lower(), max_length).lower()

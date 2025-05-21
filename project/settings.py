@@ -302,14 +302,14 @@ if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
             "OPTIONS": {
                 "location": "media",
                 "file_overwrite": False,
-                "custom_endpoint": MEDIA_URL,
+                "custom_endpoint": MEDIA_URL[:-1],
             },
         },
         "staticfiles": {
             "BACKEND": "project.storages.LowercaseGoogleCloudStorage",
             "OPTIONS": {
                 "location": "static",
-                "custom_endpoint": os.environ.get("BASE_URL", "/static/"),
+                "custom_endpoint": os.environ.get("BASE_URL", "/static/")[:-1],
             },
         },
     }
