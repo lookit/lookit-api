@@ -51,7 +51,7 @@ services:
     build:
       dockerfile: Dockerfile.web
     container_name: lookit-api-worker
-    command: uv run celery --app project worker -l INFO -Q builds,email,cleanup
+    command: uv run celery -A project worker -l INFO -Q builds,email,cleanup
     volumes:
       - .:/code
       - ./certs/dind/client:/certs/client
@@ -72,7 +72,7 @@ services:
     build:
       dockerfile: Dockerfile.web
     container_name: lookit-api-beat
-    command: uv run celery --app project beat -l DEBUG 
+    command: uv run celery -A project beat -l DEBUG
     volumes:
       - .:/code
       - ./certs/dind/client:/certs/client
