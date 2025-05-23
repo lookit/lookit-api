@@ -8,10 +8,10 @@ DEBUG=True
 
 # Site settings
 ALLOWED_HOSTS=localhost
-BASE_URL=https://localhost:8000
+BASE_URL=https://localhost:8000/
 CORS_ORIGIN_ALLOW_ALL=True
 ENVIRONMENT=develop
-EXPERIMENT_BASE_URL=https://localhost:4200
+EXPERIMENT_BASE_URL=https://localhost:4200/
 SITE_DOMAIN=localhost:8000
 SITE_NAME=Lookit
 

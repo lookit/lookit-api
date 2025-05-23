@@ -66,7 +66,7 @@ class DiscoverabilityKey(NamedTuple):
 
 
 STUDY_LISTING_A_TAG = (
-    f'<a href="{settings.BASE_URL}/studies/">the study listing page</a>'
+    f'<a href="{settings.BASE_URL}studies/">the study listing page</a>'
 )
 
 DISCOVERABILITY_HELP_TEXT = {
@@ -1008,7 +1008,8 @@ class PreviewProxyView(
             return self.authenticated_redirect(url)
 
         if settings.DEBUG and settings.ENVIRONMENT == "develop":
-            # If we're in a local environment, then redirect to the ember server
+            # If we're in a local environment, then remove leading slash and redirect to the ember server
+            path = path[0] == "/" and path[1:] or path
             url = f"{settings.EXPERIMENT_BASE_URL}{path}"
             return self.authenticated_redirect(url)
 
