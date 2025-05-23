@@ -66,7 +66,7 @@ class DiscoverabilityKey(NamedTuple):
 
 
 STUDY_LISTING_A_TAG = (
-    f'<a href="{settings.BASE_URL}/studies/">the study listing page</a>'
+    f'<a href="{settings.BASE_URL}studies/">the study listing page</a>'
 )
 
 DISCOVERABILITY_HELP_TEXT = {
