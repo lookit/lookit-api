@@ -513,6 +513,17 @@ class TestAnnouncementEmailFunctionality(TestCase):
             except ValidationError:
                 self.fail(f"Invalid URL found in email body: {url}")
 
+    def test_urls_do_not_contain_double_slashes(self):
+        message_object: Message = Message.send_announcement_email(
+            self.participant_two, self.study_two, [self.child_two, self.child_three]
+        )
+        body = message_object.body
+        urls = re.findall(r"https?://[^\s)]+", body)
+        for url in urls:
+            url_without_scheme = re.sub(r"^https?://", "", url)
+            if "//" in url_without_scheme:
+                self.fail(f"URL contains double slashes: {url}")
+
     def test_study_excluded_from_targets_after_message(self):
         Message.send_announcement_email(
             self.participant_two, self.study_one, [self.child_three]
