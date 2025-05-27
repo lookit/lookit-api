@@ -37,7 +37,7 @@ from studies.forms import (
     StudyCreateForm,
     StudyEditForm,
 )
-from studies.helpers import send_mail
+from studies.helpers import get_url_without_trailing_slash, send_mail
 from studies.models import Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 from studies.queries import get_study_list_qs
@@ -65,9 +65,7 @@ class DiscoverabilityKey(NamedTuple):
     public: bool
 
 
-STUDY_LISTING_A_TAG = (
-    f'<a href="{settings.BASE_URL}studies/">the study listing page</a>'
-)
+STUDY_LISTING_A_TAG = f'<a href="{get_url_without_trailing_slash(settings.BASE_URL)}/studies/">the study listing page</a>'
 
 DISCOVERABILITY_HELP_TEXT = {
     (

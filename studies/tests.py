@@ -16,7 +16,11 @@ from guardian.shortcuts import assign_perm
 from more_itertools import quantify
 
 from accounts.models import Child, Message, User
-from studies.helpers import ResponseEligibility, send_mail
+from studies.helpers import (
+    ResponseEligibility,
+    get_url_without_trailing_slash,
+    send_mail,
+)
 from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum, Video
 from studies.permissions import StudyPermission
 from studies.tasks import (
@@ -59,7 +63,7 @@ Questions or feedback for Children Helping Science?: childrenhelpingscience@gmai
 
 
 class TestAnnouncementEmailFunctionality(TestCase):
-    maxDiff = 2000  # In case we need to check the email body contents
+    maxDiff = None  # In case we need to check the email body contents
 
     def setUp(self):
         five_months_ago = date.today() - timedelta(days=30 * 5)
@@ -438,7 +442,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
         token = self.participant_two.generate_token()
         username = self.participant_two.username
         target_email_structure = TARGET_EMAIL_TEMPLATE.format(
-            base_url=settings.BASE_URL,
+            base_url=get_url_without_trailing_slash(settings.BASE_URL),
             study_uuid=self.study_two.uuid,
             unsubscribe=reverse(
                 "web:email-unsubscribe-link",
@@ -754,7 +758,7 @@ class TestEmailHeaders(TestCase):
         self.context = {
             "token": G(User).generate_token(),
             "username": "username@email.com",
-            "base_url": settings.BASE_URL,
+            "base_url": get_url_without_trailing_slash(settings.BASE_URL),
         }
 
     def test_email_headers_returns_expected_keys(self):

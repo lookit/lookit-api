@@ -34,7 +34,7 @@ from qrcode.image.svg import SvgPathImage
 import studies
 from accounts.queries import BitfieldQuerySet, get_child_eligibility_for_study
 from studies.fields import CONDITIONS, GESTATIONAL_AGE_CHOICES, LANGUAGES
-from studies.helpers import send_mail
+from studies.helpers import get_url_without_trailing_slash, send_mail
 from studies.permissions import (
     UMBRELLA_LAB_PERMISSION_MAP,
     LabPermission,
@@ -637,7 +637,7 @@ class Message(models.Model):
         subject = create_subject_for_study_notification(study, children)
         children_string = create_string_listing_children(children)
         context = {
-            "base_url": settings.BASE_URL,
+            "base_url": get_url_without_trailing_slash(settings.BASE_URL),
             "user": user,
             "study": study,
             "children": children,
@@ -674,7 +674,7 @@ class Message(models.Model):
 
     def send_as_email(self):
         context = {
-            "base_url": settings.BASE_URL,
+            "base_url": get_url_without_trailing_slash(settings.BASE_URL),
             "custom_message": mark_safe(self.body),
         }
 
@@ -701,7 +701,7 @@ class Message(models.Model):
     def email_headers(cls, context):
         token = context.get("token")
         username = context.get("username")
-        base_url = settings.BASE_URL
+        base_url = get_url_without_trailing_slash(settings.BASE_URL)
         if token and username:
             return {
                 "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
