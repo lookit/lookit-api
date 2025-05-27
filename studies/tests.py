@@ -749,6 +749,58 @@ class TestSendMail(TestCase):
         self.assertEqual(email.from_email, settings.EMAIL_FROM_ADDRESS)
 
 
+class TestEmailHeaders(TestCase):
+    def setUp(self):
+        self.context = {
+            "token": G(User).generate_token(),
+            "username": "username@email.com",
+            "base_url": settings.BASE_URL,
+        }
+
+    def test_email_headers_returns_expected_keys(self):
+        headers = Message.email_headers(self.context)
+        self.assertIsNotNone(headers)
+        self.assertIn("List-Unsubscribe", headers)
+        self.assertIn("List-Unsubscribe-Post", headers)
+        self.assertEqual(headers["List-Unsubscribe-Post"], "List-Unsubscribe=One-Click")
+
+    def test_list_unsubscribe_header_contains_valid_mailto_and_url(self):
+        headers = Message.email_headers(self.context)
+        header_value = headers["List-Unsubscribe"]
+        parts = [part.strip("<> ") for part in header_value.split(",")]
+        self.assertTrue(any(part.startswith("mailto:") for part in parts))
+        url_parts = [part for part in parts if part.startswith("http")]
+        self.assertEqual(len(url_parts), 1)
+
+        # Validate the unsubscribe URL
+        validator = URLValidator()
+        try:
+            validator(url_parts[0])
+        except ValidationError:
+            self.fail(f"Invalid unsubscribe URL in header: {url_parts[0]}")
+
+    def test_header_unsubscribe_url_does_not_contain_double_slashes(self):
+        # Tests for a double slash error in the URL that was caused by adding a trailing slash to the BASE_URL in project settings
+        headers = Message.email_headers(self.context)
+        url = re.search(r"https?://[^\s)]+", headers["List-Unsubscribe"]).group()
+        url_without_scheme = re.sub(r"^https?://", "", url)
+        if "//" in url_without_scheme:
+            self.fail(f"URL contains double slashes: {url}")
+
+    def test_email_headers_returns_none_if_token_missing(self):
+        context = {
+            "username": self.context["username"],
+            "base_url": self.context["base_url"],
+        }
+        headers = Message.email_headers(context)
+        self.assertIsNone(headers)
+
+    def test_email_headers_returns_none_if_username_missing(self):
+        context = {"token": self.context["token"], "base_url": self.context["base_url"]}
+        headers = Message.email_headers(context)
+        self.assertIsNone(headers)
+
+
 class StudyTypeModelTestCase(TestCase):
     def test_default_pk(self):
         study_type = StudyType.objects.get(name=StudyTypeEnum.ember_frame_player.value)
