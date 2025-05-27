@@ -502,7 +502,6 @@ class TestAnnouncementEmailFunctionality(TestCase):
 
         # Extract all URLs from the message body. We need to assume that the http(s) is there since we're grabbing the URLs with regex, so this test will NOT catch errors with the http:/https: part of the URL.
         body = message_object.body
-        print(body)
         url_regex = r"https?:[^\s)]+"
         urls = re.findall(url_regex, body)
 
@@ -514,6 +513,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
                 self.fail(f"Invalid URL found in email body: {url}")
 
     def test_urls_do_not_contain_double_slashes(self):
+        # Tests for a double slash error in URLs that was caused by adding a trailing slash to the BASE_URL in project settings
         message_object: Message = Message.send_announcement_email(
             self.participant_two, self.study_two, [self.child_two, self.child_three]
         )
