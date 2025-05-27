@@ -1,10 +1,13 @@
 import json
+import re
 from datetime import date, datetime, timedelta, timezone
 from unittest.mock import patch
 
 from botocore.exceptions import ClientError, ParamValidationError
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.validators import URLValidator
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -478,6 +481,37 @@ class TestAnnouncementEmailFunctionality(TestCase):
             message_object.subject,
             'Larry, Moe, and Curly are invited to take part in "The Most Fake Study Ever" on Lookit (Children Helping Science)!',
         )
+
+    def test_email_contains_valid_urls(self):
+        validator = URLValidator()
+        # The validator should catch various malformed URLs
+        with self.assertRaises(ValidationError):
+            validator("http:/missing-initial-slash.com")
+        with self.assertRaises(ValidationError):
+            validator("not-a-url")
+        with self.assertRaises(ValidationError):
+            validator("https://includes[brackets].com")
+
+        # It should not raise errors for http/https and valid link structures
+        validator("https://a-vaild-link.com")
+        validator("http://a-valid-link.com")
+
+        message_object: Message = Message.send_announcement_email(
+            self.participant_two, self.study_two, [self.child_two, self.child_three]
+        )
+
+        # Extract all URLs from the message body. We need to assume that the http(s) is there since we're grabbing the URLs with regex, so this test will NOT catch errors with the http:/https: part of the URL.
+        body = message_object.body
+        print(body)
+        url_regex = r"https?:[^\s)]+"
+        urls = re.findall(url_regex, body)
+
+        # Validate each URL in the announcement email body using URLValidator
+        for url in urls:
+            try:
+                validator(url)
+            except ValidationError:
+                self.fail(f"Invalid URL found in email body: {url}")
 
     def test_study_excluded_from_targets_after_message(self):
         Message.send_announcement_email(
