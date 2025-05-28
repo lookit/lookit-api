@@ -39,6 +39,7 @@ from accounts.queries import (
 )
 from accounts.utils import hash_id
 from project import settings
+from studies.helpers import get_url_without_trailing_slash
 from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum, Video
 from web.mixins import AuthenticatedRedirectMixin
 from web.models import Institution, InstitutionSection
@@ -862,9 +863,10 @@ class ExperimentProxyView(
             return self.authenticated_redirect(url)
 
         if settings.DEBUG and settings.ENVIRONMENT == "develop":
-            # If we're in a local environment, then remove leading slash and redirect to the ember server
-            path = path[0] == "/" and path[1:] or path
-            url = f"{settings.EXPERIMENT_BASE_URL}{path}"
+            # If we're in a local environment, then remove trailing slash from EFP base URL and redirect to the ember server
+            url = (
+                f"{get_url_without_trailing_slash(settings.EXPERIMENT_BASE_URL)}{path}"
+            )
             return self.authenticated_redirect(url)
 
         path = f"{study_uuid}/index.html"
