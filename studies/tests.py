@@ -2083,3 +2083,17 @@ class TestCleanupIncompleteVideoUploadsTask(TestCase):
 
         # If there are no files, the cleanup incomplete videos task just produces the initial log message
         mock_logger.debug.assert_any_call("Cleaning up incomplete video uploads...")
+
+
+class TestGetUrlWithoutTrailingSlash(TestCase):
+    def test_get_url_without_trailing_slash(self):
+        url_trailing_slash = "https://testwithslash.com/"
+        self.assertEqual(
+            get_url_without_trailing_slash(url_trailing_slash),
+            "https://testwithslash.com",
+        )
+
+        url_no_trailing_slash = "https://testwithnoslash.com"
+        self.assertEqual(
+            get_url_without_trailing_slash(url_no_trailing_slash), url_no_trailing_slash
+        )
