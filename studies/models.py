@@ -1470,7 +1470,9 @@ class Video(models.Model):
         return cls.objects.create(
             pipe_name=old_pipe_name,
             pipe_numeric_id=data["id"],
-            s3_timestamp=datetime.fromtimestamp(int(timestamp) / 1000, tz=timezone.utc),
+            s3_timestamp=datetime.fromtimestamp(
+                int(timestamp) / 1000, tz=datetime.timezone.utc
+            ),
             frame_id=frame_id,
             full_name=new_full_name,
             study=study,
