@@ -1,8 +1,7 @@
-import ast
 import base64
 import hashlib
 import hmac
-import urllib.parse
+import json
 
 from botocore.exceptions import ClientError
 from django.conf import settings
@@ -28,21 +27,17 @@ class RenameVideoView(View):
         # Parse the POST body ourselves to allow flexibility for using for other types
         # of events in the future; some of the Pipe event data includes semicolons which
         # throw the automatic parsing for a loop.
-        rawbody = list(request.body)  # bytes to ints
-        # rawbody = [45 if i==59 else i for i in rawbody] # semicolons -> dashes
-        postbody = urllib.parse.parse_qs(
-            bytes(rawbody).decode("utf-8")
-        )  # NOW parse the request string
 
         # Authenticate the webhook (see https://addpipe.com/docs#authenticating-webhooks)
         key = settings.PIPE_WEBHOOK_KEY
         # Append the JSON POST data received via webhook to the URL string.
         thisURL = request.scheme + "://" + request.headers["host"] + request.path
-        message = thisURL + postbody["payload"][0]  # TODO
-        key = bytes(key, "UTF-8")
-        message = bytes(message, "UTF-8")
+        payload = request.POST.get("payload")
+        message = thisURL + payload
         # Hash the resulting string with HMAC-SHA1, using the webhook authentication key; generate binary signature.
-        digester = hmac.new(key, message, hashlib.sha1)
+        keyBytes = bytes(key, "UTF-8")
+        messageBytes = bytes(message, "UTF-8")
+        digester = hmac.new(keyBytes, messageBytes, hashlib.sha1)
         signatureBinary = digester.digest()
         # Base64 encode the binary signature.
         signatureComputed = base64.b64encode(signatureBinary)
@@ -50,22 +45,21 @@ class RenameVideoView(View):
         signatureSent = bytes(request.headers["x-pipe-signature"], "UTF-8")
         authenticated = signatureComputed == signatureSent
 
-        d = ast.literal_eval(
-            postbody["payload"][0]
-        )  # convert from string representation of dict
+        # Convert data from string representation of dict to dict
+        payload_data = json.loads(payload)
 
         if authenticated and (
-            d["data"]["s3UploadStatus"] == "upload success"
+            payload_data["data"]["s3UploadStatus"] == "upload success"
         ):  # Go ahead and move the file
-            new_name = d["data"]["payload"]
+            new_name = payload_data["data"]["payload"]
 
             if not new_name:  # Make sure we don't have an empty payload string
                 return HttpResponseForbidden()
 
             try:
-                video_obj = Video.from_pipe_payload(d)
+                video_obj = Video.from_pipe_payload(payload_data)
                 return HttpResponse(
-                    (d["data"]["videoName"] + " --> " + video_obj.filename)
+                    (payload_data["data"]["videoName"] + " --> " + video_obj.filename)
                     if video_obj
                     else "Preview video not saved"
                 )
