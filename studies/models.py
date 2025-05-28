@@ -30,6 +30,7 @@ from studies.helpers import (
     FrameActionDispatcher,
     ResponseEligibility,
     get_eligibility_for_response,
+    get_url_without_trailing_slash,
     send_mail,
 )
 from studies.permissions import (
@@ -281,7 +282,7 @@ def default_study_structure():
 
 
 def default_exit_url():
-    return f"{settings.BASE_URL}{reverse('web:studies-history')}"
+    return f"{get_url_without_trailing_slash(settings.BASE_URL)}{reverse('web:studies-history')}"
 
 
 class Study(models.Model):
