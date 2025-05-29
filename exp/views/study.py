@@ -37,7 +37,11 @@ from studies.forms import (
     StudyCreateForm,
     StudyEditForm,
 )
-from studies.helpers import get_url_without_trailing_slash, send_mail
+from studies.helpers import (
+    get_absolute_url,
+    get_experiment_absolute_url,
+    send_mail,
+)
 from studies.models import Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 from studies.queries import get_study_list_qs
@@ -65,7 +69,9 @@ class DiscoverabilityKey(NamedTuple):
     public: bool
 
 
-STUDY_LISTING_A_TAG = f'<a href="{get_url_without_trailing_slash(settings.BASE_URL)}/studies/">the study listing page</a>'
+STUDY_LISTING_A_TAG = (
+    f'<a href="{get_absolute_url("/studies/")}">the study listing page</a>'
+)
 
 DISCOVERABILITY_HELP_TEXT = {
     (
@@ -1007,9 +1013,7 @@ class PreviewProxyView(
 
         if settings.DEBUG and settings.ENVIRONMENT == "develop":
             # If we're in a local environment, then remove leading trailing slash from EFP base URL and redirect to the ember server
-            url = (
-                f"{get_url_without_trailing_slash(settings.EXPERIMENT_BASE_URL)}{path}"
-            )
+            url = get_experiment_absolute_url(path)
             return self.authenticated_redirect(url)
 
         path = f"{study_uuid}/index.html"
