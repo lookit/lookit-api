@@ -29,8 +29,8 @@ from studies import workflow
 from studies.helpers import (
     FrameActionDispatcher,
     ResponseEligibility,
+    get_absolute_url,
     get_eligibility_for_response,
-    get_url_without_trailing_slash,
     send_mail,
 )
 from studies.permissions import (
@@ -282,7 +282,7 @@ def default_study_structure():
 
 
 def default_exit_url():
-    return f"{get_url_without_trailing_slash(settings.BASE_URL)}{reverse('web:studies-history')}"
+    return get_absolute_url(reverse("web:studies-history"))
 
 
 class Study(models.Model):
