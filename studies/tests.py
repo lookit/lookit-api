@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.validators import URLValidator
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django_dynamic_fixture import G, N
@@ -18,7 +18,7 @@ from more_itertools import quantify
 from accounts.models import Child, Message, User
 from studies.helpers import (
     ResponseEligibility,
-    get_url_without_trailing_slash,
+    get_absolute_url,
     send_mail,
 )
 from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum, Video
@@ -49,15 +49,15 @@ Why: We are interested in seeing how fast your child can hand-compute integrals.
 
 Compensation: You child will receive exactly $1 for each integral computed.
 
-You and your child can participate any time you want by going to "The Most Fake Study Ever" ({base_url}/studies/{study_uuid}/). If you have any questions, please reply to this email to reach the ECCL at faker@fakelab.com.
+You and your child can participate any time you want by going to "The Most Fake Study Ever" ({study_url}). If you have any questions, please reply to this email to reach the ECCL at faker@fakelab.com.
 
 Note: If you have taken part in Lookit studies before, you might notice that the page looks a little different than before. Our web address is changing from lookit.mit.edu to childrenhelpingscience.com as we merge together two programs for online studies that our team runs. There have been no changes to who runs the platform or who can see your child's data. Thanks for contributing to the science of how kids learn - we hope to see you soon!
 
 -- the Lookit/Children Helping Science team
 
 
-Update your CHS email preferences here: {base_url}/account/email/
-Unsubscribe from all CHS emails: {base_url}{unsubscribe}
+Update your CHS email preferences here: {email_preferences_url}
+Unsubscribe from all CHS emails: {unsubscribe_url}
 Questions or feedback for Children Helping Science?: childrenhelpingscience@gmail.com
 """
 
@@ -442,11 +442,15 @@ class TestAnnouncementEmailFunctionality(TestCase):
         token = self.participant_two.generate_token()
         username = self.participant_two.username
         target_email_structure = TARGET_EMAIL_TEMPLATE.format(
-            base_url=get_url_without_trailing_slash(settings.BASE_URL),
-            study_uuid=self.study_two.uuid,
-            unsubscribe=reverse(
-                "web:email-unsubscribe-link",
-                kwargs={"token": token, "username": username},
+            study_url=get_absolute_url(
+                reverse("web:study-detail", kwargs={"uuid": self.study_two.uuid})
+            ),
+            email_preferences_url=get_absolute_url(reverse("web:email-preferences")),
+            unsubscribe_url=get_absolute_url(
+                reverse(
+                    "web:email-unsubscribe-link",
+                    kwargs={"token": token, "username": username},
+                )
             ),
         )
 
@@ -660,7 +664,6 @@ class TestSendMail(TestCase):
             "Test email",
             ["lookit-test-email@mit.edu"],
             bcc=[],
-            base_url="https://lookit-staging.mit.edu/",
             custom_message=mark_safe(
                 '<p>line 1<br></p><p><img style="width: 24px;" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QCURXhpZgAATU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgExAAIAAAAHAAAAWodpAAQAAAABAAAAYgAAAAAAAABIAAAAAQAAAEgAAAABUGljYXNhAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAGKADAAQAAAABAAAAEAAAAAD/7QA4UGhvdG9zaG9wIDMuMAA4QklNBAQAAAAAAAA4QklNBCUAAAAAABDUHYzZjwCyBOmACZjs+EJ+/8AAEQgAEAAYAwERAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/bAEMACAYGCAoKCAgICAkICAkICQgICQkIDQgIBwkdGh8eHRocHCAkLicgIiwjHBwoNyksMDE0NDQfJzk9ODI8LjM0Mv/bAEMBCQkJDQoNFQ0NFTIhECEyMjIyMjIyMjInJzIyJiYnJycmMiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJv/dAAQAA//aAAwDAQACEQMRAD8AyvBEcEer2e6B5QNzK6hmUcHj09+avELTQ5sHZ6vf/gHsN/qejR3tjo7eU93qFs7QKjM2GwSpyOMHa35VnpojsVOTi59EeKeK7e5jv7+WFGeJpFR2iy56DOQPp+laU6kF7r3PPxeGqz96Pws//9Cj4RlJaWG0jjf/AEVRJdzv8iuc8HHIODWE60VNOb0+83hhn7K1Na+el2/8jQX+0ZLe3jh1Ww/tC0tLm2nkE7TeUN3yZOBtYAHjHrVzrUpJuK1/LyN6OFxFHldZe7p/296HC3muXf2nZ9nignKyM08nmzSGXJyQCcEcn25p+zjZSvc5p1pzm4yja2i9Ef/Z" data-filename="small.jpg"></p><p>line 2<br></p>'
             ),
@@ -758,7 +761,6 @@ class TestEmailHeaders(TestCase):
         self.context = {
             "token": G(User).generate_token(),
             "username": "username@email.com",
-            "base_url": get_url_without_trailing_slash(settings.BASE_URL),
         }
 
     def test_email_headers_returns_expected_keys(self):
@@ -794,13 +796,12 @@ class TestEmailHeaders(TestCase):
     def test_email_headers_returns_none_if_token_missing(self):
         context = {
             "username": self.context["username"],
-            "base_url": self.context["base_url"],
         }
         headers = Message.email_headers(context)
         self.assertIsNone(headers)
 
     def test_email_headers_returns_none_if_username_missing(self):
-        context = {"token": self.context["token"], "base_url": self.context["base_url"]}
+        context = {"token": self.context["token"]}
         headers = Message.email_headers(context)
         self.assertIsNone(headers)
 
@@ -2085,15 +2086,18 @@ class TestCleanupIncompleteVideoUploadsTask(TestCase):
         mock_logger.debug.assert_any_call("Cleaning up incomplete video uploads...")
 
 
-class TestGetUrlWithoutTrailingSlash(TestCase):
-    def test_get_url_without_trailing_slash(self):
-        url_trailing_slash = "https://testwithslash.com/"
-        self.assertEqual(
-            get_url_without_trailing_slash(url_trailing_slash),
-            "https://testwithslash.com",
+class TestGetAbsoluteURLTestCase(TestCase):
+    @override_settings(BASE_URL="https://fakedomain.asdf/")
+    def test_get_absolute_url(self):
+        self.assertTrue(
+            get_absolute_url("/somepath/"), "https://fakedomain.asdf/somepath/"
         )
-
-        url_no_trailing_slash = "https://testwithnoslash.com"
-        self.assertEqual(
-            get_url_without_trailing_slash(url_no_trailing_slash), url_no_trailing_slash
+        self.assertTrue(
+            get_absolute_url("somepath/"), "https://fakedomain.asdf/somepath/"
+        )
+        self.assertTrue(
+            get_absolute_url("/somepath"), "https://fakedomain.asdf/somepath"
+        )
+        self.assertTrue(
+            get_absolute_url("somepath"), "https://fakedomain.asdf/somepath"
         )
