@@ -9,6 +9,7 @@ from django.utils.translation import gettext as _
 from accounts.forms import StudyListSearchForm
 from accounts.queries import get_child_eligibility, get_child_participation_eligibility
 from project.settings import GOOGLE_TAG_MANAGER_ID
+from studies.helpers import get_absolute_url
 
 register = template.Library()
 
@@ -311,3 +312,8 @@ def staff_profile(name, img, blurb, type="large"):
     <p class="pb-4 {blurb_classes}">{blurb}</p>
     </div>"""
     return mark_safe(html)
+
+
+@register.simple_tag
+def absolute_url(name, *args, **kwargs):
+    return get_absolute_url(reverse(name, args=args, kwargs=kwargs))
