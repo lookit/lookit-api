@@ -1,8 +1,9 @@
+{% load web_extras %}
 <p>Dear {{ lab_name }} Admin,</p>
 <p>
     Your lab, {{ lab_name }}, has been approved to begin using Lookit for data collection.
     <br />
-    You can view your lab <a href="{{ base_url }}{% url 'exp:lab-detail' pk=lab_id %}">here</a>.
+    You can view your lab <a href="{% absolute_url 'exp:lab-detail' pk=lab_id %}">here</a>.
 </p>
 <p>
     Best,

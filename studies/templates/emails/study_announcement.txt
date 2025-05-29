@@ -1,4 +1,5 @@
 {% extends "emails/base.txt" %}
+{% load web_extras %}
 {% block content %}
 Dear {{ user.display_name }},
 
@@ -14,7 +15,7 @@ Why: {{ study.purpose }}
 
 Compensation: {{ study.compensation_description|default:"This is a volunteer-based study." }}
 
-{% if study.show_scheduled %}You can schedule a time to participate with your child{% else %}You and your child can participate any time you want{% endif %} by going to "{{ study.name }}" ({{ base_url }}{% url 'web:study-detail' uuid=study.uuid %}). If you have any questions, please reply to this email to reach the {{ study.lab.name }} at {{ study.lab.contact_email }}.
+{% if study.show_scheduled %}You can schedule a time to participate with your child{% else %}You and your child can participate any time you want{% endif %} by going to "{{ study.name }}" ({% absolute_url 'web:study-detail' uuid=study.uuid %}). If you have any questions, please reply to this email to reach the {{ study.lab.name }} at {{ study.lab.contact_email }}.
 
 Note: If you have taken part in Lookit studies before, you might notice that the page looks a little different than before. Our web address is changing from lookit.mit.edu to childrenhelpingscience.com as we merge together two programs for online studies that our team runs. There have been no changes to who runs the platform or who can see your child's data. Thanks for contributing to the science of how kids learn - we hope to see you soon!
 
