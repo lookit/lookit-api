@@ -1,6 +1,6 @@
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 
 import boto3
@@ -15,7 +15,7 @@ from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.shortcuts import reverse
-from django.utils import timezone
+from django.utils import timezone as dutimezone
 from django.utils.translation import gettext as _
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from guardian.shortcuts import get_users_with_perms
@@ -607,7 +607,7 @@ class Study(models.Model):
     @property
     def days_submitted(self):
         if self.status_change_date:
-            return (timezone.now() - self.status_change_date).days
+            return (dutimezone.now() - self.status_change_date).days
 
     @property
     def approved_by(self):
@@ -829,7 +829,7 @@ class Study(models.Model):
 
     # Runs for every transition to save state and log action
     def _finalize_state_change(self, ev):
-        ev.model.status_change_date = timezone.now()
+        ev.model.status_change_date = dutimezone.now()
         ev.model.save()
         self._log_action(ev)
 
@@ -1470,9 +1470,7 @@ class Video(models.Model):
         return cls.objects.create(
             pipe_name=old_pipe_name,
             pipe_numeric_id=data["id"],
-            s3_timestamp=datetime.fromtimestamp(
-                int(timestamp) / 1000, tz=datetime.timezone.utc
-            ),
+            s3_timestamp=datetime.fromtimestamp(int(timestamp) / 1000, tz=timezone.utc),
             frame_id=frame_id,
             full_name=new_full_name,
             study=study,
