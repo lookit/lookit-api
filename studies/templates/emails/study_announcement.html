@@ -1,9 +1,11 @@
 {% extends "emails/base.html" %}
+{% load web_extras %}
 {% block content %}
+{% absolute_url 'web:study-detail' uuid=study.uuid as study_detail_url %}
     <p>Dear {{ user.display_name }},</p>
     <p>
         We're writing to invite you and your child{{ children|length|pluralize:"ren" }} {{ children_string }} to
-        participate in the study <a href="{{ base_url }}{% url 'web:study-detail' uuid=study.uuid %}">"{{ study.name }}"</a>!
+        participate in the study <a href="{{ study_detail_url }}">"{{ study.name }}"</a>!
         This study is run by the {{ study.lab.name }} at {{ study.lab.institution }}.
     </p>
     <p>More details about the study...</p>
@@ -28,7 +30,7 @@
             You and your child can participate any time you want
         {% endif %}
         by going to
-        <a href="{{ base_url }}{% url 'web:study-detail' uuid=study.uuid %}">"{{ study.name }}"</a>.
+        <a href="{{ study_detail_url }}">"{{ study.name }}"</a>.
         If you have any questions, please reply to this email to reach the {{ study.lab.name }} at
         {{ study.lab.contact_email }}.
     </p>

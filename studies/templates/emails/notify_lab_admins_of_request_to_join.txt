@@ -1,5 +1,6 @@
+{% load web_extras %}
 Dear {{ lab_name }} Admin,
 
 {{ researcher_name }} has requested to join your lab, {{ lab_name }}, on Lookit.
 
-You can approve the request and set their permissions here: {{ base_url }}{{ url }}
+You can approve the request and set their permissions here: {% absolute_url "exp:lab-members" pk=lab_pk %}

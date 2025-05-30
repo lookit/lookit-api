@@ -473,7 +473,7 @@ class LabMembershipRequestView(
             context = {
                 "researcher_name": researcher_name,
                 "lab_name": lab.name,
-                "url": reverse("exp:lab-members", kwargs={"pk": lab.pk}),
+                "lab_pk": lab.pk,
             }
             send_mail.delay(
                 "notify_lab_admins_of_request_to_join",

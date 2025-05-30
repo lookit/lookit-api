@@ -1,7 +1,8 @@
+{% load web_extras %}
 Dear Study Researchers,
 
-  An experiment runner has been built for {{ study_name}} ({{ base_url }}{% url 'exp:study' pk=study_id %}).
+  An experiment runner has been built for {{ study_name}} ({% absolute_url 'exp:study' pk=study_id %}).
   
-  This study can now be previewed here: {{ base_url }}{% url 'exp:preview-detail' uuid=study_uuid %}
+  This study can now be previewed here: {% absolute_url 'exp:preview-detail' uuid=study_uuid %}
   
-  When this study is approved and activated, participants will be able to access it here: {{ base_url }}{% url 'web:study-detail' uuid=study_uuid %}
+  When this study is approved and activated, participants will be able to access it here: {% absolute_url 'web:study-detail' uuid=study_uuid %}

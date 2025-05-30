@@ -11,7 +11,6 @@
     <script src="{% static 'js/garden-participate.js' %}" defer></script>
 {% endblock head %}
 {% block content %}
-    {% url "web:lab-studies-list" lab_slug="garden" as garden_url %}
     {% include "web/garden/_navigation.html" %}
     {% trans "How to Participate" as trans_participate_title %}
     {% page_title trans_participate_title %}
@@ -146,7 +145,7 @@
                             <h4>
                                 <ol start="4" class="my-0 my-lg-2">
                                     <li>
-                                        Visit the Project GARDEN <a id="garden-studies-link" href="{{ base_url }}{{ garden_url }}">Studies Page</a>
+                                        Visit the Project GARDEN <a id="garden-studies-link" href="{% absolute_url "web:lab-studies-list" lab_slug="garden" %}">Studies Page</a>
                                     </li>
                                 </ol>
                             </h4>

@@ -1,6 +1,7 @@
+{% load web_extras %}
 <p>Dear Study Researchers,</p>
 <p>
-    The experiment runner for your study, <a href="{{ base_url }}{% url 'exp:study' pk=study_id %}">{{ study_name }}</a>,
+    The experiment runner for your study, <a href="{% absolute_url 'exp:study' pk=study_id %}">{{ study_name }}</a>,
     has failed to build.
 </p>
 <p>It failed during the {{ failure_stage }} stage. Logs are provided below to help with troubleshooting.</p>

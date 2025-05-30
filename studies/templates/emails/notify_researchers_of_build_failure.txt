@@ -1,6 +1,7 @@
+{% load web_extras %}
 Dear Study Researchers,
 
-    The experiment runner for your study, {{ study_name }} ({{base_url}}{% url 'exp:study' pk=study_id %}),
+    The experiment runner for your study, {{ study_name }} ({% absolute_url 'exp:study' pk=study_id %}),
     has failed to build.
 
     It failed during the {{ failure_stage }} stage. Logs are provided below to help with troubleshooting.

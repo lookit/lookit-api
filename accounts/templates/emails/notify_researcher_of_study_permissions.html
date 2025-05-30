@@ -1,7 +1,8 @@
+{% load web_extras %}
 <p>Dear {{ researcher_name }},</p>
 <p>You have been given {{ permission }} permissions to collaborate on {{ study_name }}.</p>
 <p>
-    Here is a link to <a href="{{ base_url }}{% url 'exp:study' study_id %}">start collaborating</a>.
+    Here is a link to <a href="{% absolute_url 'exp:study' study_id %}">start collaborating</a>.
 </p>
 <p>
     Best,

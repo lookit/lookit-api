@@ -29,6 +29,7 @@ from studies import workflow
 from studies.helpers import (
     FrameActionDispatcher,
     ResponseEligibility,
+    get_absolute_url,
     get_eligibility_for_response,
     send_mail,
 )
@@ -281,7 +282,7 @@ def default_study_structure():
 
 
 def default_exit_url():
-    return f"{settings.BASE_URL}{reverse('web:studies-history')}"
+    return get_absolute_url(reverse("web:studies-history"))
 
 
 class Study(models.Model):

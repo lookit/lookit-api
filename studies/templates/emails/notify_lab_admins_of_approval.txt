@@ -1,8 +1,9 @@
+{% load web_extras %}
 Dear {{ lab_name }} Admin,
 
 Your lab, {{ lab_name }}, has been approved to begin using Lookit for data collection.
 
-You can view your lab here: {{ base_url }}{% url 'exp:lab-detail' pk=lab_id %}
+You can view your lab here: {% absolute_url 'exp:lab-detail' pk=lab_id %}
 
 Best,
 Lookit Admin
