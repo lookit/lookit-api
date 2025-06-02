@@ -2,31 +2,32 @@ import uuid
 
 from bs4 import BeautifulSoup
 from django.template.loader import render_to_string
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django_dynamic_fixture import G
 from parameterized import parameterized
 
 from accounts.models import User
 from studies.models import Study, StudyType
 
+fake_website = "https://fakeweb.site/"
 
-class TestEmailTemplates(TestCase):
+
+@override_settings(BASE_URL=fake_website)
+class EmailTemplatesTestCase(TestCase):
     def test_notify_researcher_of_lab_permissions_html_lab_url(self):
         context = {"lab_id": 4321}
         html = render_to_string(
             "emails/notify_researcher_of_lab_permissions.html", context
         )
         bs = BeautifulSoup(html, "html.parser")
-        self.assertEqual(bs.a["href"], "https://localhost:8000/exp/labs/4321/")
+        self.assertEqual(bs.a["href"], f"{fake_website}exp/labs/4321/")
 
     def test_notify_researcher_of_lab_permissions_txt_lab_url(self):
         context = {"lab_id": 4321}
         txt = render_to_string(
             "emails/notify_researcher_of_lab_permissions.txt", context
         )
-        self.assertIn(
-            "Here is a link to this lab: https://localhost:8000/exp/labs/4321/.", txt
-        )
+        self.assertIn(f"Here is a link to this lab: {fake_website}exp/labs/4321/.", txt)
 
     def test_notify_researcher_of_study_permissions_html_study_url(self):
         context = {"study_id": 4321}
@@ -34,7 +35,7 @@ class TestEmailTemplates(TestCase):
             "emails/notify_researcher_of_study_permissions.html", context
         )
         bs = BeautifulSoup(html, "html.parser")
-        self.assertEqual(bs.a["href"], "https://localhost:8000/exp/studies/4321/")
+        self.assertEqual(bs.a["href"], f"{fake_website}exp/studies/4321/")
 
     def test_notify_researcher_of_study_permissions_txt_study_url(self):
         context = {"study_id": 4321}
@@ -42,7 +43,7 @@ class TestEmailTemplates(TestCase):
             "emails/notify_researcher_of_study_permissions.txt", context
         )
         self.assertIn(
-            "Here is a link to start collaborating: https://localhost:8000/exp/studies/4321/.",
+            f"Here is a link to start collaborating: {fake_website}exp/studies/4321/.",
             txt,
         )
 
@@ -56,10 +57,10 @@ class TestEmailTemplates(TestCase):
         # Double check that we didn't populate token with an empty value.
         self.assertTrue(context["token"])
         self.assertEqual(len(links), 3)
-        self.assertEqual(links[0]["href"], "https://localhost:8000/account/email/")
+        self.assertEqual(links[0]["href"], f"{fake_website}account/email/")
         self.assertEqual(
             links[1]["href"],
-            f"https://localhost:8000/account/fake@email.com/{context['token']}/",
+            f"{fake_website}account/fake@email.com/{context['token']}/",
         )
         self.assertEqual(
             links[2]["href"],
@@ -72,11 +73,11 @@ class TestEmailTemplates(TestCase):
         txt = render_to_string("emails/base.txt", context)
         self.assertTrue(context["token"])
         self.assertIn(
-            f"Unsubscribe from all CHS emails: https://localhost:8000/account/fake@email.com/{context['token']}/\n",
+            f"Unsubscribe from all CHS emails: {fake_website}account/fake@email.com/{context['token']}/\n",
             txt,
         )
         self.assertIn(
-            "Update your CHS email preferences here: https://localhost:8000/account/email/\n",
+            f"Update your CHS email preferences here: {fake_website}account/email/\n",
             txt,
         )
 
@@ -84,13 +85,13 @@ class TestEmailTemplates(TestCase):
         context = {"lab_id": 4321}
         html = render_to_string("emails/notify_admins_of_lab_creation.html", context)
         bs = BeautifulSoup(html, "html.parser")
-        self.assertEqual(bs.a["href"], "https://localhost:8000/exp/labs/4321/edit/")
+        self.assertEqual(bs.a["href"], f"{fake_website}exp/labs/4321/edit/")
 
     def test_notify_admins_of_lab_creation_txt_url(self):
         context = {"lab_id": 4321}
         txt = render_to_string("emails/notify_admins_of_lab_creation.txt", context)
         self.assertIn(
-            "You can approve the lab here: https://localhost:8000/exp/labs/4321/edit/\n",
+            f"You can approve the lab here: {fake_website}exp/labs/4321/edit/\n",
             txt,
         )
 
@@ -99,25 +100,25 @@ class TestEmailTemplates(TestCase):
         context = {"study_id": 4321, "action": action}
         html = render_to_string("emails/notify_admins_of_study_action.html", context)
         bs = BeautifulSoup(html, "html.parser")
-        self.assertEqual(bs.a["href"], "https://localhost:8000/exp/studies/4321/")
+        self.assertEqual(bs.a["href"], f"{fake_website}exp/studies/4321/")
 
     @parameterized.expand(["submitted", "active", "paused", "deactivated"])
     def test_notify_admins_of_study_action_txt_url(self, action):
         context = {"study_id": 4321, "action": action}
         txt = render_to_string("emails/notify_admins_of_study_action.txt", context)
-        self.assertIn(" https://localhost:8000/exp/studies/4321/\n", txt)
+        self.assertIn(f" {fake_website}exp/studies/4321/\n", txt)
 
     def test_notify_lab_admins_of_approval_html_url(self):
         context = {"lab_id": 4321}
         html = render_to_string("emails/notify_lab_admins_of_approval.html", context)
         bs = BeautifulSoup(html, "html.parser")
-        self.assertEqual(bs.a["href"], "https://localhost:8000/exp/labs/4321/")
+        self.assertEqual(bs.a["href"], f"{fake_website}exp/labs/4321/")
 
     def test_notify_lab_admins_of_approval_txt_url(self):
         context = {"lab_id": 4321}
         txt = render_to_string("emails/notify_lab_admins_of_approval.txt", context)
         self.assertIn(
-            "You can view your lab here: https://localhost:8000/exp/labs/4321/\n", txt
+            f"You can view your lab here: {fake_website}exp/labs/4321/\n", txt
         )
 
     def test_notify_admins_of_request_to_join_html_url(self):
@@ -126,7 +127,7 @@ class TestEmailTemplates(TestCase):
             "emails/notify_lab_admins_of_request_to_join.html", context
         )
         bs = BeautifulSoup(html, "html.parser")
-        self.assertEqual(bs.a["href"], "https://localhost:8000/exp/labs/4321/members/")
+        self.assertEqual(bs.a["href"], f"{fake_website}exp/labs/4321/members/")
 
     def test_notify_admins_of_request_to_join_txt_url(self):
         context = {"lab_pk": 4321}
@@ -134,7 +135,7 @@ class TestEmailTemplates(TestCase):
             "emails/notify_lab_admins_of_request_to_join.txt", context
         )
         self.assertIn(
-            "You can approve the request and set their permissions here: https://localhost:8000/exp/labs/4321/members/\n",
+            f"You can approve the request and set their permissions here: {fake_website}exp/labs/4321/members/\n",
             txt,
         )
 
@@ -144,7 +145,7 @@ class TestEmailTemplates(TestCase):
             "emails/notify_researchers_of_approval_decision.html", context
         )
         bs = BeautifulSoup(html, "html.parser")
-        self.assertEqual(bs.a["href"], "https://localhost:8000/exp/studies/4321/")
+        self.assertEqual(bs.a["href"], f"{fake_website}exp/studies/4321/")
 
     def test_notify_researchers_of_approval_decision_txt_url(self):
         context = {"study_id": 4321}
@@ -152,7 +153,7 @@ class TestEmailTemplates(TestCase):
             "emails/notify_researchers_of_approval_decision.txt", context
         )
         self.assertIn(
-            "Your study can be found here: https://localhost:8000/exp/studies/4321/\n",
+            f"Your study can be found here: {fake_website}exp/studies/4321/\n",
             txt,
         )
 
@@ -162,7 +163,7 @@ class TestEmailTemplates(TestCase):
             "emails/notify_researchers_of_build_failure.html", context
         )
         bs = BeautifulSoup(html, "html.parser")
-        self.assertEqual(bs.a["href"], "https://localhost:8000/exp/studies/4321/")
+        self.assertEqual(bs.a["href"], f"{fake_website}exp/studies/4321/")
 
     def test_notify_researchers_of_build_failure_txt_url(self):
         context = {"study_id": 4321, "study_name": "Some Study Name"}
@@ -170,7 +171,7 @@ class TestEmailTemplates(TestCase):
             "emails/notify_researchers_of_build_failure.txt", context
         )
         self.assertIn(
-            "The experiment runner for your study, Some Study Name (https://localhost:8000/exp/studies/4321/),",
+            f"The experiment runner for your study, Some Study Name ({fake_website}exp/studies/4321/),",
             txt,
         )
 
@@ -180,14 +181,14 @@ class TestEmailTemplates(TestCase):
         bs = BeautifulSoup(html, "html.parser")
         links = list(bs.findAll("a"))
         self.assertEqual(len(links), 3)
-        self.assertEqual(links[0]["href"], "https://localhost:8000/exp/studies/4321/")
+        self.assertEqual(links[0]["href"], f"{fake_website}exp/studies/4321/")
         self.assertEqual(
             links[1]["href"],
-            f"https://localhost:8000/exp/studies/{context['study_uuid']}/preview-detail/",
+            f"{fake_website}exp/studies/{context['study_uuid']}/preview-detail/",
         )
         self.assertEqual(
             links[2]["href"],
-            f"https://localhost:8000/studies/{context['study_uuid']}/",
+            f"{fake_website}studies/{context['study_uuid']}/",
         )
 
     def test_notify_researchers_of_deployment_txt_url(self):
@@ -198,11 +199,11 @@ class TestEmailTemplates(TestCase):
         }
         txt = render_to_string("emails/notify_researchers_of_deployment.txt", context)
         self.assertIn(
-            "An experiment runner has been built for Some Study Name (https://localhost:8000/exp/studies/4321/).",
+            f"An experiment runner has been built for Some Study Name ({fake_website}exp/studies/4321/).",
             txt,
         )
         self.assertIn(
-            f"This study can now be previewed here: https://localhost:8000/exp/studies/{context['study_uuid']}/preview-detail/",
+            f"This study can now be previewed here: {fake_website}exp/studies/{context['study_uuid']}/preview-detail/",
             txt,
         )
 
@@ -221,12 +222,8 @@ class TestEmailTemplates(TestCase):
         # There are more links due to this template extending the base template
         self.assertEqual(len(links), 5)
 
-        self.assertEqual(
-            links[0]["href"], f"https://localhost:8000/studies/{study.uuid}/"
-        )
-        self.assertEqual(
-            links[1]["href"], f"https://localhost:8000/studies/{study.uuid}/"
-        )
+        self.assertEqual(links[0]["href"], f"{fake_website}studies/{study.uuid}/")
+        self.assertEqual(links[1]["href"], f"{fake_website}studies/{study.uuid}/")
 
     def test_study_announcement_txt_url(self):
         study = G(Study, study_type=StudyType.get_ember_frame_player())
@@ -238,6 +235,6 @@ class TestEmailTemplates(TestCase):
         }
         txt = render_to_string("emails/study_announcement.txt", context)
         self.assertIn(
-            f'by going to "{study.name}" (https://localhost:8000/studies/{study.uuid}/).',
+            f'by going to "{study.name}" ({fake_website}studies/{study.uuid}/).',
             txt,
         )

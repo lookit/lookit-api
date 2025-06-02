@@ -19,6 +19,7 @@ from accounts.models import Child, Message, User
 from studies.helpers import (
     ResponseEligibility,
     get_absolute_url,
+    get_experiment_absolute_url,
     send_mail,
 )
 from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum, Video
@@ -2086,18 +2087,29 @@ class TestCleanupIncompleteVideoUploadsTask(TestCase):
         mock_logger.debug.assert_any_call("Cleaning up incomplete video uploads...")
 
 
+fake_website = "https://fakedomain.asdf/"
+exp_fake_website = "https://experimentfakedomain.asdf/"
+
+
+@override_settings(BASE_URL=fake_website)
+@override_settings(EXPERIMENT_BASE_URL=exp_fake_website)
 class TestGetAbsoluteURLTestCase(TestCase):
-    @override_settings(BASE_URL="https://fakedomain.asdf/")
     def test_get_absolute_url(self):
+        self.assertTrue(get_absolute_url("/somepath/"), f"{fake_website}somepath/")
+        self.assertTrue(get_absolute_url("somepath/"), f"{fake_website}somepath/")
+        self.assertTrue(get_absolute_url("/somepath"), f"{fake_website}somepath")
+        self.assertTrue(get_absolute_url("somepath"), f"{fake_website}somepath")
+
+    def test_get_experiment_absolute_url(self):
         self.assertTrue(
-            get_absolute_url("/somepath/"), "https://fakedomain.asdf/somepath/"
+            get_experiment_absolute_url("/somepath/"), f"{exp_fake_website}somepath/"
         )
         self.assertTrue(
-            get_absolute_url("somepath/"), "https://fakedomain.asdf/somepath/"
+            get_experiment_absolute_url("somepath/"), f"{exp_fake_website}somepath/"
         )
         self.assertTrue(
-            get_absolute_url("/somepath"), "https://fakedomain.asdf/somepath"
+            get_experiment_absolute_url("/somepath"), f"{exp_fake_website}somepath"
         )
         self.assertTrue(
-            get_absolute_url("somepath"), "https://fakedomain.asdf/somepath"
+            get_experiment_absolute_url("somepath"), f"{exp_fake_website}somepath"
         )

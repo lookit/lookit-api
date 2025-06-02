@@ -5,6 +5,7 @@ import re
 from email.mime.image import MIMEImage
 from urllib.parse import urljoin
 
+from django.conf import settings
 from django.core.mail.message import EmailMultiAlternatives
 from django.db import models
 from django.template.loader import get_template
@@ -14,9 +15,7 @@ from accounts.queries import (
     get_child_eligibility,
     get_child_participation_eligibility,
 )
-from project import settings
 from project.celery import app
-from project.settings import EMAIL_FROM_ADDRESS
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +72,7 @@ def send_mail(
     if not isinstance(to_addresses, list):
         to_addresses = [to_addresses]
 
-    from_address = EMAIL_FROM_ADDRESS
+    from_address = settings.EMAIL_FROM_ADDRESS
 
     email = EmailMultiAlternatives(
         subject,
