@@ -38,7 +38,6 @@ logger.setLevel(logging.DEBUG)
 
 S3_RESOURCE = boto3.resource("s3")
 
-DOCKER_CLIENT = docker.from_env()
 
 # setup a stream handler for capturing logs for db logging
 log_buffer = StringIO()
@@ -315,13 +314,15 @@ def cleanup_checkouts(older_than=None):
 @app.task
 def cleanup_docker_images():
     logger.debug("Cleaning up docker images...")
-    DOCKER_CLIENT.images.prune(filters={"dangling": True})
+    docker_client = docker.from_env()
+    docker_client.images.prune(filters={"dangling": True})
 
 
 @app.task
 def cleanup_docker_containers():
     logger.debug("Cleaning up docker containers...")
-    DOCKER_CLIENT.containers.prune()
+    docker_client = docker.from_env()
+    docker_client.containers.prune()
 
 
 @app.task(bind=True, max_retries=10, retry_backoff=10)
