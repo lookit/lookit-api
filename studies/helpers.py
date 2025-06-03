@@ -3,7 +3,9 @@ import copy
 import logging
 import re
 from email.mime.image import MIMEImage
+from urllib.parse import urljoin
 
+from django.conf import settings
 from django.core.mail.message import EmailMultiAlternatives
 from django.db import models
 from django.template.loader import get_template
@@ -14,9 +16,16 @@ from accounts.queries import (
     get_child_participation_eligibility,
 )
 from project.celery import app
-from project.settings import BASE_URL, EMAIL_FROM_ADDRESS
 
 logger = logging.getLogger(__name__)
+
+
+def get_absolute_url(path=""):
+    return urljoin(settings.BASE_URL, path)
+
+
+def get_experiment_absolute_url(path):
+    return urljoin(settings.EXPERIMENT_BASE_URL, path)
 
 
 @app.task
@@ -44,8 +53,6 @@ def send_mail(
     :param str custom_message Custom email message - for use instead of a template
     :kwargs: Context vars for the email template
     """
-    context["base_url"] = BASE_URL[-1] == "/" and BASE_URL[:-1] or BASE_URL
-
     # For text version: replace images with [IMAGE] so they're not removed entirely
     context_plain_text = copy.deepcopy(context)
     # TODO: use a custom filter rather than striptags to preserve image placeholders in the
@@ -65,7 +72,7 @@ def send_mail(
     if not isinstance(to_addresses, list):
         to_addresses = [to_addresses]
 
-    from_address = EMAIL_FROM_ADDRESS
+    from_address = settings.EMAIL_FROM_ADDRESS
 
     email = EmailMultiAlternatives(
         subject,

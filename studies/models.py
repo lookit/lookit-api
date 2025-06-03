@@ -1,6 +1,6 @@
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 
 import boto3
@@ -15,7 +15,7 @@ from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.shortcuts import reverse
-from django.utils import timezone
+from django.utils import timezone as dutimezone
 from django.utils.translation import gettext as _
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from guardian.shortcuts import get_users_with_perms
@@ -29,6 +29,7 @@ from studies import workflow
 from studies.helpers import (
     FrameActionDispatcher,
     ResponseEligibility,
+    get_absolute_url,
     get_eligibility_for_response,
     send_mail,
 )
@@ -281,7 +282,7 @@ def default_study_structure():
 
 
 def default_exit_url():
-    return f"{settings.BASE_URL}{reverse('web:studies-history')}"
+    return get_absolute_url(reverse("web:studies-history"))
 
 
 class Study(models.Model):
@@ -607,7 +608,7 @@ class Study(models.Model):
     @property
     def days_submitted(self):
         if self.status_change_date:
-            return (timezone.now() - self.status_change_date).days
+            return (dutimezone.now() - self.status_change_date).days
 
     @property
     def approved_by(self):
@@ -829,7 +830,7 @@ class Study(models.Model):
 
     # Runs for every transition to save state and log action
     def _finalize_state_change(self, ev):
-        ev.model.status_change_date = timezone.now()
+        ev.model.status_change_date = dutimezone.now()
         ev.model.save()
         self._log_action(ev)
 

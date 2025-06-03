@@ -1,5 +1,5 @@
-{% block content %}{% endblock content %}
+{% load web_extras %}{% block content %}{% endblock content %}
 
-Update your CHS email preferences here: {{ base_url }}{% url 'web:email-preferences' %}
-Unsubscribe from all CHS emails: {{ base_url }}{% url 'web:email-unsubscribe-link' username=username token=token %}
+Update your CHS email preferences here: {% absolute_url 'web:email-preferences' %}
+Unsubscribe from all CHS emails: {% absolute_url 'web:email-unsubscribe-link' username=username token=token %}
 Questions or feedback for Children Helping Science?: childrenhelpingscience@gmail.com
