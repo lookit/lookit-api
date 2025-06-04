@@ -1,6 +1,0 @@
-id,env_id,region,"datetime (UTC)",recovered,name,original_container,length,orig_size,orig_width,orig_height,payload
-4257755,3,us1,"2019-08-12 19:40:53",0,eF6bbQ57wdGsJkYTwK4wCqvNeqGAP32s,webm,3.98,690058,960,720,videoStream_2c3b8103-efef-437b-8b95-c0ad5ea5e69e_1-video-consent_5617cff3-9d95-4e52-8a0a-c25a941ab525_1565638844143_29
-4257767,3,us1,"2019-08-12 19:43:23",0,5YqRuozeov7prxq1y7fBf62rIwnacGYp,webm,121.67,20122874,960,720,videoStream_2c3b8103-efef-437b-8b95-c0ad5ea5e69e_8-pref-phys-videos_5617cff3-9d95-4e52-8a0a-c25a941ab525_1565638880542_787
-4257770,3,us1,"2019-08-12 19:44:02",0,brdhpVSSaqe2NAGVkSqgkvbPEBGBMODy,webm,37.05,6281193,960,720,videoStream_2c3b8103-efef-437b-8b95-c0ad5ea5e69e_9-pref-phys-videos_5617cff3-9d95-4e52-8a0a-c25a941ab525_1565639003668_891
-4270581,2,us1,"2019-08-13 22:55:20",0,xxDcCHRPhFWwyDTTJuqUkHlxJY254lr1,webm,12.62,348034,640,480,videoStream_1e9157cd-b898-4098-9429-a599720d0c0a_1-video-consent_77e2ff44-6454-4387-a610-d7fca726f716_1565736838054_188
-4270598,2,us1,"2019-08-13 22:58:19",0,5aLxjDYcNDH7kdFGi6M4XhDdqGvMzQpf,webm,42.83,1208264,640,480,videoStream_1e9157cd-b898-4098-9429-a599720d0c0a_5-story-intro-2_77e2ff44-6454-4387-a610-d7fca726f716_1565737054099_27
