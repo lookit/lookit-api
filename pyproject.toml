@@ -27,7 +27,7 @@ dependencies = [
     "djangorestframework==3.16.0",
     "djangorestframework-jsonapi==7.1.0",
     "docker==7.1.0",
-    "drf-nested-routers==0.94.1",
+    "drf-nested-routers==0.94.2",
     "fleep==1.0.1",
     "gevent==25.4.2",
     "google-cloud-storage==3.1.0",
