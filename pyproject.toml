@@ -39,7 +39,7 @@ dependencies = [
     "pyotp==2.9.0",
     "python-dateutil==2.9.0.post0",
     "qrcode==8.1",
-    "requests==2.32.3",
+    "requests==2.32.4",
     "sendgrid-django==4.2.0",
     "sentry-sdk==2.27.0",
     "transitions==0.9.2",
