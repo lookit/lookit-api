@@ -1,7 +1,10 @@
 import hashlib
+import os
+import shutil
 import urllib.request
 import zipfile
 from pathlib import Path
+from urllib.parse import urlparse
 
 import sass
 from django.core.management.base import BaseCommand, CommandError
@@ -25,36 +28,41 @@ class Command(BaseCommand):
         js_url = get_bootstrap_setting("javascript_url").get("url")
         bs5_version = js_url.split("/")[4].split("@")[1]
 
-        # download BS5 scss from https://getbootstrap.com/docs/5.2/getting-started/download/
-        bs5_url = f"https://github.com/twbs/bootstrap/archive/v{bs5_version}.zip"
-        bs5_filename = bs5_url.split("/")[-1]
+        # download BS5 scss
+        bs5_url = urlparse(
+            f"https://github.com/twbs/bootstrap/archive/v{bs5_version}.zip"
+        )
+
+        bs5_filename = os.path.basename(bs5_url.path)
 
         # the known root directory of the BS5 archive zip file
-        zip_root_dir = Path("bootstrap-5.2.0")
+        zip_root_dir = Path(f"bootstrap-{bs5_version}")
 
         # get the hash of the exisiting compiled css file
         css_hash = self.get_css_hash()
 
-        # when the root directory doesn't exists, download and extract file
+        # download and extract file
+        print(f"Downloading bootstrap v{bs5_version}.")
+        urllib.request.urlretrieve(bs5_url.geturl(), bs5_filename)
+
+        print("Unzip bootstrap file.")
+        with zipfile.ZipFile(bs5_filename) as zip_ref:
+            zip_ref.extractall("./")
+
+        print("Remove downloaded compressed file.")
+        Path(bs5_filename).unlink()
+
         if not zip_root_dir.exists():
-            print(f"Downloading bootstrap v{bs5_version}....")
-            urllib.request.urlretrieve(bs5_url, bs5_filename)
+            raise CommandError(
+                f'Expected directory "{zip_root_dir}" was not found after unzip.'
+            )
 
-            print("Unzip bootstrap file...")
-            with zipfile.ZipFile(bs5_filename) as zip_ref:
-                zip_ref.extractall("./")
-
-            print("Remove downloaded compressed file...")
-            Path(bs5_filename).unlink()
-
-            if not zip_root_dir.exists():
-                raise CommandError(
-                    f'Expected directory "{zip_root_dir}" was not found after unzip.'
-                )
-
-        print("Compile sass to css...")
+        print("Compile sass to css.")
         with open(self.output_css, "w") as fp:
             fp.write(sass.compile(filename="scss/base.scss"))
+
+        print("Remove bootstrap directory.")
+        shutil.rmtree(zip_root_dir)
 
         if self.get_css_hash() != css_hash:
             raise CommandError("The custom bootstrap 5 css file has been updated.")
