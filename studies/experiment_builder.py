@@ -16,8 +16,6 @@ from django.core.files import File
 from project import storages
 from studies.helpers import send_mail
 
-DOCKER_CLIENT = docker.from_env()
-
 logger = logging.getLogger(__name__)
 
 
@@ -193,7 +191,8 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
             self.build_context["update_fields"] += ["metadata"]
 
     def build_docker_image(self):
-        image, _image_log_gen = DOCKER_CLIENT.images.build(
+        docker_client = docker.from_env()
+        image, _image_log_gen = docker_client.images.build(
             path=settings.EMBER_BUILD_ROOT_PATH,
             pull=True,
             tag="ember_build",
@@ -222,7 +221,8 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
         )
 
     def run_docker_container(self, container_paths, study_uuid, local_paths):
-        stdout_and_stderr = DOCKER_CLIENT.containers.run(
+        docker_client = docker.from_env()
+        stdout_and_stderr = docker_client.containers.run(
             "ember_build",
             command="bash build.sh",
             auto_remove=True,
