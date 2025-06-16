@@ -377,9 +377,13 @@ def build_zipfile_of_videos(
                 for video in video_qs:
                     temporary_file_path = os.path.join(temp_directory, video.full_name)
                     file_response = requests.get(video.view_url, stream=True)
+                    logger.info(f"Downloading {video.full_name}")
                     with open(temporary_file_path, mode="w+b") as local_file:
                         for chunk in file_response.iter_content(8192):
                             local_file.write(chunk)
+                    logger.info(
+                        f"Download complete ({os.path.getsize(temporary_file_path)}B) {video.full_name}"
+                    )
                     zf.write(temporary_file_path, video.full_name)
                     os.remove(temporary_file_path)
 
