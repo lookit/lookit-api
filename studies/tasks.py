@@ -395,12 +395,12 @@ def build_zipfile_of_videos(
         int(time.time() + datetime.timedelta(minutes=30).seconds)
     )
     # send an email with the signed url and return
-    email_context = dict(
-        signed_url=signed_url,
-        user=requesting_user,
-        videos=video_qs,
-        zip_filename=zip_filename,
-    )
+    email_context = {
+        "signed_url": signed_url,
+        "user": requesting_user,
+        "videos": video_qs,
+        "zip_filename": zip_filename,
+    }
     send_mail(
         "download_zip",
         "Your video archive has been created",
@@ -472,9 +472,11 @@ def build_framedata_dict(filename, study_uuid, requesting_user_uuid):
     # then send the email with a 24h link
     signed_url = gs_blob.generate_signed_url(datetime.timedelta(hours=24))
     # send an email with the signed url and return
-    email_context = dict(
-        signed_url=signed_url, user=requesting_user, csv_filename=csv_filename
-    )
+    email_context = {
+        "signed_url": signed_url,
+        "user": requesting_user,
+        "csv_filename": csv_filename,
+    }
     send_mail(
         "download_framedata_dict",
         "Your frame data dictionary has been created",
