@@ -330,6 +330,7 @@ def build_zipfile_of_videos(
     self, filename, study_uuid, match, requesting_user_uuid, consent_only=False
 ):
     import getpass
+    import os
     import socket
 
     from accounts.models import User
@@ -337,6 +338,7 @@ def build_zipfile_of_videos(
 
     logging.info(f"Hostname {socket.gethostname()}")
     logging.info(f"User {getpass.getuser()}")
+    logging.info(f"Current directory {os.getcwd()}")
 
     study = Study.objects.get(uuid=study_uuid)
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
