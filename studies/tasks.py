@@ -329,8 +329,12 @@ def cleanup_docker_containers():
 def build_zipfile_of_videos(
     self, filename, study_uuid, match, requesting_user_uuid, consent_only=False
 ):
+    import socket
+
     from accounts.models import User
     from studies.models import Study
+
+    logging.info(f"Hostname {socket.gethostname()}")
 
     study = Study.objects.get(uuid=study_uuid)
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
