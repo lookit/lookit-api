@@ -329,8 +329,16 @@ def cleanup_docker_containers():
 def build_zipfile_of_videos(
     self, filename, study_uuid, match, requesting_user_uuid, consent_only=False
 ):
+    import getpass
+    import os
+    import socket
+
     from accounts.models import User
     from studies.models import Study
+
+    logging.info(f"Hostname {socket.gethostname()}")
+    logging.info(f"User {getpass.getuser()}")
+    logging.info(f"Current directory {os.getcwd()}")
 
     study = Study.objects.get(uuid=study_uuid)
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
@@ -371,15 +379,19 @@ def build_zipfile_of_videos(
     # if the file exists short circuit and send the email with a 30m link
     if not gs_blob.exists():
         # if it doesn't exist build the zipfile
-        with tempfile.TemporaryDirectory() as temp_directory:
+        with tempfile.TemporaryDirectory(dir="/code/scratch") as temp_directory:
             zip_file_path = os.path.join(temp_directory, zip_filename)
             with zipfile.ZipFile(zip_file_path, "w") as zf:
                 for video in video_qs:
                     temporary_file_path = os.path.join(temp_directory, video.full_name)
                     file_response = requests.get(video.view_url, stream=True)
+                    logger.info(f"Downloading {video.full_name}")
                     with open(temporary_file_path, mode="w+b") as local_file:
                         for chunk in file_response.iter_content(8192):
                             local_file.write(chunk)
+                    logger.info(
+                        f"Download complete ({os.path.getsize(temporary_file_path)}B) {video.full_name}"
+                    )
                     zf.write(temporary_file_path, video.full_name)
                     os.remove(temporary_file_path)
 
@@ -391,12 +403,12 @@ def build_zipfile_of_videos(
         int(time.time() + datetime.timedelta(minutes=30).seconds)
     )
     # send an email with the signed url and return
-    email_context = dict(
-        signed_url=signed_url,
-        user=requesting_user,
-        videos=video_qs,
-        zip_filename=zip_filename,
-    )
+    email_context = {
+        "signed_url": signed_url,
+        "user": requesting_user,
+        "videos": video_qs,
+        "zip_filename": zip_filename,
+    }
     send_mail(
         "download_zip",
         "Your video archive has been created",
@@ -468,9 +480,11 @@ def build_framedata_dict(filename, study_uuid, requesting_user_uuid):
     # then send the email with a 24h link
     signed_url = gs_blob.generate_signed_url(datetime.timedelta(hours=24))
     # send an email with the signed url and return
-    email_context = dict(
-        signed_url=signed_url, user=requesting_user, csv_filename=csv_filename
-    )
+    email_context = {
+        "signed_url": signed_url,
+        "user": requesting_user,
+        "csv_filename": csv_filename,
+    }
     send_mail(
         "download_framedata_dict",
         "Your frame data dictionary has been created",
