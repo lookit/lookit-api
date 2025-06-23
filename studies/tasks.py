@@ -329,12 +329,14 @@ def cleanup_docker_containers():
 def build_zipfile_of_videos(
     self, filename, study_uuid, match, requesting_user_uuid, consent_only=False
 ):
+    import getpass
     import socket
 
     from accounts.models import User
     from studies.models import Study
 
     logging.info(f"Hostname {socket.gethostname()}")
+    logging.info(f"User {getpass.getuser()}")
 
     study = Study.objects.get(uuid=study_uuid)
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
@@ -375,7 +377,7 @@ def build_zipfile_of_videos(
     # if the file exists short circuit and send the email with a 30m link
     if not gs_blob.exists():
         # if it doesn't exist build the zipfile
-        with tempfile.TemporaryDirectory(dir="/code/scratch/") as temp_directory:
+        with tempfile.TemporaryDirectory(dir="/code/scratch") as temp_directory:
             zip_file_path = os.path.join(temp_directory, zip_filename)
             with zipfile.ZipFile(zip_file_path, "w") as zf:
                 for video in video_qs:
