@@ -93,8 +93,9 @@ def google_tag_manager() -> Text:
     )
 
 
-@register.simple_tag
+@register.simple_tag(takes_context=True)
 def nav_link(
+    context,
     request,
     url_name,
     text,
@@ -117,6 +118,7 @@ def nav_link(
     Returns:
         SafeText: HTML of navigation item
     """
+    request = context["request"]
     if html_classes is None:
         html_classes = [
             "nav-link",
@@ -135,9 +137,22 @@ def nav_link(
         aria_current = ' aria-current="page"'
     if queryString:
         url = url + queryString
-    nav_a_tag = (
-        f'<a class="{" ".join(html_classes)}"{aria_current} href="{url}">{text}</a>'
-    )
+    if url == "/logout/":
+        # As of Django 4.1, logout must be a POST
+        csrf_token = context.get("csrf_token", "")
+        csrf_input = (
+            f'<input type="hidden" name="csrfmiddlewaretoken" value="{csrf_token}">'
+            if csrf_token and csrf_token != "NOTPROVIDED"
+            else ""
+        )
+        nav_a_tag = f'''<form class="d-inline" id="logout-form" action="{url}" method="post">
+                {csrf_input}
+                <button type="submit" class="{" ".join(html_classes)}"{aria_current}>{text}</button>
+            </form>'''
+    else:
+        nav_a_tag = (
+            f'<a class="{" ".join(html_classes)}"{aria_current} href="{url}">{text}</a>'
+        )
 
     if list:
         return mark_safe(f'<li class="nav-item">{nav_a_tag}</li>')
@@ -145,9 +160,9 @@ def nav_link(
         return mark_safe(nav_a_tag)
 
 
-@register.simple_tag
-def dropdown_item(request, url_name, text):
-    return nav_link(request, url_name, text, ["dropdown-item"])
+@register.simple_tag(takes_context=True)
+def dropdown_item(context, request, url_name, text):
+    return nav_link(context, request, url_name, text, ["dropdown-item"])
 
 
 @register.simple_tag
