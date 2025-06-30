@@ -118,7 +118,6 @@ def nav_link(
     Returns:
         SafeText: HTML of navigation item
     """
-    request = context["request"]
     if html_classes is None:
         html_classes = [
             "nav-link",
