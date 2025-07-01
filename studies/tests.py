@@ -1563,6 +1563,10 @@ class ResponseEligibilityTestCase(TestCase):
 
 
 class TestListIncompleteVideoUploads(TestCase):
+    def setUp(self):
+        self.bucket_var_name = "S3_BUCKET_NAME"
+        self.bucket_name = "pipedeathstaging"
+
     # Patch the S3_CLIENT directly (instead of boto3) because it has already been created globally in the module
     @patch("studies.tasks.S3_CLIENT")
     def test_with_valid_s3_response(self, mock_s3_client):
@@ -1578,7 +1582,7 @@ class TestListIncompleteVideoUploads(TestCase):
             ]
         }
 
-        result = get_all_incomplete_video_files()
+        result = get_all_incomplete_video_files(self.bucket_name)
 
         # Assert that list_multipart_uploads mock was called
         mock_s3_client.list_multipart_uploads.assert_called_once()
@@ -1621,7 +1625,7 @@ class TestListIncompleteVideoUploads(TestCase):
             ]
         }
 
-        result = get_all_incomplete_video_files()
+        result = get_all_incomplete_video_files(self.bucket_name)
 
         mock_s3_client.list_multipart_uploads.assert_called_once()
         # Only uploads that were created more than 24 hrs ago are returned
@@ -1644,7 +1648,7 @@ class TestListIncompleteVideoUploads(TestCase):
 
         # Test that an error is raised
         with self.assertRaises(ValueError):
-            get_all_incomplete_video_files()
+            get_all_incomplete_video_files(self.bucket_name)
 
     @patch("studies.tasks.S3_CLIENT")
     def test_no_uploads_key_in_s3_response(self, mock_s3_client):
@@ -1652,7 +1656,7 @@ class TestListIncompleteVideoUploads(TestCase):
 
         mock_s3_client.list_multipart_uploads.return_value = {"SomeOtherKey": "Value"}
 
-        result = get_all_incomplete_video_files()
+        result = get_all_incomplete_video_files(self.bucket_name)
 
         mock_s3_client.list_multipart_uploads.assert_called_once()
         # get_all_incomplete_video_files should return an empty array
@@ -1664,7 +1668,7 @@ class TestListIncompleteVideoUploads(TestCase):
 
         mock_s3_client.list_multipart_uploads.return_value = {"Uploads": []}
 
-        result = get_all_incomplete_video_files()
+        result = get_all_incomplete_video_files(self.bucket_name)
 
         mock_s3_client.list_multipart_uploads.assert_called_once()
         # get_all_incomplete_video_files should return an empty array
@@ -1678,7 +1682,7 @@ class TestListIncompleteVideoUploads(TestCase):
 
         # Test that an error is raised
         with self.assertRaises(TypeError):
-            get_all_incomplete_video_files()
+            get_all_incomplete_video_files(self.bucket_name)
 
     @patch("studies.tasks.S3_CLIENT")
     def test_incomplete_video_uploads_is_not_iterable(self, mock_s3_client):
@@ -1688,7 +1692,7 @@ class TestListIncompleteVideoUploads(TestCase):
 
         # Test that an error is raised
         with self.assertRaises(TypeError):
-            get_all_incomplete_video_files()
+            get_all_incomplete_video_files(self.bucket_name)
 
     @patch("studies.tasks.S3_CLIENT")
     def test_incomplete_video_uploads_missing_date_initiated(self, mock_s3_client):
@@ -1703,7 +1707,7 @@ class TestListIncompleteVideoUploads(TestCase):
             ]
         }
 
-        result = get_all_incomplete_video_files()
+        result = get_all_incomplete_video_files(self.bucket_name)
 
         mock_s3_client.list_multipart_uploads.assert_called_once()
         # get_all_incomplete_video_files should return all of the Upload objects with a valid "Initiated" datetime
@@ -1729,7 +1733,7 @@ class TestListIncompleteVideoUploads(TestCase):
 
         # Test that the ClientError is raised
         with self.assertRaises(ClientError):
-            get_all_incomplete_video_files()
+            get_all_incomplete_video_files(self.bucket_name)
 
     @patch("studies.tasks.S3_CLIENT")
     def test_s3_response_is_validation_error(self, mock_s3_client):
@@ -1743,10 +1747,14 @@ class TestListIncompleteVideoUploads(TestCase):
 
         # Test that the ValueError is raised (ParamValidationError is caught and re-raised as ValueError)
         with self.assertRaises(ValueError):
-            get_all_incomplete_video_files()
+            get_all_incomplete_video_files(self.bucket_name)
 
 
 class TestListFilePartsFromIncompleteUpload(TestCase):
+    def setUp(self):
+        self.bucket_var_name = "S3_BUCKET_NAME"
+        self.bucket_name = "pipedeathstaging"
+
     # Patch the S3_CLIENT directly (instead of boto3) because it has already been created globally in the module
     @patch("studies.tasks.S3_CLIENT")
     def test_with_valid_s3_response(self, mock_s3_client):
@@ -1760,7 +1768,7 @@ class TestListFilePartsFromIncompleteUpload(TestCase):
             ]
         }
 
-        result = get_file_parts("example_video.webm", "upload-id-123")
+        result = get_file_parts(self.bucket_name, "example_video.webm", "upload-id-123")
 
         # Assert that list_parts mock was called
         mock_s3_client.list_parts.assert_called_once()
@@ -1777,14 +1785,14 @@ class TestListFilePartsFromIncompleteUpload(TestCase):
         mock_s3_client.list_parts.return_value = None
 
         with self.assertRaises(ValueError):
-            get_file_parts("example_video.webm", "upload-id-123")
+            get_file_parts(self.bucket_name, "example_video.webm", "upload-id-123")
 
     @patch("studies.tasks.S3_CLIENT")
     def test_no_parts_key_in_s3_response(self, mock_s3_client):
         # get_file_parts should return an empty array if the S3 response exists but doesn't contain a "Parts" key
         mock_s3_client.list_parts.return_value = {"SomeOtherKey": "Value"}
 
-        result = get_file_parts("example_video.webm", "upload-id-123")
+        result = get_file_parts(self.bucket_name, "example_video.webm", "upload-id-123")
 
         mock_s3_client.list_parts.assert_called_once()
         # get_file_parts should return an empty list
@@ -1796,7 +1804,7 @@ class TestListFilePartsFromIncompleteUpload(TestCase):
         # get_file_parts should return an empty array if the S3 response exists and contains a "Parts" key, but the list is empty.
         mock_s3_client.list_parts.return_value = {"Parts": []}
 
-        result = get_file_parts("example_video.webm", "upload-id-123")
+        result = get_file_parts(self.bucket_name, "example_video.webm", "upload-id-123")
 
         mock_s3_client.list_parts.assert_called_once()
         # get_file_parts should return an empty list
@@ -1813,7 +1821,7 @@ class TestListFilePartsFromIncompleteUpload(TestCase):
         mock_s3_client.list_parts.return_value = {"Parts": [{"ETag": "etag1"}]}
 
         with self.assertRaises(KeyError):
-            get_file_parts("example_video.webm", "upload-id-123")
+            get_file_parts(self.bucket_name, "example_video.webm", "upload-id-123")
 
     @patch("studies.tasks.S3_CLIENT")
     def test_get_file_parts_with_missing_etag(self, mock_s3_client):
@@ -1821,7 +1829,7 @@ class TestListFilePartsFromIncompleteUpload(TestCase):
         mock_s3_client.list_parts.return_value = {"Parts": [{"PartNumber": 1}]}
 
         with self.assertRaises(KeyError):
-            get_file_parts("example_video.webm", "upload-id-123")
+            get_file_parts(self.bucket_name, "example_video.webm", "upload-id-123")
 
     @patch("studies.tasks.S3_CLIENT")
     def test_get_file_parts_client_error(self, mock_s3_client):
@@ -1835,7 +1843,7 @@ class TestListFilePartsFromIncompleteUpload(TestCase):
         mock_s3_client.list_parts.side_effect = ClientError(error_response, "ListParts")
         # get_file_parts should raise a ClientError
         with self.assertRaises(ClientError):
-            get_file_parts("example_video.webm", "upload-id-123")
+            get_file_parts(self.bucket_name, "example_video.webm", "upload-id-123")
 
     @patch("studies.tasks.S3_CLIENT")
     def test_get_file_parts_param_validation_error(self, mock_s3_client):
@@ -1847,10 +1855,14 @@ class TestListFilePartsFromIncompleteUpload(TestCase):
 
         # get_file_parts should raise a ValueError (since ParamValidationError is caught and re-raised as ValueError)
         with self.assertRaises(ValueError):
-            get_file_parts("example_video.webm", "upload-id-123")
+            get_file_parts(self.bucket_name, "example_video.webm", "upload-id-123")
 
 
 class TestCompleteMultipartUpload(TestCase):
+    def setUp(self):
+        self.bucket_var_name = "S3_BUCKET_NAME"
+        self.bucket_name = "pipedeathstaging"
+
     # Patch the logger from studies.tasks to test execution in logs, because this function doesn't return anything
     @patch("studies.tasks.logger")
     # Patch the S3_CLIENT directly (instead of boto3) because it has already been created globally in the module
@@ -1862,6 +1874,7 @@ class TestCompleteMultipartUpload(TestCase):
         }
 
         complete_multipart_upload(
+            self.bucket_name,
             "example_video.webm",
             "upload-id-123",
             [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
@@ -1877,6 +1890,7 @@ class TestCompleteMultipartUpload(TestCase):
         mock_s3_client.complete_multipart_upload.return_value = None
 
         complete_multipart_upload(
+            self.bucket_name,
             "example_video.webm",
             "upload-id-123",
             [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
@@ -1896,6 +1910,7 @@ class TestCompleteMultipartUpload(TestCase):
         mock_s3_client.complete_multipart_upload.return_value = {"ResponseMetadata": {}}
 
         complete_multipart_upload(
+            self.bucket_name,
             "example_video.webm",
             "upload-id-123",
             [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
@@ -1915,6 +1930,7 @@ class TestCompleteMultipartUpload(TestCase):
         mock_s3_client.complete_multipart_upload.return_value = {}
 
         complete_multipart_upload(
+            self.bucket_name,
             "example_video.webm",
             "upload-id-123",
             [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
@@ -1941,6 +1957,7 @@ class TestCompleteMultipartUpload(TestCase):
         # complete_multipart_upload should raise this ClientError
         with self.assertRaises(ClientError):
             complete_multipart_upload(
+                self.bucket_name,
                 "example_video.webm",
                 "upload-id-123",
                 [{"PartNumber": 1, "ETag": "etag1"}],
@@ -1963,7 +1980,10 @@ class TestCompleteMultipartUpload(TestCase):
         )
 
         complete_multipart_upload(
-            "example_video.webm", "upload-id-123", [{"PartNumber": 1, "ETag": "etag1"}]
+            self.bucket_name,
+            "example_video.webm",
+            "upload-id-123",
+            [{"PartNumber": 1, "ETag": "etag1"}],
         )
 
         # complete_multipart_upload should log this error but not raise it
@@ -1973,7 +1993,7 @@ class TestCompleteMultipartUpload(TestCase):
 
 
 class TestCleanupIncompleteVideoUploadsTask(TestCase):
-    def setup(self):
+    def setUp(self):
         # We run the tasks on list of buckets, which are variable names that must be defined in settings.
         self.bucket_var_name = "S3_BUCKET_NAME"
         self.bucket_name = "pipedeathstaging"
