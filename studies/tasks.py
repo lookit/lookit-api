@@ -530,9 +530,11 @@ def cleanup_incomplete_video_uploads(task, *args, **kwargs):
         if incomplete_video_uploads:
             for video in incomplete_video_uploads:
                 logger.debug(f"Handling incomplete file: {video['Key']}")
-                parts = get_file_parts(video["Key"], video["UploadId"])
+                parts = get_file_parts(bucket_name, video["Key"], video["UploadId"])
                 if parts:
-                    complete_multipart_upload(video["Key"], video["UploadId"], parts)
+                    complete_multipart_upload(
+                        bucket_name, video["Key"], video["UploadId"], parts
+                    )
 
 
 def get_all_incomplete_video_files(bucket_name):
