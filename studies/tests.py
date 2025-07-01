@@ -1973,6 +1973,11 @@ class TestCompleteMultipartUpload(TestCase):
 
 
 class TestCleanupIncompleteVideoUploadsTask(TestCase):
+    def setup(self):
+        # We run the tasks on list of buckets, which are variable names that must be defined in settings.
+        self.bucket_var_name = "S3_BUCKET_NAME"
+        self.bucket_name = "pipedeathstaging"
+
     @patch("studies.tasks.complete_multipart_upload")
     @patch("studies.tasks.get_file_parts")
     @patch("studies.tasks.get_all_incomplete_video_files")
@@ -1997,27 +2002,24 @@ class TestCleanupIncompleteVideoUploadsTask(TestCase):
             "ResponseMetadata": {"HTTPStatusCode": 200}
         }
 
-        # We run the tasks on list of buckets, which are variable names that must be defined in settings.
-        bucket_var_name = "S3_BUCKET_NAME"
-        bucket_name = "pipedeathstaging"
-        cleanup_incomplete_video_uploads(bucket_names=[bucket_var_name])
+        cleanup_incomplete_video_uploads(bucket_names=[self.bucket_var_name])
 
         # Check that all mocked functions were called
         mock_get_all_incomplete_video_files.assert_called_once()
         mock_get_file_parts.assert_any_call(
-            bucket_name, "example_video.webm", "upload-id-123"
+            self.bucket_name, "example_video.webm", "upload-id-123"
         )
         mock_get_file_parts.assert_any_call(
-            bucket_name, "another_video.webm", "upload-id-456"
+            self.bucket_name, "another_video.webm", "upload-id-456"
         )
         mock_complete_multipart_upload.assert_any_call(
-            bucket_name,
+            self.bucket_name,
             "example_video.webm",
             "upload-id-123",
             [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
         )
         mock_complete_multipart_upload.assert_any_call(
-            bucket_name,
+            self.bucket_name,
             "another_video.webm",
             "upload-id-456",
             [{"PartNumber": 1, "ETag": "etag1"}, {"PartNumber": 2, "ETag": "etag2"}],
@@ -2025,7 +2027,7 @@ class TestCleanupIncompleteVideoUploadsTask(TestCase):
 
         # Logger should show the initial log message, and the "handling incomplete file" message for each file in the list.
         mock_logger.debug.assert_any_call(
-            f"Cleaning up incomplete video uploads in bucket: {bucket_name}"
+            f"Cleaning up incomplete video uploads in bucket: {self.bucket_name}"
         )
         mock_logger.debug.assert_any_call(
             "Handling incomplete file: example_video.webm"
@@ -2052,17 +2054,15 @@ class TestCleanupIncompleteVideoUploadsTask(TestCase):
         ]
         mock_get_file_parts.return_value = []
 
-        bucket_var_name = "S3_BUCKET_NAME"
-        bucket_name = "pipedeathstaging"
-        cleanup_incomplete_video_uploads(bucket_names=[bucket_var_name])
+        cleanup_incomplete_video_uploads(bucket_names=[self.bucket_var_name])
 
         # The mock function for getting incomplete files and their parts should have been called
         mock_get_all_incomplete_video_files.assert_called_once()
         mock_get_file_parts.assert_any_call(
-            bucket_name, "example_video.webm", "upload-id-123"
+            self.bucket_name, "example_video.webm", "upload-id-123"
         )
         mock_get_file_parts.assert_any_call(
-            bucket_name, "another_video.webm", "upload-id-456"
+            self.bucket_name, "another_video.webm", "upload-id-456"
         )
 
         # The complete multipart upload function should not have been called since there were no uploads with associated parts
@@ -2070,7 +2070,7 @@ class TestCleanupIncompleteVideoUploadsTask(TestCase):
 
         # Logger should show the initial log message, and the "handling incomplete file" message for each file in the list.
         mock_logger.debug.assert_any_call(
-            f"Cleaning up incomplete video uploads in bucket: {bucket_name}"
+            f"Cleaning up incomplete video uploads in bucket: {self.bucket_name}"
         )
         mock_logger.debug.assert_any_call(
             "Handling incomplete file: example_video.webm"
@@ -2093,10 +2093,7 @@ class TestCleanupIncompleteVideoUploadsTask(TestCase):
         # If there are no incomplete uploads, this task should just log the initial message. It should not attempt to get any file parts or complete any files.
         mock_get_all_incomplete_video_files.return_value = []
 
-        bucket_var_name = "S3_BUCKET_NAME"
-        bucket_name = "pipedeathstaging"
-
-        cleanup_incomplete_video_uploads(bucket_names=[bucket_var_name])
+        cleanup_incomplete_video_uploads(bucket_names=[self.bucket_var_name])
 
         # The mock function for getting incomplete files should have been called
         mock_get_all_incomplete_video_files.assert_called_once()
@@ -2106,7 +2103,9 @@ class TestCleanupIncompleteVideoUploadsTask(TestCase):
         mock_complete_multipart_upload.assert_not_called()
 
         # If there are no files, the cleanup incomplete videos task just produces the initial log message
-        debug_string = f"Cleaning up incomplete video uploads in bucket: {bucket_name}"
+        debug_string = (
+            f"Cleaning up incomplete video uploads in bucket: {self.bucket_name}"
+        )
         mock_logger.debug.assert_any_call(debug_string)
 
 
