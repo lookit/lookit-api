@@ -6,7 +6,7 @@ from django.db import migrations
 
 
 def add_kwargs_to_video_cleanup_task(apps, schema_editor):
-    PeriodicTask = apps.get_model("django_celery_beat", "PeriodicTask")
+    periodic_task = apps.get_model("django_celery_beat", "PeriodicTask")
 
     bucket_names = [
         "S3_BUCKET_NAME",
@@ -14,21 +14,21 @@ def add_kwargs_to_video_cleanup_task(apps, schema_editor):
     ]
 
     try:
-        task = PeriodicTask.objects.get(name="Nightly video upload cleanup")
+        task = periodic_task.objects.get(name="Nightly video upload cleanup")
         task.kwargs = json.dumps({"bucket_names": bucket_names})
         task.save()
-    except PeriodicTask.DoesNotExist:
+    except periodic_task.DoesNotExist:
         pass
 
 
 def remove_kwargs_from_video_cleanup_task(apps, schema_editor):
-    PeriodicTask = apps.get_model("django_celery_beat", "PeriodicTask")
+    periodic_task = apps.get_model("django_celery_beat", "PeriodicTask")
 
     try:
-        task = PeriodicTask.objects.get(name="Nightly video upload cleanup")
+        task = periodic_task.objects.get(name="Nightly video upload cleanup")
         task.kwargs = ""
         task.save()
-    except PeriodicTask.DoesNotExist:
+    except periodic_task.DoesNotExist:
         pass
 
 
