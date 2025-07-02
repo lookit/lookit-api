@@ -1564,6 +1564,8 @@ class ResponseEligibilityTestCase(TestCase):
 
 test_bucket_var_name = "FAKE_BUCKET_VAR"
 test_bucket_name = "fake-bucket-for-tests"
+test_bucket_var_name_2 = "FAKE_BUCKET_VAR_2"
+test_bucket_name_2 = "another-fake-bucket"
 
 
 class TestListIncompleteVideoUploads(TestCase):
@@ -2120,6 +2122,70 @@ class TestCleanupIncompleteVideoUploadsTask(TestCase):
             f"Cleaning up incomplete video uploads in bucket: {test_bucket_name}"
         )
         mock_logger.debug.assert_any_call(debug_string)
+
+    def tearDown(self):
+        # Clean up the setitngs override
+        self.override.disable()
+
+
+class TestVideoCleanupTaskWithMultipleBuckets(TestCase):
+    def setUp(self):
+        # The cleanup_incomplete_video_uploads task takes a list of buckets, which are variables from settings that hold bucket names. The bucket names must be defined in the project settings, otherwise they will be skipped, so we need to override the settings here.
+        # Can't use a dynamic setting name with the override_settings decorator, so manually start an override_settings here instead.
+        # Define two bucket variables to pass in to the task and loop over.
+        self.override = override_settings(
+            **{
+                test_bucket_var_name: test_bucket_name,
+                test_bucket_var_name_2: test_bucket_name_2,
+            }
+        )
+        self.override.enable()
+
+    @patch("studies.tasks.get_all_incomplete_video_files")
+    @patch("studies.tasks.logger")
+    def test_cleanup_videos_task_runs_on_multiple_buckets(
+        self, mock_logger, mock_get_all_incomplete_video_files
+    ):
+        mock_get_all_incomplete_video_files.return_value = []
+
+        cleanup_incomplete_video_uploads(
+            bucket_names=[test_bucket_var_name, test_bucket_var_name_2]
+        )
+
+        # Check that the main function was called with both buckets
+        mock_get_all_incomplete_video_files.assert_any_call(test_bucket_name)
+        mock_get_all_incomplete_video_files.assert_any_call(test_bucket_name_2)
+        mock_logger.debug.assert_any_call(
+            f"Cleaning up incomplete video uploads in bucket: {test_bucket_name}"
+        )
+        mock_logger.debug.assert_any_call(
+            f"Cleaning up incomplete video uploads in bucket: {test_bucket_name_2}"
+        )
+
+    @patch("studies.tasks.get_all_incomplete_video_files")
+    @patch("studies.tasks.logger")
+    def test_cleanup_videos_task_skips_invalid_bucket(
+        self, mock_logger, mock_get_all_incomplete_video_files
+    ):
+        mock_get_all_incomplete_video_files.return_value = []
+
+        invalid_bucket_var = "MISSING_BUCKET_VAR"
+
+        # Call task with one valid and one invalid (missing) bucket variable from settings
+        cleanup_incomplete_video_uploads(
+            bucket_names=[invalid_bucket_var, test_bucket_var_name]
+        )
+
+        # Valid bucket was used
+        mock_get_all_incomplete_video_files.assert_called_once_with(test_bucket_name)
+        mock_logger.debug.assert_any_call(
+            f"Cleaning up incomplete video uploads in bucket: {test_bucket_name}"
+        )
+
+        # Error was logged for invalid bucket
+        mock_logger.error.assert_any_call(
+            f"Invalid S3 bucket setting: {invalid_bucket_var}"
+        )
 
     def tearDown(self):
         # Clean up the setitngs override
