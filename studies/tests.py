@@ -1562,10 +1562,12 @@ class ResponseEligibilityTestCase(TestCase):
         )
 
 
+# We run the tasks on list of buckets, which are variables that hold bucket names that must be defined in settings.
+@override_settings(FAKE_BUCKET_VAR="fake-bucket-for-tests")
 class TestListIncompleteVideoUploads(TestCase):
     def setUp(self):
-        self.bucket_var_name = "S3_BUCKET_NAME"
-        self.bucket_name = "pipedeathstaging"
+        self.bucket_var_name = "FAKE_BUCKET_VAR"
+        self.bucket_name = "fake-bucket-for-tests"
 
     # Patch the S3_CLIENT directly (instead of boto3) because it has already been created globally in the module
     @patch("studies.tasks.S3_CLIENT")
@@ -1750,10 +1752,12 @@ class TestListIncompleteVideoUploads(TestCase):
             get_all_incomplete_video_files(self.bucket_name)
 
 
+# We run the tasks on list of buckets, which are variables that hold bucket names that must be defined in settings.
+@override_settings(FAKE_BUCKET_VAR="fake-bucket-for-tests")
 class TestListFilePartsFromIncompleteUpload(TestCase):
     def setUp(self):
-        self.bucket_var_name = "S3_BUCKET_NAME"
-        self.bucket_name = "pipedeathstaging"
+        self.bucket_var_name = "FAKE_BUCKET_VAR"
+        self.bucket_name = "fake-bucket-for-tests"
 
     # Patch the S3_CLIENT directly (instead of boto3) because it has already been created globally in the module
     @patch("studies.tasks.S3_CLIENT")
@@ -1858,10 +1862,12 @@ class TestListFilePartsFromIncompleteUpload(TestCase):
             get_file_parts(self.bucket_name, "example_video.webm", "upload-id-123")
 
 
+# We run the tasks on list of buckets, which are variables that hold bucket names that must be defined in settings.
+@override_settings(FAKE_BUCKET_VAR="fake-bucket-for-tests")
 class TestCompleteMultipartUpload(TestCase):
     def setUp(self):
-        self.bucket_var_name = "S3_BUCKET_NAME"
-        self.bucket_name = "pipedeathstaging"
+        self.bucket_var_name = "FAKE_BUCKET_VAR"
+        self.bucket_name = "fake-bucket-for-tests"
 
     # Patch the logger from studies.tasks to test execution in logs, because this function doesn't return anything
     @patch("studies.tasks.logger")
@@ -1992,11 +1998,12 @@ class TestCompleteMultipartUpload(TestCase):
         )
 
 
+# We run the tasks on list of buckets, which are variables that hold bucket names that must be defined in settings.
+@override_settings(FAKE_BUCKET_VAR="fake-bucket-for-tests")
 class TestCleanupIncompleteVideoUploadsTask(TestCase):
     def setUp(self):
-        # We run the tasks on list of buckets, which are variable names that must be defined in settings.
-        self.bucket_var_name = "S3_BUCKET_NAME"
-        self.bucket_name = "pipedeathstaging"
+        self.bucket_var_name = "FAKE_BUCKET_VAR"
+        self.bucket_name = "fake-bucket-for-tests"
 
     @patch("studies.tasks.complete_multipart_upload")
     @patch("studies.tasks.get_file_parts")
