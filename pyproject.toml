@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = "==3.13.*"
 dependencies = [
-    "boto3==1.38.9",
+    "boto3==1.39.9",
     "ciso8601==2.3.2",
     "django==5.2.2",
     "django-ace-overlay",
