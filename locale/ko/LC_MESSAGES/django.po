@@ -1,8 +1,9 @@
+#: studies/models.py:1006 studies/models.py:1013
 msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-04 17:42-0400\n"
+"POT-Creation-Date: 2025-08-06 13:03-0400\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -71,98 +72,98 @@ msgstr ""
 "연구자가 귀하의 개별 응답에 대해 질문이 있습니다 (예를 들어, 귀하께서 연구 중"
 "에 기술적 문제를 보고하시는 경우)"
 
-#: accounts/forms.py:322
+#: accounts/forms.py:325
 #, fuzzy
 msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
 msgstr ""
 "다음 형태에 맞게 년/월/일을 입력해주십시오 (쉼표로 구분): 0000-00-00, "
 "0000-00-00, ..."
 
-#: accounts/forms.py:325
+#: accounts/forms.py:328
 msgid ""
 "If the answer varies or needs more explanation, you can tell us more below."
 msgstr ""
 
-#: accounts/forms.py:328
+#: accounts/forms.py:331
 msgid ""
 "Please select the appropriate responses for everyone in your children's "
 "immediate family."
 msgstr ""
 
-#: accounts/forms.py:333
+#: accounts/forms.py:336
 msgid "What country do you live in?"
 msgstr "귀하께서는 어느 나라에 살고 계십니까?"
 
-#: accounts/forms.py:334
+#: accounts/forms.py:337
 #, fuzzy
 msgid "What state do you live in?"
 msgstr "귀하는 어느 지역 (도, 특별시) 에 살고 계십니까?"
 
-#: accounts/forms.py:335
+#: accounts/forms.py:338
 msgid "How would you describe the area where you live?"
 msgstr "귀하께서 살고 계신 지역을 어떻게 설명 하시겠습니까?"
 
-#: accounts/forms.py:336
+#: accounts/forms.py:339
 #, fuzzy
 msgid "How many children do you have?"
 msgstr "귀하는 자녀분이 몇명 있으십니까?"
 
-#: accounts/forms.py:337
+#: accounts/forms.py:340
 msgid "For each child, please enter his or her birthdate:"
 msgstr "각 자녀분의 생년월일을 입력해주십시오:"
 
-#: accounts/forms.py:339
+#: accounts/forms.py:342
 #, fuzzy
 msgid "How many parents/guardians do your children live with?"
 msgstr "귀하의 자녀분(들)은 몇 명의 부모/법적보호자와 함께 살고 있습니까?"
 
-#: accounts/forms.py:341
+#: accounts/forms.py:344
 msgid "What is your age?"
 msgstr "귀하의 만 나이는 무엇입니까?"
 
-#: accounts/forms.py:342
+#: accounts/forms.py:345
 msgid "What is your gender?"
 msgstr "귀하의 성별은 무엇입니까?"
 
-#: accounts/forms.py:343
+#: accounts/forms.py:346
 #, fuzzy
 #| msgid "What is your gender?"
 msgid "Describe your gender"
 msgstr "귀하의 성별은 무엇입니까?"
 
-#: accounts/forms.py:345
+#: accounts/forms.py:348
 #, fuzzy
 msgid "What is the highest level of education you've completed?"
 msgstr "귀하가 수료한 최고학력은 무엇입니까?"
 
-#: accounts/forms.py:348
+#: accounts/forms.py:351
 msgid "What is your approximate family yearly income (in US dollars)?"
 msgstr "대략적인 연간 가족 소득은 얼마입니까 (한국 원화로)?"
 
-#: accounts/forms.py:350
+#: accounts/forms.py:353
 msgid "Anything else you'd like us to know?"
 msgstr "저희에게 더 알려주시고 싶으신 부분이 있으십니까?"
 
-#: accounts/forms.py:351
+#: accounts/forms.py:354
 msgid "How did you hear about Lookit?"
 msgstr "Lookit에 대해 어떻게 알게 되셨습니까?"
 
-#: accounts/forms.py:353
+#: accounts/forms.py:356
 msgid ""
 "What racial group(s) does your family identify with/belong to? Please select "
 "any that apply to someone in your children's immediate family."
 msgstr ""
 
-#: accounts/forms.py:356
+#: accounts/forms.py:359
 #, fuzzy
 msgid "Share more about your family's race, ethnicity, or origin:"
 msgstr "다른 인종, 민족 또는 출신"
 
-#: accounts/forms.py:359
+#: accounts/forms.py:362
 msgid "Share more about your children's parents/guardians:"
 msgstr ""
 
-#: accounts/forms.py:378
+#: accounts/forms.py:381
 #, fuzzy
 msgid ""
 "This lets us figure out exactly how old your child is when they participate "
@@ -173,44 +174,44 @@ msgstr ""
 "줍니다. 저희는 다른 독자가 자녀분의 생년월일을 계산할 수 있는 형태의 정보를 "
 "절대로 출판하지 않습니다."
 
-#: accounts/forms.py:385
+#: accounts/forms.py:388
 #, fuzzy
 msgid "Birthdays cannot be in the future."
 msgstr "생일은 미래의 날짜일 수 없습니다."
 
-#: accounts/forms.py:402
+#: accounts/forms.py:405
 msgid "First Name"
 msgstr "이름"
 
-#: accounts/forms.py:403 accounts/templates/accounts/participant_detail.html:36
+#: accounts/forms.py:406 accounts/templates/accounts/participant_detail.html:36
 #: web/templates/web/children-list.html:45
 msgid "Birthday"
 msgstr "생년월일"
 
-#: accounts/forms.py:404 accounts/templates/accounts/participant_detail.html:44
+#: accounts/forms.py:407 accounts/templates/accounts/participant_detail.html:44
 msgid "Gender"
 msgstr "성별"
 
-#: accounts/forms.py:405 accounts/templates/accounts/participant_detail.html:48
+#: accounts/forms.py:408 accounts/templates/accounts/participant_detail.html:48
 msgid "Gestational Age at Birth"
 msgstr "임신 주 수 (출생 당시 __주)"
 
-#: accounts/forms.py:407
+#: accounts/forms.py:410
 msgid "Any additional information you'd like us to know"
 msgstr "저희에게 더 알려주시고 싶으신 부분이 있으십니까?"
 
-#: accounts/forms.py:409
+#: accounts/forms.py:412
 #, fuzzy
 msgid "Characteristics and conditions"
 msgstr "특성 및 조건"
 
-#: accounts/forms.py:411
+#: accounts/forms.py:414
 msgid ""
 "Languages this child is exposed to at home, school, or with another "
 "caregiver."
 msgstr "자녀분이 가정, 학교 또는 다른 보호자와 있을 때 노출되는 언어(들)"
 
-#: accounts/forms.py:417
+#: accounts/forms.py:420
 #, fuzzy
 msgid ""
 "This lets you select the correct child to participate in a particular study. "
@@ -223,89 +224,89 @@ msgstr ""
 "함할 수 있지만 (예 : \"영희가 참여할 수 있는 새로운 연구가 있습니다!\") 저희"
 "는 절대 자녀분의 이름을 공적으로 게시하거나 연구에 사용하지 않을 것입니다."
 
-#: accounts/forms.py:420
+#: accounts/forms.py:423
 msgid ""
 "For instance, diagnosed developmental disorders or vision or hearing problems"
 msgstr "예를 들어, 발달 장애 또는 시력 및 청력 문제를 진단받은 적이 있습니다."
 
-#: accounts/forms.py:423
+#: accounts/forms.py:426
 #, fuzzy
 msgid "Please round down to the nearest full week of pregnancy completed"
 msgstr ""
 "출산까지 임신 하셨던 기간을 가장 가까운 정수로 내림하여 응답해주십시오 (예 "
 "36.5주 --> 36주)."
 
-#: accounts/forms.py:426
+#: accounts/forms.py:429
 msgid ""
 "Most research studies are designed for a general age range, but some focus "
 "on a particular group of children. The choices you make below are used to "
 "show you studies that are designed for children with these characteristics."
 msgstr ""
 
-#: accounts/forms.py:456
+#: accounts/forms.py:459
 #, fuzzy
 #| msgid "Studies"
 msgid "All studies"
 msgstr "연구들"
 
-#: accounts/forms.py:457
+#: accounts/forms.py:460
 msgid "Studies happening right now"
 msgstr ""
 
-#: accounts/forms.py:458
+#: accounts/forms.py:461
 #, fuzzy
 msgid "Scheduled studies"
 msgstr "현재 진행중인 연구들"
 
-#: accounts/forms.py:461
+#: accounts/forms.py:464
 msgid "Find studies for..."
 msgstr ""
 
-#: accounts/forms.py:462
+#: accounts/forms.py:465
 msgid "babies (under 1)"
 msgstr ""
 
-#: accounts/forms.py:463
+#: accounts/forms.py:466
 msgid "toddlers (1-2)"
 msgstr ""
 
-#: accounts/forms.py:464
+#: accounts/forms.py:467
 msgid "preschoolers (3-4)"
 msgstr ""
 
-#: accounts/forms.py:465
+#: accounts/forms.py:468
 msgid "school-age kids (5-17)"
 msgstr ""
 
-#: accounts/forms.py:466
+#: accounts/forms.py:469
 msgid "adults (18+)"
 msgstr ""
 
-#: accounts/forms.py:469
+#: accounts/forms.py:472
 msgid "Show studies happening..."
 msgstr ""
 
-#: accounts/forms.py:470
+#: accounts/forms.py:473
 #, fuzzy
 #| msgid "Meet the Lookit team"
 msgid "here on the Lookit platform"
 msgstr "Lookit 팀을 만나보십시오."
 
-#: accounts/forms.py:471
+#: accounts/forms.py:474
 msgid "on other websites"
 msgstr ""
 
-#: accounts/forms.py:476
+#: accounts/forms.py:479
 msgid "Hide Studies We've Done"
 msgstr ""
 
-#: accounts/forms.py:515
+#: accounts/forms.py:518
 #, fuzzy
 #| msgid "Your past studies"
 msgid "Lookit studies"
 msgstr "귀하의 지난 연구들"
 
-#: accounts/forms.py:516
+#: accounts/forms.py:519
 #, fuzzy
 msgid "External studies"
 msgstr "현재 진행중인 연구들"
@@ -749,7 +750,7 @@ msgstr "농/어촌 지역"
 msgid "Select a State"
 msgstr "도/특별시 선택"
 
-#: accounts/models.py:717
+#: accounts/models.py:721
 #, fuzzy
 #| msgid "Gan"
 msgid "and"
@@ -1241,6 +1242,55 @@ msgstr ""
 msgid "The Users who have requested to join this Lab."
 msgstr "이 연구실에 가입을 요청한 사용자들입니다."
 
+#: studies/models.py:1007
+#, fuzzy
+#| msgid "preview"
+msgid "Needs review"
+msgstr "미리보기"
+
+#: studies/models.py:1008
+msgid "To pay"
+msgstr ""
+
+#: studies/models.py:1009
+msgid "Do not pay"
+msgstr ""
+
+#: studies/models.py:1010
+msgid "Paid"
+msgstr ""
+
+#: studies/models.py:1014
+msgid "To schedule"
+msgstr ""
+
+#: studies/models.py:1015
+#, fuzzy
+msgid "Scheduled"
+msgstr "현재 진행중인 연구들"
+
+#: studies/models.py:1016
+msgid "Session attended"
+msgstr ""
+
+#: studies/models.py:1017
+#, fuzzy
+#| msgid "Password reset complete"
+msgid "Session complete"
+msgstr "비밀번호 재설정 완료"
+
+#: studies/models.py:1018
+msgid "Follow up"
+msgstr ""
+
+#: studies/models.py:1019
+msgid "Communication complete"
+msgstr ""
+
+#: studies/models.py:1020
+msgid "Withdrawn or closed"
+msgstr ""
+
 #: web/templates/registration/logged_out.html:5
 msgid "You've successfully logged out."
 msgstr "성공적으로 로그아웃 하셨습니다."
@@ -1504,7 +1554,7 @@ msgstr "지난 연구들"
 msgid "Logout"
 msgstr "로그아웃"
 
-#: web/templates/web/_navigation.html:12 web/templatetags/web_extras.py:169
+#: web/templates/web/_navigation.html:12 web/templatetags/web_extras.py:184
 msgid "Sign up"
 msgstr "회원가입"
 
@@ -1524,7 +1574,7 @@ msgstr ""
 msgid "studies for school-aged kids & teens (5-17)"
 msgstr ""
 
-#: web/templates/web/base.html:16 web/templates/web/home.html:35
+#: web/templates/web/base.html:17 web/templates/web/home.html:35
 msgid "Children Helping Science"
 msgstr ""
 
@@ -1612,8 +1662,8 @@ msgstr ""
 
 #: web/templates/web/children-list.html:36
 msgid ""
-"click here</a> to review the requirements for '{{ request.session."
-"study_name }}'."
+"click here</a> to review the requirements for "
+"'{{ request.session.study_name }}'."
 msgstr ""
 
 #: web/templates/web/children-list.html:44
@@ -2134,8 +2184,8 @@ msgstr "누가 우리 비디오를 보나요?"
 #| "research on human development and behavior. Researchers who are granted "
 #| "access to the Databrary library must agree to treat the data with the "
 #| "same high standard of care they would use in their own laboratories. "
-#| "Learn more about Databrary's <a href=\"https://databrary.org/about."
-#| "html\">mission</a> or the <a href=\"https://databrary.org/access/"
+#| "Learn more about Databrary's <a href=\"https://databrary.org/"
+#| "about.html\">mission</a> or the <a href=\"https://databrary.org/access/"
 #| "responsibilities/investigators.html\">requirements for authorized users</"
 #| "a>.</p>\n"
 #| "                                <p>Next, we ask what types of uses of "
@@ -2800,11 +2850,11 @@ msgid ""
 "\"study details\" page, which will always include contact information for "
 "the lab running that study. </p>\n"
 "                <p>If you want to get in touch with the researchers "
-"organizing this website, you can reach us by email at <a href=\"mailto:"
-"lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
+"organizing this website, you can reach us by email at <a "
+"href=\"mailto:lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
 "                <p>To report any technical difficulties during "
-"participation, please contact our team by email at <a href=\"mailto:"
-"lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
+"participation, please contact our team by email at <a "
+"href=\"mailto:lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
 "                "
 msgstr ""
 
@@ -2870,13 +2920,13 @@ msgid ""
 "                <p>If you are trying to participate in a study and having "
 "difficulties, please start by contacting the researchers who made that "
 "specific study.  If you still need help, you can also reach the Children "
-"Helping Science team for help at <a href=\"mailto:lookit-tech@mit."
-"edu\">lookit-tech@mit.edu</a>.</p>\n"
+"Helping Science team for help at <a href=\"mailto:lookit-"
+"tech@mit.edu\">lookit-tech@mit.edu</a>.</p>\n"
 "                <p>If you are a researcher working on creating a study, you "
 "can find help in our <a href=\"https://lookit.readthedocs.io/en/develop/"
-"index.html\">documentation</a>, and in our <a href = \"https://docs.google."
-"com/forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/"
-"viewform\">Slack community</a>.</p>\n"
+"index.html\">documentation</a>, and in our <a href = \"https://"
+"docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-"
+"I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform\">Slack community</a>.</p>\n"
 "                "
 msgstr ""
 
@@ -2928,15 +2978,16 @@ msgid ""
 "testing, or submit a new protocol for your proposed online study.</p>\n"
 "                <p>As of April 2023, we have agreements with over 90 "
 "universities, including institutions in the United States, Canada, the "
-"United Kingdom, and European Union. Please email <a href=\"mailto:lookit@mit."
-"edu\">lookit@mit.edu</a> if you are not sure whether your institution "
-"already has an agreement, or if you need any help at all getting your "
-"paperwork in order.</p>\n"
+"United Kingdom, and European Union. Please email <a "
+"href=\"mailto:lookit@mit.edu\">lookit@mit.edu</a> if you are not sure "
+"whether your institution already has an agreement, or if you need any help "
+"at all getting your paperwork in order.</p>\n"
 "                <p>While you are completing these steps, you can get started "
 "on Children Helping Science by creating a lab account, creating your first "
 "study, and getting it peer reviewed by our researcher community. A step-by-"
-"step guide to getting started is available <a href=\"https://lookit."
-"readthedocs.io/en/develop/researchers-start-here.html\">here</a>.</p>\n"
+"step guide to getting started is available <a href=\"https://"
+"lookit.readthedocs.io/en/develop/researchers-start-here.html\">here</a>.</"
+"p>\n"
 "                "
 msgstr ""
 
@@ -2950,10 +3001,11 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"                <p>Children Helping Science has a <a href = \"https://docs."
-"google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-"
-"Q/viewform\">Slack community</a> for researchers to ask for help, conduct "
-"peer review, and discuss online research methods.</p>\n"
+"                <p>Children Helping Science has a <a href = \"https://"
+"docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-"
+"I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform\">Slack community</a> for "
+"researchers to ask for help, conduct peer review, and discuss online "
+"research methods.</p>\n"
 "                <p>The Society for Research in Child Development also has a "
 "<a href = \"https://commons.srcd.org/communities/community-home/digestviewer/"
 "viewthread?CommunityKey=bd3d326e-b7db-49bf-"
@@ -2975,7 +3027,7 @@ msgstr "귀하의 만 나이는 무엇입니까?"
 msgid "Welcome to"
 msgstr ""
 
-#: web/templates/web/garden/participate.html:16
+#: web/templates/web/garden/participate.html:15
 #, fuzzy
 #| msgid "Log in to participate"
 msgid "How to Participate"
@@ -4018,9 +4070,10 @@ msgstr "유효하지 않음"
 #: web/templates/web/studies-history.html:123
 #, fuzzy
 msgid ""
-"There was a technical problem with your consent video, or it did not show "
-"you reading the consent statement out loud. Your other data from this "
-"session will not be viewed or used by the study researchers."
+"There was a technical problem with your consent video, it did not show you "
+"reading the consent statement out loud, or the researcher determined that "
+"you did not meet the eligibility criteria. Your other data from this session "
+"will not be viewed or used by the study researchers."
 msgstr ""
 "귀하의 동의 영상에 기술적인 문제가 있거나, 귀하께서 동의문을 소리내어 읽는 것"
 "을 보여주지 않았습니다. 이 세션의 귀하의 다른 데이터는 연구자가 보거나 사용하"
@@ -4230,7 +4283,7 @@ msgid ""
 "the researchers."
 msgstr ""
 
-#: web/templatetags/web_extras.py:191
+#: web/templatetags/web_extras.py:206
 #, fuzzy
 #| msgid ""
 #| "Please note you'll need a laptop or desktop computer (not a mobile "
@@ -4246,7 +4299,7 @@ msgstr ""
 "참여하시려면 Chrome 또는 Firefox를 실행할 수 있는 노트북 또는 데스크톱 컴퓨"
 "터 (휴대 기기가 아님)가 필요합니다."
 
-#: web/templatetags/web_extras.py:195
+#: web/templatetags/web_extras.py:210
 msgid ""
 "You and your child can participate in these studies right now by choosing a "
 "study and then clicking \"Participate.\" Please note you'll need a laptop or "
@@ -4254,51 +4307,50 @@ msgid ""
 "participate, unless a specific study says otherwise."
 msgstr ""
 
-#: web/templatetags/web_extras.py:199
+#: web/templatetags/web_extras.py:214
 msgid ""
 "You and your child can participate in these studies by scheduling a time to "
 "meet with a researcher (usually over video conferencing). Choose a study and "
 "then click \"Participate\" to sign up for a study session in the future."
 msgstr ""
 
-#: web/views.py:130
+#: web/views.py:179
 msgid "Participant created."
 msgstr "연구참여자 계정이 생성됨"
 
-#: web/views.py:173
+#: web/views.py:222
 msgid "Demographic data saved."
 msgstr "인구 통계 정보가 저장됨"
 
-#: web/views.py:239
+#: web/views.py:288
 msgid "Child added."
 msgstr "자녀 정보가 추가됨"
 
-#: web/views.py:280
+#: web/views.py:329
 msgid "Child deleted."
 msgstr "자녀 정보가 삭제됨"
 
-#: web/views.py:282
+#: web/views.py:331
 msgid "Child updated."
 msgstr "자녀 정보가 업데이트 됨"
 
-#: web/views.py:310
+#: web/views.py:359
 msgid "Email preferences saved."
 msgstr "이메일 선호 방식이 저장됨"
 
-#: web/views.py:720
 #, fuzzy, python-brace-format
-#| msgid ""
-#| "The study {study.name} is not currently collecting data - the study is "
-#| "either completed or paused. If you think this is an error, please contact "
-#| "{study.contact_info}"
-msgid ""
-"The study {study.name} is not currently collecting data - the study is "
-"either completed or paused. If you think this is an error, please contact "
-"{study.contact_info}"
-msgstr ""
-"{연구명} 연구는 현재 연구정보를 모으고 있지 않습니다 - 이 연구는 종단되었거"
-"나 임시로 중단되었습니다. 만약 오류가 있다고 판단되신다면, {연구연락정보} 로 "
-"연락을 주십시오."
+#~| msgid ""
+#~| "The study {study.name} is not currently collecting data - the study is "
+#~| "either completed or paused. If you think this is an error, please "
+#~| "contact {study.contact_info}"
+#~ msgid ""
+#~ "The study {study.name} is not currently collecting data - the study is "
+#~ "either completed or paused. If you think this is an error, please contact "
+#~ "{study.contact_info}"
+#~ msgstr ""
+#~ "{연구명} 연구는 현재 연구정보를 모으고 있지 않습니다 - 이 연구는 종단되었"
+#~ "거나 임시로 중단되었습니다. 만약 오류가 있다고 판단되신다면, {연구연락정"
+#~ "보} 로 연락을 주십시오."
 
 #~ msgid ""
 #~ "Your password can’t be too similar to your other personal information."

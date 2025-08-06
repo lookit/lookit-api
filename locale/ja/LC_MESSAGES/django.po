@@ -1,8 +1,9 @@
+#: studies/models.py:1006 studies/models.py:1013
 msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-04 17:42-0400\n"
+"POT-Creation-Date: 2025-08-06 13:03-0400\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -69,79 +70,79 @@ msgstr ""
 "参加した研究・調査における私の回答に対して、研究者から質問があるとき (例：web"
 "カメラがうまく接続できなかったなど技術的な問題を報告していた場合など)"
 
-#: accounts/forms.py:322
+#: accounts/forms.py:325
 msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
 msgstr ""
 "カンマ区切りのリストとして入力してください。例：YYYY-MM-DD, YYYY-MM-DD, ..."
 
-#: accounts/forms.py:325
+#: accounts/forms.py:328
 msgid ""
 "If the answer varies or needs more explanation, you can tell us more below."
 msgstr ""
 "回答が複数にまたがる場合や、より詳細な説明が必要となる場合は、以下で詳しくお"
 "聞かせください。"
 
-#: accounts/forms.py:328
+#: accounts/forms.py:331
 msgid ""
 "Please select the appropriate responses for everyone in your children's "
 "immediate family."
 msgstr "お子さんのご家族について、該当する回答をお選びください。"
 
-#: accounts/forms.py:333
+#: accounts/forms.py:336
 msgid "What country do you live in?"
 msgstr "どちらの国にお住まいですか？"
 
-#: accounts/forms.py:334
+#: accounts/forms.py:337
 msgid "What state do you live in?"
 msgstr "どの都道府県にお住まいですか？"
 
-#: accounts/forms.py:335
+#: accounts/forms.py:338
 msgid "How would you describe the area where you live?"
 msgstr "住んでいる地域をどんなところですか？"
 
-#: accounts/forms.py:336
+#: accounts/forms.py:339
 msgid "How many children do you have?"
 msgstr "お子さんは何人いますか？"
 
-#: accounts/forms.py:337
+#: accounts/forms.py:340
 msgid "For each child, please enter his or her birthdate:"
 msgstr "お子さん一人一人の生年月日を記入してください。"
 
-#: accounts/forms.py:339
+#: accounts/forms.py:342
 msgid "How many parents/guardians do your children live with?"
 msgstr ""
 "お子さんは、ご両親（またはその他の保護者）、合計何人と一緒に暮らしています"
 "か？"
 
-#: accounts/forms.py:341
+#: accounts/forms.py:344
 msgid "What is your age?"
 msgstr "あなたの年齢はおいくつですか？"
 
-#: accounts/forms.py:342
+#: accounts/forms.py:345
 msgid "What is your gender?"
 msgstr "あなたの性別は何ですか？"
 
-#: accounts/forms.py:343
+#: accounts/forms.py:346
 msgid "Describe your gender"
 msgstr "性別の自己記述"
 
-#: accounts/forms.py:345
+#: accounts/forms.py:348
 msgid "What is the highest level of education you've completed?"
 msgstr "あなたの最終学歴は何ですか？"
 
-#: accounts/forms.py:348
+#: accounts/forms.py:351
 msgid "What is your approximate family yearly income (in US dollars)?"
 msgstr "ご家族の年収（日本円で）はいくらぐらいでしょうか？"
 
-#: accounts/forms.py:350
+#: accounts/forms.py:353
 msgid "Anything else you'd like us to know?"
 msgstr "他に何か私たちが知っておくべきことはありますか？"
 
-#: accounts/forms.py:351
+#: accounts/forms.py:354
 msgid "How did you hear about Lookit?"
 msgstr "Lookitをどのようにして知りましたか？"
 
-#: accounts/forms.py:353
+#: accounts/forms.py:356
 msgid ""
 "What racial group(s) does your family identify with/belong to? Please select "
 "any that apply to someone in your children's immediate family."
@@ -149,15 +150,15 @@ msgstr ""
 "あなたの家族の人種について教えてください。以下の選択肢から当てはまるものを選"
 "んでください。"
 
-#: accounts/forms.py:356
+#: accounts/forms.py:359
 msgid "Share more about your family's race, ethnicity, or origin:"
 msgstr "ご家族の人種、民族、出身地について詳しく教えてください。"
 
-#: accounts/forms.py:359
+#: accounts/forms.py:362
 msgid "Share more about your children's parents/guardians:"
 msgstr "お子さんの保護者について詳しく教えてください。"
 
-#: accounts/forms.py:378
+#: accounts/forms.py:381
 msgid ""
 "This lets us figure out exactly how old your child is when they participate "
 "in a study. We never publish children's birthdates or information that would "
@@ -166,43 +167,43 @@ msgstr ""
 "こちらは、調査参加時にお子さんが何歳であったかを正確に把握するためです。お子"
 "さんの誕生日や、誕生日を計算できるような情報は決して公開いたしません。"
 
-#: accounts/forms.py:385
+#: accounts/forms.py:388
 msgid "Birthdays cannot be in the future."
 msgstr "誕生日が未来の日付になっています。"
 
-#: accounts/forms.py:402
+#: accounts/forms.py:405
 msgid "First Name"
 msgstr "お名前"
 
-#: accounts/forms.py:403 accounts/templates/accounts/participant_detail.html:36
+#: accounts/forms.py:406 accounts/templates/accounts/participant_detail.html:36
 #: web/templates/web/children-list.html:45
 msgid "Birthday"
 msgstr "誕生日"
 
-#: accounts/forms.py:404 accounts/templates/accounts/participant_detail.html:44
+#: accounts/forms.py:407 accounts/templates/accounts/participant_detail.html:44
 msgid "Gender"
 msgstr "性別"
 
-#: accounts/forms.py:405 accounts/templates/accounts/participant_detail.html:48
+#: accounts/forms.py:408 accounts/templates/accounts/participant_detail.html:48
 msgid "Gestational Age at Birth"
 msgstr "出産時の妊娠期間"
 
-#: accounts/forms.py:407
+#: accounts/forms.py:410
 msgid "Any additional information you'd like us to know"
 msgstr "他に何か私たちが知っておくべきことはありますか？"
 
-#: accounts/forms.py:409
+#: accounts/forms.py:412
 msgid "Characteristics and conditions"
 msgstr "特徴と条件"
 
-#: accounts/forms.py:411
+#: accounts/forms.py:414
 msgid ""
 "Languages this child is exposed to at home, school, or with another "
 "caregiver."
 msgstr ""
 "家庭や学校、または他の保護者と一緒にいる際に、このお子さんが触れる言語。"
 
-#: accounts/forms.py:417
+#: accounts/forms.py:420
 msgid ""
 "This lets you select the correct child to participate in a particular study. "
 "A nickname or initials are fine! We may include your child's name in email "
@@ -214,16 +215,16 @@ msgstr ""
 "ば、「まりちゃんのための新しい研究があります！」など）、名前を公表したり、研"
 "究に使用したりすることはありません。"
 
-#: accounts/forms.py:420
+#: accounts/forms.py:423
 msgid ""
 "For instance, diagnosed developmental disorders or vision or hearing problems"
 msgstr "例えば、診断を受けた発達障がい、視力・聴力の障がい"
 
-#: accounts/forms.py:423
+#: accounts/forms.py:426
 msgid "Please round down to the nearest full week of pregnancy completed"
 msgstr "数字を切り捨てて、妊娠週数に最も近いものにしてください"
 
-#: accounts/forms.py:426
+#: accounts/forms.py:429
 msgid ""
 "Most research studies are designed for a general age range, but some focus "
 "on a particular group of children. The choices you make below are used to "
@@ -233,63 +234,63 @@ msgstr ""
 "プの子どもたちに焦点を当てたものもあります。以下の選択肢は、お子さんにあった"
 "研究・調査を表示するために使用されます。"
 
-#: accounts/forms.py:456
+#: accounts/forms.py:459
 msgid "All studies"
 msgstr "すべての研究・調査"
 
-#: accounts/forms.py:457
+#: accounts/forms.py:460
 msgid "Studies happening right now"
 msgstr "現在行われている研究・調査"
 
-#: accounts/forms.py:458
+#: accounts/forms.py:461
 msgid "Scheduled studies"
 msgstr "予定されている研究・調査"
 
-#: accounts/forms.py:461
+#: accounts/forms.py:464
 msgid "Find studies for..."
 msgstr "研究・調査を探す (年齢別)："
 
-#: accounts/forms.py:462
+#: accounts/forms.py:465
 msgid "babies (under 1)"
 msgstr "乳児（１歳未満）"
 
-#: accounts/forms.py:463
+#: accounts/forms.py:466
 msgid "toddlers (1-2)"
 msgstr "幼児（１～２歳）"
 
-#: accounts/forms.py:464
+#: accounts/forms.py:467
 msgid "preschoolers (3-4)"
 msgstr "未就学児（３～４歳）"
 
-#: accounts/forms.py:465
+#: accounts/forms.py:468
 msgid "school-age kids (5-17)"
 msgstr "学齢児童（５～１７歳）"
 
-#: accounts/forms.py:466
+#: accounts/forms.py:469
 msgid "adults (18+)"
 msgstr "成人（１８歳以上）"
 
-#: accounts/forms.py:469
+#: accounts/forms.py:472
 msgid "Show studies happening..."
 msgstr "進行中の調査を選択（現在、この機能で日本語の調査は選択できません）"
 
-#: accounts/forms.py:470
+#: accounts/forms.py:473
 msgid "here on the Lookit platform"
 msgstr "Lookitウェブサイト内調査"
 
-#: accounts/forms.py:471
+#: accounts/forms.py:474
 msgid "on other websites"
 msgstr "他のウェブサイトでの調査"
 
-#: accounts/forms.py:476
+#: accounts/forms.py:479
 msgid "Hide Studies We've Done"
 msgstr "既に実施した研究・調査を非表示にする"
 
-#: accounts/forms.py:515
+#: accounts/forms.py:518
 msgid "Lookit studies"
 msgstr "Lookitの研究・調査"
 
-#: accounts/forms.py:516
+#: accounts/forms.py:519
 msgid "External studies"
 msgstr "外部の研究・調査"
 
@@ -724,7 +725,7 @@ msgstr "田舎"
 msgid "Select a State"
 msgstr "都道府県を選択してください"
 
-#: accounts/models.py:717
+#: accounts/models.py:721
 msgid "and"
 msgstr "と"
 
@@ -1196,6 +1197,56 @@ msgstr ""
 msgid "The Users who have requested to join this Lab."
 msgstr "本研究室への参加を希望されたユーザー。"
 
+#: studies/models.py:1007
+#, fuzzy
+#| msgid "preview"
+msgid "Needs review"
+msgstr "プレビュー"
+
+#: studies/models.py:1008
+msgid "To pay"
+msgstr ""
+
+#: studies/models.py:1009
+msgid "Do not pay"
+msgstr ""
+
+#: studies/models.py:1010
+msgid "Paid"
+msgstr ""
+
+#: studies/models.py:1014
+msgid "To schedule"
+msgstr ""
+
+#: studies/models.py:1015
+#, fuzzy
+#| msgid "Scheduled studies"
+msgid "Scheduled"
+msgstr "予定されている研究・調査"
+
+#: studies/models.py:1016
+msgid "Session attended"
+msgstr ""
+
+#: studies/models.py:1017
+#, fuzzy
+#| msgid "Password reset complete"
+msgid "Session complete"
+msgstr "パスワードのリセットが完了しました。"
+
+#: studies/models.py:1018
+msgid "Follow up"
+msgstr ""
+
+#: studies/models.py:1019
+msgid "Communication complete"
+msgstr ""
+
+#: studies/models.py:1020
+msgid "Withdrawn or closed"
+msgstr ""
+
 #: web/templates/registration/logged_out.html:5
 msgid "You've successfully logged out."
 msgstr "ログアウトに成功しました。"
@@ -1426,7 +1477,7 @@ msgstr "これまで参加した研究・調査"
 msgid "Logout"
 msgstr "ログアウト"
 
-#: web/templates/web/_navigation.html:12 web/templatetags/web_extras.py:169
+#: web/templates/web/_navigation.html:12 web/templatetags/web_extras.py:184
 msgid "Sign up"
 msgstr "登録する"
 
@@ -1446,7 +1497,7 @@ msgstr "3歳〜4歳の幼児の調査"
 msgid "studies for school-aged kids & teens (5-17)"
 msgstr "5歳〜17歳の子供の調査"
 
-#: web/templates/web/base.html:16 web/templates/web/home.html:35
+#: web/templates/web/base.html:17 web/templates/web/home.html:35
 msgid "Children Helping Science"
 msgstr "科学を助ける子どもたち"
 
@@ -1512,8 +1563,8 @@ msgid ""
 "When you are ready, click the 'Continue to Study' button to go on to your "
 "study, '{{ request.session.study_name }}'."
 msgstr ""
-"準備ができ次第、「研究・調査を続ける 」ボタンをクリックして、「{{ request."
-"session.study_name}}」調査に進みます。"
+"準備ができ次第、「研究・調査を続ける 」ボタンをクリックして、"
+"「{{ request.session.study_name}}」調査に進みます。"
 
 #: web/templates/web/children-list.html:30
 msgid ""
@@ -1546,8 +1597,8 @@ msgstr ""
 
 #: web/templates/web/children-list.html:36
 msgid ""
-"click here</a> to review the requirements for '{{ request.session."
-"study_name }}'."
+"click here</a> to review the requirements for "
+"'{{ request.session.study_name }}'."
 msgstr ""
 "ここをクリック</a>して、'{{ request.session.study_name }}' の要件を確認してく"
 "ださい。"
@@ -2783,9 +2834,9 @@ msgstr ""
 "イェール大学の<a href = \"https://compdevlab.yale.edu/\">Julian Jara-"
 "Ettinger</a>、テキサス大学ダラス校の<a href = \"https://www.utdallas.edu/"
 "thinklab/\">Candice Mills</a>、マサチューセッツ工科大学の <a href = \"http://"
-"eccl.mit.edu/\">Laura Schulz</a>、とミネルバ大学の<a href = \"https://www."
-"minerva.kgi.edu/people/mark-sheskin-phd/\">Mark Sheskin</a>によって立ち上げら"
-"れた。</p>"
+"eccl.mit.edu/\">Laura Schulz</a>、とミネルバ大学の<a href = \"https://"
+"www.minerva.kgi.edu/people/mark-sheskin-phd/\">Mark Sheskin</a>によって立ち上"
+"げられた。</p>"
 
 #: web/templates/web/faq.html:627
 msgid "How can I contact you?"
@@ -2798,11 +2849,11 @@ msgid ""
 "\"study details\" page, which will always include contact information for "
 "the lab running that study. </p>\n"
 "                <p>If you want to get in touch with the researchers "
-"organizing this website, you can reach us by email at <a href=\"mailto:"
-"lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
+"organizing this website, you can reach us by email at <a "
+"href=\"mailto:lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
 "                <p>To report any technical difficulties during "
-"participation, please contact our team by email at <a href=\"mailto:"
-"lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
+"participation, please contact our team by email at <a "
+"href=\"mailto:lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
 "                "
 msgstr ""
 "\n"
@@ -2871,13 +2922,13 @@ msgid ""
 "                <p>If you are trying to participate in a study and having "
 "difficulties, please start by contacting the researchers who made that "
 "specific study.  If you still need help, you can also reach the Children "
-"Helping Science team for help at <a href=\"mailto:lookit-tech@mit."
-"edu\">lookit-tech@mit.edu</a>.</p>\n"
+"Helping Science team for help at <a href=\"mailto:lookit-"
+"tech@mit.edu\">lookit-tech@mit.edu</a>.</p>\n"
 "                <p>If you are a researcher working on creating a study, you "
 "can find help in our <a href=\"https://lookit.readthedocs.io/en/develop/"
-"index.html\">documentation</a>, and in our <a href = \"https://docs.google."
-"com/forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/"
-"viewform\">Slack community</a>.</p>\n"
+"index.html\">documentation</a>, and in our <a href = \"https://"
+"docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-"
+"I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform\">Slack community</a>.</p>\n"
 "                "
 msgstr ""
 "\n"
@@ -2887,10 +2938,11 @@ msgstr ""
 "tech@mit.edu\">lookit-tech@mit.edu</a>に連絡して助けを求めることもできます "
 "(英語対応のみ)。</p>\n"
 "                                <p>研究・調査を作成している研究者の方でヘルプ"
-"が必要な場合には、<a href=\"https://lookit.readthedocs.io/en/develop/index."
-"html\">こちらのドキュメント</a>、または<a href = \"https://docs.google.com/"
-"forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/"
-"viewform\">Slackコミュニティ</a>にて解決を図ることができます。</p>"
+"が必要な場合には、<a href=\"https://lookit.readthedocs.io/en/develop/"
+"index.html\">こちらのドキュメント</a>、または<a href = \"https://"
+"docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-"
+"I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform\">Slackコミュニティ</a>にて解決"
+"を図ることができます。</p>"
 
 #: web/templates/web/faq.html:714
 msgid "What security measures do you implement?"
@@ -2951,15 +3003,16 @@ msgid ""
 "testing, or submit a new protocol for your proposed online study.</p>\n"
 "                <p>As of April 2023, we have agreements with over 90 "
 "universities, including institutions in the United States, Canada, the "
-"United Kingdom, and European Union. Please email <a href=\"mailto:lookit@mit."
-"edu\">lookit@mit.edu</a> if you are not sure whether your institution "
-"already has an agreement, or if you need any help at all getting your "
-"paperwork in order.</p>\n"
+"United Kingdom, and European Union. Please email <a "
+"href=\"mailto:lookit@mit.edu\">lookit@mit.edu</a> if you are not sure "
+"whether your institution already has an agreement, or if you need any help "
+"at all getting your paperwork in order.</p>\n"
 "                <p>While you are completing these steps, you can get started "
 "on Children Helping Science by creating a lab account, creating your first "
 "study, and getting it peer reviewed by our researcher community. A step-by-"
-"step guide to getting started is available <a href=\"https://lookit."
-"readthedocs.io/en/develop/researchers-start-here.html\">here</a>.</p>\n"
+"step guide to getting started is available <a href=\"https://"
+"lookit.readthedocs.io/en/develop/researchers-start-here.html\">here</a>.</"
+"p>\n"
 "                "
 msgstr ""
 "\n"
@@ -2972,8 +3025,8 @@ msgstr ""
 "                                <p>2023年4月現在、私たちは米国、カナダ、英"
 "国、欧州連合の機関を含む50以上の大学と協定を結んでいます。あなたの所属機関が"
 "既に協定を結んでいるかどうかがわからない場合や、書類を整えるのに支援が必要な"
-"場合は、こちらのメールアドレス <a href=\"mailto:lookit-tech@mit."
-"edu\">lookit@mit.edu</a> までご連絡ください (英語対応のみ)。</p>\n"
+"場合は、こちらのメールアドレス <a href=\"mailto:lookit-"
+"tech@mit.edu\">lookit@mit.edu</a> までご連絡ください (英語対応のみ)。</p>\n"
 "                                <p>これらのステップを踏んでいる間でも、ラボア"
 "カウントを作成し、最初の研究・調査を作成し、研究者コミュニティによってピアレ"
 "ビューを受けることで、Children Helping Scienceプラットフォームの使用を開始す"
@@ -2993,10 +3046,11 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"                <p>Children Helping Science has a <a href = \"https://docs."
-"google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-"
-"Q/viewform\">Slack community</a> for researchers to ask for help, conduct "
-"peer review, and discuss online research methods.</p>\n"
+"                <p>Children Helping Science has a <a href = \"https://"
+"docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-"
+"I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform\">Slack community</a> for "
+"researchers to ask for help, conduct peer review, and discuss online "
+"research methods.</p>\n"
 "                <p>The Society for Research in Child Development also has a "
 "<a href = \"https://commons.srcd.org/communities/community-home/digestviewer/"
 "viewthread?CommunityKey=bd3d326e-b7db-49bf-"
@@ -3008,11 +3062,11 @@ msgid ""
 "                "
 msgstr ""
 "\n"
-"Children Helping Scienceプラットフォームには <a href = \"https://docs.google."
-"com/forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/"
-"viewform\">Slackを使ったコミュニティ</a>があり、研究者はヘルプを求めたり、ピ"
-"アレビューを実施したり、オンライン研究・調査について議論したりすることができ"
-"ます。</p>\n"
+"Children Helping Scienceプラットフォームには <a href = \"https://"
+"docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-"
+"I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform\">Slackを使ったコミュニティ</a>"
+"があり、研究者はヘルプを求めたり、ピアレビューを実施したり、オンライン研究・"
+"調査について議論したりすることができます。</p>\n"
 "                                <p>The Society for Research in Child "
 "Developmentも同様に <a href = \"https://commons.srcd.org/communities/"
 "community-home/digestviewer/viewthread?CommunityKey=bd3d326e-b7db-49bf-"
@@ -3030,7 +3084,7 @@ msgstr "&nbsp;"
 msgid "Welcome to"
 msgstr "&nbsp;"
 
-#: web/templates/web/garden/participate.html:16
+#: web/templates/web/garden/participate.html:15
 msgid "How to Participate"
 msgstr "&nbsp;"
 
@@ -3878,10 +3932,16 @@ msgid "Invalid"
 msgstr "無効"
 
 #: web/templates/web/studies-history.html:123
+#, fuzzy
+#| msgid ""
+#| "There was a technical problem with your consent video, or it did not show "
+#| "you reading the consent statement out loud. Your other data from this "
+#| "session will not be viewed or used by the study researchers."
 msgid ""
-"There was a technical problem with your consent video, or it did not show "
-"you reading the consent statement out loud. Your other data from this "
-"session will not be viewed or used by the study researchers."
+"There was a technical problem with your consent video, it did not show you "
+"reading the consent statement out loud, or the researcher determined that "
+"you did not meet the eligibility criteria. Your other data from this session "
+"will not be viewed or used by the study researchers."
 msgstr ""
 "あなたの同意に関する録画ビデオには技術的な問題があったか、同意文を読み上げて"
 "いる様子が記録されていませんでした。そのため、このセッション以降にあるあなた"
@@ -4067,7 +4127,7 @@ msgstr ""
 "参加するをクリックすると、この研究・調査の研究者があなたに連絡することが可能"
 "になり、あなたのお子さんのプロフィール情報が研究者と共有されます。"
 
-#: web/templatetags/web_extras.py:191
+#: web/templatetags/web_extras.py:206
 msgid ""
 "Use the tabs above to see activities you can do right now, or scheduled "
 "activities you can sign up for.\n"
@@ -4083,7 +4143,7 @@ msgstr ""
 "やタブレットは使用できません)。特に指定がない限りは、ChromeまたはFirefoxのブ"
 "ラウザが必要となります。"
 
-#: web/templatetags/web_extras.py:195
+#: web/templatetags/web_extras.py:210
 msgid ""
 "You and your child can participate in these studies right now by choosing a "
 "study and then clicking \"Participate.\" Please note you'll need a laptop or "
@@ -4095,7 +4155,7 @@ msgstr ""
 "す (スマートフォンやタブレットは使用できません)。特に指定がない限りは、Chrome"
 "またはFirefoxのブラウザが必要となります。"
 
-#: web/templatetags/web_extras.py:199
+#: web/templatetags/web_extras.py:214
 msgid ""
 "You and your child can participate in these studies by scheduling a time to "
 "meet with a researcher (usually over video conferencing). Choose a study and "
@@ -4105,37 +4165,36 @@ msgstr ""
 "はオンラインミーティングです)。これから参加したい研究・調査を選んで、「参加す"
 "る」をクリックしてください。"
 
-#: web/views.py:130
+#: web/views.py:179
 msgid "Participant created."
 msgstr "参加者が作成されました。"
 
-#: web/views.py:173
+#: web/views.py:222
 msgid "Demographic data saved."
 msgstr "人口統計学的データが保存されました。"
 
-#: web/views.py:239
+#: web/views.py:288
 msgid "Child added."
 msgstr "お子さんの情報が追加されました。"
 
-#: web/views.py:280
+#: web/views.py:329
 msgid "Child deleted."
 msgstr "お子さんの情報が削除されました。"
 
-#: web/views.py:282
+#: web/views.py:331
 msgid "Child updated."
 msgstr "お子さんの情報が更新されました。"
 
-#: web/views.py:310
+#: web/views.py:359
 msgid "Email preferences saved."
 msgstr "メール設定が保存されました。"
 
-#: web/views.py:720
 #, python-brace-format
-msgid ""
-"The study {study.name} is not currently collecting data - the study is "
-"either completed or paused. If you think this is an error, please contact "
-"{study.contact_info}"
-msgstr ""
-"研究・調査「 {study.name} 」は現在データ収集を行っていません（データ収集が完"
-"了したか、停止されているためです）。この状態がエラーだと思われる場合は、以下"
-"までご連絡ください。 {study.contact_info}"
+#~ msgid ""
+#~ "The study {study.name} is not currently collecting data - the study is "
+#~ "either completed or paused. If you think this is an error, please contact "
+#~ "{study.contact_info}"
+#~ msgstr ""
+#~ "研究・調査「 {study.name} 」は現在データ収集を行っていません（データ収集が"
+#~ "完了したか、停止されているためです）。この状態がエラーだと思われる場合は、"
+#~ "以下までご連絡ください。 {study.contact_info}"
