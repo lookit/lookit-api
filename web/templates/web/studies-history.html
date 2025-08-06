@@ -120,7 +120,7 @@
                                         {% trans "Your consent video has not yet been reviewed by a researcher." %}
                                     {% elif response.most_recent_ruling == 'rejected' %}
                                         {% trans "Invalid" %}.
-                                        {% trans "There was a technical problem with your consent video, or it did not show you reading the consent statement out loud. Your other data from this session will not be viewed or used by the study researchers." %}
+                                        {% trans "There was a technical problem with your consent video, it did not show you reading the consent statement out loud, or the researcher determined that you did not meet the eligibility criteria. Your other data from this session will not be viewed or used by the study researchers." %}
                                     {% else %}
                                         {% trans "No information about consent video review status." %}
                                     {% endif %}
