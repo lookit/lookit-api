@@ -1,8 +1,9 @@
+#: studies/models.py:1006 studies/models.py:1013
 msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-04 17:42-0400\n"
+"POT-Creation-Date: 2025-08-06 13:03-0400\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -72,93 +73,93 @@ msgstr ""
 "Een onderzoeker heeft vragen over mijn individuele antwoorden (bijvoorbeeld "
 "als ik tijdens het onderzoek een technisch probleem meld)"
 
-#: accounts/forms.py:322
+#: accounts/forms.py:325
 msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
 msgstr ""
 "Voer in als een lijst door komma's gescheiden: JJJJ-MM-DD, JJJJ-MM-DD, ..."
 
-#: accounts/forms.py:325
+#: accounts/forms.py:328
 msgid ""
 "If the answer varies or needs more explanation, you can tell us more below."
 msgstr ""
 
-#: accounts/forms.py:328
+#: accounts/forms.py:331
 msgid ""
 "Please select the appropriate responses for everyone in your children's "
 "immediate family."
 msgstr ""
 
-#: accounts/forms.py:333
+#: accounts/forms.py:336
 msgid "What country do you live in?"
 msgstr "In welk land woont u?"
 
-#: accounts/forms.py:334
+#: accounts/forms.py:337
 msgid "What state do you live in?"
 msgstr "In welke provincie woont u?"
 
-#: accounts/forms.py:335
+#: accounts/forms.py:338
 msgid "How would you describe the area where you live?"
 msgstr "Hoe zou u het gebied waarin u woont omschrijven?"
 
-#: accounts/forms.py:336
+#: accounts/forms.py:339
 msgid "How many children do you have?"
 msgstr "Hoeveel kinderen heeft u?"
 
-#: accounts/forms.py:337
+#: accounts/forms.py:340
 msgid "For each child, please enter his or her birthdate:"
 msgstr "Geef voor elk kind zijn of haar geboortedatum op:"
 
-#: accounts/forms.py:339
+#: accounts/forms.py:342
 msgid "How many parents/guardians do your children live with?"
 msgstr "Bij hoeveel ouders / verzorgers wonen uw kinderen?"
 
-#: accounts/forms.py:341
+#: accounts/forms.py:344
 msgid "What is your age?"
 msgstr "Wat is uw leeftijd?"
 
-#: accounts/forms.py:342
+#: accounts/forms.py:345
 msgid "What is your gender?"
 msgstr "Wat is uw geslacht?"
 
-#: accounts/forms.py:343
+#: accounts/forms.py:346
 #, fuzzy
 #| msgid "What is your gender?"
 msgid "Describe your gender"
 msgstr "Wat is uw geslacht?"
 
-#: accounts/forms.py:345
+#: accounts/forms.py:348
 msgid "What is the highest level of education you've completed?"
 msgstr "Wat is de hoogste opleiding die u heeft afgerond?"
 
-#: accounts/forms.py:348
+#: accounts/forms.py:351
 msgid "What is your approximate family yearly income (in US dollars)?"
 msgstr "Wat is uw geschatte jaarlijkse gezinsinkomen (in euro's)?"
 
-#: accounts/forms.py:350
+#: accounts/forms.py:353
 msgid "Anything else you'd like us to know?"
 msgstr "Is er nog iets anders waarvan u wilt dat wij het weten?"
 
-#: accounts/forms.py:351
+#: accounts/forms.py:354
 msgid "How did you hear about Lookit?"
 msgstr "Hoe heeft u over Lookit gehoord?"
 
-#: accounts/forms.py:353
+#: accounts/forms.py:356
 msgid ""
 "What racial group(s) does your family identify with/belong to? Please select "
 "any that apply to someone in your children's immediate family."
 msgstr ""
 
-#: accounts/forms.py:356
+#: accounts/forms.py:359
 #, fuzzy
 #| msgid "Another race, ethnicity, or origin"
 msgid "Share more about your family's race, ethnicity, or origin:"
 msgstr "Een andere etniciteit of afkomst"
 
-#: accounts/forms.py:359
+#: accounts/forms.py:362
 msgid "Share more about your children's parents/guardians:"
 msgstr ""
 
-#: accounts/forms.py:378
+#: accounts/forms.py:381
 msgid ""
 "This lets us figure out exactly how old your child is when they participate "
 "in a study. We never publish children's birthdates or information that would "
@@ -168,36 +169,36 @@ msgstr ""
 "een studie. We publiceren nooit geboortegegevens van kinderen of informatie "
 "waarmee een lezer de geboortedatum kan berekenen."
 
-#: accounts/forms.py:385
+#: accounts/forms.py:388
 msgid "Birthdays cannot be in the future."
 msgstr "De geboortedatum kan niet in de toekomst liggen."
 
-#: accounts/forms.py:402
+#: accounts/forms.py:405
 msgid "First Name"
 msgstr "Voornaam"
 
-#: accounts/forms.py:403 accounts/templates/accounts/participant_detail.html:36
+#: accounts/forms.py:406 accounts/templates/accounts/participant_detail.html:36
 #: web/templates/web/children-list.html:45
 msgid "Birthday"
 msgstr "Geboortedatum"
 
-#: accounts/forms.py:404 accounts/templates/accounts/participant_detail.html:44
+#: accounts/forms.py:407 accounts/templates/accounts/participant_detail.html:44
 msgid "Gender"
 msgstr "Geslacht"
 
-#: accounts/forms.py:405 accounts/templates/accounts/participant_detail.html:48
+#: accounts/forms.py:408 accounts/templates/accounts/participant_detail.html:48
 msgid "Gestational Age at Birth"
 msgstr "Zwangerschapsduur bij de geboorte"
 
-#: accounts/forms.py:407
+#: accounts/forms.py:410
 msgid "Any additional information you'd like us to know"
 msgstr "Eventuele aanvullende informatie waarvan u wilt dat wij het weten"
 
-#: accounts/forms.py:409
+#: accounts/forms.py:412
 msgid "Characteristics and conditions"
 msgstr "Kenmerken en voorwaarden"
 
-#: accounts/forms.py:411
+#: accounts/forms.py:414
 msgid ""
 "Languages this child is exposed to at home, school, or with another "
 "caregiver."
@@ -205,7 +206,7 @@ msgstr ""
 "Talen waaraan dit kind thuis, op school of bij een andere verzorger wordt "
 "blootgesteld."
 
-#: accounts/forms.py:417
+#: accounts/forms.py:420
 msgid ""
 "This lets you select the correct child to participate in a particular study. "
 "A nickname or initials are fine! We may include your child's name in email "
@@ -218,87 +219,87 @@ msgstr ""
 "beschikbaar voor Julia!\"), maar we zullen nooit namen publiceren of ze "
 "gebruiken in ons onderzoek."
 
-#: accounts/forms.py:420
+#: accounts/forms.py:423
 msgid ""
 "For instance, diagnosed developmental disorders or vision or hearing problems"
 msgstr ""
 "Bijvoorbeeld gediagnosticeerde ontwikkelingsstoornissen of zicht- of "
 "gehoorproblemen"
 
-#: accounts/forms.py:423
+#: accounts/forms.py:426
 msgid "Please round down to the nearest full week of pregnancy completed"
 msgstr "Rond af naar de dichtstbijzijnde volledige zwangerschapsweek"
 
-#: accounts/forms.py:426
+#: accounts/forms.py:429
 msgid ""
 "Most research studies are designed for a general age range, but some focus "
 "on a particular group of children. The choices you make below are used to "
 "show you studies that are designed for children with these characteristics."
 msgstr ""
 
-#: accounts/forms.py:456
+#: accounts/forms.py:459
 #, fuzzy
 #| msgid "Studies"
 msgid "All studies"
 msgstr "Studies"
 
-#: accounts/forms.py:457
+#: accounts/forms.py:460
 msgid "Studies happening right now"
 msgstr ""
 
-#: accounts/forms.py:458
+#: accounts/forms.py:461
 #, fuzzy
 #| msgid "Current studies"
 msgid "Scheduled studies"
 msgstr "Huidige studies"
 
-#: accounts/forms.py:461
+#: accounts/forms.py:464
 msgid "Find studies for..."
 msgstr ""
 
-#: accounts/forms.py:462
+#: accounts/forms.py:465
 msgid "babies (under 1)"
 msgstr ""
 
-#: accounts/forms.py:463
+#: accounts/forms.py:466
 msgid "toddlers (1-2)"
 msgstr ""
 
-#: accounts/forms.py:464
+#: accounts/forms.py:467
 msgid "preschoolers (3-4)"
 msgstr ""
 
-#: accounts/forms.py:465
+#: accounts/forms.py:468
 msgid "school-age kids (5-17)"
 msgstr ""
 
-#: accounts/forms.py:466
+#: accounts/forms.py:469
 msgid "adults (18+)"
 msgstr ""
 
-#: accounts/forms.py:469
+#: accounts/forms.py:472
 msgid "Show studies happening..."
 msgstr ""
 
-#: accounts/forms.py:470
+#: accounts/forms.py:473
 msgid "here on the Lookit platform"
 msgstr ""
 
-#: accounts/forms.py:471
+#: accounts/forms.py:474
 msgid "on other websites"
 msgstr ""
 
-#: accounts/forms.py:476
+#: accounts/forms.py:479
 msgid "Hide Studies We've Done"
 msgstr ""
 
-#: accounts/forms.py:515
+#: accounts/forms.py:518
 #, fuzzy
 #| msgid "Your past studies"
 msgid "Lookit studies"
 msgstr "Je eerdere studies"
 
-#: accounts/forms.py:516
+#: accounts/forms.py:519
 #, fuzzy
 #| msgid "Current studies"
 msgid "External studies"
@@ -735,7 +736,7 @@ msgstr "landelijk"
 msgid "Select a State"
 msgstr "Selecteer een provincie"
 
-#: accounts/models.py:717
+#: accounts/models.py:721
 #, fuzzy
 #| msgid "Gan"
 msgid "and"
@@ -1214,6 +1215,56 @@ msgstr ""
 msgid "The Users who have requested to join this Lab."
 msgstr "De gebruikers die hebben verzocht om lid te worden van dit Lab."
 
+#: studies/models.py:1007
+#, fuzzy
+#| msgid "preview"
+msgid "Needs review"
+msgstr "voorbeeld"
+
+#: studies/models.py:1008
+msgid "To pay"
+msgstr ""
+
+#: studies/models.py:1009
+msgid "Do not pay"
+msgstr ""
+
+#: studies/models.py:1010
+msgid "Paid"
+msgstr ""
+
+#: studies/models.py:1014
+msgid "To schedule"
+msgstr ""
+
+#: studies/models.py:1015
+#, fuzzy
+#| msgid "Current studies"
+msgid "Scheduled"
+msgstr "Huidige studies"
+
+#: studies/models.py:1016
+msgid "Session attended"
+msgstr ""
+
+#: studies/models.py:1017
+#, fuzzy
+#| msgid "Password reset complete"
+msgid "Session complete"
+msgstr "Wachtwoord opnieuw instellen voltooid"
+
+#: studies/models.py:1018
+msgid "Follow up"
+msgstr ""
+
+#: studies/models.py:1019
+msgid "Communication complete"
+msgstr ""
+
+#: studies/models.py:1020
+msgid "Withdrawn or closed"
+msgstr ""
+
 #: web/templates/registration/logged_out.html:5
 msgid "You've successfully logged out."
 msgstr "U bent succesvol uitgelogd."
@@ -1472,7 +1523,7 @@ msgstr "Eerdere studies"
 msgid "Logout"
 msgstr "Uitloggen"
 
-#: web/templates/web/_navigation.html:12 web/templatetags/web_extras.py:169
+#: web/templates/web/_navigation.html:12 web/templatetags/web_extras.py:184
 msgid "Sign up"
 msgstr "Aanmelden"
 
@@ -1492,7 +1543,7 @@ msgstr ""
 msgid "studies for school-aged kids & teens (5-17)"
 msgstr ""
 
-#: web/templates/web/base.html:16 web/templates/web/home.html:35
+#: web/templates/web/base.html:17 web/templates/web/home.html:35
 msgid "Children Helping Science"
 msgstr ""
 
@@ -1577,8 +1628,8 @@ msgstr ""
 
 #: web/templates/web/children-list.html:36
 msgid ""
-"click here</a> to review the requirements for '{{ request.session."
-"study_name }}'."
+"click here</a> to review the requirements for "
+"'{{ request.session.study_name }}'."
 msgstr ""
 
 #: web/templates/web/children-list.html:44
@@ -2407,11 +2458,11 @@ msgid ""
 "\"study details\" page, which will always include contact information for "
 "the lab running that study. </p>\n"
 "                <p>If you want to get in touch with the researchers "
-"organizing this website, you can reach us by email at <a href=\"mailto:"
-"lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
+"organizing this website, you can reach us by email at <a "
+"href=\"mailto:lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
 "                <p>To report any technical difficulties during "
-"participation, please contact our team by email at <a href=\"mailto:"
-"lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
+"participation, please contact our team by email at <a "
+"href=\"mailto:lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
 "                "
 msgstr ""
 
@@ -2459,13 +2510,13 @@ msgid ""
 "                <p>If you are trying to participate in a study and having "
 "difficulties, please start by contacting the researchers who made that "
 "specific study.  If you still need help, you can also reach the Children "
-"Helping Science team for help at <a href=\"mailto:lookit-tech@mit."
-"edu\">lookit-tech@mit.edu</a>.</p>\n"
+"Helping Science team for help at <a href=\"mailto:lookit-"
+"tech@mit.edu\">lookit-tech@mit.edu</a>.</p>\n"
 "                <p>If you are a researcher working on creating a study, you "
 "can find help in our <a href=\"https://lookit.readthedocs.io/en/develop/"
-"index.html\">documentation</a>, and in our <a href = \"https://docs.google."
-"com/forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/"
-"viewform\">Slack community</a>.</p>\n"
+"index.html\">documentation</a>, and in our <a href = \"https://"
+"docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-"
+"I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform\">Slack community</a>.</p>\n"
 "                "
 msgstr ""
 
@@ -2517,15 +2568,16 @@ msgid ""
 "testing, or submit a new protocol for your proposed online study.</p>\n"
 "                <p>As of April 2023, we have agreements with over 90 "
 "universities, including institutions in the United States, Canada, the "
-"United Kingdom, and European Union. Please email <a href=\"mailto:lookit@mit."
-"edu\">lookit@mit.edu</a> if you are not sure whether your institution "
-"already has an agreement, or if you need any help at all getting your "
-"paperwork in order.</p>\n"
+"United Kingdom, and European Union. Please email <a "
+"href=\"mailto:lookit@mit.edu\">lookit@mit.edu</a> if you are not sure "
+"whether your institution already has an agreement, or if you need any help "
+"at all getting your paperwork in order.</p>\n"
 "                <p>While you are completing these steps, you can get started "
 "on Children Helping Science by creating a lab account, creating your first "
 "study, and getting it peer reviewed by our researcher community. A step-by-"
-"step guide to getting started is available <a href=\"https://lookit."
-"readthedocs.io/en/develop/researchers-start-here.html\">here</a>.</p>\n"
+"step guide to getting started is available <a href=\"https://"
+"lookit.readthedocs.io/en/develop/researchers-start-here.html\">here</a>.</"
+"p>\n"
 "                "
 msgstr ""
 
@@ -2539,10 +2591,11 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"                <p>Children Helping Science has a <a href = \"https://docs."
-"google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-"
-"Q/viewform\">Slack community</a> for researchers to ask for help, conduct "
-"peer review, and discuss online research methods.</p>\n"
+"                <p>Children Helping Science has a <a href = \"https://"
+"docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-"
+"I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform\">Slack community</a> for "
+"researchers to ask for help, conduct peer review, and discuss online "
+"research methods.</p>\n"
 "                <p>The Society for Research in Child Development also has a "
 "<a href = \"https://commons.srcd.org/communities/community-home/digestviewer/"
 "viewthread?CommunityKey=bd3d326e-b7db-49bf-"
@@ -2564,7 +2617,7 @@ msgstr "Wat is uw leeftijd?"
 msgid "Welcome to"
 msgstr ""
 
-#: web/templates/web/garden/participate.html:16
+#: web/templates/web/garden/participate.html:15
 #, fuzzy
 #| msgid "Log in to participate"
 msgid "How to Participate"
@@ -3250,10 +3303,16 @@ msgid "Invalid"
 msgstr "Ongeldig"
 
 #: web/templates/web/studies-history.html:123
+#, fuzzy
+#| msgid ""
+#| "There was a technical problem with your consent video, or it did not show "
+#| "you reading the consent statement out loud. Your other data from this "
+#| "session will not be viewed or used by the study researchers."
 msgid ""
-"There was a technical problem with your consent video, or it did not show "
-"you reading the consent statement out loud. Your other data from this "
-"session will not be viewed or used by the study researchers."
+"There was a technical problem with your consent video, it did not show you "
+"reading the consent statement out loud, or the researcher determined that "
+"you did not meet the eligibility criteria. Your other data from this session "
+"will not be viewed or used by the study researchers."
 msgstr ""
 "Er was een technisch probleem met uw toestemmingsvideo, of u hebt de "
 "toestemmingsverklaring niet hardop gelezen. Uw andere gegevens van deze "
@@ -3465,7 +3524,7 @@ msgid ""
 "the researchers."
 msgstr ""
 
-#: web/templatetags/web_extras.py:191
+#: web/templatetags/web_extras.py:206
 #, fuzzy
 #| msgid ""
 #| "Please note you'll need a laptop or desktop computer (not a mobile "
@@ -3481,7 +3540,7 @@ msgstr ""
 "Houd er rekening mee dat u een laptop of desktopcomputer (geen mobiele "
 "telefoon) met Chrome of Firefox nodig heeft om deel te nemen."
 
-#: web/templatetags/web_extras.py:195
+#: web/templatetags/web_extras.py:210
 msgid ""
 "You and your child can participate in these studies right now by choosing a "
 "study and then clicking \"Participate.\" Please note you'll need a laptop or "
@@ -3489,47 +3548,46 @@ msgid ""
 "participate, unless a specific study says otherwise."
 msgstr ""
 
-#: web/templatetags/web_extras.py:199
+#: web/templatetags/web_extras.py:214
 msgid ""
 "You and your child can participate in these studies by scheduling a time to "
 "meet with a researcher (usually over video conferencing). Choose a study and "
 "then click \"Participate\" to sign up for a study session in the future."
 msgstr ""
 
-#: web/views.py:130
+#: web/views.py:179
 msgid "Participant created."
 msgstr "Deelnemer gemaakt."
 
-#: web/views.py:173
+#: web/views.py:222
 msgid "Demographic data saved."
 msgstr "Demografische gegevens opgeslagen."
 
-#: web/views.py:239
+#: web/views.py:288
 msgid "Child added."
 msgstr "Kind toegevoegd."
 
-#: web/views.py:280
+#: web/views.py:329
 msgid "Child deleted."
 msgstr "Kind verwijderd."
 
-#: web/views.py:282
+#: web/views.py:331
 msgid "Child updated."
 msgstr "Kind geüpdatet."
 
-#: web/views.py:310
+#: web/views.py:359
 msgid "Email preferences saved."
 msgstr "E-mailvoorkeuren opgeslagen."
 
-#: web/views.py:720
 #, python-brace-format
-msgid ""
-"The study {study.name} is not currently collecting data - the study is "
-"either completed or paused. If you think this is an error, please contact "
-"{study.contact_info}"
-msgstr ""
-"Het onderzoek {study.name} verzamelt momenteel geen gegevens - het onderzoek "
-"is voltooid of onderbroken. Als u denkt dat dit een fout is, neem dan "
-"contact op met {study.contact_info}"
+#~ msgid ""
+#~ "The study {study.name} is not currently collecting data - the study is "
+#~ "either completed or paused. If you think this is an error, please contact "
+#~ "{study.contact_info}"
+#~ msgstr ""
+#~ "Het onderzoek {study.name} verzamelt momenteel geen gegevens - het "
+#~ "onderzoek is voltooid of onderbroken. Als u denkt dat dit een fout is, "
+#~ "neem dan contact op met {study.contact_info}"
 
 #~ msgid ""
 #~ "Your password can’t be too similar to your other personal information."
