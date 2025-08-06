@@ -148,11 +148,6 @@ RESPONSE_COLUMNS = [
         extractor=lambda resp: resp.most_recent_ruling_comment,
     ),
     ResponseDataColumn(
-        id="consent__time",
-        description="Timestamp of most recent consent ruling, format e.g. 2019-12-09 20:40",
-        extractor=lambda resp: resp.most_recent_ruling_date,
-    ),
-    ResponseDataColumn(
         id="study__uuid",
         description="Unique identifier of study associated with this response. Same for all responses to a given Lookit study.",
         extractor=lambda resp: str(resp.study.uuid),

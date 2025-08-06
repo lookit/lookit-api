@@ -329,8 +329,16 @@ def cleanup_docker_containers():
 def build_zipfile_of_videos(
     self, filename, study_uuid, match, requesting_user_uuid, consent_only=False
 ):
+    import getpass
+    import os
+    import socket
+
     from accounts.models import User
     from studies.models import Study
+
+    logging.info(f"Hostname {socket.gethostname()}")
+    logging.info(f"User {getpass.getuser()}")
+    logging.info(f"Current directory {os.getcwd()}")
 
     study = Study.objects.get(uuid=study_uuid)
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
@@ -371,15 +379,19 @@ def build_zipfile_of_videos(
     # if the file exists short circuit and send the email with a 30m link
     if not gs_blob.exists():
         # if it doesn't exist build the zipfile
-        with tempfile.TemporaryDirectory() as temp_directory:
+        with tempfile.TemporaryDirectory(dir="/code/scratch") as temp_directory:
             zip_file_path = os.path.join(temp_directory, zip_filename)
             with zipfile.ZipFile(zip_file_path, "w") as zf:
                 for video in video_qs:
                     temporary_file_path = os.path.join(temp_directory, video.full_name)
                     file_response = requests.get(video.view_url, stream=True)
+                    logger.info(f"Downloading {video.full_name}")
                     with open(temporary_file_path, mode="w+b") as local_file:
                         for chunk in file_response.iter_content(8192):
                             local_file.write(chunk)
+                    logger.info(
+                        f"Download complete ({os.path.getsize(temporary_file_path)}B) {video.full_name}"
+                    )
                     zf.write(temporary_file_path, video.full_name)
                     os.remove(temporary_file_path)
 
@@ -391,12 +403,12 @@ def build_zipfile_of_videos(
         int(time.time() + datetime.timedelta(minutes=30).seconds)
     )
     # send an email with the signed url and return
-    email_context = dict(
-        signed_url=signed_url,
-        user=requesting_user,
-        videos=video_qs,
-        zip_filename=zip_filename,
-    )
+    email_context = {
+        "signed_url": signed_url,
+        "user": requesting_user,
+        "videos": video_qs,
+        "zip_filename": zip_filename,
+    }
     send_mail(
         "download_zip",
         "Your video archive has been created",
@@ -468,9 +480,11 @@ def build_framedata_dict(filename, study_uuid, requesting_user_uuid):
     # then send the email with a 24h link
     signed_url = gs_blob.generate_signed_url(datetime.timedelta(hours=24))
     # send an email with the signed url and return
-    email_context = dict(
-        signed_url=signed_url, user=requesting_user, csv_filename=csv_filename
-    )
+    email_context = {
+        "signed_url": signed_url,
+        "user": requesting_user,
+        "csv_filename": csv_filename,
+    }
     send_mail(
         "download_framedata_dict",
         "Your frame data dictionary has been created",
@@ -499,19 +513,31 @@ def delete_video_from_cloud(
 
 
 @app.task(bind=True)
-def cleanup_incomplete_video_uploads(task):
+def cleanup_incomplete_video_uploads(task, *args, **kwargs):
     """Check for incomplete multi-part uploads in S3 and try to manually complete the video."""
-    logger.debug("Cleaning up incomplete video uploads...")
-    incomplete_video_uploads = get_all_incomplete_video_files()
-    if incomplete_video_uploads:
-        for video in incomplete_video_uploads:
-            logger.debug(f"Handling incomplete file: {video['Key']}")
-            parts = get_file_parts(video["Key"], video["UploadId"])
-            if parts:
-                complete_multipart_upload(video["Key"], video["UploadId"], parts)
+    # kwargs were added to the task later, so default to the original (hard-coded) S3 bucket name for backwards compatibility
+    bucket_names = kwargs.get("bucket_names", ["S3_BUCKET_NAME"])
+
+    for bucket_var_name in bucket_names:
+        try:
+            bucket_name = getattr(settings, bucket_var_name)
+        except AttributeError:
+            logger.error(f"Invalid S3 bucket setting: {bucket_var_name}")
+            continue
+
+        logger.debug(f"Cleaning up incomplete video uploads in bucket: {bucket_name}")
+        incomplete_video_uploads = get_all_incomplete_video_files(bucket_name)
+        if incomplete_video_uploads:
+            for video in incomplete_video_uploads:
+                logger.debug(f"Handling incomplete file: {video['Key']}")
+                parts = get_file_parts(bucket_name, video["Key"], video["UploadId"])
+                if parts:
+                    complete_multipart_upload(
+                        bucket_name, video["Key"], video["UploadId"], parts
+                    )
 
 
-def get_all_incomplete_video_files():
+def get_all_incomplete_video_files(bucket_name):
     """Gets a list of all incomplete multipart uploads from our EFP RecordRTC S3 video bucket.
     Returns an array with 0 or more objects, where each object corresponds to an incomplete multipart upload.
     Each object contains the following keys: UploadId, Key (filename), Initiated (timestamp), StorageClass, Owner (DisplayName and ID), Initiator (DisplayName and ID).
@@ -519,9 +545,7 @@ def get_all_incomplete_video_files():
     incomplete_uploads = []
 
     try:
-        uploads_response = S3_CLIENT.list_multipart_uploads(
-            Bucket=settings.S3_BUCKET_NAME
-        )
+        uploads_response = S3_CLIENT.list_multipart_uploads(Bucket=bucket_name)
     except ClientError as error:
         logger.error(f"Failed to list multipart uploads due to a ClientError: {error}")
         raise error
@@ -535,7 +559,7 @@ def get_all_incomplete_video_files():
     # Handle the case where uploads_response is None
     if uploads_response is None:
         logger.error(
-            f"S3 response for multipart uploads for bucket {settings.S3_BUCKET_NAME} is None."
+            f"S3 response for multipart uploads for bucket {bucket_name} is None."
         )
         raise ValueError("Received invalid response from S3: None")
 
@@ -558,30 +582,30 @@ def get_all_incomplete_video_files():
         if error.args[0] == "Uploads":
             # This is expected and not a problem - no need to re-raise the error.
             logger.debug(
-                f"No Uploads key found in the S3 response for multipart uploads for bucket {settings.S3_BUCKET_NAME}. Exception: {error}. S3 response: {uploads_response}."
+                f"No Uploads key found in the S3 response for multipart uploads for bucket {bucket_name}. Exception: {error}. S3 response: {uploads_response}."
             )
         else:
             logger.error(
-                f"A key error occurred when listing multipart uploads for bucket {settings.S3_BUCKET_NAME}. Exception: {error}. S3 response: {uploads_response}."
+                f"A key error occurred when listing multipart uploads for bucket {bucket_name}. Exception: {error}. S3 response: {uploads_response}."
             )
             raise error
     except Exception as error:
         logger.error(
-            f"An exception occurred when listing multipart uploads for bucket {settings.S3_BUCKET_NAME}. Exception: {error}. S3 response: {uploads_response}."
+            f"An exception occurred when listing multipart uploads for bucket {bucket_name}. Exception: {error}. S3 response: {uploads_response}."
         )
         raise error
 
     return incomplete_uploads
 
 
-def get_file_parts(filename, id):
+def get_file_parts(bucket_name, filename, id):
     """Gets the uploaded part list for a particular incomplete video upload.
     Returns an array with 0 or more objects, where each object contains a part number and ETag for all parts that were successfully uploaded.
     """
     parts = []
     try:
         file_parts_response = S3_CLIENT.list_parts(
-            Bucket=settings.S3_BUCKET_NAME, Key=filename, UploadId=id
+            Bucket=bucket_name, Key=filename, UploadId=id
         )
     except ClientError as error:
         logger.error(
@@ -601,7 +625,7 @@ def get_file_parts(filename, id):
 
     if file_parts_response is None:
         logger.error(
-            f"S3 response for upload parts for file {filename} in bucket {settings.S3_BUCKET_NAME} is None."
+            f"S3 response for upload parts for file {filename} in bucket {bucket_name} is None."
         )
         raise ValueError("Received invalid response from S3: None")
 
@@ -617,29 +641,29 @@ def get_file_parts(filename, id):
         if error.args[0] == "Parts":
             # This is expected and not a problem - no need to re-raise the error.
             logger.debug(
-                f"Unable to complete {filename} in bucket {settings.S3_BUCKET_NAME}. No Parts found for this upload. Exception: {error}."
+                f"Unable to complete {filename} in bucket {bucket_name}. No Parts found for this upload. Exception: {error}."
             )
         else:
             logger.error(
-                f"A key error occurred when when creating the parts list for file {filename} in bucket {settings.S3_BUCKET_NAME}. Exception: {error}."
+                f"A key error occurred when when creating the parts list for file {filename} in bucket {bucket_name}. Exception: {error}."
             )
             raise error
     except Exception as error:
         logger.error(
-            f"Failed to create the parts list from S3 response for file {filename} in bucket {settings.S3_BUCKET_NAME}: {error}."
+            f"Failed to create the parts list from S3 response for file {filename} in bucket {bucket_name}: {error}."
         )
         raise error
 
     return parts
 
 
-def complete_multipart_upload(filename, id, parts):
+def complete_multipart_upload(bucket_name, filename, id, parts):
     """Attempt to complete the multi-part upload for a given incomplete file.
     Takes the filename, upload ID, and list of parts for the incomplete file.
     """
     try:
         resp = S3_CLIENT.complete_multipart_upload(
-            Bucket=settings.S3_BUCKET_NAME,
+            Bucket=bucket_name,
             Key=filename,
             MultipartUpload={"Parts": parts},
             UploadId=id,
