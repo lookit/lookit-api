@@ -381,7 +381,9 @@ def build_zipfile_of_videos(
         # if it doesn't exist build the zipfile
         with tempfile.TemporaryDirectory(dir="/code/scratch") as temp_directory:
             zip_file_path = os.path.join(temp_directory, zip_filename)
-            with zipfile.ZipFile(zip_file_path, "w") as zf:
+            with zipfile.ZipFile(
+                zip_file_path, "w", compression=zipfile.ZIP_STORED
+            ) as zf:
                 for video in video_qs:
                     temporary_file_path = os.path.join(temp_directory, video.full_name)
                     file_response = requests.get(video.view_url, stream=True)
