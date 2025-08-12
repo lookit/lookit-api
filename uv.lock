@@ -586,15 +586,15 @@ wheels = [
 
 [[package]]
 name = "drf-nested-routers"
-version = "0.94.1"
+version = "0.94.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "djangorestframework" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1e/24/9e6a070dc491a416c93e4ec41950c7ea66d6a63b8db8d8abc0c128355978/drf-nested-routers-0.94.1.tar.gz", hash = "sha256:2b846385ed95c9f17bf4242db3b264ac826b5af00dda6c737d3fe7cc7bf2c7db", size = 18347, upload-time = "2024-05-10T22:36:55.553Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f6/98/2d29f3ecd337255bc2775b9addef347b6fd30ff7b3757649d0e50602ba08/drf_nested_routers-0.94.2.tar.gz", hash = "sha256:aa70923b716dc47cd93b8129b06be6c15706b405cf5f718f59cb8eed01de59cc", size = 22845, upload-time = "2025-05-14T17:03:50.896Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4e/a2/313a95268ffae9773a59aeb15c3f6932d4c905616d4797b371e6257fc8f9/drf_nested_routers-0.94.1-py2.py3-none-any.whl", hash = "sha256:3a8ec45a025c0f39188ec1ec415244beb875a6f4db87911a1f5a606d09b68c9f", size = 36260, upload-time = "2024-05-10T22:36:53.092Z" },
+    { url = "https://files.pythonhosted.org/packages/62/dc/6bdb857a631fe6558db18a009c93ae16c3ad94fef0b7be7a3aa35c3264fa/drf_nested_routers-0.94.2-py2.py3-none-any.whl", hash = "sha256:74dbdceeae2a32f8668ba0df8e3eeabeb9b1c64d2621d914901ae653e4e3bcff", size = 36367, upload-time = "2025-05-14T17:03:49.257Z" },
 ]
 
 [[package]]
@@ -914,7 +914,7 @@ requires-dist = [
     { name = "djangorestframework", specifier = "==3.16.0" },
     { name = "djangorestframework-jsonapi", specifier = "==7.1.0" },
     { name = "docker", specifier = "==7.1.0" },
-    { name = "drf-nested-routers", specifier = "==0.94.1" },
+    { name = "drf-nested-routers", specifier = "==0.94.2" },
     { name = "fleep", specifier = "==1.0.1" },
     { name = "gevent", specifier = "==25.4.2" },
     { name = "google-cloud-storage", specifier = "==3.1.0" },
