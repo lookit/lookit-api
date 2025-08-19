@@ -382,11 +382,12 @@ def build_zipfile_of_videos(
                         chunk_size=8192
                     ),  # 8 kb, could be increased to e.g. 65536 / 64 kb or 262144
                     datetime.now(),
+                    0,  # compression method (0=STORE, 8=DEFLATE)
                 )
 
         # Stream zip directly to GCS (no temp file)
         with gs_blob.open("wb") as f:
-            for chunk in stream_zip(file_iter(), compression=None):
+            for chunk in stream_zip(file_iter()):
                 f.write(chunk)
 
     # then send the email with a 30m link
