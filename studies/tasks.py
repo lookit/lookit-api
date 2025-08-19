@@ -8,7 +8,6 @@ import secrets
 import shutil
 import tempfile
 import time
-import zipfile
 from collections import Counter
 from io import StringIO
 from itertools import starmap
@@ -25,6 +24,7 @@ from django.db import connection
 from django.utils import timezone
 from google.cloud import storage as gc_storage
 from more_itertools import chunked, first, flatten, groupby_transform, map_reduce
+from stream_zip import stream_zip
 
 from accounts.models import Child, Message, User
 from accounts.queries import get_child_eligibility_for_study
@@ -379,26 +379,23 @@ def build_zipfile_of_videos(
     # if the file exists short circuit and send the email with a 30m link
     if not gs_blob.exists():
         # if it doesn't exist build the zipfile
-        with tempfile.TemporaryDirectory(dir="/code/scratch") as temp_directory:
-            zip_file_path = os.path.join(temp_directory, zip_filename)
-            with zipfile.ZipFile(
-                zip_file_path, "w", compression=zipfile.ZIP_STORED
-            ) as zf:
-                for video in video_qs:
-                    temporary_file_path = os.path.join(temp_directory, video.full_name)
-                    file_response = requests.get(video.view_url, stream=True)
-                    logger.info(f"Downloading {video.full_name}")
-                    with open(temporary_file_path, mode="w+b") as local_file:
-                        for chunk in file_response.iter_content(8192):
-                            local_file.write(chunk)
-                    logger.info(
-                        f"Download complete ({os.path.getsize(temporary_file_path)}B) {video.full_name}"
-                    )
-                    zf.write(temporary_file_path, video.full_name)
-                    os.remove(temporary_file_path)
+        # generator of files (name, iterator of bytes, mod time) for stream_zip
+        def file_iter():
+            for video in video_qs:
+                logger.info(f"Streaming {video.full_name}")
+                file_response = requests.get(video.view_url, stream=True)
+                yield (
+                    video.full_name,
+                    file_response.iter_content(
+                        chunk_size=8192
+                    ),  # 8 kb, could be increased to e.g. 65536 / 64 kb or 262144
+                    datetime.now(),
+                )
 
-            # upload the zip to GoogleCloudStorage
-            gs_blob.upload_from_filename(zip_file_path)
+        # Stream zip directly to GCS (no temp file)
+        with gs_blob.open("wb") as f:
+            for chunk in stream_zip(file_iter(), compression=None):
+                f.write(chunk)
 
     # then send the email with a 30m link
     signed_url = gs_blob.generate_signed_url(
