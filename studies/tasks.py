@@ -381,7 +381,7 @@ def build_zipfile_of_videos(
                     file_response.iter_content(
                         chunk_size=8192
                     ),  # 8 kb, could be increased to e.g. 65536 / 64 kb or 262144
-                    datetime.now(),
+                    datetime.datetime.now(),
                     0,  # compression method (0=STORE, 8=DEFLATE)
                 )
 
