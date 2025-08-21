@@ -6,6 +6,7 @@ import os
 import random
 import secrets
 import shutil
+import stat
 import tempfile
 import time
 from collections import Counter
@@ -24,7 +25,7 @@ from django.db import connection
 from django.utils import timezone
 from google.cloud import storage as gc_storage
 from more_itertools import chunked, first, flatten, groupby_transform, map_reduce
-from stream_zip import stream_zip
+from stream_zip import ZIP_64, stream_zip
 
 from accounts.models import Child, Message, User
 from accounts.queries import get_child_eligibility_for_study
@@ -364,25 +365,26 @@ def build_zipfile_of_videos(
     # get the bucket
     gs_private_bucket = gs_client.get_bucket(settings.GS_PRIVATE_BUCKET_NAME)
     # instantiate a blob for the file
-    gs_blob = gc_storage.blob.Blob(
-        zip_filename, gs_private_bucket, chunk_size=256 * 1024 * 1024
-    )  # 256mb
+    gs_blob = gs_private_bucket.blob(zip_filename)
 
     # if the file exists short circuit and send the email with a 30m link
     if not gs_blob.exists():
         # if it doesn't exist build the zipfile
-        # generator of files (name, iterator of bytes, mod time) for stream_zip
+        total_videos = video_qs.count()
+
         def file_iter():
-            for video in video_qs:
-                logger.info(f"Streaming {video.full_name}")
+            for idx, video in enumerate(video_qs, start=1):
+                logger.info(
+                    f"Adding {video.full_name} to stream: file {idx} of {total_videos}"
+                )
                 file_response = requests.get(video.view_url, stream=True)
+                # file name, modified time, file mode, method, contents (stream)
                 yield (
                     video.full_name,
-                    file_response.iter_content(
-                        chunk_size=8192
-                    ),  # 8 kb, could be increased to e.g. 65536 / 64 kb or 262144
                     datetime.datetime.now(),
-                    0,  # compression method (0=STORE, 8=DEFLATE)
+                    stat.S_IFREG | 0o600,
+                    ZIP_64,
+                    file_response.iter_content(64 * 1024),
                 )
 
         # Stream zip directly to GCS (no temp file)
