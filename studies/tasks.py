@@ -336,6 +336,10 @@ def build_zipfile_of_videos(
     study = Study.objects.get(uuid=study_uuid)
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
 
+    logger.info(
+        f"Video zip requested: study {study_uuid}, user {requesting_user_uuid}, consent only {consent_only}"
+    )
+
     video_qs = (
         study.consent_videos if consent_only else study.videos_for_consented_responses
     )
