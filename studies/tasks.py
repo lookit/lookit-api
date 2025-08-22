@@ -6,9 +6,9 @@ import os
 import random
 import secrets
 import shutil
+import stat
 import tempfile
 import time
-import zipfile
 from collections import Counter
 from io import StringIO
 from itertools import starmap
@@ -25,6 +25,7 @@ from django.db import connection
 from django.utils import timezone
 from google.cloud import storage as gc_storage
 from more_itertools import chunked, first, flatten, groupby_transform, map_reduce
+from stream_zip import ZIP_64, stream_zip
 
 from accounts.models import Child, Message, User
 from accounts.queries import get_child_eligibility_for_study
@@ -329,19 +330,15 @@ def cleanup_docker_containers():
 def build_zipfile_of_videos(
     self, filename, study_uuid, match, requesting_user_uuid, consent_only=False
 ):
-    import getpass
-    import os
-    import socket
-
     from accounts.models import User
     from studies.models import Study
 
-    logging.info(f"Hostname {socket.gethostname()}")
-    logging.info(f"User {getpass.getuser()}")
-    logging.info(f"Current directory {os.getcwd()}")
-
     study = Study.objects.get(uuid=study_uuid)
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
+
+    logger.info(
+        f"Video zip requested: study {study_uuid}, user {requesting_user_uuid}, consent only {consent_only}"
+    )
 
     video_qs = (
         study.consent_videos if consent_only else study.videos_for_consented_responses
@@ -372,31 +369,32 @@ def build_zipfile_of_videos(
     # get the bucket
     gs_private_bucket = gs_client.get_bucket(settings.GS_PRIVATE_BUCKET_NAME)
     # instantiate a blob for the file
-    gs_blob = gc_storage.blob.Blob(
-        zip_filename, gs_private_bucket, chunk_size=256 * 1024 * 1024
-    )  # 256mb
+    gs_blob = gs_private_bucket.blob(zip_filename)
 
     # if the file exists short circuit and send the email with a 30m link
     if not gs_blob.exists():
         # if it doesn't exist build the zipfile
-        with tempfile.TemporaryDirectory(dir="/code/scratch") as temp_directory:
-            zip_file_path = os.path.join(temp_directory, zip_filename)
-            with zipfile.ZipFile(zip_file_path, "w") as zf:
-                for video in video_qs:
-                    temporary_file_path = os.path.join(temp_directory, video.full_name)
-                    file_response = requests.get(video.view_url, stream=True)
-                    logger.info(f"Downloading {video.full_name}")
-                    with open(temporary_file_path, mode="w+b") as local_file:
-                        for chunk in file_response.iter_content(8192):
-                            local_file.write(chunk)
-                    logger.info(
-                        f"Download complete ({os.path.getsize(temporary_file_path)}B) {video.full_name}"
-                    )
-                    zf.write(temporary_file_path, video.full_name)
-                    os.remove(temporary_file_path)
+        total_videos = video_qs.count()
 
-            # upload the zip to GoogleCloudStorage
-            gs_blob.upload_from_filename(zip_file_path)
+        def file_iter():
+            for idx, video in enumerate(video_qs, start=1):
+                logger.info(
+                    f"Adding {video.full_name} to stream: file {idx} of {total_videos}"
+                )
+                file_response = requests.get(video.view_url, stream=True)
+                # file name, modified time, file mode, method, contents (stream)
+                yield (
+                    video.full_name,
+                    datetime.datetime.now(),
+                    stat.S_IFREG | 0o600,
+                    ZIP_64,
+                    file_response.iter_content(64 * 1024),
+                )
+
+        # Stream zip directly to GCS (no temp file)
+        with gs_blob.open("wb") as f:
+            for chunk in stream_zip(file_iter()):
+                f.write(chunk)
 
     # then send the email with a 30m link
     signed_url = gs_blob.generate_signed_url(
