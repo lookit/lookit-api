@@ -19,7 +19,7 @@ RUN apt-get update \
         git=1:2.39.5-0+deb12u2 \
         gcc=4:12.2.0-3 \
         wget=1.21.3-1+deb12u1 \
-        libc6-dev=2.36-9+deb12u10 \
+        libc6-dev=2.36-9+deb12u13 \
     && rm -rf /var/lib/apt/lists/*  
 
 RUN gosu nobody true  
