@@ -13,7 +13,7 @@ dependencies = [
     "django-bootstrap-icons==0.9.0",
     "django-bootstrap5==22.2",
     "django-celery-beat==2.8.1",
-    "django-cors-headers==3.13.0",
+    "django-cors-headers==4.8.0",
     "django-countries==7.6.1",
     "django-extensions==4.1",
     "django-filter==2.4.0",
