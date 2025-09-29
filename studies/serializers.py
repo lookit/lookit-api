@@ -166,6 +166,41 @@ class ResponseWriteableSerializer(UuidResourceModelSerializer):
         ).user.latest_demographics.id
         return super().create(validated_data)
 
+    def update(self, instance, validated_data):
+        """
+        Override response update/save request so that, for jsPsych studies, the frame sequence is computed automatically
+        from exp_data. This only runs on PATCH/PUT requests for existing response objects, NOT for POST/create requests (if we need to do that, we should move this to a validate method.)
+        """
+        exp_data = validated_data.get("exp_data", instance.exp_data)
+
+        # Compute frame sequence only for jsPsych studies, and only if exp_data is provided
+        if instance.study.study_type.is_jspsych and exp_data is not None:
+            validated_data["sequence"] = self.compute_sequence(exp_data)
+
+        return super().update(instance, validated_data)
+
+    def compute_sequence(self, exp_data):
+        """
+        Safely generate the sequence list from jsPsych exp_data.
+        Each row should be a dict with trial_index and trial_type.
+        """
+        if not isinstance(exp_data, list):
+            return []
+
+        sequence = []
+        for el in exp_data:
+            # skip non-dict/object elements
+            if not isinstance(el, dict):
+                continue
+            trial_index = el.get("trial_index")
+            trial_type = el.get("trial_type")
+            # skip dicts that are missing required keys
+            if trial_index is None or trial_type is None:
+                continue
+            sequence.append(f"{trial_index}-{trial_type}")
+
+        return sequence
+
     class Meta:
         model = Response
         fields = (
