@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework_json_api import serializers
 
 from accounts.models import Child
@@ -9,6 +11,8 @@ from api.serializers import (
     UuidResourceModelSerializer,
 )
 from studies.models import Feedback, Response, Study, Video
+
+logger = logging.getLogger(__name__)
 
 
 class StudySerializer(UuidHyperlinkedModelSerializer):
@@ -166,16 +170,58 @@ class ResponseWriteableSerializer(UuidResourceModelSerializer):
         ).user.latest_demographics.id
         return super().create(validated_data)
 
+    def validate_exp_data(self, exp_data):
+        """
+        jsPsych studies only: enforce append-only for exp_data rows. PATCH requests must have the same or larger number of rows (trials) as the existing data, though the trial data itself can be modified.
+        """
+        instance = self.instance
+
+        # validation is for jsPsych responses and PATCH updates only
+        if instance is not None and instance.study.study_type.is_jspsych:
+            if exp_data is None and instance.exp_data is not None:
+                logger.warning(
+                    f"Rejected jsPsych exp_data update for response {instance.uuid}: "
+                    f"jsPsych exp_data cannot be overwritten with null"
+                )
+                raise serializers.ValidationError(
+                    "Rejected jsPsych PATCH update: jsPsych exp_data cannot be overwritten with null"
+                )
+
+            # If exp_data is provided, validate its type and length
+            if exp_data is not None:
+                if not isinstance(exp_data, list):
+                    logger.warning(
+                        f"Rejected jsPsych exp_data update for response {instance.uuid}: "
+                        f"jsPsych exp_data must be a list, instead received {type(exp_data).__name__}"
+                    )
+                    raise serializers.ValidationError(
+                        f"Rejected jsPsych PATCH update: jsPsych exp_data must be a list, instead received {type(exp_data).__name__}"
+                    )
+
+                old_exp_data = instance.exp_data or []
+                if not isinstance(old_exp_data, list):
+                    old_exp_data = []
+
+                if len(exp_data) < len(old_exp_data):
+                    logger.warning(
+                        f"Rejected jsPsych exp_data update for response {instance.uuid}: "
+                        f"new length {len(exp_data)} < old length {len(old_exp_data)}"
+                    )
+                    raise serializers.ValidationError(
+                        "Rejected jsPsych PATCH update: exp_data cannot reduce in length"
+                    )
+
+        return exp_data
+
     def update(self, instance, validated_data):
         """
-        Override response update/save request so that, for jsPsych studies, the frame sequence is computed automatically
-        from exp_data. This only runs on PATCH/PUT requests for existing response objects, NOT for POST/create requests (if we need to do that, we should move this to a validate method.)
+        Override response update/save request so that, for jsPsych studies,
+        the frame sequence is computed automatically from exp_data.
         """
-        exp_data = validated_data.get("exp_data", instance.exp_data)
+        exp_data = validated_data.get("exp_data")
 
-        # Compute frame sequence only for jsPsych studies, and only if exp_data is provided
         if instance.study.study_type.is_jspsych and exp_data is not None:
-            validated_data["sequence"] = self.compute_sequence(exp_data)
+            instance.sequence = self.compute_sequence(exp_data)
 
         return super().update(instance, validated_data)
 
