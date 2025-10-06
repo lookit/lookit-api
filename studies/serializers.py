@@ -222,6 +222,8 @@ class ResponseWriteableSerializer(UuidResourceModelSerializer):
 
         if instance.study.study_type.is_jspsych and exp_data is not None:
             instance.sequence = self.compute_sequence(exp_data)
+            # Remove old sequence from validated_data so DRF doesn’t overwrite it in super().update
+            validated_data.pop("sequence", None)
 
         return super().update(instance, validated_data)
 
