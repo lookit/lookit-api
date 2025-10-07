@@ -140,6 +140,7 @@ $(document).ready(function () {
         // 1) Clear the current container
         $videoPreviousButton.nextUntil($videoNextButton).remove();
         $currentSurveyConsentInfo.parent().removeClass("bg-warning");
+        $currentVideoInfo.text("Loading...");
 
         currentlyConsideredVideos = responseData["videos"];
         currentVideoListIndex = 0;
@@ -164,7 +165,7 @@ $(document).ready(function () {
             $videoElement.trigger("load").trigger("play");
         } else {
             $videoElement.css("visibility", "hidden");
-            $currentVideoInfo.text("No video found for this response.");
+            $currentVideoInfo.html("<strong>No video found for this response.</strong><br>Please allow 1-2 days for videos to appear before rejecting consent.");
             $currentVideoInfo.parent().addClass("bg-warning");
         }
     }
