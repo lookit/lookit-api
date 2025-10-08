@@ -245,6 +245,10 @@ const labsData = {
         {
             "url": "https://www.cehd.umn.edu/icd/research/carlson/",
             "name": "University of Minnesota Carlson Child Development Lab"
+        },
+        {
+            "url": "https://innovation.umn.edu/early-language-experience-lab",
+            "name": "University of Minnesota Early Language & Experience (ELE) Lab"
         }
     ],
     "Kentucky": [
