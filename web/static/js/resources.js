@@ -590,6 +590,10 @@ const labsData = {
         {
             "url": "https://denhamlab.gmu.edu/labmembers.html",
             "name": "George Mason University Child Development Lab"
+        },
+        {
+            "url": "www.vtlearnlab.com",
+            "name": "Virginia Tech Learning and Development Lab"
         }
     ],
     "Washington": [
