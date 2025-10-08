@@ -429,7 +429,7 @@ const labsData = {
         },
         {
             "url": "https://www.thequadlab.com/",
-            "name": "Rutgers University QUAD Lab"
+            "name": "Rutgers University Quantitative Development (QUAD) Lab"
         }
     ],
     "New Mexico": [],
