@@ -347,6 +347,10 @@ const labsData = {
         {
             "url": "https://www.northeastern.edu/berentlab/research/infant/",
             "name": "Northeastern Infant Phonology Lab"
+        },
+        {
+            "url": "https://facelab.emerson.edu/",
+            "name": "Emerson College FACE Lab"
         }
     ],
     "Michigan": [
