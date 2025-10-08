@@ -565,6 +565,10 @@ const labsData = {
         {
             "url": "https://www.uh.edu/class/psychology/dev-psych/research/cognitive-development/index.php",
             "name": "University of Houston Cognitive Development Lab"
+        },
+        {
+            "url": "https://sarahkucker.wixsite.com/smukidlab",
+            "name": "Southern Methodist University Kids in Development (KID) Lab"
         }
     ],
     "Utah": [],
