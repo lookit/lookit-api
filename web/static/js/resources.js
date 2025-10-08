@@ -441,6 +441,10 @@ const labsData = {
         {
             "url": "https://wp.nyu.edu/babychildnyu/",
             "name": "NYU BabyChildTeen (collection of research groups)"
+        },
+        {
+            "url": "https://www.newschool.edu/centers-institutes-labs/center-research-with-infants-toddlers/",
+            "name": "The New School Center for Research with Infants and Toddlers"
         }
     ],
     "North Carolina": [
