@@ -426,6 +426,10 @@ const labsData = {
         {
             "url": "https://ruccs.rutgers.edu/languagestudies/people.html",
             "name": "Rutgers University Lab for Developmental Language Studies"
+        },
+        {
+            "url": "https://www.thequadlab.com/",
+            "name": "Rutgers University QUAD Lab"
         }
     ],
     "New Mexico": [],
