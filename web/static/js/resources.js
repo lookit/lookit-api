@@ -233,24 +233,6 @@ const labsData = {
             "name": "KU Memory and Development Lab"
         }
     ],
-    "Minnesota": [
-        {
-            "url": "https://www.cehd.umn.edu/icd/research/seralab/",
-            "name": "University of Minnesota Language and Cognitive Development Lab"
-        },
-        {
-            "url": "https://www.cehd.umn.edu/icd/research/cdnlab/",
-            "name": "University of Minnesota Cognitive Development & Neuroimaging Lab"
-        },
-        {
-            "url": "https://www.cehd.umn.edu/icd/research/carlson/",
-            "name": "University of Minnesota Carlson Child Development Lab"
-        },
-        {
-            "url": "https://innovation.umn.edu/early-language-experience-lab",
-            "name": "University of Minnesota Early Language & Experience (ELE) Lab"
-        }
-    ],
     "Kentucky": [
         {
             "url": "https://babythinker.org",
@@ -361,6 +343,24 @@ const labsData = {
         {
             "url": "https://ofenlab.wayne.edu/people.php",
             "name": "Wayne State University Cognitive Brain Development Lab"
+        }
+    ],
+    "Minnesota": [
+        {
+            "url": "https://www.cehd.umn.edu/icd/research/seralab/",
+            "name": "University of Minnesota Language and Cognitive Development Lab"
+        },
+        {
+            "url": "https://www.cehd.umn.edu/icd/research/cdnlab/",
+            "name": "University of Minnesota Cognitive Development & Neuroimaging Lab"
+        },
+        {
+            "url": "https://www.cehd.umn.edu/icd/research/carlson/",
+            "name": "University of Minnesota Carlson Child Development Lab"
+        },
+        {
+            "url": "https://innovation.umn.edu/early-language-experience-lab",
+            "name": "University of Minnesota Early Language & Experience (ELE) Lab"
         }
     ],
     "Mississippi": [],
