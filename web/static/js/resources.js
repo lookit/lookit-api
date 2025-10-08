@@ -233,20 +233,6 @@ const labsData = {
             "name": "KU Memory and Development Lab"
         }
     ],
-    "Minnesota": [
-        {
-            "url": "https://www.cehd.umn.edu/icd/research/seralab/",
-            "name": "University of Minnesota Language and Cognitive Development Lab"
-        },
-        {
-            "url": "https://www.cehd.umn.edu/icd/research/cdnlab/",
-            "name": "University of Minnesota Cognitive Development & Neuroimaging Lab"
-        },
-        {
-            "url": "https://www.cehd.umn.edu/icd/research/carlson/",
-            "name": "University of Minnesota Carlson Child Development Lab"
-        }
-    ],
     "Kentucky": [
         {
             "url": "https://babythinker.org",
@@ -343,6 +329,10 @@ const labsData = {
         {
             "url": "https://www.northeastern.edu/berentlab/research/infant/",
             "name": "Northeastern Infant Phonology Lab"
+        },
+        {
+            "url": "https://facelab.emerson.edu/",
+            "name": "Emerson College FACE Lab"
         }
     ],
     "Michigan": [
@@ -353,6 +343,24 @@ const labsData = {
         {
             "url": "https://ofenlab.wayne.edu/people.php",
             "name": "Wayne State University Cognitive Brain Development Lab"
+        }
+    ],
+    "Minnesota": [
+        {
+            "url": "https://www.cehd.umn.edu/icd/research/seralab/",
+            "name": "University of Minnesota Language and Cognitive Development Lab"
+        },
+        {
+            "url": "https://www.cehd.umn.edu/icd/research/cdnlab/",
+            "name": "University of Minnesota Cognitive Development & Neuroimaging Lab"
+        },
+        {
+            "url": "https://www.cehd.umn.edu/icd/research/carlson/",
+            "name": "University of Minnesota Carlson Child Development Lab"
+        },
+        {
+            "url": "https://innovation.umn.edu/early-language-experience-lab",
+            "name": "University of Minnesota Early Language & Experience (ELE) Lab"
         }
     ],
     "Mississippi": [],
@@ -418,6 +426,10 @@ const labsData = {
         {
             "url": "https://ruccs.rutgers.edu/languagestudies/people.html",
             "name": "Rutgers University Lab for Developmental Language Studies"
+        },
+        {
+            "url": "https://www.thequadlab.com/",
+            "name": "Rutgers University Quantitative Development (QUAD) Lab"
         }
     ],
     "New Mexico": [],
@@ -437,6 +449,10 @@ const labsData = {
         {
             "url": "https://wp.nyu.edu/babychildnyu/",
             "name": "NYU BabyChildTeen (collection of research groups)"
+        },
+        {
+            "url": "https://www.newschool.edu/centers-institutes-labs/center-research-with-infants-toddlers/",
+            "name": "The New School Center for Research with Infants and Toddlers"
         }
     ],
     "North Carolina": [
@@ -557,6 +573,10 @@ const labsData = {
         {
             "url": "https://www.uh.edu/class/psychology/dev-psych/research/cognitive-development/index.php",
             "name": "University of Houston Cognitive Development Lab"
+        },
+        {
+            "url": "https://sarahkucker.wixsite.com/smukidlab",
+            "name": "Southern Methodist University Kids in Development (KID) Lab"
         }
     ],
     "Utah": [],
@@ -582,6 +602,10 @@ const labsData = {
         {
             "url": "https://denhamlab.gmu.edu/labmembers.html",
             "name": "George Mason University Child Development Lab"
+        },
+        {
+            "url": "www.vtlearnlab.com",
+            "name": "Virginia Tech Learning and Development Lab"
         }
     ],
     "Washington": [
