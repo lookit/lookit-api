@@ -13,7 +13,7 @@
 {% block content %}
     {% bs_icon "arrow-right" as bs_icon_arrow_right %}
     {% trans "Next Video" as trans_next_video %}
-    <form action method="post" class="d-none">
+    <form id="past-studies-tabs-form" action="{% url 'web:studies-history' %}" method="post" class="d-none">
         {% csrf_token %}
         {{ form }}
     </form>
