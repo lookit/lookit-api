@@ -24,7 +24,7 @@ document.querySelectorAll('[role=past_studies_tabs]').forEach(function (tab) {
         const radio = document.querySelector(`[name="past_studies_tabs"][value="${tab.dataset.value}"]`)
         if (!radio.hasAttribute('checked')) {
             radio.checked = true
-            document.querySelector('form').submit()
+            document.querySelector('form#past-studies-tabs-form').submit()
         }
     })
 })
