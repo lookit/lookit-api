@@ -13,7 +13,7 @@
 {% block content %}
     {% bs_icon "arrow-right" as bs_icon_arrow_right %}
     {% trans "Next Video" as trans_next_video %}
-    <form action method="post" class="d-none">
+    <form id="past-studies-tabs-form" action="{% url 'web:studies-history' %}" method="post" class="d-none">
         {% csrf_token %}
         {{ form }}
     </form>
@@ -78,24 +78,31 @@
                 <h4 class="card-title">{% trans "Study Responses" %}</h4>
                 {% for response in study.responses.all %}
                     <div class="row mb-3">
-                        <div class="col-3 d-flex flex-column">
-                            {% if response.videos.all %}
-                                <video controls width="100%" height="auto">
-                                    {% for video in response.videos.all %}
-                                        <source src="{{ video.view_url }}"
-                                                type="video/mp4"
-                                                data-index="{{ forloop.counter }}" />
-                                    {% endfor %}
-                                </video>
-                                <button class="{% button_primary_classes %} btn-sm next-video d-flex justify-content-center align-items-center"
-                                        type="button">
-                                    {{ bs_icon_arrow_right }}
-                                    &nbsp;
-                                    {{ trans_next_video }}
-                                    (<span class="video-number">1</span>/{{ response.videos.all | length }})
-                                </button>
-                            {% endif %}
-                        </div>
+                        {% if form.past_studies_tabs|studies_tab_selected == "0" %}
+                            <div class="col-3 d-flex flex-column">
+                                {% if response.videos.all %}
+                                    <video controls width="100%" height="auto">
+                                        {% for video in response.videos.all %}
+                                            <source src="{{ video.view_url }}"
+                                                    type="video/mp4"
+                                                    data-index="{{ forloop.counter }}" />
+                                        {% endfor %}
+                                    </video>
+                                    <button class="{% button_primary_classes %} btn-sm next-video d-flex justify-content-center align-items-center"
+                                            type="button">
+                                        {{ bs_icon_arrow_right }}
+                                        &nbsp;
+                                        {{ trans_next_video }}
+                                        (<span class="video-number">1</span>/{{ response.videos.all | length }})
+                                    </button>
+                                {% else %}
+                                    <div class="border border-3 border-primary p-2">
+                                        {% trans "No video recordings found." %}
+                                        <p class="fst-italic text-muted">{% trans "Please allow 1-2 days after your session ends for videos to appear." %}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
                         <div class="col">
                             <div>
                                 <strong>{% trans "Child" %}:</strong>

@@ -9,6 +9,7 @@ from rest_framework.test import APIClient, APITestCase
 from accounts.models import Child, DemographicData, User
 from studies.models import ConsentRuling, Lab, Response, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
+from studies.serializers import ResponseWriteableSerializer
 
 
 class ResponseTestCase(APITestCase):
@@ -78,6 +79,14 @@ class ResponseTestCase(APITestCase):
                 "id": str(self.response.uuid),
             }
         }
+
+        # for testing response API with jsPsych studies
+        self.study_jspsych = G(
+            Study,
+            creator=self.researcher,
+            lab=self.lab,
+            study_type=StudyType.get_jspsych(),
+        )
 
     # Response List test
     def testGetResponseListUnauthenticated(self):
@@ -491,6 +500,160 @@ class ResponseTestCase(APITestCase):
             },
         )
 
+    # Test sequence values for jsPsych response patches.
+    # Unlike EFP, the response sequence is created server-side for jsPsych responses.
+    def testPatchJsPsychResponseNoData(self):
+        # If exp data is missing and there is no data saved yet, the sequence should be empty
+        self.client.force_authenticate(user=self.participant)
+        response = G(
+            Response,
+            child=self.child,
+            study=self.study_jspsych,
+            study_type=self.study_jspsych.study_type,
+            completed=False,
+        )
+        patch_url = f"{self.url}{response.uuid}/"
+        data = {
+            "data": {  # no exp_data
+                "relationships": {
+                    "child": {"data": {"type": "children", "id": str(self.child.uuid)}},
+                    "study": {
+                        "data": {"type": "studies", "id": str(self.study_jspsych.uuid)}
+                    },
+                },
+                "type": "responses",
+                "id": str(response.uuid),
+            }
+        }
+        api_response = self.client.patch(
+            patch_url,
+            json.dumps(data),
+            content_type="application/vnd.api+json",
+        )
+        self.assertEqual(
+            api_response.status_code, status.HTTP_200_OK, msg=api_response.data
+        )
+        self.assertEqual(api_response.data["sequence"], [])
+
+    def testPatchJsPsychResponseWithData(self):
+        # If exp_data is valid, the sequence should be created from the updated data.
+        self.client.force_authenticate(user=self.participant)
+        response = G(
+            Response,
+            child=self.child,
+            study=self.study_jspsych,
+            study_type=self.study_jspsych.study_type,
+            completed=False,
+        )
+        patch_url = f"{self.url}{response.uuid}/"
+        data = {
+            "data": {
+                "attributes": {
+                    "exp_data": [
+                        {"trial_index": 10, "trial_type": "video-config"},
+                        {"trial_index": 11, "trial_type": "video-consent"},
+                    ]
+                },
+                "relationships": {
+                    "child": {"data": {"type": "children", "id": str(self.child.uuid)}},
+                    "study": {
+                        "data": {"type": "studies", "id": str(self.study_jspsych.uuid)}
+                    },
+                },
+                "type": "responses",
+                "id": str(response.uuid),
+            }
+        }
+        api_response = self.client.patch(
+            patch_url,
+            json.dumps(data),
+            content_type="application/vnd.api+json",
+        )
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            api_response.data["sequence"], ["10-video-config", "11-video-consent"]
+        )
+
+    def testPatchJsPsychResponseSequenceIsIgnored(self):
+        # If the patch request sends a sequence value, it should be ignored
+        self.client.force_authenticate(user=self.participant)
+        response = G(
+            Response,
+            child=self.child,
+            study=self.study_jspsych,
+            study_type=self.study_jspsych.study_type,
+            completed=False,
+        )
+        patch_url = f"{self.url}{response.uuid}/"
+        data = {
+            "data": {
+                "attributes": {
+                    "exp_data": [
+                        {"trial_index": 20, "trial_type": "video-config"},
+                        {"trial_index": 21, "trial_type": "video-consent"},
+                    ],
+                    "sequence": ["this", "should", "be", "ignored"],
+                },
+                "relationships": {
+                    "child": {"data": {"type": "children", "id": str(self.child.uuid)}},
+                    "study": {
+                        "data": {"type": "studies", "id": str(self.study_jspsych.uuid)}
+                    },
+                },
+                "type": "responses",
+                "id": str(response.uuid),
+            }
+        }
+        api_response = self.client.patch(
+            patch_url,
+            json.dumps(data),
+            content_type="application/vnd.api+json",
+        )
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            api_response.data["sequence"], ["20-video-config", "21-video-consent"]
+        )
+
+    def testPatchJsPsychResponseKeepsExistingExpDataValueIfMissing(self):
+        # If patch request does not contain exp_data, then any existing exp_data/sequence for this object should be kept.
+        self.client.force_authenticate(user=self.participant)
+        existing_exp_data = [
+            {"trial_index": 40, "trial_type": "video-config"},
+            {"trial_index": 41, "trial_type": "video-consent"},
+        ]
+        response = G(
+            Response,
+            child=self.child,
+            study=self.study_jspsych,
+            study_type=self.study_jspsych.study_type,
+            exp_data=existing_exp_data,
+            sequence=["40-video-config", "41-video-consent"],
+            completed=False,
+        )
+        patch_url = f"{self.url}{response.uuid}/"
+        data = {
+            "data": {
+                "relationships": {
+                    "child": {"data": {"type": "children", "id": str(self.child.uuid)}},
+                    "study": {
+                        "data": {"type": "studies", "id": str(self.study_jspsych.uuid)}
+                    },
+                },
+                "type": "responses",
+                "id": str(response.uuid),
+            }
+        }
+        api_response = self.client.patch(
+            patch_url,
+            json.dumps(data),
+            content_type="application/vnd.api+json",
+        )
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data["exp_data"], existing_exp_data)
+        self.assertEqual(
+            api_response.data["sequence"], ["40-video-config", "41-video-consent"]
+        )
+
     # Delete responses
     def testDeleteResponse(self):
         self.client.force_authenticate(user=self.superuser)
@@ -498,3 +661,289 @@ class ResponseTestCase(APITestCase):
             self.response_detail_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    # Response writeable serializer - PATCH/update jsPsych response objects (does not apply to EFP)
+    def testResponseWriteableSerializerComputesJsPsychSequence(self):
+        # If exp data is formatted correctly, the serializer will generate the sequence array from the data
+        response = G(
+            Response,
+            child=self.child,
+            study=self.study_jspsych,
+            study_type=self.study_jspsych.study_type,
+            completed=False,
+        )
+        exp_data = [
+            {"trial_index": 7, "trial_type": "video-config"},
+            {"trial_index": 8, "trial_type": "video-consent"},
+        ]
+        serializer = ResponseWriteableSerializer(
+            instance=response,
+            data={"exp_data": exp_data},
+            partial=True,
+        )
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        updated = serializer.save()
+        self.assertEqual(updated.sequence, ["7-video-config", "8-video-consent"])
+
+    def testResponseWriteableSerializerJsPsychDataIsMissing(self):
+        # If exp data is missing and there is no existing exp_data for this response object, the sequence should be an empty array
+        response = G(
+            Response,
+            child=self.child,
+            study=self.study_jspsych,
+            study_type=self.study_jspsych.study_type,
+            completed=False,
+        )
+        serializer = ResponseWriteableSerializer(
+            instance=response,
+            data={},  # no exp_data
+            partial=True,
+        )
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        updated = serializer.save()
+        self.assertEqual(updated.sequence, [])
+
+    def testResponseWriteableSerializerJsPsychDataWrongType(self):
+        # If exp data is the wrong type (not a list), the update should fail
+        response = G(
+            Response, child=self.child, study=self.study_jspsych, completed=False
+        )
+        serializer = ResponseWriteableSerializer(
+            instance=response,
+            data={"exp_data": 42},
+            partial=True,
+        )
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("exp_data", serializer.errors)
+        self.assertIn(
+            "jsPsych exp_data must be a list, instead received int",
+            str(serializer.errors["exp_data"]),
+        )
+
+    def testResponseWriteableSerializerJsPsychDataElementsNotDicts(self):
+        # If an element in the exp_data list is not a dict, the sequence should skip it
+        response = G(
+            Response,
+            child=self.child,
+            study=self.study_jspsych,
+            study_type=self.study_jspsych.study_type,
+            completed=False,
+        )
+        exp_data = [
+            {"trial_index": 1, "trial_type": "html-button-response"},
+            "not-a-dict",
+            {"trial_index": 2, "trial_type": "instructions"},
+        ]
+        serializer = ResponseWriteableSerializer(
+            instance=response,
+            data={"exp_data": exp_data},
+            partial=True,
+        )
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        updated = serializer.save()
+        self.assertEqual(updated.sequence, ["1-html-button-response", "2-instructions"])
+
+    def testResponseWriteableSerializerJsPsychDataMissingKeys(self):
+        # If a required key is missing from a trial object, the sequence should skip it
+        response = G(
+            Response,
+            child=self.child,
+            study=self.study_jspsych,
+            study_type=self.study_jspsych.study_type,
+            completed=False,
+        )
+        exp_data = [
+            {"trial_index": 1},  # missing trial_type
+            {"trial_index": 2, "trial_type": "video-consent"},
+            {"trial_type": "html-button-response"},  # missing trial_index
+        ]
+        serializer = ResponseWriteableSerializer(
+            instance=response,
+            data={"exp_data": exp_data},
+            partial=True,
+        )
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        updated = serializer.save()
+        self.assertEqual(updated.sequence, ["2-video-consent"])
+
+    def testResponseWriteableSerializerKeepsExistingJsPsychExpDataIfMissing(self):
+        # If exp_data is missing from the validated data that the serializer receives, then any existing exp_data and sequence values should remain untouched.
+        existing_exp_data = [
+            {"trial_index": 0, "trial_type": "html-button-response"},
+            {"trial_index": 1, "trial_type": "start-recording"},
+        ]
+        response = G(
+            Response,
+            child=self.child,
+            study=self.study_jspsych,
+            study_type=self.study_jspsych.study_type,
+            exp_data=existing_exp_data,
+            sequence=["0-html-button-response", "1-start-recording"],
+            completed=False,
+        )
+        serializer = ResponseWriteableSerializer(
+            instance=response,
+            data={},
+            partial=True,
+        )
+        # Valid because no fields are being updated/validated
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        updated = serializer.save()
+        self.assertEqual(updated.exp_data, existing_exp_data)
+        self.assertEqual(
+            updated.sequence, ["0-html-button-response", "1-start-recording"]
+        )
+
+    def testResponseWriteableSerializerKeepsExistingJsPsychExpDataIfNone(self):
+        # If exp_data is explicitly set to None when there is existing data, then validation should fail and existing data should not be overwritten.
+        existing_exp_data = [
+            {"trial_index": 0, "trial_type": "html-button-response"},
+            {"trial_index": 1, "trial_type": "start-recording"},
+        ]
+        response = G(
+            Response,
+            child=self.child,
+            study=self.study_jspsych,
+            study_type=self.study_jspsych.study_type,
+            exp_data=existing_exp_data,
+            sequence=["0-html-button-response", "1-start-recording"],
+            completed=False,
+        )
+        serializer = ResponseWriteableSerializer(
+            instance=response,
+            data={"exp_data": None},
+            partial=True,
+        )
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("exp_data", serializer.errors)
+        self.assertIn("This field may not be null.", str(serializer.errors["exp_data"]))
+
+    def testResponseWriteableSerializerRejectsShorterJsPsychExpData(self):
+        # If new exp_data is shorter than existing exp_data, validation should fail
+        existing_exp_data = [
+            {"trial_index": 0, "trial_type": "video-config"},
+            {"trial_index": 1, "trial_type": "video-consent"},
+            {"trial_index": 2, "trial_type": "instructions"},
+        ]  # 3 trials
+        response = G(
+            Response,
+            child=self.child,
+            study=self.study_jspsych,
+            study_type=self.study_jspsych.study_type,
+            exp_data=existing_exp_data,
+            completed=False,
+        )
+        new_exp_data_1 = [
+            {"trial_index": 0, "trial_type": "video-config"},
+        ]  # 1 trials
+        new_exp_data_2 = [
+            {"trial_index": 0, "trial_type": "video-config"},
+            {"trial_index": 1, "trial_type": "video-consent"},
+        ]  # 2 trials
+        serializer_1 = ResponseWriteableSerializer(
+            instance=response,
+            data={"exp_data": new_exp_data_1},
+            partial=True,
+        )
+        self.assertFalse(serializer_1.is_valid())
+        self.assertIn("exp_data", serializer_1.errors)
+        self.assertIn(
+            "Rejected jsPsych PATCH update: exp_data cannot reduce in length",
+            str(serializer_1.errors["exp_data"]),
+        )
+        serializer_2 = ResponseWriteableSerializer(
+            instance=response,
+            data={"exp_data": new_exp_data_2},
+            partial=True,
+        )
+        self.assertFalse(serializer_2.is_valid())
+        self.assertIn("exp_data", serializer_2.errors)
+        self.assertIn(
+            "Rejected jsPsych PATCH update: exp_data cannot reduce in length",
+            str(serializer_2.errors["exp_data"]),
+        )
+
+    def testResponseWriteableSerializerAcceptsEqualLengthJsPsychExpData(self):
+        # If new exp_data has the same number of elements, it should be accepted (modifications allowed)
+        existing_exp_data = [
+            {"trial_index": 0, "trial_type": "video-config"},
+            {"trial_index": 1, "trial_type": "video-consent"},
+        ]
+        response = G(
+            Response,
+            child=self.child,
+            study=self.study_jspsych,
+            study_type=self.study_jspsych.study_type,
+            exp_data=existing_exp_data,
+            completed=False,
+        )
+        equal_length_exp_data = [
+            {"trial_index": 3, "trial_type": "different-video-config"},
+            {
+                "trial_index": 4,
+                "trial_type": "different-video-consent",
+                "another_key": "another_value",
+            },
+        ]
+        serializer = ResponseWriteableSerializer(
+            instance=response,
+            data={"exp_data": equal_length_exp_data},
+            partial=True,
+        )
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        updated = serializer.save()
+        self.assertEqual(
+            updated.sequence, ["3-different-video-config", "4-different-video-consent"]
+        )
+
+    def testResponseWriteableSerializerAcceptsLongerJsPsychExpData(self):
+        # If new exp_data is longer, it should be accepted and sequence should be updated
+        existing_exp_data = [
+            {"trial_index": 0, "trial_type": "video-config"},
+        ]
+        response = G(
+            Response,
+            child=self.child,
+            study=self.study_jspsych,
+            study_type=self.study_jspsych.study_type,
+            exp_data=existing_exp_data,
+            completed=False,
+        )
+        longer_exp_data = [
+            {"trial_index": 0, "trial_type": "video-config"},
+            {"trial_index": 1, "trial_type": "video-consent"},
+        ]
+        serializer_1 = ResponseWriteableSerializer(
+            instance=response,
+            data={"exp_data": longer_exp_data},
+            partial=True,
+        )
+        self.assertTrue(serializer_1.is_valid(), serializer_1.errors)
+        updated_1 = serializer_1.save()
+        self.assertEqual(updated_1.sequence, ["0-video-config", "1-video-consent"])
+        much_longer_exp_data = [
+            {"trial_index": 0, "trial_type": "video-config"},
+            {"trial_index": 1, "trial_type": "video-consent"},
+            {"trial_index": 2, "trial_type": "trial"},
+            {"trial_index": 3, "trial_type": "trial"},
+            {"trial_index": 4, "trial_type": "trial"},
+            {"trial_index": 5, "trial_type": "trial"},
+        ]
+        serializer_2 = ResponseWriteableSerializer(
+            instance=response,
+            data={"exp_data": much_longer_exp_data},
+            partial=True,
+        )
+        self.assertTrue(serializer_2.is_valid(), serializer_2.errors)
+        updated_2 = serializer_2.save()
+        self.assertEqual(
+            updated_2.sequence,
+            [
+                "0-video-config",
+                "1-video-consent",
+                "2-trial",
+                "3-trial",
+                "4-trial",
+                "5-trial",
+            ],
+        )
