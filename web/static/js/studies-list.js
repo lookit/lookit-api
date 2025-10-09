@@ -1,4 +1,4 @@
-const $form = $('form');
+const $form = $('form#studies_list_form');
 const $hideStudiesCheckbox = $form.find('input:checkbox[name=hide_studies_we_have_done]')
 const $checkboxes = $form.find('input:checkbox')
 const $dropdownSelected = $form.find('select option:selected')
