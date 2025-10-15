@@ -1,7 +1,9 @@
+const form = document.querySelector('form#experiment_runner_form');
+
 function toggleScheduling() {
-    const scheduled = document.forms[0].scheduled;
-    const scheduling = document.querySelector('#id_scheduling');
-    const checked_scheduling = document.querySelector('input[name="scheduling"]:checked')
+    const scheduled = form.querySelector('#id_scheduled');
+    const scheduling = form.querySelector('#id_scheduling');
+    const checked_scheduling = form.querySelector('input[name="scheduling"]:checked');
     if (scheduled.value === "Scheduled") {
         scheduling.parentNode.classList.remove('d-none');
     } else {
@@ -11,9 +13,9 @@ function toggleScheduling() {
 }
 
 function toggleOtherScheduling() {
-    const scheduled = document.forms[0].scheduled;
-    const scheduling = document.forms[0].scheduling;
-    const otherScheduling = document.querySelector('#id_other_scheduling')
+    const scheduled = form.querySelector('#id_scheduled');
+    const scheduling = form.querySelector('#id_scheduling');
+    const otherScheduling = form.querySelector('#id_other_scheduling');
     if (scheduling.value === 'Other' && scheduled.value === "Scheduled") {
         otherScheduling.parentNode.classList.remove('d-none');
     } else {
@@ -23,9 +25,8 @@ function toggleOtherScheduling() {
 }
 
 function toggleOtherStudyPlatform() {
-    const studyPlatform = document.forms[0].study_platform;
-    const otherStudyPlatform = document.forms[0].other_study_platform;
-
+    const studyPlatform = form.study_platform;
+    const otherStudyPlatform = form.other_study_platform;
     if (studyPlatform.value === 'Other') {
         otherStudyPlatform.parentNode.classList.remove('d-none')
     } else {
@@ -41,13 +42,12 @@ toggleScheduling();
 toggleOtherScheduling();
 toggleOtherStudyPlatform();
 
-
 /***
  * Event listeners
  */
-document.querySelector('#id_scheduled').addEventListener('click', () => {
+form.querySelector('#id_scheduled').addEventListener('click', () => {
     toggleScheduling();
     toggleOtherScheduling();
 });
-document.querySelector('#id_scheduling').addEventListener('change', toggleOtherScheduling);
-document.querySelector('#id_study_platform').addEventListener('change', toggleOtherStudyPlatform);
+form.querySelector('#id_scheduling').addEventListener('change', toggleOtherScheduling);
+form.querySelector('#id_study_platform').addEventListener('change', toggleOtherStudyPlatform);
