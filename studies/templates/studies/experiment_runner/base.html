@@ -48,7 +48,7 @@
                     </p>
                     {% block header %}
                     {% endblock header %}
-                    <form action="" method="post" class="form">
+                    <form method="post" class="form" id="{{ form_id|default:'experiment_runner_form' }}" action="{{ form_action|default:'' }}">
                         {% csrf_token %}
                         {% block form %}
                         {% endblock form %}

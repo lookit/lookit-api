@@ -128,9 +128,10 @@ new Clipboard('.copy-link-button'); // NOSONAR
 
 $('#private-study-link, #study-preview-link').attr('readonly', 'readonly');
 
-
-$('form').submit(function () {
-    $('#changeStatusButton').prop("disabled", "disabled");
+// disable the study state dropdown and submit/save button to prevent another status change while the page reloads
+$('form#studyStateModalForm').submit(function () {
+    $('#changeStudyState').prop("disabled", "disabled");
+    $('form#studyStateModalForm button').prop("disabled", "disabled");
 });
 
 $(function () {

@@ -8,7 +8,7 @@
 })();
 
 $(document).ready(function() {
-    $('form').submit(function() {
+    $('form#study-details-form').submit(function() {
         $('#create-study-button').prop("disabled", "disabled");
     });
 });
