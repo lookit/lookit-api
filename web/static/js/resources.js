@@ -551,6 +551,10 @@ const labsData = {
         {
             "url": "https://peabody.vanderbilt.edu/departments/psych/research/research_labs/educational_cognitive_neuroscience_lab/index.php",
             "name": "Vanderbilt Educational Cognitive Neuroscience Lab"
+        },
+        {
+            "url": "https://theccdlab.com/",
+            "name": "Vanderbilt University Computational Cognitive Development Lab"
         }
     ],
     "Texas": [
