@@ -18,7 +18,7 @@ dependencies = [
     "django-extensions==4.1",
     "django-filter==2.4.0",
     "django-guardian==2.4.0",
-    "django-localflavor==4.0",
+    "django-localflavor==5.0",
     "django-model-utils==5.0.0",
     "django-multiselectfield==0.1.13",
     "django-prettyjson==0.4.1",
