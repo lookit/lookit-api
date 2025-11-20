@@ -5,16 +5,16 @@
 @import "superuser";
 
 // Add imports to adjust default colors and theme maps
-@import "bootstrap-5.2.0/scss/functions";
+@import "bootstrap-5.3.3/scss/functions";
 @import "custom-variables";
-@import "bootstrap-5.2.0/scss/variables";
+@import "bootstrap-5.3.3/scss/variables";
 @import "custom-maps";
 
 // import study-responses after custom variables because it uses a color variable
 @import "study-responses";
 
 // Add all bootstrap features
-@import "bootstrap-5.2.0/scss/bootstrap";
+@import "bootstrap-5.3.3/scss/bootstrap";
 
 
 .empty-text {
@@ -36,7 +36,7 @@
 
 // Screen widths xs to lg
 .home-title-text {
-    font-size: calc(1.325rem + 0.9vw) !important;  // fs-2
+    font-size: calc(1.325rem + 0.9vw) !important; // fs-2
 }
 
 .home-subtitle-text {
@@ -46,7 +46,7 @@
 // Screen widths xl and xxl
 @include media-breakpoint-up(xl) {
     .home-title-text {
-        font-size: calc(1.375rem + 1.5vw) !important;  // fs-1
+        font-size: calc(1.375rem + 1.5vw) !important; // fs-1
     }
 
     .home-subtitle-text {
@@ -54,7 +54,8 @@
     }
 }
 
-.img-hover:hover, .img-hover:focus {
+.img-hover:hover,
+.img-hover:focus {
     color: #636464;
     background-color: #e5e5e5;
 }
