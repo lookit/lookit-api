@@ -6,4 +6,4 @@ function validateExperiment(event) {
 /**
  * Event Listeners
  */
-document.querySelector('form').addEventListener('submit', validateExperiment);
+document.querySelector('form#experiment_runner_form').addEventListener('submit', validateExperiment);

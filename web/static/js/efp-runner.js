@@ -120,7 +120,7 @@ function updateCommitUpdateInfo(event) {
 }
 
 function updateLastPlayerSha() {
-    const form = document.forms[0];
+    const form = document.querySelector('form#experiment_runner_form');
 
     if (!form.last_known_player_sha.value) {
         const playerRepoUrl = document.querySelector('#id_player_repo_url').value;
@@ -162,4 +162,4 @@ updateLastPlayerSha();
 document.querySelector('#id_use_generator').addEventListener("click", updateProtocolDisplay);
 document.querySelector('#update-button').addEventListener("click", updateCommitUpdateInfo);
 document.querySelector('#id_last_known_player_sha').addEventListener('keyup', updateCommitDescription);
-document.querySelector('form').addEventListener('submit', validateGenerator);
+document.querySelector('form#experiment_runner_form').addEventListener('submit', validateGenerator);
