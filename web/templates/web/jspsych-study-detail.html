@@ -6,6 +6,46 @@
         <meta name="keywords" content="">
         <title>My experiment</title>
         {{ aws_vars|json_script:"aws-vars" }}
+        <!-- Loader style -->
+        <style>
+            #chs-loader-container {
+                position: fixed;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: white;
+                z-index: 9999;
+            }
+            #chs-loader-container .loader {
+                border: 16px solid #f3f3f3;
+                border-top: 16px solid #3498db;
+                border-radius: 50%;
+                width: 120px;
+                height: 120px;
+                animation: spin 2s linear infinite;
+            }
+            @keyframes spin {
+                0%   { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+        <!-- External style sheets -->
+        <link rel="stylesheet"
+            href="https://unpkg.com/jspsych@8.0.3/css/jspsych.css"
+            integrity="sha384-JNNpz6XWsC9uPPHlCuf9rr6LrSD2uYvbkApP5kAp6g/lFBue51K1kMzxGawS50nK"
+            crossorigin="anonymous">
+        <link rel="stylesheet"
+            href="https://unpkg.com/@lookit/style@0.2.0"
+            integrity="sha384-miw7AsL+cxLi4XSZ0X8OL6ef4v2/sWTYoWqRSDj4AzEMJzCCL8up7TCFqL4XgrVf"
+            crossorigin="anonymous">
+    </head>
+    <body>
+        <!-- Loader: visible immediately -->
+        <div id="chs-loader-container">
+            <div class="loader"></div>
+        </div>
+        <!-- External JS -->
         <script src="https://unpkg.com/jspsych@8.0.3"
                 integrity="sha384-YlD0H7IvUJqPzueP9WYLT0zKLtEnoNlbxZ5Kd4jg+3orRU5jXGk4ozBUMLqQ+SQ1"
                 crossorigin="anonymous"></script>
@@ -60,19 +100,17 @@
         <script src="https://unpkg.com/@lookit/surveys@4.0.1"
                 integrity="sha384-y5ZVd6DNQBV6mg7BLNyjgqGCXA81bqySLwFy407dhgc1UUjFaKRRqZ2X7u6MZgza"
                 crossorigin="anonymous"></script>
-        <link rel="stylesheet"
-              href="https://unpkg.com/jspsych@8.0.3/css/jspsych.css"
-              integrity="sha384-JNNpz6XWsC9uPPHlCuf9rr6LrSD2uYvbkApP5kAp6g/lFBue51K1kMzxGawS50nK"
-              crossorigin="anonymous">
-        <link rel="stylesheet"
-              href="https://unpkg.com/@lookit/style@0.2.0"
-              integrity="sha384-miw7AsL+cxLi4XSZ0X8OL6ef4v2/sWTYoWqRSDj4AzEMJzCCL8up7TCFqL4XgrVf"
-              crossorigin="anonymous">
+        <!-- Once everything has loaded, run experiment and remove loader div -->
         <script type="module">
-                const responseUuid="{{ response.uuid }}";
+            try {
+                const responseUuid = "{{ response.uuid }}";
                 await chsData.load(responseUuid);
                 initJsPsych = chsInitJsPsych(responseUuid);
                 {% autoescape off %}{{ study.metadata.experiment }}{% endautoescape %}
+            } finally {
+                // Remove loader
+                document.getElementById("chs-loader-container")?.remove();
+            }
         </script>
-    </head>
+    </body>
 </html>
