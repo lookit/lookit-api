@@ -6,6 +6,46 @@
         <meta name="keywords" content="">
         <title>My experiment</title>
         {{ aws_vars|json_script:"aws-vars" }}
+        <!-- Loader style -->
+        <style>
+            #chs-loader-container {
+                position: fixed;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: white;
+                z-index: 9999;
+            }
+            #chs-loader-container .loader {
+                border: 16px solid #f3f3f3;
+                border-top: 16px solid #3498db;
+                border-radius: 50%;
+                width: 120px;
+                height: 120px;
+                animation: spin 2s linear infinite;
+            }
+            @keyframes spin {
+                0%   { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+        <!-- External style sheets -->
+        <link rel="stylesheet"
+            href="https://unpkg.com/jspsych@8.0.3/css/jspsych.css"
+            integrity="sha384-JNNpz6XWsC9uPPHlCuf9rr6LrSD2uYvbkApP5kAp6g/lFBue51K1kMzxGawS50nK"
+            crossorigin="anonymous">
+        <link rel="stylesheet"
+            href="https://unpkg.com/@lookit/style@0.3.0"
+            integrity="sha384-kmN9wmXS/lsT78dPkfu99YiznGYo4lNUhB5tLUJWL82ScmPucLsOrYj5np/FM/vC"
+            crossorigin="anonymous">
+    </head>
+    <body>
+        <!-- Loader: visible immediately -->
+        <div id="chs-loader-container">
+            <div class="loader"></div>
+        </div>
+        <!-- External JS -->
         <script src="https://unpkg.com/jspsych@8.0.3"
                 integrity="sha384-YlD0H7IvUJqPzueP9WYLT0zKLtEnoNlbxZ5Kd4jg+3orRU5jXGk4ozBUMLqQ+SQ1"
                 crossorigin="anonymous"></script>
@@ -27,11 +67,11 @@
         <script src="https://unpkg.com/@jspsych/plugin-video-button-response@2.0.0"
                 integrity="sha384-u1N4HtXTAx8IPaZxRLKurCoPhFnSQ+TrF+33Lr1ORBhnRogBnU8Fd7tbPkFh1uUj"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych-contrib/plugin-image-hotspots@1.0.0"
-                integrity="sha384-5FFtjOjpPAEX7u5oCl4/EIA79s5PCUgxFlQJV48+FaiDcZNkPgIULQiU2g2LEkrp"
+        <script src="https://unpkg.com/@jspsych-contrib/plugin-image-hotspots@1.1.0"
+                integrity="sha384-7AhLUtRbC1B+Xy/IvMrbPwOq6HljuZNa73fxtKSPix5U/fRpljnK/hkcJGtKsTRJ"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych-contrib/plugin-video-hotspots@1.0.0"
-                integrity="sha384-rt4050E4IgezDryQLHWQQ2R/MifIghArPZ09ovDSwWB6n46Kviwidtl3nMHVyEOE"
+        <script src="https://unpkg.com/@jspsych-contrib/plugin-video-hotspots@1.1.0"
+                integrity="sha384-us3mQaYVUiroiiS/C+w4pJnlRl7E65KWAPC/zqIXWJxpHQhXfn06a2C+fxhkVLbd"
                 crossorigin="anonymous"></script>
         <script src="https://unpkg.com/@jspsych/plugin-preload@2.0.0"
                 integrity="sha384-veBuhHbf5WLQIFlG9N6a+5E/kRYJcBTDKkqJRTkc7wuGwptljsBa2fYuTseMkOBI"
@@ -44,35 +84,33 @@
                 crossorigin="anonymous"></script>
         <script src="https://unpkg.com/@jspsych/plugin-fullscreen@2.1.0" integrity="sha384-JQEV9wMXFDbTpp1eYJSU9G7uQeyZcLGabno5ZHQJGytUBG19mTZ+ZBV5dsm7m6Mf" crossorigin="anonymous"></script>
         {% comment %} Data and templates packages are peer dependencies and should be listed first. {% endcomment %}
-        <script src="https://unpkg.com/@lookit/data@0.2.0"
-                integrity="sha384-iMjDaQDmCTXe6XO59EktLBsg7KmDZZvT5jN/QMiP+ctA8YfQDT/hATDKM1EtoxBQ"
+        <script src="https://unpkg.com/@lookit/data@0.3.0"
+                integrity="sha384-kpjDWFQo7CQk9i6Bq58NNCC8i5mFCMAbapMhF3xxLmEc2vD6wHqMc/aI0w1u/fTh"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@lookit/templates@2.1.0"
-                integrity="sha384-9RZZJpDYP42tyQa4nwroWarnZ815GNnaR8dEyt2UvYokn8TJpkK/Ddl2NgLhCCBK"
+        <script src="https://unpkg.com/@lookit/templates@3.0.0"
+                integrity="sha384-pIAOVEQIg3xJ2GqUcOasib4l2WGBtEDJvdO4tv1f+mIkboyXqTpuRJlXEVy8K3qL"
                 crossorigin="anonymous"></script>
         {% comment %} End peer dependencies. {% endcomment %}
-        <script src="https://unpkg.com/@lookit/lookit-initjspsych@2.1.0"
-                integrity="sha384-57tffibjHG+dqyEOLLeNY18jNHuOzQPmYiOB+m20j6+/vBNP91YeP1Nb6Krk2cmk"
+        <script src="https://unpkg.com/@lookit/lookit-initjspsych@3.0.0"
+                integrity="sha384-DfIlRlOvuxLal1x5aNa2A7Z7bT7aicnGeuLWp6kSaF/MP1kH4b6NFSGT7ucmkVaN"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@lookit/record@4.1.0"
-                integrity="sha384-DxWDXLMg/gkElFfpqPzd7tCXey6RPcraAB881PbJZm/LfpZbu/J8AsaT4IH3YjTR"
+        <script src="https://unpkg.com/@lookit/record@5.0.0"
+                integrity="sha384-FtTGYc7PNqvbjsEFtFjrmcbs8JWbJNOPMj4WMc8D6aQT6ZeBSesES98wvqxZo/Tr"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@lookit/surveys@4.0.1"
-                integrity="sha384-y5ZVd6DNQBV6mg7BLNyjgqGCXA81bqySLwFy407dhgc1UUjFaKRRqZ2X7u6MZgza"
+        <script src="https://unpkg.com/@lookit/surveys@5.0.0"
+                integrity="sha384-khBuMGRD2HA6lF3nmRuPepPuryCbcmtbS+H1nAgWVV2dzm3hnM/edNG2WISl/+M4"
                 crossorigin="anonymous"></script>
-        <link rel="stylesheet"
-              href="https://unpkg.com/jspsych@8.0.3/css/jspsych.css"
-              integrity="sha384-JNNpz6XWsC9uPPHlCuf9rr6LrSD2uYvbkApP5kAp6g/lFBue51K1kMzxGawS50nK"
-              crossorigin="anonymous">
-        <link rel="stylesheet"
-              href="https://unpkg.com/@lookit/style@0.2.0"
-              integrity="sha384-miw7AsL+cxLi4XSZ0X8OL6ef4v2/sWTYoWqRSDj4AzEMJzCCL8up7TCFqL4XgrVf"
-              crossorigin="anonymous">
+        <!-- Once everything has loaded, run experiment and remove loader div -->
         <script type="module">
-                const responseUuid="{{ response.uuid }}";
+            try {
+                const responseUuid = "{{ response.uuid }}";
                 await chsData.load(responseUuid);
                 initJsPsych = chsInitJsPsych(responseUuid);
                 {% autoescape off %}{{ study.metadata.experiment }}{% endautoescape %}
+            } finally {
+                // Remove loader
+                document.getElementById("chs-loader-container")?.remove();
+            }
         </script>
-    </head>
+    </body>
 </html>
