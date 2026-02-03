@@ -364,6 +364,12 @@ class Study(models.Model):
     is_building = models.BooleanField(default=False)
     compensation_description = models.TextField(blank=True)
     criteria_expression = models.TextField(blank=True, default="")
+    max_responses = models.IntegerField(
+        null=True,
+        blank=True,
+        default=None,
+        validators=[MinValueValidator(1)],
+    )
     must_have_participated = models.ManyToManyField(
         "self", blank=True, symmetrical=False, related_name="expected_participation"
     )
