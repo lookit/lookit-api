@@ -104,4 +104,20 @@ $(document).ready(function () {
     // Trigger mousedown to populate ui.
     mustHave.dispatchEvent(new Event('mousedown'));
     mustNotHave.dispatchEvent(new Event('mousedown'));
+
+    /*
+        Max Responses validation
+    */
+    const maxResponses = document.querySelector('#id_max_responses');
+    if (maxResponses) {
+        maxResponses.addEventListener('input', () => {
+            // Remove non-numeric characters and leading zeros
+            let value = maxResponses.value.replace(/[^0-9]/g, '').replace(/^0+/, '');
+            // Ensure minimum value of 1 if not empty
+            if (value !== '' && parseInt(value) < 1) {
+                value = '1';
+            }
+            maxResponses.value = value;
+        });
+    }
 });
