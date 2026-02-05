@@ -561,22 +561,23 @@ class Study(models.Model):
         A response is counted as valid if:
         - is_preview is False
         - eligibility is "Eligible" or blank/empty
-        - completed is True
+        - completed is True (internal study types only)
+
+        For external studies, the completed field is ignored.
 
         Returns:
             int: Count of valid responses
         """
-        return (
-            self.responses.filter(
-                is_preview=False,
-                completed=True,
-            )
-            .filter(
-                models.Q(eligibility=[])
-                | models.Q(eligibility__contains=[ResponseEligibility.ELIGIBLE])
-            )
-            .count()
-        )
+        responses = self.responses.filter(is_preview=False)
+
+        # For internal study types, also require completed=True
+        if not self.study_type.is_external:
+            responses = responses.filter(completed=True)
+
+        return responses.filter(
+            models.Q(eligibility=[])
+            | models.Q(eligibility__contains=[ResponseEligibility.ELIGIBLE])
+        ).count()
 
     @property
     def has_reached_max_responses(self) -> bool:
