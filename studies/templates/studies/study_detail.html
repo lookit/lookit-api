@@ -127,6 +127,29 @@
                     Your study link will show up here when you have built the experiment runner.
                 {% endif %}
             </p>
+            {% if study.max_responses %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="fw-bold">Valid Responses</span>
+                        <span>{{ study.valid_response_count }} / {{ study.max_responses }}</span>
+                    </div>
+                    {% widthratio study.valid_response_count study.max_responses 100 as percent_str %}
+                    {% with percent=percent_str|add:"0" %}
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar {% if percent >= 100 %}bg-success{% elif percent >= 75 %}bg-warning{% else %}bg-info{% endif %}"
+                                role="progressbar"
+                                style="width: {% if percent > 100 %}100{% else %}{{ percent }}{% endif %}%;"
+                                aria-valuenow="{{ study.valid_response_count }}"
+                                aria-valuemin="0"
+                                aria-valuemax="{{ study.max_responses }}">
+                            </div>
+                        </div>
+                        {% if percent >= 100 %}
+                            <small class="text-muted">Response limit reached</small>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            {% endif %}
         </div>
         <div class="col-2">
             <form id="cloneForm"
