@@ -364,6 +364,12 @@ class Study(models.Model):
     is_building = models.BooleanField(default=False)
     compensation_description = models.TextField(blank=True)
     criteria_expression = models.TextField(blank=True, default="")
+    max_responses = models.IntegerField(
+        null=True,
+        blank=True,
+        default=None,
+        validators=[MinValueValidator(1)],
+    )
     must_have_participated = models.ManyToManyField(
         "self", blank=True, symmetrical=False, related_name="expected_participation"
     )
@@ -547,6 +553,50 @@ class Study(models.Model):
     def videos_for_consented_responses(self):
         """Gets videos but only for consented responses."""
         return Video.objects.filter(response_id__in=self.consented_responses)
+
+    @property
+    def valid_response_count(self) -> int:
+        """Return the count of valid responses for max_responses limit.
+
+        A response is counted as valid if:
+        - is_preview is False
+        - eligibility is "Eligible" or blank/empty
+        - completed is True (internal study types only)
+
+        For external studies, the completed field is ignored.
+
+        Returns:
+            int: Count of valid responses
+        """
+        responses = self.responses.filter(is_preview=False)
+
+        # For internal study types, also require completed=True
+        if not self.study_type.is_external:
+            responses = responses.filter(completed=True)
+
+        return responses.filter(
+            models.Q(eligibility=[])
+            | models.Q(eligibility__contains=[ResponseEligibility.ELIGIBLE])
+        ).count()
+
+    @property
+    def has_reached_max_responses(self) -> bool:
+        """Check if the study has reached its maximum number of valid responses.
+
+        Returns:
+            bool: True if max_responses is set and the limit has been reached
+        """
+        if self.max_responses is None:
+            return False
+        return self.valid_response_count >= self.max_responses
+
+    def check_and_pause_if_at_max_responses(self):
+        """Check if max responses reached and pause the study if so.
+
+        Only pauses if the study is currently active.
+        """
+        # TODO: Implement logic to pause study when max responses reached
+        pass
 
     @property
     def consent_videos(self):
@@ -1293,6 +1343,10 @@ def take_action_on_exp_data(sender, instance, created, **kwargs):
         return
     else:
         dispatch_frame_action(response)
+
+    # If this response is complete, then check if this study has reached max responses and pause if needed
+    if response.completed:
+        response.study.check_and_pause_if_at_max_responses()
 
 
 class FeedbackApiManager(models.Manager):

@@ -861,6 +861,234 @@ class StudyModelTestCase(TestCase):
 
         self.assertIn(response, study.responses_for_researcher(user))
 
+    def test_valid_response_count_internal_study(self):
+        """Test that valid_response_count correctly counts eligible, completed, non-preview responses."""
+        study = Study.objects.create(study_type=StudyType.get_ember_frame_player())
+        user = User.objects.create(is_active=True)
+        child = Child.objects.create(user=user, birthday=date.today())
+
+        # Note: Response.save() auto-sets eligibility, so we update this value after creation
+
+        # Valid response: completed, not preview, eligible
+        valid1 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=True,
+            is_preview=False,
+        )
+        Response.objects.filter(pk=valid1.pk).update(eligibility=[])
+
+        # Valid response: completed, not preview, empty eligibility
+        valid2 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=True,
+            is_preview=False,
+        )
+        Response.objects.filter(pk=valid2.pk).update(
+            eligibility=[ResponseEligibility.ELIGIBLE]
+        )
+
+        # Invalid: preview response
+        invalid3 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=True,
+            is_preview=True,
+        )
+        Response.objects.filter(pk=invalid3.pk).update(
+            eligibility=[ResponseEligibility.ELIGIBLE]
+        )
+
+        # Invalid: not completed
+        invalid4 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=False,
+            is_preview=False,
+        )
+        Response.objects.filter(pk=invalid4.pk).update(
+            eligibility=[ResponseEligibility.ELIGIBLE]
+        )
+
+        # Invalid: ineligible
+        invalid5 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=True,
+            is_preview=False,
+        )
+        Response.objects.filter(pk=invalid5.pk).update(
+            eligibility=[ResponseEligibility.INELIGIBLE_OLD]
+        )
+
+        self.assertEqual(study.valid_response_count, 2)
+
+    def test_valid_response_count_external_study(self):
+        """Test that valid_response_count for external studies ignores completed field."""
+        study = Study.objects.create(study_type=StudyType.get_external())
+        user = User.objects.create(is_active=True)
+        child = Child.objects.create(user=user, birthday=date.today())
+
+        # Valid: not preview, eligible, completed
+        r1 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=True,
+            is_preview=False,
+        )
+        Response.objects.filter(pk=r1.pk).update(
+            eligibility=[ResponseEligibility.ELIGIBLE]
+        )
+
+        # Valid: not preview, eligible, NOT completed (should still count for external)
+        r2 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=False,
+            is_preview=False,
+        )
+        Response.objects.filter(pk=r2.pk).update(
+            eligibility=[ResponseEligibility.ELIGIBLE]
+        )
+
+        # Valid: not preview, empty eligibility, NOT completed
+        r3 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=False,
+            is_preview=False,
+        )
+        Response.objects.filter(pk=r3.pk).update(eligibility=[])
+
+        # Invalid: preview response (should not count)
+        r4 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=True,
+            is_preview=True,
+        )
+        Response.objects.filter(pk=r4.pk).update(
+            eligibility=[ResponseEligibility.ELIGIBLE]
+        )
+
+        # Invalid: ineligible (should not count)
+        r5 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=True,
+            is_preview=False,
+        )
+        Response.objects.filter(pk=r5.pk).update(
+            eligibility=[ResponseEligibility.INELIGIBLE_CRITERIA]
+        )
+
+        # 3 valid responses: r1, r2, r3 (completed field ignored for external)
+        self.assertEqual(study.valid_response_count, 3)
+
+    def test_has_reached_max_responses_no_limit(self):
+        """Test that has_reached_max_responses returns False when max_responses is None."""
+        study = Study.objects.create(
+            study_type=StudyType.get_ember_frame_player(),
+            max_responses=None,
+        )
+        self.assertFalse(study.has_reached_max_responses)
+
+    def test_has_reached_max_responses_not_reached(self):
+        """Test that has_reached_max_responses returns False when limit not reached."""
+        study = Study.objects.create(
+            study_type=StudyType.get_ember_frame_player(),
+            max_responses=5,
+        )
+        user = User.objects.create(is_active=True)
+        child = Child.objects.create(user=user, birthday=date.today())
+
+        # Add 2 valid responses
+        for _ in range(2):
+            r = Response.objects.create(
+                study=study,
+                child=child,
+                study_type=study.study_type,
+                demographic_snapshot=user.latest_demographics,
+                completed=True,
+                is_preview=False,
+            )
+            Response.objects.filter(pk=r.pk).update(
+                eligibility=[ResponseEligibility.ELIGIBLE]
+            )
+
+        self.assertFalse(study.has_reached_max_responses)
+
+    def test_has_reached_max_responses_reached(self):
+        """Test that has_reached_max_responses returns True when limit is reached."""
+        study = Study.objects.create(
+            study_type=StudyType.get_ember_frame_player(),
+            max_responses=3,
+        )
+        user = User.objects.create(is_active=True)
+        child = Child.objects.create(user=user, birthday=date.today())
+
+        # Add 3 valid responses
+        for _ in range(3):
+            r = Response.objects.create(
+                study=study,
+                child=child,
+                study_type=study.study_type,
+                demographic_snapshot=user.latest_demographics,
+                completed=True,
+                is_preview=False,
+            )
+            Response.objects.filter(pk=r.pk).update(
+                eligibility=[ResponseEligibility.ELIGIBLE]
+            )
+
+        self.assertTrue(study.has_reached_max_responses)
+
+    def test_has_reached_max_responses_exceeded(self):
+        """Test that has_reached_max_responses returns True when limit is exceeded."""
+        study = Study.objects.create(
+            study_type=StudyType.get_ember_frame_player(),
+            max_responses=2,
+        )
+        user = User.objects.create(is_active=True)
+        child = Child.objects.create(user=user, birthday=date.today())
+
+        # Add 4 valid responses (exceeds limit of 2)
+        for _ in range(4):
+            r = Response.objects.create(
+                study=study,
+                child=child,
+                study_type=study.study_type,
+                demographic_snapshot=user.latest_demographics,
+                completed=True,
+                is_preview=False,
+            )
+            Response.objects.filter(pk=r.pk).update(
+                eligibility=[ResponseEligibility.ELIGIBLE]
+            )
+
+        self.assertTrue(study.has_reached_max_responses)
+
 
 class VideoModelTestCase(TestCase):
     def setUp(self):

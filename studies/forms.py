@@ -168,9 +168,15 @@ class StudyForm(ModelForm):
     must_not_have_participated = forms.MultipleChoiceField(
         choices=participated_choices, required=False
     )
+    set_response_limit = forms.BooleanField(
+        required=False,
+        label="Set a Response Limit",
+        help_text="Check this box to set a target number of valid responses for this study. The study will automatically pause when the number of valid responses reaches this limit.",
+    )
 
     def clean(self):
         cleaned_data = super().clean()
+
         min_age_days = self.cleaned_data.get("min_age_days")
         min_age_months = self.cleaned_data.get("min_age_months")
         min_age_years = self.cleaned_data.get("min_age_years")
@@ -205,12 +211,23 @@ class StudyForm(ModelForm):
 
         return cleaned_image
 
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        # Explicitly set max_responses to None if set_response_limit is unchecked
+        if not self.cleaned_data.get("set_response_limit"):
+            instance.max_responses = None
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
+
     class Meta:
         model = Study
         fields = [
             "name",
             "lab",
             "priority",
+            "max_responses",
             "image",
             "preview_summary",
             "short_description",
@@ -247,6 +264,7 @@ class StudyForm(ModelForm):
             "study_type": "Experiment Type",
             "compensation_description": "Compensation",
             "priority": "Lab Page Priority",
+            "max_responses": "Maximum Responses",
         }
         widgets = {
             "preview_summary": Textarea(attrs={"rows": 2}),
@@ -277,6 +295,7 @@ class StudyForm(ModelForm):
             "priority": forms.TextInput(
                 attrs={"type": "range", "min": "1", "max": "99"}
             ),
+            "max_responses": forms.NumberInput(attrs={"min": "1"}),
         }
 
         help_texts = {
@@ -300,6 +319,7 @@ class StudyForm(ModelForm):
             "shared_preview": "Allow other Lookit researchers to preview your study and give feedback.",
             "study_type": "Choose the type of experiment you are creating - this will change the fields that appear on the Study Details page.",
             "priority": "This affects how studies are ordered at your lab's custom URL, not the main study page. If you leave all studies at the highest priority (99), then all of your lab's active/discoverable studies will be shown in a randomized order on your lab page. If you lower the priority of this study to 1, then it will appear last in the list on your lab page. You can find your lab's custom URL from the <a href='/exp/labs/'>labs page</a>. For more info, see the documentation on <a href='https://lookit.readthedocs.io/en/develop/researchers-manage-org.html#ordering-studies-on-your-lab-page'>study prioritization</a>.",
+            "max_responses": "This is an optional limit on the number of valid responses that should be collected before the study is automatically paused. This limit can be changed at any time, and you can edit the valid/invalid status for each response. For no response limit, leave this field blank or uncheck 'Set a Response Limit'.",
         }
 
 
