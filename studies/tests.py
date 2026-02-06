@@ -870,7 +870,7 @@ class StudyModelTestCase(TestCase):
         # Note: Response.save() auto-sets eligibility, so we update this value after creation
 
         # Valid response: completed, not preview, eligible
-        r1 = Response.objects.create(
+        valid1 = Response.objects.create(
             study=study,
             child=child,
             study_type=study.study_type,
@@ -878,23 +878,23 @@ class StudyModelTestCase(TestCase):
             completed=True,
             is_preview=False,
         )
-        Response.objects.filter(pk=r1.pk).update(
+        Response.objects.filter(pk=valid1.pk).update(eligibility=[])
+
+        # Valid response: completed, not preview, empty eligibility
+        valid2 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=True,
+            is_preview=False,
+        )
+        Response.objects.filter(pk=valid2.pk).update(
             eligibility=[ResponseEligibility.ELIGIBLE]
         )
 
-        # Valid response: completed, not preview, empty eligibility
-        r2 = Response.objects.create(
-            study=study,
-            child=child,
-            study_type=study.study_type,
-            demographic_snapshot=user.latest_demographics,
-            completed=True,
-            is_preview=False,
-        )
-        Response.objects.filter(pk=r2.pk).update(eligibility=[])
-
         # Invalid: preview response
-        r3 = Response.objects.create(
+        invalid3 = Response.objects.create(
             study=study,
             child=child,
             study_type=study.study_type,
@@ -902,12 +902,12 @@ class StudyModelTestCase(TestCase):
             completed=True,
             is_preview=True,
         )
-        Response.objects.filter(pk=r3.pk).update(
+        Response.objects.filter(pk=invalid3.pk).update(
             eligibility=[ResponseEligibility.ELIGIBLE]
         )
 
         # Invalid: not completed
-        r4 = Response.objects.create(
+        invalid4 = Response.objects.create(
             study=study,
             child=child,
             study_type=study.study_type,
@@ -915,12 +915,12 @@ class StudyModelTestCase(TestCase):
             completed=False,
             is_preview=False,
         )
-        Response.objects.filter(pk=r4.pk).update(
+        Response.objects.filter(pk=invalid4.pk).update(
             eligibility=[ResponseEligibility.ELIGIBLE]
         )
 
         # Invalid: ineligible
-        r5 = Response.objects.create(
+        invalid5 = Response.objects.create(
             study=study,
             child=child,
             study_type=study.study_type,
@@ -928,7 +928,7 @@ class StudyModelTestCase(TestCase):
             completed=True,
             is_preview=False,
         )
-        Response.objects.filter(pk=r5.pk).update(
+        Response.objects.filter(pk=invalid5.pk).update(
             eligibility=[ResponseEligibility.INELIGIBLE_OLD]
         )
 
@@ -1000,7 +1000,7 @@ class StudyModelTestCase(TestCase):
             is_preview=False,
         )
         Response.objects.filter(pk=r5.pk).update(
-            eligibility=[ResponseEligibility.INELIGIBLE_OLD]
+            eligibility=[ResponseEligibility.INELIGIBLE_CRITERIA]
         )
 
         # 3 valid responses: r1, r2, r3 (completed field ignored for external)
