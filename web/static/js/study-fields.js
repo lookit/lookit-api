@@ -106,10 +106,37 @@ $(document).ready(function () {
     mustNotHave.dispatchEvent(new Event('mousedown'));
 
     /*
-        Max Responses validation
+        Max Responses validation and checkbox toggle
     */
     const maxResponses = document.querySelector('#id_max_responses');
-    if (maxResponses) {
+    const setResponseLimit = document.querySelector('#id_set_response_limit');
+
+    if (maxResponses && setResponseLimit) {
+        // Function to enable/disable max_responses based on checkbox
+        function toggleMaxResponses() {
+            if (setResponseLimit.checked) {
+                maxResponses.disabled = false;
+                maxResponses.parentElement.classList.remove('text-muted');
+            } else {
+                // The max responses value is cleared when the setResponseLimit box is unchecked, but this value won't actually be saved with the form data if the form is submitted in this state, because the max_responses field is disabled. This case is handled on the backend in the form's clean method, which checks if setResponseLimit is unchecked, and if so, sets max_responses to None.
+                maxResponses.disabled = true;
+                maxResponses.value = '';
+                maxResponses.parentElement.classList.add('text-muted');
+            }
+        }
+
+        // On page load, check the checkbox if max_responses has a value
+        if (maxResponses.value) {
+            setResponseLimit.checked = true;
+        }
+
+        // Set initial state
+        toggleMaxResponses();
+
+        // Listen for checkbox changes
+        setResponseLimit.addEventListener('change', toggleMaxResponses);
+
+        // Input validation for max_responses
         maxResponses.addEventListener('input', () => {
             // Remove non-numeric characters and leading zeros
             let value = maxResponses.value.replace(/[^0-9]/g, '').replace(/^0+/, '');

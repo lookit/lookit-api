@@ -168,9 +168,20 @@ class StudyForm(ModelForm):
     must_not_have_participated = forms.MultipleChoiceField(
         choices=participated_choices, required=False
     )
+    set_response_limit = forms.BooleanField(
+        required=False,
+        label="Set a Response Limit",
+        help_text="Check this box to set a target number of valid responses for this study. The study will automatically pause when the number of valid responses reaches this limit.",
+    )
 
     def clean(self):
         cleaned_data = super().clean()
+
+        # Clear max_responses value if set_response_limit is not checked
+        # (when set_response_limit is not checked, the max_responses field is diabled, which means the None value will not be saved)
+        if not cleaned_data.get("set_response_limit"):
+            cleaned_data["max_responses"] = None
+
         min_age_days = self.cleaned_data.get("min_age_days")
         min_age_months = self.cleaned_data.get("min_age_months")
         min_age_years = self.cleaned_data.get("min_age_years")
@@ -303,7 +314,7 @@ class StudyForm(ModelForm):
             "shared_preview": "Allow other Lookit researchers to preview your study and give feedback.",
             "study_type": "Choose the type of experiment you are creating - this will change the fields that appear on the Study Details page.",
             "priority": "This affects how studies are ordered at your lab's custom URL, not the main study page. If you leave all studies at the highest priority (99), then all of your lab's active/discoverable studies will be shown in a randomized order on your lab page. If you lower the priority of this study to 1, then it will appear last in the list on your lab page. You can find your lab's custom URL from the <a href='/exp/labs/'>labs page</a>. For more info, see the documentation on <a href='https://lookit.readthedocs.io/en/develop/researchers-manage-org.html#ordering-studies-on-your-lab-page'>study prioritization</a>.",
-            "max_responses": "Optional limit on the number of valid responses to collect for this study. When this response limit is reached, the study will be automatically paused. This value can be changed at any time. Leave blank for no limit.",
+            "max_responses": "This is an optional limit on the number of valid responses that should be collected before the study is automatically paused. This limit can be changed at any time, and you can edit the valid/invalid status for each response. For no response limit, leave this field blank or uncheck 'Set a Response Limit'.",
         }
 
 
