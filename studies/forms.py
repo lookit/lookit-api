@@ -177,11 +177,6 @@ class StudyForm(ModelForm):
     def clean(self):
         cleaned_data = super().clean()
 
-        # Clear max_responses value if set_response_limit is not checked
-        # (when set_response_limit is not checked, the max_responses field is diabled, which means the None value will not be saved)
-        if not cleaned_data.get("set_response_limit"):
-            cleaned_data["max_responses"] = None
-
         min_age_days = self.cleaned_data.get("min_age_days")
         min_age_months = self.cleaned_data.get("min_age_months")
         min_age_years = self.cleaned_data.get("min_age_years")
@@ -215,6 +210,16 @@ class StudyForm(ModelForm):
                 )
 
         return cleaned_image
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        # Explicitly set max_responses to None if set_response_limit is unchecked
+        if not self.cleaned_data.get("set_response_limit"):
+            instance.max_responses = None
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
 
     class Meta:
         model = Study
