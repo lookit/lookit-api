@@ -5,7 +5,6 @@
 {% bootstrap_field form.name label_class="form-label fw-bold" wrapper_class="mb-4" %}
 {% bootstrap_field form.lab label_class="form-label fw-bold" wrapper_class="mb-4" %}
 {% bootstrap_field form.priority label_class="form-label fw-bold" wrapper_class="mb-4" addon_before="" %}
-{% bootstrap_field form.max_responses label_class="form-label fw-bold" wrapper_class="mb-4" %}
 <hr />
 <div class="row">
     <div class="col-xs-12 mb-4">
@@ -157,5 +156,13 @@
 {% bootstrap_field form.must_have_participated label_class="form-label fw-bold" wrapper_class="mb-4" %}
 {% bootstrap_field form.must_not_have_participated label_class="form-label fw-bold" wrapper_class="mb-4" %}
 {% bootstrap_field form.criteria_expression label_class="form-label fw-bold" wrapper_class="mb-4" %}
+<hr />
+<div class="mb-4">
+    {% bootstrap_field form.set_response_limit label_class="form-label fw-bold" wrapper_class="mb-2" %}
+    <div id="max-responses-container" class="ms-4 mb-0">
+         {% bootstrap_label "Maximum Responses" label_class="form-label fw-bold" label_for="id_max_responses" %}
+         {% bootstrap_field form.max_responses show_label=False show_help=False field_class="w-25" placeholder="Enter a number" %}
+    </div>
+</div>
 <hr />
 {% bootstrap_field form.study_type label_class="form-label fw-bold" wrapper_class="mb-4" %}
