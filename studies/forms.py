@@ -295,7 +295,9 @@ class StudyForm(ModelForm):
             "priority": forms.TextInput(
                 attrs={"type": "range", "min": "1", "max": "99"}
             ),
-            "max_responses": forms.NumberInput(attrs={"min": "1"}),
+            "max_responses": forms.NumberInput(
+                attrs={"min": "1", "placeholder": "Enter a number"}
+            ),
         }
 
         help_texts = {
