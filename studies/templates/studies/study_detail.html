@@ -136,7 +136,7 @@
                     {% widthratio study.valid_response_count study.max_responses 100 as percent_str %}
                     {% with percent=percent_str|add:"0" %}
                         <div class="progress" style="height: 20px;">
-                            <div class="progress-bar {% if percent >= 100 %}bg-success{% elif percent >= 75 %}bg-warning{% else %}bg-info{% endif %}"
+                            <div class="progress-bar {% if percent > 100 %}bg-danger progress-bar-striped progress-bar-animated{% elif percent == 100 %}bg-success{% elif percent >= 75 %}bg-warning{% else %}bg-info{% endif %}"
                                 role="progressbar"
                                 style="width: {% if percent > 100 %}100{% else %}{{ percent }}{% endif %}%;"
                                 aria-valuenow="{{ study.valid_response_count }}"
@@ -144,8 +144,14 @@
                                 aria-valuemax="{{ study.max_responses }}">
                             </div>
                         </div>
-                        {% if percent >= 100 %}
-                            <small class="text-muted">Response limit reached</small>
+                        {% if percent == 100 %}
+                            <div class="alert alert-success py-1 px-2 mt-1 mb-0 small">
+                                <span class="fw-bold">Response limit reached.</span> Your study has been paused.
+                            </div>
+                        {% elif percent > 100 %}
+                            <div class="alert alert-danger py-1 px-2 mt-1 mb-0 small">
+                                <span class="fw-bold">Response limit exceeded.</span> Your study has been paused.
+                            </div>
                         {% endif %}
                     {% endwith %}
                 </div>
