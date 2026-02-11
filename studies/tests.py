@@ -1089,6 +1089,154 @@ class StudyModelTestCase(TestCase):
 
         self.assertTrue(study.has_reached_max_responses)
 
+    def test_check_and_pause_if_at_max_responses_no_limit_set(self):
+        """Study without max_responses set should not pause."""
+        study = Study.objects.create(
+            name="No Limit Study",
+            lab=Lab.objects.create(
+                name="Test Lab No Limit",
+                institution="Test",
+                contact_email="test@test.com",
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            max_responses=None,
+        )
+        study.state = "active"
+        study.save()
+
+        study.check_and_pause_if_at_max_responses()
+        study.refresh_from_db()
+
+        self.assertEqual(study.state, "active")
+
+    def test_check_and_pause_if_at_max_responses_not_active(self):
+        """Study not in active state should not pause."""
+        study = Study.objects.create(
+            name="Not Active Study",
+            lab=Lab.objects.create(
+                name="Test Lab Not Active",
+                institution="Test",
+                contact_email="test@test.com",
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            max_responses=1,
+        )
+        # Study is in "created" state by default
+        self.assertEqual(study.state, "created")
+
+        study.check_and_pause_if_at_max_responses()
+        study.refresh_from_db()
+
+        self.assertEqual(study.state, "created")
+
+    def test_check_and_pause_if_at_max_responses_not_reached(self):
+        """Active study that hasn't reached max_responses should not pause."""
+        study = Study.objects.create(
+            name="Under Limit Study",
+            lab=Lab.objects.create(
+                name="Test Lab Under Limit",
+                institution="Test",
+                contact_email="test@test.com",
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            max_responses=5,
+        )
+        study.state = "active"
+        study.save()
+        user = User.objects.create(is_active=True)
+        child = Child.objects.create(user=user, birthday=date.today())
+
+        # Add only 2 responses (under limit of 5)
+        for _ in range(2):
+            r = Response.objects.create(
+                study=study,
+                child=child,
+                study_type=study.study_type,
+                demographic_snapshot=user.latest_demographics,
+                completed=True,
+                is_preview=False,
+            )
+            Response.objects.filter(pk=r.pk).update(
+                eligibility=[ResponseEligibility.ELIGIBLE]
+            )
+
+        study.check_and_pause_if_at_max_responses()
+        study.refresh_from_db()
+
+        self.assertEqual(study.state, "active")
+
+    def test_check_and_pause_if_at_max_responses_limit_reached(self):
+        """Active study that has reached max_responses should pause."""
+        study = Study.objects.create(
+            name="At Limit Study",
+            lab=Lab.objects.create(
+                name="Test Lab At Limit",
+                institution="Test",
+                contact_email="test@test.com",
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            max_responses=2,
+        )
+        study.state = "active"
+        study.save()
+        user = User.objects.create(is_active=True)
+        child = Child.objects.create(user=user, birthday=date.today())
+
+        # Add exactly 2 responses (at limit of 2)
+        for _ in range(2):
+            r = Response.objects.create(
+                study=study,
+                child=child,
+                study_type=study.study_type,
+                demographic_snapshot=user.latest_demographics,
+                completed=True,
+                is_preview=False,
+            )
+            Response.objects.filter(pk=r.pk).update(
+                eligibility=[ResponseEligibility.ELIGIBLE]
+            )
+
+        study.check_and_pause_if_at_max_responses()
+        study.refresh_from_db()
+
+        self.assertEqual(study.state, "paused")
+
+    def test_check_and_pause_if_at_max_responses_limit_exceeded(self):
+        """Active study that has exceeded max_responses should pause."""
+        study = Study.objects.create(
+            name="Over Limit Study",
+            lab=Lab.objects.create(
+                name="Test Lab Over Limit",
+                institution="Test",
+                contact_email="test@test.com",
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            max_responses=2,
+        )
+        study.state = "active"
+        study.save()
+        user = User.objects.create(is_active=True)
+        child = Child.objects.create(user=user, birthday=date.today())
+
+        # Add 4 responses (exceeds limit of 2)
+        for _ in range(4):
+            r = Response.objects.create(
+                study=study,
+                child=child,
+                study_type=study.study_type,
+                demographic_snapshot=user.latest_demographics,
+                completed=True,
+                is_preview=False,
+            )
+            Response.objects.filter(pk=r.pk).update(
+                eligibility=[ResponseEligibility.ELIGIBLE]
+            )
+
+        study.check_and_pause_if_at_max_responses()
+        study.refresh_from_db()
+
+        self.assertEqual(study.state, "paused")
+
 
 class VideoModelTestCase(TestCase):
     def setUp(self):
