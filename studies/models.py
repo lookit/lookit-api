@@ -593,10 +593,22 @@ class Study(models.Model):
     def check_and_pause_if_at_max_responses(self):
         """Check if max responses reached and pause the study if so.
 
-        Only pauses if the study is currently active.
+        Only pauses if the study is currently active. Uses the state machine's
+        pause trigger to properly transition and run callbacks.
         """
-        # TODO: Implement logic to pause study when max responses reached
-        pass
+        if self.max_responses is None:
+            return
+
+        if self.state != "active":
+            return
+
+        if not self.has_reached_max_responses:
+            return
+
+        # Use the state machine's pause trigger to properly transition
+        # and run callbacks (like notify_administrators_of_pause)
+        self.pause()  # No user since this is system-triggered
+        self.save()
 
     @property
     def consent_videos(self):
@@ -825,12 +837,16 @@ class Study(models.Model):
         )
 
     def notify_administrators_of_pause(self, ev):
+        user = ev.kwargs.get("user")
+        caller_name = (
+            user.get_short_name() if user else "System (max responses reached)"
+        )
         context = {
             "lab_name": self.lab.name,
             "study_name": self.name,
             "study_id": self.pk,
             "study_uuid": str(self.uuid),
-            "researcher_name": ev.kwargs.get("user").get_short_name(),
+            "researcher_name": caller_name,
             "action": ev.transition.dest,
         }
         send_mail.delay(
