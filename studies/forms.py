@@ -171,7 +171,7 @@ class StudyForm(ModelForm):
     set_response_limit = forms.BooleanField(
         required=False,
         label="Set a Response Limit",
-        help_text="Check this box to set a target number of valid responses for this study. The study will automatically pause when the number of valid responses reaches this limit.",
+        help_text="Check this box to set a target number of valid responses for this study.",
     )
 
     def clean(self):
@@ -319,7 +319,7 @@ class StudyForm(ModelForm):
             "shared_preview": "Allow other Lookit researchers to preview your study and give feedback.",
             "study_type": "Choose the type of experiment you are creating - this will change the fields that appear on the Study Details page.",
             "priority": "This affects how studies are ordered at your lab's custom URL, not the main study page. If you leave all studies at the highest priority (99), then all of your lab's active/discoverable studies will be shown in a randomized order on your lab page. If you lower the priority of this study to 1, then it will appear last in the list on your lab page. You can find your lab's custom URL from the <a href='/exp/labs/'>labs page</a>. For more info, see the documentation on <a href='https://lookit.readthedocs.io/en/develop/researchers-manage-org.html#ordering-studies-on-your-lab-page'>study prioritization</a>.",
-            "max_responses": "This is an optional limit on the number of valid responses that should be collected before the study is automatically paused. This limit can be changed at any time, and you can edit the valid/invalid status for each response. For no response limit, leave this field blank or uncheck 'Set a Response Limit'.",
+            "max_responses": "The study will automatically pause when the number of valid responses reaches this limit. You can change this value at any time. Note that participant sessions running when the limit is reached are permitted to continue. See [the documentation] for more information on response limits, valid responses, and changing a response's valid/invaild status. For no response limit, leave this field blank.",
         }
 
 
