@@ -611,8 +611,9 @@ class Study(models.Model):
 
         # Use the state machine's pause trigger to properly transition
         # and run callbacks (like notify_administrators_of_pause)
+        # Note: no explicit save() needed here because the state machine's
+        # _finalize_state_change callback already saves the model.
         self.pause()  # No user since this is system-triggered
-        self.save()
 
     @property
     def consent_videos(self):
