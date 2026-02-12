@@ -605,6 +605,10 @@ class Study(models.Model):
         if not self.has_reached_max_responses:
             return
 
+        # Refresh from DB to ensure the in-memory study is current before
+        # the pause transition triggers a save (via _finalize_state_change).
+        self.refresh_from_db()
+
         # Use the state machine's pause trigger to properly transition
         # and run callbacks (like notify_administrators_of_pause)
         self.pause()  # No user since this is system-triggered
@@ -1014,6 +1018,12 @@ def check_modification_of_approved_study(
         ):
             continue  # Skip, since the actual JSON content is the same - only exact_text changing
         if new != current:
+            # For file fields (e.g. image), None and "" are equivalent empty
+            # values that can differ between in-memory defaults and DB-loaded
+            # values. Treat them as unchanged.
+            if hasattr(current, "name") and hasattr(new, "name"):
+                if (current.name or "") == (new.name or ""):
+                    continue
             important_fields_changed = True
             break
 
