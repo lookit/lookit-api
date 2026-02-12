@@ -841,6 +841,7 @@ class StudyTypeModelTestCase(TestCase):
         self.assertFalse(StudyType.get_jspsych().is_external)
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class StudyModelTestCase(TestCase):
     def _create_response(
         self, study, child, user, completed=True, is_preview=False, eligibility=None
