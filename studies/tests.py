@@ -842,6 +842,53 @@ class StudyTypeModelTestCase(TestCase):
 
 
 class StudyModelTestCase(TestCase):
+    def _create_response(
+        self, study, child, user, completed=True, is_preview=False, eligibility=None
+    ):
+        """Create a single response, optionally overriding eligibility after creation.
+
+        Note: Response.save() auto-sets eligibility, so we use .update() to override it.
+        Pass eligibility=None to skip the override (keep auto-set value).
+        """
+        r = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=completed,
+            is_preview=is_preview,
+        )
+        if eligibility is not None:
+            Response.objects.filter(pk=r.pk).update(eligibility=eligibility)
+        return r
+
+    def _create_eligible_responses(self, study, count):
+        """Create a user, child, and the given number of eligible responses for a study."""
+        user = User.objects.create(is_active=True)
+        child = Child.objects.create(user=user, birthday=date.today())
+        for _ in range(count):
+            self._create_response(
+                study, child, user, eligibility=[ResponseEligibility.ELIGIBLE]
+            )
+        return user, child
+
+    def _create_study_with_lab(self, name, max_responses, state=None):
+        """Create a study with a lab, optionally setting its state."""
+        study = Study.objects.create(
+            name=name,
+            lab=Lab.objects.create(
+                name=f"Test Lab {name}",
+                institution="Test",
+                contact_email="test@test.com",
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            max_responses=max_responses,
+        )
+        if state:
+            study.state = state
+            study.save()
+        return study
+
     def test_responses_for_researcher_external_studies(self):
         study = Study.objects.create(
             study_type=StudyType.get_external(),
@@ -867,69 +914,31 @@ class StudyModelTestCase(TestCase):
         user = User.objects.create(is_active=True)
         child = Child.objects.create(user=user, birthday=date.today())
 
-        # Note: Response.save() auto-sets eligibility, so we update this value after creation
-
-        # Valid response: completed, not preview, eligible
-        valid1 = Response.objects.create(
-            study=study,
-            child=child,
-            study_type=study.study_type,
-            demographic_snapshot=user.latest_demographics,
-            completed=True,
-            is_preview=False,
-        )
-        Response.objects.filter(pk=valid1.pk).update(eligibility=[])
-
         # Valid response: completed, not preview, empty eligibility
-        valid2 = Response.objects.create(
-            study=study,
-            child=child,
-            study_type=study.study_type,
-            demographic_snapshot=user.latest_demographics,
-            completed=True,
-            is_preview=False,
+        self._create_response(study, child, user, eligibility=[])
+        # Valid response: completed, not preview, eligible
+        self._create_response(
+            study, child, user, eligibility=[ResponseEligibility.ELIGIBLE]
         )
-        Response.objects.filter(pk=valid2.pk).update(
-            eligibility=[ResponseEligibility.ELIGIBLE]
-        )
-
         # Invalid: preview response
-        invalid3 = Response.objects.create(
-            study=study,
-            child=child,
-            study_type=study.study_type,
-            demographic_snapshot=user.latest_demographics,
-            completed=True,
+        self._create_response(
+            study,
+            child,
+            user,
             is_preview=True,
+            eligibility=[ResponseEligibility.ELIGIBLE],
         )
-        Response.objects.filter(pk=invalid3.pk).update(
-            eligibility=[ResponseEligibility.ELIGIBLE]
-        )
-
         # Invalid: not completed
-        invalid4 = Response.objects.create(
-            study=study,
-            child=child,
-            study_type=study.study_type,
-            demographic_snapshot=user.latest_demographics,
+        self._create_response(
+            study,
+            child,
+            user,
             completed=False,
-            is_preview=False,
+            eligibility=[ResponseEligibility.ELIGIBLE],
         )
-        Response.objects.filter(pk=invalid4.pk).update(
-            eligibility=[ResponseEligibility.ELIGIBLE]
-        )
-
         # Invalid: ineligible
-        invalid5 = Response.objects.create(
-            study=study,
-            child=child,
-            study_type=study.study_type,
-            demographic_snapshot=user.latest_demographics,
-            completed=True,
-            is_preview=False,
-        )
-        Response.objects.filter(pk=invalid5.pk).update(
-            eligibility=[ResponseEligibility.INELIGIBLE_OLD]
+        self._create_response(
+            study, child, user, eligibility=[ResponseEligibility.INELIGIBLE_OLD]
         )
 
         self.assertEqual(study.valid_response_count, 2)
@@ -941,66 +950,30 @@ class StudyModelTestCase(TestCase):
         child = Child.objects.create(user=user, birthday=date.today())
 
         # Valid: not preview, eligible, completed
-        r1 = Response.objects.create(
-            study=study,
-            child=child,
-            study_type=study.study_type,
-            demographic_snapshot=user.latest_demographics,
-            completed=True,
-            is_preview=False,
+        self._create_response(
+            study, child, user, eligibility=[ResponseEligibility.ELIGIBLE]
         )
-        Response.objects.filter(pk=r1.pk).update(
-            eligibility=[ResponseEligibility.ELIGIBLE]
-        )
-
         # Valid: not preview, eligible, NOT completed (should still count for external)
-        r2 = Response.objects.create(
-            study=study,
-            child=child,
-            study_type=study.study_type,
-            demographic_snapshot=user.latest_demographics,
+        self._create_response(
+            study,
+            child,
+            user,
             completed=False,
-            is_preview=False,
+            eligibility=[ResponseEligibility.ELIGIBLE],
         )
-        Response.objects.filter(pk=r2.pk).update(
-            eligibility=[ResponseEligibility.ELIGIBLE]
-        )
-
         # Valid: not preview, empty eligibility, NOT completed
-        r3 = Response.objects.create(
-            study=study,
-            child=child,
-            study_type=study.study_type,
-            demographic_snapshot=user.latest_demographics,
-            completed=False,
-            is_preview=False,
-        )
-        Response.objects.filter(pk=r3.pk).update(eligibility=[])
-
+        self._create_response(study, child, user, completed=False, eligibility=[])
         # Invalid: preview response (should not count)
-        r4 = Response.objects.create(
-            study=study,
-            child=child,
-            study_type=study.study_type,
-            demographic_snapshot=user.latest_demographics,
-            completed=True,
+        self._create_response(
+            study,
+            child,
+            user,
             is_preview=True,
+            eligibility=[ResponseEligibility.ELIGIBLE],
         )
-        Response.objects.filter(pk=r4.pk).update(
-            eligibility=[ResponseEligibility.ELIGIBLE]
-        )
-
         # Invalid: ineligible (should not count)
-        r5 = Response.objects.create(
-            study=study,
-            child=child,
-            study_type=study.study_type,
-            demographic_snapshot=user.latest_demographics,
-            completed=True,
-            is_preview=False,
-        )
-        Response.objects.filter(pk=r5.pk).update(
-            eligibility=[ResponseEligibility.INELIGIBLE_CRITERIA]
+        self._create_response(
+            study, child, user, eligibility=[ResponseEligibility.INELIGIBLE_CRITERIA]
         )
 
         # 3 valid responses: r1, r2, r3 (completed field ignored for external)
@@ -1020,23 +993,7 @@ class StudyModelTestCase(TestCase):
             study_type=StudyType.get_ember_frame_player(),
             max_responses=5,
         )
-        user = User.objects.create(is_active=True)
-        child = Child.objects.create(user=user, birthday=date.today())
-
-        # Add 2 valid responses
-        for _ in range(2):
-            r = Response.objects.create(
-                study=study,
-                child=child,
-                study_type=study.study_type,
-                demographic_snapshot=user.latest_demographics,
-                completed=True,
-                is_preview=False,
-            )
-            Response.objects.filter(pk=r.pk).update(
-                eligibility=[ResponseEligibility.ELIGIBLE]
-            )
-
+        self._create_eligible_responses(study, count=2)
         self.assertFalse(study.has_reached_max_responses)
 
     def test_has_reached_max_responses_reached(self):
@@ -1045,23 +1002,7 @@ class StudyModelTestCase(TestCase):
             study_type=StudyType.get_ember_frame_player(),
             max_responses=3,
         )
-        user = User.objects.create(is_active=True)
-        child = Child.objects.create(user=user, birthday=date.today())
-
-        # Add 3 valid responses
-        for _ in range(3):
-            r = Response.objects.create(
-                study=study,
-                child=child,
-                study_type=study.study_type,
-                demographic_snapshot=user.latest_demographics,
-                completed=True,
-                is_preview=False,
-            )
-            Response.objects.filter(pk=r.pk).update(
-                eligibility=[ResponseEligibility.ELIGIBLE]
-            )
-
+        self._create_eligible_responses(study, count=3)
         self.assertTrue(study.has_reached_max_responses)
 
     def test_has_reached_max_responses_exceeded(self):
@@ -1070,39 +1011,14 @@ class StudyModelTestCase(TestCase):
             study_type=StudyType.get_ember_frame_player(),
             max_responses=2,
         )
-        user = User.objects.create(is_active=True)
-        child = Child.objects.create(user=user, birthday=date.today())
-
-        # Add 4 valid responses (exceeds limit of 2)
-        for _ in range(4):
-            r = Response.objects.create(
-                study=study,
-                child=child,
-                study_type=study.study_type,
-                demographic_snapshot=user.latest_demographics,
-                completed=True,
-                is_preview=False,
-            )
-            Response.objects.filter(pk=r.pk).update(
-                eligibility=[ResponseEligibility.ELIGIBLE]
-            )
-
+        self._create_eligible_responses(study, count=4)
         self.assertTrue(study.has_reached_max_responses)
 
     def test_check_and_pause_if_at_max_responses_no_limit_set(self):
         """Study without max_responses set should not pause."""
-        study = Study.objects.create(
-            name="No Limit Study",
-            lab=Lab.objects.create(
-                name="Test Lab No Limit",
-                institution="Test",
-                contact_email="test@test.com",
-            ),
-            study_type=StudyType.get_ember_frame_player(),
-            max_responses=None,
+        study = self._create_study_with_lab(
+            "No Limit Study", max_responses=None, state="active"
         )
-        study.state = "active"
-        study.save()
 
         study.check_and_pause_if_at_max_responses()
         study.refresh_from_db()
@@ -1111,16 +1027,7 @@ class StudyModelTestCase(TestCase):
 
     def test_check_and_pause_if_at_max_responses_not_active(self):
         """Study not in active state should not pause."""
-        study = Study.objects.create(
-            name="Not Active Study",
-            lab=Lab.objects.create(
-                name="Test Lab Not Active",
-                institution="Test",
-                contact_email="test@test.com",
-            ),
-            study_type=StudyType.get_ember_frame_player(),
-            max_responses=1,
-        )
+        study = self._create_study_with_lab("Not Active Study", max_responses=1)
         # Study is in "created" state by default
         self.assertEqual(study.state, "created")
 
@@ -1131,34 +1038,10 @@ class StudyModelTestCase(TestCase):
 
     def test_check_and_pause_if_at_max_responses_not_reached(self):
         """Active study that hasn't reached max_responses should not pause."""
-        study = Study.objects.create(
-            name="Under Limit Study",
-            lab=Lab.objects.create(
-                name="Test Lab Under Limit",
-                institution="Test",
-                contact_email="test@test.com",
-            ),
-            study_type=StudyType.get_ember_frame_player(),
-            max_responses=5,
+        study = self._create_study_with_lab(
+            "Under Limit Study", max_responses=5, state="active"
         )
-        study.state = "active"
-        study.save()
-        user = User.objects.create(is_active=True)
-        child = Child.objects.create(user=user, birthday=date.today())
-
-        # Add only 2 responses (under limit of 5)
-        for _ in range(2):
-            r = Response.objects.create(
-                study=study,
-                child=child,
-                study_type=study.study_type,
-                demographic_snapshot=user.latest_demographics,
-                completed=True,
-                is_preview=False,
-            )
-            Response.objects.filter(pk=r.pk).update(
-                eligibility=[ResponseEligibility.ELIGIBLE]
-            )
+        self._create_eligible_responses(study, count=2)
 
         study.check_and_pause_if_at_max_responses()
         study.refresh_from_db()
@@ -1167,34 +1050,10 @@ class StudyModelTestCase(TestCase):
 
     def test_check_and_pause_if_at_max_responses_limit_reached(self):
         """Active study that has reached max_responses should pause."""
-        study = Study.objects.create(
-            name="At Limit Study",
-            lab=Lab.objects.create(
-                name="Test Lab At Limit",
-                institution="Test",
-                contact_email="test@test.com",
-            ),
-            study_type=StudyType.get_ember_frame_player(),
-            max_responses=2,
+        study = self._create_study_with_lab(
+            "At Limit Study", max_responses=2, state="active"
         )
-        study.state = "active"
-        study.save()
-        user = User.objects.create(is_active=True)
-        child = Child.objects.create(user=user, birthday=date.today())
-
-        # Add exactly 2 responses (at limit of 2)
-        for _ in range(2):
-            r = Response.objects.create(
-                study=study,
-                child=child,
-                study_type=study.study_type,
-                demographic_snapshot=user.latest_demographics,
-                completed=True,
-                is_preview=False,
-            )
-            Response.objects.filter(pk=r.pk).update(
-                eligibility=[ResponseEligibility.ELIGIBLE]
-            )
+        self._create_eligible_responses(study, count=2)
 
         study.check_and_pause_if_at_max_responses()
         study.refresh_from_db()
@@ -1203,34 +1062,10 @@ class StudyModelTestCase(TestCase):
 
     def test_check_and_pause_if_at_max_responses_limit_exceeded(self):
         """Active study that has exceeded max_responses should pause."""
-        study = Study.objects.create(
-            name="Over Limit Study",
-            lab=Lab.objects.create(
-                name="Test Lab Over Limit",
-                institution="Test",
-                contact_email="test@test.com",
-            ),
-            study_type=StudyType.get_ember_frame_player(),
-            max_responses=2,
+        study = self._create_study_with_lab(
+            "Over Limit Study", max_responses=2, state="active"
         )
-        study.state = "active"
-        study.save()
-        user = User.objects.create(is_active=True)
-        child = Child.objects.create(user=user, birthday=date.today())
-
-        # Add 4 responses (exceeds limit of 2)
-        for _ in range(4):
-            r = Response.objects.create(
-                study=study,
-                child=child,
-                study_type=study.study_type,
-                demographic_snapshot=user.latest_demographics,
-                completed=True,
-                is_preview=False,
-            )
-            Response.objects.filter(pk=r.pk).update(
-                eligibility=[ResponseEligibility.ELIGIBLE]
-            )
+        self._create_eligible_responses(study, count=4)
 
         study.check_and_pause_if_at_max_responses()
         study.refresh_from_db()
