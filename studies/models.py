@@ -8,6 +8,7 @@ import dateutil
 import fleep
 from botocore.exceptions import ClientError
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.models import Group, Permission
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -590,11 +591,18 @@ class Study(models.Model):
             return False
         return self.valid_response_count >= self.max_responses
 
-    def check_and_pause_if_at_max_responses(self):
+    def check_and_pause_if_at_max_responses(
+        self, send_researcher_email=False, request=None
+    ):
         """Check if max responses reached and pause the study if so.
 
         Only pauses if the study is currently active. Uses the state machine's
         pause trigger to properly transition and run callbacks.
+
+        Args:
+            send_researcher_email: If True, send notification email to researchers
+                with CHANGE_STUDY_STATUS permission.
+            request: If provided, display a Django messages banner to the user.
         """
         if self.max_responses is None:
             return
@@ -610,10 +618,20 @@ class Study(models.Model):
         self.refresh_from_db()
 
         # Use the state machine's pause trigger to properly transition
-        # and run callbacks (like notify_administrators_of_pause)
+        # and run callbacks (like notify_administrators_of_pause).
         # Note: no explicit save() needed here because the state machine's
         # _finalize_state_change callback already saves the model.
         self.pause()  # No user since this is system-triggered
+
+        if send_researcher_email:
+            self._notify_researchers_of_max_responses_pause()
+
+        if request:
+            messages.warning(
+                request,
+                f'Study "{self.name}" has been automatically paused because it '
+                f"reached the response limit ({self.valid_response_count}/{self.max_responses}).",
+            )
 
     @property
     def consent_videos(self):
@@ -862,6 +880,28 @@ class Study(models.Model):
                 Group.objects.get(
                     name=SiteAdminGroup.LOOKIT_ADMIN.name
                 ).user_set.values_list("username", flat=True)
+            ),
+            **context,
+        )
+
+    def _notify_researchers_of_max_responses_pause(self):
+        """Send email to researchers notifying them the study was auto-paused
+        because it reached the maximum number of responses."""
+        context = {
+            "study_name": self.name,
+            "study_id": self.pk,
+            "study_uuid": str(self.uuid),
+            "max_responses": self.max_responses,
+            "valid_response_count": self.valid_response_count,
+        }
+        send_mail.delay(
+            "notify_researchers_of_max_responses_pause",
+            f"{self.name}: Study paused - response limit reached",
+            settings.EMAIL_FROM_ADDRESS,
+            bcc=list(
+                self.users_with_study_perms(
+                    StudyPermission.CHANGE_STUDY_STATUS
+                ).values_list("username", flat=True)
             ),
             **context,
         )
