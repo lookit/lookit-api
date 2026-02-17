@@ -1,7 +1,7 @@
 import json
 import re
 from datetime import date, datetime, timedelta, timezone
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from botocore.exceptions import ClientError, ParamValidationError
 from django.conf import settings
@@ -1072,6 +1072,81 @@ class StudyModelTestCase(TestCase):
         study.refresh_from_db()
 
         self.assertEqual(study.state, "paused")
+
+    @patch("studies.models.send_mail")
+    def test_check_and_pause_sends_researcher_email_when_requested(
+        self, mock_send_mail
+    ):
+        """Researcher notification email is sent when send_researcher_email=True."""
+        study = self._create_study_with_lab(
+            "Email Test", max_responses=2, state="active"
+        )
+        self._create_eligible_responses(study, count=2)
+
+        study.check_and_pause_if_at_max_responses(send_researcher_email=True)
+
+        researcher_calls = [
+            c
+            for c in mock_send_mail.delay.call_args_list
+            if c[0][0] == "notify_researchers_of_max_responses_pause"
+        ]
+        self.assertEqual(len(researcher_calls), 1)
+
+    @patch("studies.models.send_mail")
+    def test_check_and_pause_no_researcher_email_by_default(self, mock_send_mail):
+        """Researcher notification email is not sent by default."""
+        study = self._create_study_with_lab(
+            "No Email Test", max_responses=2, state="active"
+        )
+        self._create_eligible_responses(study, count=2)
+
+        study.check_and_pause_if_at_max_responses()
+
+        researcher_calls = [
+            c
+            for c in mock_send_mail.delay.call_args_list
+            if c[0][0] == "notify_researchers_of_max_responses_pause"
+        ]
+        self.assertEqual(len(researcher_calls), 0)
+
+    @patch("studies.models.send_mail")
+    @patch("studies.models.messages")
+    def test_check_and_pause_shows_banner_when_request_provided(
+        self, mock_messages, mock_send_mail
+    ):
+        """A Django messages warning is added when request is provided."""
+        study = self._create_study_with_lab(
+            "Banner Test", max_responses=2, state="active"
+        )
+        self._create_eligible_responses(study, count=2)
+        mock_request = MagicMock()
+
+        study.check_and_pause_if_at_max_responses(request=mock_request)
+
+        mock_messages.warning.assert_called_once()
+        call_args = mock_messages.warning.call_args
+        self.assertEqual(call_args[0][0], mock_request)
+        self.assertIn("automatically paused", call_args[0][1])
+
+        researcher_calls = [
+            c
+            for c in mock_send_mail.delay.call_args_list
+            if c[0][0] == "notify_researchers_of_max_responses_pause"
+        ]
+        self.assertEqual(len(researcher_calls), 0)
+
+    @patch("studies.models.send_mail")
+    @patch("studies.models.messages")
+    def test_check_and_pause_no_banner_by_default(self, mock_messages, mock_send_mail):
+        """No Django message is added when request is not provided."""
+        study = self._create_study_with_lab(
+            "No Banner Test", max_responses=2, state="active"
+        )
+        self._create_eligible_responses(study, count=2)
+
+        study.check_and_pause_if_at_max_responses()
+
+        mock_messages.warning.assert_not_called()
 
 
 class VideoModelTestCase(TestCase):
