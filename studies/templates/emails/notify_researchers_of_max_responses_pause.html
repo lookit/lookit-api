@@ -1,0 +1,17 @@
+{% load web_extras %}
+<p>Dear Study Researchers,</p>
+<p>
+    Your study <strong>{{ study_name }}</strong> has been automatically paused
+    because it reached the maximum number of valid responses
+    ({{ valid_response_count }}/{{ max_responses }}).
+</p>
+<p>
+    If you would like to collect more data, you can increase the study's response limit and/or edit the valid/invalid status of individual responses, and then re-start it (your study will NOT be re-started automatically).
+    <br />
+    Your study can be found <a href="{% absolute_url 'exp:study' pk=study_id %}">here</a>.
+</p>
+<p>
+    Best,
+    <br />
+    Lookit Bot
+</p>
