@@ -1411,9 +1411,9 @@ def take_action_on_exp_data(sender, instance, created, **kwargs):
     else:
         dispatch_frame_action(response)
 
-    # If this response is complete, then check if this study has reached max responses and pause if needed
+    # If this response is complete, then check if this study has reached max responses and, if so, pause the study and email researchers.
     if response.completed:
-        response.study.check_and_pause_if_at_max_responses()
+        response.study.check_and_pause_if_at_max_responses(send_researcher_email=True)
 
 
 class FeedbackApiManager(models.Manager):
