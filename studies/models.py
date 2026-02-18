@@ -1412,12 +1412,15 @@ def take_action_on_exp_data(sender, instance, created, **kwargs):
     """
     response = instance  # Aliasing because instance is hooked as a kwarg.
 
-    if created or not response.sequence:
+    if response.study.study_type.is_external:
+        # External studies: check if study has reached max responses and, if so, pause the study and email researchers.
+        response.study.check_and_pause_if_at_max_responses(send_researcher_email=True)
+    elif created or not response.sequence:
         return
     else:
         dispatch_frame_action(response)
 
-    # If this response is complete, then check if this study has reached max responses and, if so, pause the study and email researchers.
+    # Internal studies: if response is complete, check if this study has reached max responses and, if so, pause the study and email researchers.
     if response.completed:
         response.study.check_and_pause_if_at_max_responses(send_researcher_email=True)
 
