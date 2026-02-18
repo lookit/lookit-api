@@ -31,7 +31,8 @@ from exp.views.study import (
     StudyDetailView,
     StudyPreviewDetailView,
 )
-from studies.models import Lab, Study, StudyType
+from studies.helpers import ResponseEligibility
+from studies.models import Lab, Response, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 
 
@@ -1334,3 +1335,195 @@ class StudyParticipatedViewTestCase(TestCase):
 # TODO: StudyPreviewProxyView
 # - add checks analogous to preview detail view
 # - check for correct redirect
+
+
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+@override_settings(CELERY_TASK_EAGER_PROPAGATES=True)
+@patch("studies.helpers.send_mail")
+class StudyUpdateMaxResponsesTestCase(TestCase):
+    """Tests for banner messages when max_responses is edited via StudyUpdateView."""
+
+    def setUp(self):
+        self.client = Force2FAClient()
+        self.user = G(User, is_active=True, is_researcher=True)
+        self.lab = G(Lab, name="Max Resp Lab", approved_to_test=True)
+        self.lab.researchers.add(self.user)
+
+        self.study = G(
+            Study,
+            image=SimpleUploadedFile(
+                name="small.gif",
+                content=(
+                    b"\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04"
+                    b"\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02"
+                    b"\x02\x4c\x01\x00\x3b"
+                ),
+                content_type="image/gif",
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            creator=self.user,
+            lab=self.lab,
+            name="Max Resp Study",
+            short_description="test",
+            preview_summary="test",
+            purpose="test",
+            criteria="test",
+            duration="test",
+            contact_info="test",
+            exit_url="https://mit.edu",
+        )
+        self.study.admin_group.user_set.add(self.user)
+        assign_perm(
+            StudyPermission.WRITE_STUDY_DETAILS.prefixed_codename,
+            self.user,
+            self.study,
+        )
+        self.client.force_login(self.user)
+
+    def _form_data(self, include_image=True, **overrides):
+        """Build minimal valid form data for the StudyEditForm.
+
+        Set include_image=False to avoid triggering the pre_save signal that
+        rejects approved/active studies when monitored fields change.
+        """
+        data = {
+            "name": self.study.name,
+            "lab": self.study.lab_id,
+            "study_type": self.study.study_type_id,
+            "min_age_years": 0,
+            "min_age_months": 0,
+            "min_age_days": 0,
+            "max_age_years": 1,
+            "max_age_months": 0,
+            "max_age_days": 0,
+            "priority": 1,
+            "preview_summary": self.study.preview_summary,
+            "short_description": self.study.short_description,
+            "purpose": self.study.purpose,
+            "compensation_description": self.study.compensation_description,
+            "exit_url": self.study.exit_url,
+            "criteria": self.study.criteria,
+            "duration": self.study.duration,
+            "contact_info": self.study.contact_info,
+        }
+        if include_image:
+            data["image"] = SimpleUploadedFile(
+                name="test_image.jpg",
+                content=open("exp/tests/static/study_image.png", "rb").read(),
+                content_type="image/jpeg",
+            )
+        data.update(overrides)
+        return data
+
+    def _create_eligible_responses(self, count):
+        """Create eligible, completed, non-preview responses for the study."""
+        participant = G(User, is_active=True)
+        child = G(
+            Child,
+            user=participant,
+            given_name="Test child",
+            birthday=datetime.date.today() - datetime.timedelta(days=30),
+        )
+        for _ in range(count):
+            r = Response.objects.create(
+                study=self.study,
+                child=child,
+                study_type=self.study.study_type,
+                demographic_snapshot=participant.latest_demographics,
+                completed=True,
+                is_preview=False,
+            )
+            Response.objects.filter(pk=r.pk).update(
+                eligibility=[ResponseEligibility.ELIGIBLE]
+            )
+
+    def _get_warning_messages(self, response):
+        """Extract warning-level messages from a followed response."""
+        from django.contrib.messages import constants
+
+        return [m for m in response.context["messages"] if m.level == constants.WARNING]
+
+    def test_banner_when_max_responses_reached_non_active_study(self, mock_send_mail):
+        """Warning banner shown when max_responses is set at/below response count on non-active study."""
+        self.assertEqual(self.study.state, "created")
+        self._create_eligible_responses(3)
+        data = self._form_data(set_response_limit=True, max_responses=3)
+        response = self.client.post(
+            reverse("exp:study-edit", kwargs={"pk": self.study.id}),
+            data,
+            follow=True,
+        )
+        warnings = self._get_warning_messages(response)
+        self.assertEqual(len(warnings), 1)
+        self.assertIn("reached the response limit", str(warnings[0]))
+
+        # Study should NOT be paused (was not active)
+        self.study.refresh_from_db()
+        self.assertNotEqual(self.study.state, "paused")
+
+    def test_study_paused_when_max_responses_reached_active_study(self, mock_send_mail):
+        """Active study is paused and warning shown when max_responses is set at response count."""
+        self.assertEqual(self.study.state, "created")
+        self.study.state = "active"
+        self.study.save()
+        self._create_eligible_responses(3)
+        # include_image=False to avoid triggering the pre_save signal that
+        # rejects active studies when monitored fields (like image) change.
+        data = self._form_data(
+            include_image=False, set_response_limit=True, max_responses=3
+        )
+        response = self.client.post(
+            reverse("exp:study-edit", kwargs={"pk": self.study.id}),
+            data,
+            follow=True,
+        )
+        warnings = self._get_warning_messages(response)
+        self.assertEqual(len(warnings), 1)
+        self.assertIn("automatically paused", str(warnings[0]))
+
+        self.study.refresh_from_db()
+        self.assertEqual(self.study.state, "paused")
+
+    def test_no_banner_when_max_responses_not_reached(self, mock_send_mail):
+        """No warning when max_responses is set above the current response count."""
+        self._create_eligible_responses(2)
+        data = self._form_data(set_response_limit=True, max_responses=10)
+        response = self.client.post(
+            reverse("exp:study-edit", kwargs={"pk": self.study.id}),
+            data,
+            follow=True,
+        )
+        warnings = self._get_warning_messages(response)
+        self.assertEqual(len(warnings), 0)
+        self.assertNotEqual(self.study.state, "paused")
+
+    def test_no_banner_when_max_responses_unchanged(self, mock_send_mail):
+        """No warning when max_responses is submitted but hasn't changed."""
+        self.study.max_responses = 5
+        self.study.save()
+        self._create_eligible_responses(5)
+        data = self._form_data(set_response_limit=True, max_responses=5)
+        response = self.client.post(
+            reverse("exp:study-edit", kwargs={"pk": self.study.id}),
+            data,
+            follow=True,
+        )
+        warnings = self._get_warning_messages(response)
+        self.assertEqual(len(warnings), 0)
+
+    def test_banner_when_max_responses_lowered_below_count(self, mock_send_mail):
+        """Warning shown when max_responses is lowered below existing response count."""
+        self.assertEqual(self.study.state, "created")
+        self.study.max_responses = 10
+        self.study.save()
+        self._create_eligible_responses(5)
+        data = self._form_data(set_response_limit=True, max_responses=3)
+        response = self.client.post(
+            reverse("exp:study-edit", kwargs={"pk": self.study.id}),
+            data,
+            follow=True,
+        )
+        warnings = self._get_warning_messages(response)
+        self.assertEqual(len(warnings), 1)
+        self.assertIn("reached the response limit", str(warnings[0]))
+        self.assertEqual(self.study.state, "created")
