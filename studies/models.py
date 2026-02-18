@@ -1325,7 +1325,7 @@ class Response(models.Model):
 
     @property
     def normalized_exp_data(self):
-        # Where study type is jspysch, convert experiment data to resemble EFP exp data.
+        # Where study type is jspsych, convert experiment data to resemble EFP exp data.
         if self.study_type.is_jspsych:
             return {key: value for key, value in zip(self.sequence, self.exp_data)}
         else:

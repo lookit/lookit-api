@@ -88,7 +88,7 @@ class Force2FAClient(Client):
 
 class RecordingMethodJsPsychTestCase(TestCase):
     @patch("boto3.client")
-    def test_jspysch(self, mock_client):
+    def test_jspsych(self, mock_client):
         make_boto_client(mock_client)
         _, study, child = get_user(StudyType.get_jspsych())
         context = {"study": study, "view": TestView(child.uuid)}
