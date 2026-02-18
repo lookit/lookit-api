@@ -226,9 +226,18 @@ class StudyUpdateView(
         )
         study.must_have_participated.set(form.cleaned_data["must_have_participated"])
 
+        changed_fields = form.changed_data
+
         messages.success(self.request, f"{study.name} study details saved.")
 
-        return super().form_valid(form)
+        # Save form first so the new max_responses value is persisted before
+        # check_and_pause_if_at_max_responses (which calls refresh_from_db).
+        response = super().form_valid(form)
+        # Now check to see if the study has reached max responses with the new value
+        if "max_responses" in changed_fields:
+            study.check_and_pause_if_at_max_responses(request=self.request)
+
+        return response
 
     def form_invalid(self, form: StudyEditForm):
         messages.error(self.request, form.errors)
