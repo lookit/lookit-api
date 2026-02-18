@@ -598,6 +598,7 @@ class Study(models.Model):
 
         Only pauses if the study is currently active. Uses the state machine's
         pause trigger to properly transition and run callbacks.
+        If the study is not active, this method is used to optionally display a banner message, with no state transition.
 
         Args:
             send_researcher_email: If True, send notification email to researchers
@@ -605,9 +606,6 @@ class Study(models.Model):
             request: If provided, display a Django messages banner to the user.
         """
         if self.max_responses is None:
-            return
-
-        if self.state != "active":
             return
 
         if not self.has_reached_max_responses:
@@ -621,17 +619,25 @@ class Study(models.Model):
         # and run callbacks (like notify_administrators_of_pause).
         # Note: no explicit save() needed here because the state machine's
         # _finalize_state_change callback already saves the model.
-        self.pause()  # No user since this is system-triggered
+        if self.state == "active":
+            self.pause()  # No user since this is system-triggered
 
-        if send_researcher_email:
-            self._notify_researchers_of_max_responses_pause()
+            if send_researcher_email:
+                self._notify_researchers_of_max_responses_pause()
 
-        if request:
-            messages.warning(
-                request,
-                f'Study "{self.name}" has been automatically paused because it '
-                f"reached the response limit ({self.valid_response_count}/{self.max_responses}).",
-            )
+            if request:
+                messages.warning(
+                    request,
+                    f'Study "{self.name}" has been automatically paused because it '
+                    f"reached the response limit ({self.valid_response_count}/{self.max_responses}).",
+                )
+        else:
+            # Study is not active, so not state transition is needed. Just notify the researcher that they cannot start the study.
+            if request:
+                messages.warning(
+                    request,
+                    f'Study "{self.name}" has reached the response limit ({self.valid_response_count}/{self.max_responses}).',
+                )
 
     @property
     def consent_videos(self):
