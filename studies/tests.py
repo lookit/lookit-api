@@ -22,7 +22,16 @@ from studies.helpers import (
     get_experiment_absolute_url,
     send_mail,
 )
-from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum, Video
+from studies.models import (
+    REJECTED,
+    ConsentRuling,
+    Lab,
+    Response,
+    Study,
+    StudyType,
+    StudyTypeEnum,
+    Video,
+)
 from studies.permissions import StudyPermission
 from studies.tasks import (
     MessageTarget,
@@ -869,24 +878,26 @@ class StudyModelTestCase(TestCase):
 
         # Note: Response.save() auto-sets eligibility, so we update this value after creation
 
-        # Valid response: completed, not preview, eligible
+        # Valid response: completed, consent frame completed, not preview, eligible
         valid1 = Response.objects.create(
             study=study,
             child=child,
             study_type=study.study_type,
             demographic_snapshot=user.latest_demographics,
             completed=True,
+            completed_consent_frame=True,
             is_preview=False,
         )
         Response.objects.filter(pk=valid1.pk).update(eligibility=[])
 
-        # Valid response: completed, not preview, empty eligibility
+        # Valid response: completed, consent frame completed, not preview, empty eligibility
         valid2 = Response.objects.create(
             study=study,
             child=child,
             study_type=study.study_type,
             demographic_snapshot=user.latest_demographics,
             completed=True,
+            completed_consent_frame=True,
             is_preview=False,
         )
         Response.objects.filter(pk=valid2.pk).update(
@@ -900,6 +911,7 @@ class StudyModelTestCase(TestCase):
             study_type=study.study_type,
             demographic_snapshot=user.latest_demographics,
             completed=True,
+            completed_consent_frame=True,
             is_preview=True,
         )
         Response.objects.filter(pk=invalid3.pk).update(
@@ -913,6 +925,7 @@ class StudyModelTestCase(TestCase):
             study_type=study.study_type,
             demographic_snapshot=user.latest_demographics,
             completed=False,
+            completed_consent_frame=True,
             is_preview=False,
         )
         Response.objects.filter(pk=invalid4.pk).update(
@@ -926,10 +939,25 @@ class StudyModelTestCase(TestCase):
             study_type=study.study_type,
             demographic_snapshot=user.latest_demographics,
             completed=True,
+            completed_consent_frame=True,
             is_preview=False,
         )
         Response.objects.filter(pk=invalid5.pk).update(
             eligibility=[ResponseEligibility.INELIGIBLE_OLD]
+        )
+
+        # Invalid: consent frame not completed
+        invalid6 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=True,
+            completed_consent_frame=False,
+            is_preview=False,
+        )
+        Response.objects.filter(pk=invalid6.pk).update(
+            eligibility=[ResponseEligibility.ELIGIBLE]
         )
 
         self.assertEqual(study.valid_response_count, 2)
@@ -1006,6 +1034,123 @@ class StudyModelTestCase(TestCase):
         # 3 valid responses: r1, r2, r3 (completed field ignored for external)
         self.assertEqual(study.valid_response_count, 3)
 
+    def test_valid_response_count_excludes_rejected_consent_internal(self):
+        """Test that valid_response_count excludes responses with rejected consent for internal studies."""
+        study = Study.objects.create(study_type=StudyType.get_ember_frame_player())
+        user = User.objects.create(is_active=True)
+        child = Child.objects.create(user=user, birthday=date.today())
+
+        # Valid: completed, consent frame completed, eligible, no consent ruling (pending)
+        r1 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=True,
+            completed_consent_frame=True,
+            is_preview=False,
+        )
+        Response.objects.filter(pk=r1.pk).update(
+            eligibility=[ResponseEligibility.ELIGIBLE]
+        )
+
+        # Valid: completed, consent frame completed, eligible, accepted consent
+        r2 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=True,
+            completed_consent_frame=True,
+            is_preview=False,
+        )
+        Response.objects.filter(pk=r2.pk).update(
+            eligibility=[ResponseEligibility.ELIGIBLE]
+        )
+        ConsentRuling.objects.create(response=r2, action="accepted", arbiter=user)
+
+        # Invalid: completed, consent frame completed, eligible, but consent rejected
+        r3 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=True,
+            completed_consent_frame=True,
+            is_preview=False,
+        )
+        Response.objects.filter(pk=r3.pk).update(
+            eligibility=[ResponseEligibility.ELIGIBLE]
+        )
+        ConsentRuling.objects.create(response=r3, action=REJECTED, arbiter=user)
+
+        # 2 valid: r1 (no ruling = pending) and r2 (accepted). r3 excluded (rejected).
+        self.assertEqual(study.valid_response_count, 2)
+
+    def test_valid_response_count_uses_most_recent_consent_ruling(self):
+        """Test that only the most recent consent ruling is considered."""
+        study = Study.objects.create(study_type=StudyType.get_ember_frame_player())
+        user = User.objects.create(is_active=True)
+        child = Child.objects.create(user=user, birthday=date.today())
+
+        # Response with rejected then accepted consent (most recent = accepted, so valid)
+        r1 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=True,
+            completed_consent_frame=True,
+            is_preview=False,
+        )
+        Response.objects.filter(pk=r1.pk).update(
+            eligibility=[ResponseEligibility.ELIGIBLE]
+        )
+        ConsentRuling.objects.create(response=r1, action=REJECTED, arbiter=user)
+        ConsentRuling.objects.create(response=r1, action="accepted", arbiter=user)
+
+        # Response with accepted then rejected consent (most recent = rejected, so invalid)
+        r2 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=True,
+            completed_consent_frame=True,
+            is_preview=False,
+        )
+        Response.objects.filter(pk=r2.pk).update(
+            eligibility=[ResponseEligibility.ELIGIBLE]
+        )
+        ConsentRuling.objects.create(response=r2, action="accepted", arbiter=user)
+        ConsentRuling.objects.create(response=r2, action=REJECTED, arbiter=user)
+
+        # Only r1 is valid (most recent ruling is accepted)
+        self.assertEqual(study.valid_response_count, 1)
+
+    def test_valid_response_count_consent_ignored_for_external(self):
+        """Test that consent rulings are not checked for external studies."""
+        study = Study.objects.create(study_type=StudyType.get_external())
+        user = User.objects.create(is_active=True)
+        child = Child.objects.create(user=user, birthday=date.today())
+
+        # Response with rejected consent - should still count for external
+        r1 = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+            completed=True,
+            is_preview=False,
+        )
+        Response.objects.filter(pk=r1.pk).update(
+            eligibility=[ResponseEligibility.ELIGIBLE]
+        )
+        ConsentRuling.objects.create(response=r1, action=REJECTED, arbiter=user)
+
+        # Should count because external studies don't check consent
+        self.assertEqual(study.valid_response_count, 1)
+
     def test_has_reached_max_responses_no_limit(self):
         """Test that has_reached_max_responses returns False when max_responses is None."""
         study = Study.objects.create(
@@ -1031,6 +1176,7 @@ class StudyModelTestCase(TestCase):
                 study_type=study.study_type,
                 demographic_snapshot=user.latest_demographics,
                 completed=True,
+                completed_consent_frame=True,
                 is_preview=False,
             )
             Response.objects.filter(pk=r.pk).update(
@@ -1056,6 +1202,7 @@ class StudyModelTestCase(TestCase):
                 study_type=study.study_type,
                 demographic_snapshot=user.latest_demographics,
                 completed=True,
+                completed_consent_frame=True,
                 is_preview=False,
             )
             Response.objects.filter(pk=r.pk).update(
@@ -1081,6 +1228,7 @@ class StudyModelTestCase(TestCase):
                 study_type=study.study_type,
                 demographic_snapshot=user.latest_demographics,
                 completed=True,
+                completed_consent_frame=True,
                 is_preview=False,
             )
             Response.objects.filter(pk=r.pk).update(
