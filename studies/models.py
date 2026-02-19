@@ -853,7 +853,7 @@ class Study(models.Model):
         """
         if self.has_reached_max_responses:
             raise RuntimeError(
-                f'Cannot activate the study "{self.name}" ({self.id}) because it has reached its maximum number of responses.'
+                f'Cannot activate the study "{self.name}" ({self.id}) because it has reached its maximum number of responses. Be sure to handle all pending consents and review existing responses, as this may open up slots. Then increase the response limit in the Study Ad if necessary, and try starting the study again.'
             )
 
     def notify_administrators_of_activation(self, ev):
