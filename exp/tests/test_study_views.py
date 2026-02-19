@@ -673,6 +673,171 @@ class ChangeStudyStatusViewTestCase(TestCase):
         mock_request.POST.keys.assert_not_called()
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+@override_settings(CELERY_TASK_EAGER_PROPAGATES=True)
+@patch("studies.helpers.send_mail")
+class ActivateStudyMaxResponsesTestCase(TestCase):
+    """Integration tests for the check_if_at_max_responses workflow guard.
+
+    When a researcher tries to activate a study (from approved or paused state),
+    the transition should be blocked if the study has already reached its
+    max_responses limit.
+    """
+
+    def setUp(self):
+        self.client = Force2FAClient()
+        self.user = G(User, is_active=True, is_researcher=True)
+        self.lab = G(Lab, name="Activation Test Lab", approved_to_test=True)
+        self.lab.researchers.add(self.user)
+
+        self.study = G(
+            Study,
+            image=SimpleUploadedFile(
+                name="small.gif",
+                content=(
+                    b"\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04"
+                    b"\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02"
+                    b"\x02\x4c\x01\x00\x3b"
+                ),
+                content_type="image/gif",
+            ),
+            study_type=StudyType.get_external(),
+            creator=self.user,
+            lab=self.lab,
+            name="Activation Test Study",
+            built=True,
+        )
+        self.study.admin_group.user_set.add(self.user)
+        assign_perm(
+            StudyPermission.CHANGE_STUDY_STATUS.prefixed_codename,
+            self.user,
+            self.study,
+        )
+        self.client.force_login(self.user)
+
+        self.change_status_url = reverse(
+            "exp:change-study-status", kwargs={"pk": self.study.pk}
+        )
+
+    def _create_eligible_responses(self, count):
+        """Create eligible, non-preview responses for the study."""
+        participant = G(User, is_active=True)
+        child = G(
+            Child,
+            user=participant,
+            given_name="Test child",
+            birthday=datetime.date.today() - datetime.timedelta(days=30),
+        )
+        for _ in range(count):
+            r = Response.objects.create(
+                study=self.study,
+                child=child,
+                study_type=self.study.study_type,
+                demographic_snapshot=participant.latest_demographics,
+                completed=True,
+                is_preview=False,
+            )
+            Response.objects.filter(pk=r.pk).update(
+                eligibility=[ResponseEligibility.ELIGIBLE]
+            )
+
+    def _get_error_messages(self, response):
+        """Extract error-level messages from a followed response."""
+        from django.contrib.messages import constants
+
+        return [m for m in response.context["messages"] if m.level == constants.ERROR]
+
+    def _get_success_messages(self, response):
+        """Extract success-level messages from a followed response."""
+        from django.contrib.messages import constants
+
+        return [m for m in response.context["messages"] if m.level == constants.SUCCESS]
+
+    def test_activate_blocked_from_approved_when_at_max_responses(self, mock_send_mail):
+        """Activating an approved study fails when max_responses has been reached."""
+        self.study.state = "approved"
+        self.study.max_responses = 3
+        self.study.save()
+        self._create_eligible_responses(3)
+
+        response = self.client.post(
+            self.change_status_url, {"trigger": "activate"}, follow=True
+        )
+
+        self.study.refresh_from_db()
+        self.assertNotEqual(self.study.state, "active")
+        errors = self._get_error_messages(response)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("TRANSITION ERROR", str(errors[0]))
+        self.assertIn("maximum number of responses", str(errors[0]))
+
+    def test_activate_blocked_from_paused_when_at_max_responses(self, mock_send_mail):
+        """Reactivating a paused study fails when max_responses has been reached."""
+        self.study.state = "paused"
+        self.study.max_responses = 2
+        self.study.save()
+        self._create_eligible_responses(3)
+
+        response = self.client.post(
+            self.change_status_url, {"trigger": "activate"}, follow=True
+        )
+
+        self.study.refresh_from_db()
+        self.assertNotEqual(self.study.state, "active")
+        errors = self._get_error_messages(response)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("TRANSITION ERROR", str(errors[0]))
+        self.assertIn("maximum number of responses", str(errors[0]))
+
+    def test_activate_succeeds_when_below_max_responses(self, mock_send_mail):
+        """Activating an approved study succeeds when below the max_responses limit."""
+        self.study.state = "approved"
+        self.study.max_responses = 10
+        self.study.save()
+        self._create_eligible_responses(3)
+
+        response = self.client.post(
+            self.change_status_url, {"trigger": "activate"}, follow=True
+        )
+
+        self.study.refresh_from_db()
+        self.assertEqual(self.study.state, "active")
+        errors = self._get_error_messages(response)
+        self.assertEqual(len(errors), 0)
+
+    def test_activate_succeeds_when_no_max_responses_set(self, mock_send_mail):
+        """Activating an approved study succeeds when max_responses is not set."""
+        self.study.state = "approved"
+        self.study.max_responses = None
+        self.study.save()
+        self._create_eligible_responses(5)
+
+        response = self.client.post(
+            self.change_status_url, {"trigger": "activate"}, follow=True
+        )
+
+        self.study.refresh_from_db()
+        self.assertEqual(self.study.state, "active")
+        errors = self._get_error_messages(response)
+        self.assertEqual(len(errors), 0)
+
+    def test_activate_succeeds_when_exactly_at_limit_minus_one(self, mock_send_mail):
+        """Activating succeeds when response count is one below max_responses."""
+        self.study.state = "approved"
+        self.study.max_responses = 4
+        self.study.save()
+        self._create_eligible_responses(3)
+
+        response = self.client.post(
+            self.change_status_url, {"trigger": "activate"}, follow=True
+        )
+
+        self.study.refresh_from_db()
+        self.assertEqual(self.study.state, "active")
+        errors = self._get_error_messages(response)
+        self.assertEqual(len(errors), 0)
+
+
 class ManageResearcherPermissionsViewTestCase(TestCase):
     def test_model(self) -> None:
         manage_researcher_permissions_view = ManageResearcherPermissionsView()
