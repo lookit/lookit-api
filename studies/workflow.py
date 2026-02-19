@@ -100,7 +100,7 @@ transitions = [
         "trigger": "activate",
         "source": ["approved", "paused"],
         "dest": "active",
-        "before": ["check_if_built"],
+        "before": ["check_if_built", "check_if_at_max_responses"],
         "after": ["notify_administrators_of_activation"],
     },
     {

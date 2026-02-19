@@ -841,7 +841,19 @@ class Study(models.Model):
         """
         if self.needs_to_be_built:
             raise RuntimeError(
-                f'Cannot activate study - experiment runner for "{self.name}" ({self.id}) has not been built!'
+                f'Cannot activate the study "{self.name}" ({self.id}) because the experiment runner has not been built!'
+            )
+
+    def check_if_at_max_responses(self, ev):
+        """Check if study has reached its max responses value before activating/starting.
+
+        :param ev: The event object
+        :type ev: transitions.core.EventData
+        :raise: RuntimeError
+        """
+        if self.has_reached_max_responses:
+            raise RuntimeError(
+                f'Cannot activate the study "{self.name}" ({self.id}) because it has reached its maximum number of responses.'
             )
 
     def notify_administrators_of_activation(self, ev):
