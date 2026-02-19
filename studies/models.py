@@ -560,20 +560,38 @@ class Study(models.Model):
 
         A response is counted as valid if:
         - is_preview is False
-        - eligibility is "Eligible" or blank/empty
-        - completed is True (internal study types only)
+        - eligibility is "Eligible" or blank/empty (backwards compatibility)
 
-        For external studies, the completed field is ignored.
+        And for internal studies, responses must also meet the following conditions:
+        - completed is True
+        - completed_consent_frame is True
+        - the consent has not been rejected (must be either pending or accepted)
+
+        For external studies, the completed, completed_consent_frame, and consent requirements are ignored.
 
         Returns:
             int: Count of valid responses
         """
+        # Filter out preview responses
         responses = self.responses.filter(is_preview=False)
 
-        # For internal study types, also require completed=True
+        # For internal study types, also require completed_consent_frame=True, completed=True, and consent not rejected
         if not self.study_type.is_external:
-            responses = responses.filter(completed=True)
+            responses = responses.filter(completed=True, completed_consent_frame=True)
+            newest_ruling_subquery = models.Subquery(
+                ConsentRuling.objects.filter(response=models.OuterRef("pk"))
+                .order_by("-created_at")
+                .values("action")[:1]
+            )
+            # Filter out responses with rejected consent, and explicitly allow NULL consent rulings (pending, i.e. no judgment has been submitted).
+            responses = responses.annotate(
+                current_ruling=newest_ruling_subquery
+            ).filter(
+                models.Q(current_ruling__isnull=True)
+                | ~models.Q(current_ruling=REJECTED)
+            )
 
+        # Filter out ineligible responses
         return responses.filter(
             models.Q(eligibility=[])
             | models.Q(eligibility__contains=[ResponseEligibility.ELIGIBLE])
