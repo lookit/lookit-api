@@ -56,6 +56,49 @@ input[type="checkbox"].researcher-editable:disabled + label .icon-star {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical; }
 
+progress.study-progress {
+  --study-progress-color: var(--bs-info);
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  border-radius: .375rem;
+  height: 20px;
+  width: 100%;
+  overflow: hidden;
+  background-color: #e9ecef; }
+
+progress.study-progress::-webkit-progress-bar {
+  background-color: #e9ecef;
+  border-radius: .375rem; }
+
+progress.study-progress::-webkit-progress-value {
+  background-color: var(--study-progress-color);
+  border-radius: .375rem; }
+
+progress.study-progress::-moz-progress-bar {
+  background-color: var(--study-progress-color);
+  border-radius: .375rem; }
+
+progress.study-progress-info {
+  --study-progress-color: var(--bs-info); }
+
+progress.study-progress-warning {
+  --study-progress-color: var(--bs-warning); }
+
+progress.study-progress-success {
+  --study-progress-color: var(--bs-success); }
+
+progress.study-progress-danger {
+  --study-progress-color: var(--bs-danger); }
+
+progress.study-progress-danger::-webkit-progress-value {
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-size: 1rem 1rem; }
+
+progress.study-progress-danger::-moz-progress-bar {
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-size: 1rem 1rem; }
+
 /*!
    * Bootstrap  v5.2.0 (https://getbootstrap.com/)
    * Copyright 2011-2022 The Bootstrap Authors
