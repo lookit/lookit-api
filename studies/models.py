@@ -613,7 +613,6 @@ class Study(models.Model):
 
         Only pauses if the study is currently active.
         """
-        # TODO: Implement logic to pause study when max responses reached
         pass
 
     @property
