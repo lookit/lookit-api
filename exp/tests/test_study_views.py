@@ -1595,6 +1595,7 @@ class StudyUpdateMaxResponsesTestCase(TestCase):
                 child=child,
                 study_type=self.study.study_type,
                 demographic_snapshot=participant.latest_demographics,
+                completed_consent_frame=True,
                 completed=True,
                 is_preview=False,
             )

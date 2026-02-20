@@ -22,7 +22,16 @@ from studies.helpers import (
     get_experiment_absolute_url,
     send_mail,
 )
-from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum, Video
+from studies.models import (
+    REJECTED,
+    ConsentRuling,
+    Lab,
+    Response,
+    Study,
+    StudyType,
+    StudyTypeEnum,
+    Video,
+)
 from studies.permissions import StudyPermission
 from studies.tasks import (
     MessageTarget,
@@ -843,24 +852,44 @@ class StudyTypeModelTestCase(TestCase):
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class StudyModelTestCase(TestCase):
-    def _create_response(
-        self, study, child, user, completed=True, is_preview=False, eligibility=None
-    ):
-        """Create a single response, optionally overriding eligibility after creation.
+    def _create_study_with_participant(self, study_type=None, **study_kwargs):
+        """Create a study with a user and child for testing.
 
-        Note: Response.save() auto-sets eligibility, so we use .update() to override it.
-        Pass eligibility=None to skip the override (keep auto-set value).
+        Returns (study, user, child) tuple.
         """
+        if study_type is None:
+            study_type = StudyType.get_ember_frame_player()
+        study = Study.objects.create(study_type=study_type, **study_kwargs)
+        user = User.objects.create(is_active=True)
+        child = Child.objects.create(user=user, birthday=date.today())
+        return study, user, child
+
+    def _create_response(
+        self,
+        study,
+        child,
+        eligibility=None,
+        completed=True,
+        completed_consent_frame=True,
+        is_preview=False,
+    ):
+        """Create a response and update its eligibility.
+
+        Note: Response.save() auto-sets eligibility, so we use .update() after creation.
+        """
+        if eligibility is None:
+            eligibility = [ResponseEligibility.ELIGIBLE]
+        user = child.user
         r = Response.objects.create(
             study=study,
             child=child,
             study_type=study.study_type,
             demographic_snapshot=user.latest_demographics,
             completed=completed,
+            completed_consent_frame=completed_consent_frame,
             is_preview=is_preview,
         )
-        if eligibility is not None:
-            Response.objects.filter(pk=r.pk).update(eligibility=eligibility)
+        Response.objects.filter(pk=r.pk).update(eligibility=eligibility)
         return r
 
     def _create_eligible_responses(self, study, count):
@@ -869,7 +898,7 @@ class StudyModelTestCase(TestCase):
         child = Child.objects.create(user=user, birthday=date.today())
         for _ in range(count):
             self._create_response(
-                study, child, user, eligibility=[ResponseEligibility.ELIGIBLE]
+                study, child, eligibility=[ResponseEligibility.ELIGIBLE]
             )
         return user, child
 
@@ -891,11 +920,11 @@ class StudyModelTestCase(TestCase):
         return study
 
     def test_responses_for_researcher_external_studies(self):
-        study = Study.objects.create(
-            study_type=StudyType.get_external(),
+        study, user, child = self._create_study_with_participant(
+            study_type=StudyType.get_external()
         )
-        user = User.objects.create(is_active=True, is_researcher=True)
-        child = Child.objects.create(user=user, birthday=date.today())
+        user.is_researcher = True
+        user.save()
         response = Response.objects.create(
             study=study,
             child=child,
@@ -911,74 +940,103 @@ class StudyModelTestCase(TestCase):
 
     def test_valid_response_count_internal_study(self):
         """Test that valid_response_count correctly counts eligible, completed, non-preview responses."""
-        study = Study.objects.create(study_type=StudyType.get_ember_frame_player())
-        user = User.objects.create(is_active=True)
-        child = Child.objects.create(user=user, birthday=date.today())
+        study, _, child = self._create_study_with_participant()
 
-        # Valid response: completed, not preview, empty eligibility
-        self._create_response(study, child, user, eligibility=[])
-        # Valid response: completed, not preview, eligible
-        self._create_response(
-            study, child, user, eligibility=[ResponseEligibility.ELIGIBLE]
-        )
+        # Valid: completed, consent frame completed, not preview, empty eligibility
+        self._create_response(study, child, eligibility=[])
+
+        # Valid: completed, consent frame completed, not preview, eligible
+        self._create_response(study, child)
+
         # Invalid: preview response
-        self._create_response(
-            study,
-            child,
-            user,
-            is_preview=True,
-            eligibility=[ResponseEligibility.ELIGIBLE],
-        )
+        self._create_response(study, child, is_preview=True)
+
         # Invalid: not completed
-        self._create_response(
-            study,
-            child,
-            user,
-            completed=False,
-            eligibility=[ResponseEligibility.ELIGIBLE],
-        )
+        self._create_response(study, child, completed=False)
+
         # Invalid: ineligible
         self._create_response(
-            study, child, user, eligibility=[ResponseEligibility.INELIGIBLE_OLD]
+            study, child, eligibility=[ResponseEligibility.INELIGIBLE_OLD]
         )
+
+        # Invalid: consent frame not completed
+        self._create_response(study, child, completed_consent_frame=False)
 
         self.assertEqual(study.valid_response_count, 2)
 
     def test_valid_response_count_external_study(self):
         """Test that valid_response_count for external studies ignores completed field."""
-        study = Study.objects.create(study_type=StudyType.get_external())
-        user = User.objects.create(is_active=True)
-        child = Child.objects.create(user=user, birthday=date.today())
+        study, _, child = self._create_study_with_participant(
+            study_type=StudyType.get_external()
+        )
 
         # Valid: not preview, eligible, completed
-        self._create_response(
-            study, child, user, eligibility=[ResponseEligibility.ELIGIBLE]
-        )
+        self._create_response(study, child)
+
         # Valid: not preview, eligible, NOT completed (should still count for external)
-        self._create_response(
-            study,
-            child,
-            user,
-            completed=False,
-            eligibility=[ResponseEligibility.ELIGIBLE],
-        )
+        self._create_response(study, child, completed=False)
+
         # Valid: not preview, empty eligibility, NOT completed
-        self._create_response(study, child, user, completed=False, eligibility=[])
+        self._create_response(study, child, completed=False, eligibility=[])
+
         # Invalid: preview response (should not count)
-        self._create_response(
-            study,
-            child,
-            user,
-            is_preview=True,
-            eligibility=[ResponseEligibility.ELIGIBLE],
-        )
+        self._create_response(study, child, is_preview=True)
+
         # Invalid: ineligible (should not count)
         self._create_response(
-            study, child, user, eligibility=[ResponseEligibility.INELIGIBLE_CRITERIA]
+            study, child, eligibility=[ResponseEligibility.INELIGIBLE_CRITERIA]
         )
 
-        # 3 valid responses: r1, r2, r3 (completed field ignored for external)
+        # 3 valid responses (completed field ignored for external)
         self.assertEqual(study.valid_response_count, 3)
+
+    def test_valid_response_count_excludes_rejected_consent_internal(self):
+        """Test that valid_response_count excludes responses with rejected consent for internal studies."""
+        study, user, child = self._create_study_with_participant()
+
+        # Valid: no consent ruling (pending)
+        self._create_response(study, child)
+
+        # Valid: accepted consent
+        r2 = self._create_response(study, child)
+        ConsentRuling.objects.create(response=r2, action="accepted", arbiter=user)
+
+        # Invalid: consent rejected
+        r3 = self._create_response(study, child)
+        ConsentRuling.objects.create(response=r3, action=REJECTED, arbiter=user)
+
+        # 2 valid: r1 (no ruling = pending) and r2 (accepted). r3 excluded (rejected).
+        self.assertEqual(study.valid_response_count, 2)
+
+    def test_valid_response_count_uses_most_recent_consent_ruling(self):
+        """Test that only the most recent consent ruling is considered."""
+        study, user, child = self._create_study_with_participant()
+
+        # Response with rejected then accepted consent (most recent = accepted, so valid)
+        r1 = self._create_response(study, child)
+        ConsentRuling.objects.create(response=r1, action=REJECTED, arbiter=user)
+        ConsentRuling.objects.create(response=r1, action="accepted", arbiter=user)
+
+        # Response with accepted then rejected consent (most recent = rejected, so invalid)
+        r2 = self._create_response(study, child)
+        ConsentRuling.objects.create(response=r2, action="accepted", arbiter=user)
+        ConsentRuling.objects.create(response=r2, action=REJECTED, arbiter=user)
+
+        # Only r1 is valid (most recent ruling is accepted)
+        self.assertEqual(study.valid_response_count, 1)
+
+    def test_valid_response_count_consent_ignored_for_external(self):
+        """Test that consent rulings are not checked for external studies."""
+        study, user, child = self._create_study_with_participant(
+            study_type=StudyType.get_external()
+        )
+
+        # Response with rejected consent - should still count for external
+        r1 = self._create_response(study, child)
+        ConsentRuling.objects.create(response=r1, action=REJECTED, arbiter=user)
+
+        # Should count because external studies don't check consent
+        self.assertEqual(study.valid_response_count, 1)
 
     def test_has_reached_max_responses_no_limit(self):
         """Test that has_reached_max_responses returns False when max_responses is None."""
@@ -990,29 +1048,29 @@ class StudyModelTestCase(TestCase):
 
     def test_has_reached_max_responses_not_reached(self):
         """Test that has_reached_max_responses returns False when limit not reached."""
-        study = Study.objects.create(
-            study_type=StudyType.get_ember_frame_player(),
-            max_responses=5,
-        )
-        self._create_eligible_responses(study, count=2)
+        study, _, child = self._create_study_with_participant(max_responses=5)
+
+        for _ in range(2):
+            self._create_response(study, child)
+
         self.assertFalse(study.has_reached_max_responses)
 
     def test_has_reached_max_responses_reached(self):
         """Test that has_reached_max_responses returns True when limit is reached."""
-        study = Study.objects.create(
-            study_type=StudyType.get_ember_frame_player(),
-            max_responses=3,
-        )
-        self._create_eligible_responses(study, count=3)
+        study, _, child = self._create_study_with_participant(max_responses=3)
+
+        for _ in range(3):
+            self._create_response(study, child)
+
         self.assertTrue(study.has_reached_max_responses)
 
     def test_has_reached_max_responses_exceeded(self):
         """Test that has_reached_max_responses returns True when limit is exceeded."""
-        study = Study.objects.create(
-            study_type=StudyType.get_ember_frame_player(),
-            max_responses=2,
-        )
-        self._create_eligible_responses(study, count=4)
+        study, _, child = self._create_study_with_participant(max_responses=2)
+
+        for _ in range(4):
+            self._create_response(study, child)
+
         self.assertTrue(study.has_reached_max_responses)
 
     def test_check_and_pause_if_at_max_responses_no_limit_set(self):
