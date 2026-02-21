@@ -28,6 +28,13 @@ def get_experiment_absolute_url(path):
     return urljoin(settings.EXPERIMENT_BASE_URL, path)
 
 
+def sanitize_log_input(user_input):
+    """Removes newline characters to prevent log injection."""
+    if isinstance(user_input, str):
+        return user_input.replace("\n", "").replace("\r", "")
+    return user_input
+
+
 @app.task
 def send_mail(
     template_name,

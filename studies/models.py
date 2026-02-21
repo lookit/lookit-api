@@ -31,6 +31,7 @@ from studies.helpers import (
     ResponseEligibility,
     get_absolute_url,
     get_eligibility_for_response,
+    sanitize_log_input,
     send_mail,
 )
 from studies.permissions import (
@@ -1313,7 +1314,9 @@ class Response(models.Model):
                                 response = file_obj.get()
                             except ClientError:
                                 logger.warning(
-                                    f"could not find {video_id} or {pipe_name} in S3!"
+                                    sanitize_log_input(
+                                        f"could not find {video_id} or {pipe_name} in S3!"
+                                    )
                                 )
                                 continue
                         # Read first 32 bytes from streaming body (file header) to get actual filetype.
@@ -1465,20 +1468,28 @@ class Video(models.Model):
             )
         except ValueError:
             logger.error(
-                f"Could not parse video filename {pipe_payload} to extract study and response"
+                sanitize_log_input(
+                    f"Could not parse video filename {pipe_payload} to extract study and response"
+                )
             )
             raise
 
         try:
             study = Study.objects.get(uuid=study_uuid)
         except Study.DoesNotExist as ex:
-            logger.error(f"Study with uuid {study_uuid} does not exist. {ex}")
+            logger.error(
+                sanitize_log_input(f"Study with uuid {study_uuid} does not exist. {ex}")
+            )
             raise
 
         try:
             response = Response.objects.get(uuid=response_uuid)
         except Response.DoesNotExist as ex:
-            logger.error(f"Response with uuid {response_uuid} does not exist. {ex}")
+            logger.error(
+                sanitize_log_input(
+                    f"Response with uuid {response_uuid} does not exist. {ex}"
+                )
+            )
             raise
 
         return marked_as_consent, pipe_payload, study, frame_id, response, timestamp
@@ -1515,7 +1526,9 @@ class Video(models.Model):
             )
         except ClientError:  # old_name_full not found!
             logger.error(
-                f"Amazon S3 couldn't find the video for Pipe ID {old_pipe_name} in bucket {settings.BUCKET_NAME}"
+                sanitize_log_input(
+                    f"Amazon S3 couldn't find the video for Pipe ID {old_pipe_name} in bucket {settings.BUCKET_NAME}"
+                )
             )
             raise
         else:  # Go on to remove the originals
