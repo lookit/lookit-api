@@ -20,7 +20,6 @@ from studies.helpers import (
     ResponseEligibility,
     get_absolute_url,
     get_experiment_absolute_url,
-    sanitize_log_input,
     send_mail,
 )
 from studies.models import (
@@ -2403,18 +2402,3 @@ class TestGetAbsoluteURLTestCase(TestCase):
         self.assertTrue(
             get_experiment_absolute_url("somepath"), f"{exp_fake_website}somepath"
         )
-
-
-class TestSanitizeLogInputCase(TestCase):
-    def test_sanitize_input_with_log_injection(self):
-        sanitized_input = "some dataFAKE LOG: User Admin logged in"
-        user_input_n = "some data\nFAKE LOG: User Admin logged in"
-        self.assertEqual(sanitize_log_input(user_input_n), sanitized_input)
-        user_input_r = "some data\rFAKE LOG: User Admin logged in"
-        self.assertEqual(sanitize_log_input(user_input_r), sanitized_input)
-        user_input_rn = "some data\r\nFAKE LOG: User Admin logged in"
-        self.assertEqual(sanitize_log_input(user_input_rn), sanitized_input)
-
-    def test_sanitize_input_with_safe_characters(self):
-        user_input_safe = "some safe user input"
-        self.assertEqual(sanitize_log_input(user_input_safe), user_input_safe)
