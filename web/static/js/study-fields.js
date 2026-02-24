@@ -139,9 +139,9 @@ $(document).ready(function () {
         // Input validation for max_responses
         maxResponses.addEventListener('input', () => {
             // Remove non-numeric characters and leading zeros
-            let value = maxResponses.value.replace(/[^0-9]/g, '').replace(/^0+/, '');
+            let value = maxResponses.value.replace(/\D/g, '').replace(/^0+/, '');
             // Ensure minimum value of 1 if not empty
-            if (value !== '' && parseInt(value) < 1) {
+            if (value !== '' && Number.parseInt(value) < 1) {
                 value = '1';
             }
             maxResponses.value = value;
