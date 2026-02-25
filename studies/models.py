@@ -8,6 +8,7 @@ import dateutil
 import fleep
 from botocore.exceptions import ClientError
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.models import Group, Permission
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -608,12 +609,53 @@ class Study(models.Model):
             return False
         return self.valid_response_count >= self.max_responses
 
-    def check_and_pause_if_at_max_responses(self):
+    def check_and_pause_if_at_max_responses(
+        self, send_researcher_email=False, request=None
+    ):
         """Check if max responses reached and pause the study if so.
 
-        Only pauses if the study is currently active.
+        Only pauses if the study is currently active. Uses the state machine's
+        pause trigger to properly transition and run callbacks.
+        If the study is not active, this method is used to optionally display a banner message, with no state transition.
+
+        Args:
+            send_researcher_email: If True, send notification email to researchers
+                with CHANGE_STUDY_STATUS permission.
+            request: If provided, display a Django messages banner to the user.
         """
-        pass
+        if self.max_responses is None:
+            return
+
+        if not self.has_reached_max_responses:
+            return
+
+        # Refresh from DB to ensure the in-memory study is current before
+        # the pause transition triggers a save (via _finalize_state_change).
+        self.refresh_from_db()
+
+        # Use the state machine's pause trigger to properly transition
+        # and run callbacks (like notify_administrators_of_pause).
+        # Note: no explicit save() needed here because the state machine's
+        # _finalize_state_change callback already saves the model.
+        if self.state == "active":
+            self.pause()  # No user since this is system-triggered
+
+            if send_researcher_email:
+                self._notify_researchers_of_max_responses_pause()
+
+            if request:
+                messages.warning(
+                    request,
+                    f'Study "{self.name}" has been automatically paused because it '
+                    f"reached the response limit ({self.valid_response_count}/{self.max_responses}).",
+                )
+        else:
+            # Study is not active, so not state transition is needed. Just notify the researcher that they cannot start the study.
+            if request:
+                messages.warning(
+                    request,
+                    f'Study "{self.name}" has reached the response limit ({self.valid_response_count}/{self.max_responses}).',
+                )
 
     @property
     def consent_videos(self):
@@ -817,7 +859,19 @@ class Study(models.Model):
         """
         if self.needs_to_be_built:
             raise RuntimeError(
-                f'Cannot activate study - experiment runner for "{self.name}" ({self.id}) has not been built!'
+                f'Cannot activate the study "{self.name}" ({self.id}) because the experiment runner has not been built!'
+            )
+
+    def check_if_at_max_responses(self, ev):
+        """Check if study has reached its max responses value before activating/starting.
+
+        :param ev: The event object
+        :type ev: transitions.core.EventData
+        :raise: RuntimeError
+        """
+        if self.has_reached_max_responses:
+            raise RuntimeError(
+                f'Cannot activate the study "{self.name}" ({self.id}) because it has reached its maximum number of responses. Be sure to handle all pending consents and review existing responses, as this may open up slots. Then increase the response limit in the Study Ad if necessary, and try starting the study again.'
             )
 
     def notify_administrators_of_activation(self, ev):
@@ -842,12 +896,16 @@ class Study(models.Model):
         )
 
     def notify_administrators_of_pause(self, ev):
+        user = ev.kwargs.get("user")
+        caller_name = (
+            user.get_short_name() if user else "System (max responses reached)"
+        )
         context = {
             "lab_name": self.lab.name,
             "study_name": self.name,
             "study_id": self.pk,
             "study_uuid": str(self.uuid),
-            "researcher_name": ev.kwargs.get("user").get_short_name(),
+            "researcher_name": caller_name,
             "action": ev.transition.dest,
         }
         send_mail.delay(
@@ -858,6 +916,28 @@ class Study(models.Model):
                 Group.objects.get(
                     name=SiteAdminGroup.LOOKIT_ADMIN.name
                 ).user_set.values_list("username", flat=True)
+            ),
+            **context,
+        )
+
+    def _notify_researchers_of_max_responses_pause(self):
+        """Send email to researchers notifying them the study was auto-paused
+        because it reached the maximum number of responses."""
+        context = {
+            "study_name": self.name,
+            "study_id": self.pk,
+            "study_uuid": str(self.uuid),
+            "max_responses": self.max_responses,
+            "valid_response_count": self.valid_response_count,
+        }
+        send_mail.delay(
+            "notify_researchers_of_max_responses_pause",
+            f"{self.name}: Study paused - response limit reached",
+            settings.EMAIL_FROM_ADDRESS,
+            bcc=list(
+                self.users_with_study_perms(
+                    StudyPermission.CHANGE_STUDY_STATUS
+                ).values_list("username", flat=True)
             ),
             **context,
         )
@@ -1015,6 +1095,12 @@ def check_modification_of_approved_study(
         ):
             continue  # Skip, since the actual JSON content is the same - only exact_text changing
         if new != current:
+            # For file fields (e.g. image), None and "" are equivalent empty
+            # values that can differ between in-memory defaults and DB-loaded
+            # values. Treat them as unchanged.
+            if hasattr(current, "name") and hasattr(new, "name"):
+                if (current.name or "") == (new.name or ""):
+                    continue
             important_fields_changed = True
             break
 
@@ -1269,7 +1355,7 @@ class Response(models.Model):
 
     @property
     def normalized_exp_data(self):
-        # Where study type is jspysch, convert experiment data to resemble EFP exp data.
+        # Where study type is jspsych, convert experiment data to resemble EFP exp data.
         if self.study_type.is_jspsych:
             return {key: value for key, value in zip(self.sequence, self.exp_data)}
         else:
@@ -1356,14 +1442,17 @@ def take_action_on_exp_data(sender, instance, created, **kwargs):
     """
     response = instance  # Aliasing because instance is hooked as a kwarg.
 
-    if created or not response.sequence:
+    if response.study.study_type.is_external:
+        # External studies: check if study has reached max responses and, if so, pause the study and email researchers.
+        response.study.check_and_pause_if_at_max_responses(send_researcher_email=True)
+    elif created or not response.sequence:
         return
     else:
         dispatch_frame_action(response)
 
-    # If this response is complete, then check if this study has reached max responses and pause if needed
+    # Internal studies: if response is complete, check if this study has reached max responses and, if so, pause the study and email researchers.
     if response.completed:
-        response.study.check_and_pause_if_at_max_responses()
+        response.study.check_and_pause_if_at_max_responses(send_researcher_email=True)
 
 
 class FeedbackApiManager(models.Manager):

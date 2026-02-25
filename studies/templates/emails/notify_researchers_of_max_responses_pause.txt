@@ -1,0 +1,11 @@
+{% load web_extras %}
+Dear Study Researchers,
+
+Your study {{ study_name }} has been automatically paused because it reached the maximum number of valid responses ({{ valid_response_count }} valid / {{ max_responses }} limit).
+
+Please make sure to handle any pending consents and review your responses, as doing so may open up more slots. Then, if you would like to collect more data, you can increase the study's response limit if necessary, and re-start it. Your study will NOT be restarted automatically if more slots become available and/or you increase the response limit.
+
+Your study can be found here: {% absolute_url 'exp:study' study_id %}
+
+Best,
+Lookit Bot
