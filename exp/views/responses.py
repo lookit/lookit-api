@@ -879,6 +879,7 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
             "response__researcher_payment_status",
             "response__researcher_session_status",
             "response__researcher_star",
+            "response__is_valid",
         ]
 
         context["session_status_options"] = list(Response.SESSION_STATUS_CHOICES)
