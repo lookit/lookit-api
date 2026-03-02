@@ -132,7 +132,7 @@ def get_response_headers(
     }
     selected_standard_header_ids = [
         col.id
-        for col in RESPONSE_COLUMNS[0:-2]
+        for col in RESPONSE_COLUMNS[0:-3]
         if col.id not in unselected_optional_ids
     ]
     return selected_standard_header_ids + sorted(
