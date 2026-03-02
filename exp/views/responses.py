@@ -1121,6 +1121,7 @@ class StudyResponseSetResearcherFields(
         "researcher_session_status",
         "researcher_payment_status",
         "researcher_star",
+        "is_valid",
     ]
 
     def user_can_edit_response(self):
@@ -1194,6 +1195,14 @@ class StudyResponseSetResearcherFields(
             if not isinstance(value, bool):
                 return JsonResponse(
                     {"error": "Invalid request: Star field must be a boolean value."},
+                    status=400,
+                )
+        elif field_id == self.EDITABLE_FIELDS[3]:
+            if not isinstance(value, bool):
+                return JsonResponse(
+                    {
+                        "error": "Invalid request: Valid Response must be a boolean value."
+                    },
                     status=400,
                 )
 
