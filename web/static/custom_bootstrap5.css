@@ -45,9 +45,26 @@ select.researcher-editable:disabled {
   background-color: lightgray;
   cursor: not-allowed; }
 
-input[type="checkbox"].researcher-editable:disabled + label .icon-star {
+input[type="checkbox"].researcher-editable:disabled + label .icon-star,
+input[type="checkbox"].researcher-editable:disabled + label .icon-valid-check,
+input[type="checkbox"].researcher-editable:disabled + label .icon-valid-xmark {
   color: lightgray;
+  fill: lightgray;
   cursor: not-allowed; }
+
+.icon-valid-check,
+.icon-valid-xmark {
+  display: none; }
+
+.icon-valid-check.icon-valid-filled {
+  display: inline;
+  color: var(--bs-success);
+  fill: var(--bs-success); }
+
+.icon-valid-xmark.icon-invalid-filled {
+  display: inline;
+  color: #ff5f5c;
+  fill: #ff5f5c; }
 
 .truncate-parent-feedback {
   overflow: hidden;

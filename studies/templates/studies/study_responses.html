@@ -118,8 +118,24 @@
                                         id="response-{{ forloop.counter }}"
                                         data-response-id="{{ response.response__id }}"
                                         data-response-uuid="{{ response.response__uuid }}">
-                                        <td>
-                                            {% if response.response__is_preview %}P{% endif %}
+                                        <td data-sort="{{response.response__is_valid}}"
+                                            data-filter="{% if response.response__is_preview %}Preview{% elif response.response__is_valid %}Valid &#10004;{% else %}Invalid &#10008;{% endif %}">
+                                            {% if response.response__is_preview %}
+                                                P
+                                            {% else %}
+                                                <input type="checkbox"
+                                                       name="is-valid"
+                                                       data-field="is_valid"
+                                                       id="valid-checkbox-{{ forloop.counter }}"
+                                                       class="researcher-editable input-checkbox-hidden valid-checkbox"
+                                                       aria-label="Toggle valid response status"
+                                                       {% if response.response__is_valid %}checked{% endif %}
+                                                       {% if not can_edit_feedback %}disabled{% endif %} />
+                                                <label for="valid-checkbox-{{ forloop.counter }}">
+                                                    <svg class="icon-valid-check {% if response.response__is_valid %}icon-valid-filled{% endif %}" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>
+                                                    <svg class="icon-valid-xmark {% if not response.response__is_valid %}icon-invalid-filled{% endif %}" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"/></svg>
+                                                </label>
+                                            {% endif %}
                                         </td>
                                         <td>{{ response.child_id_slug }}</td>
                                         <td>{{ response.response__id }}</td>
@@ -169,7 +185,8 @@
                                                 {% endfor %}
                                             </select>
                                         </td>
-                                        <td data-sort="{{response.response__researcher_star}}">
+                                        <td data-sort="{{response.response__researcher_star}}"
+                                            data-filter="{% if response.response__researcher_star %}Starred &#9733;{% else %}Unstarred &#9734;{% endif %}">
                                             <input type="checkbox"
                                                    name="star"
                                                    id="star-checkbox-{{ forloop.counter }}"
@@ -186,7 +203,18 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th scope="col"></th>
+                                    <th scope="col">
+                                        <select name="filter-valid-status"
+                                            id="filter-valid-status"
+                                            class="form-select"
+                                            autocomplete="off"
+                                            aria-label="Filter on preview or valid response status">
+                                            <option value="" selected=""></option>
+                                            <option value="preview">Preview</option>
+                                            <option value="valid">Valid &#10004;</option>
+                                            <option value="invalid">Invalid &#10008;</option>
+                                        </select>
+                                    </th>
                                     <th scope="col">
                                         <input type="text" class="form-control" placeholder="Filter Child ID" />
                                     </th>
@@ -242,7 +270,15 @@
                                         </select>
                                     </th>
                                     <th scope="col">
-                                        {% comment %} Empty footer element for the star column {% endcomment %}
+                                        <select name="filter-star-status"
+                                            id="filter-star-status"
+                                            class="form-select"
+                                            autocomplete="off"
+                                            aria-label="Filter on star status">
+                                            <option value="" selected=""></option>
+                                            <option value="starred">Starred &#9733;</option>
+                                            <option value="unstarred">Unstarred &#9734;</option>
+                                        </select>
                                     </th>
                                 </tr>
                             </tfoot>

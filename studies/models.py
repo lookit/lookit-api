@@ -1172,7 +1172,6 @@ class Response(models.Model):
         ("communication_complete", _("Communication complete")),
         ("withdrawn_closed", _("Withdrawn or closed")),
     )
-
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     study = models.ForeignKey(
         Study, on_delete=models.PROTECT, related_name="responses"
@@ -1214,6 +1213,7 @@ class Response(models.Model):
         choices=SESSION_STATUS_CHOICES, max_length=22, blank=True
     )
     researcher_star = models.BooleanField(default=False)
+    is_valid = models.BooleanField(default=True)
 
     def __str__(self):
         return self.display_name

@@ -31,9 +31,30 @@ select.researcher-editable:disabled {
     cursor: not-allowed;
 }
 
-input[type="checkbox"].researcher-editable:disabled+label .icon-star {
+input[type="checkbox"].researcher-editable:disabled+label .icon-star,
+input[type="checkbox"].researcher-editable:disabled+label .icon-valid-check,
+input[type="checkbox"].researcher-editable:disabled+label .icon-valid-xmark {
     color: lightgray;
+    fill: lightgray;
     cursor: not-allowed;
+}
+
+// Valid/invalid response icons: show check or xmark, only one at a time
+.icon-valid-check,
+.icon-valid-xmark {
+    display: none;
+}
+
+.icon-valid-check.icon-valid-filled {
+    display: inline;
+    color: var(--bs-success);
+    fill: var(--bs-success);
+}
+
+.icon-valid-xmark.icon-invalid-filled {
+    display: inline;
+    color: $red;
+    fill: $red;
 }
 
 // Response info box
