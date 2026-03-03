@@ -119,7 +119,7 @@
                                         data-response-id="{{ response.response__id }}"
                                         data-response-uuid="{{ response.response__uuid }}">
                                         <td data-sort="{{response.response__is_valid}}"
-                                            data-filter="{% if response.response__is_preview %}P{% elif response.response__is_valid %}&#10004;{% else %}&#10008;{% endif %}">
+                                            data-filter="{% if response.response__is_preview %}Preview{% elif response.response__is_valid %}Valid &#10004;{% else %}Invalid &#10008;{% endif %}">
                                             {% if response.response__is_preview %}
                                                 P
                                             {% else %}
@@ -186,7 +186,7 @@
                                             </select>
                                         </td>
                                         <td data-sort="{{response.response__researcher_star}}"
-                                            data-filter="{% if response.response__researcher_star %}&#9733;{% else %}&#9734;{% endif %}">
+                                            data-filter="{% if response.response__researcher_star %}Starred &#9733;{% else %}Unstarred &#9734;{% endif %}">
                                             <input type="checkbox"
                                                    name="star"
                                                    id="star-checkbox-{{ forloop.counter }}"
@@ -276,7 +276,7 @@
                                             autocomplete="off"
                                             aria-label="Filter on star status">
                                             <option value="" selected=""></option>
-                                            <option value="starred">Starred &#9733;</span></option>
+                                            <option value="starred">Starred &#9733;</option>
                                             <option value="unstarred">Unstarred &#9734;</option>
                                         </select>
                                     </th>
