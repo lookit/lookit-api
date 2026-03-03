@@ -75,9 +75,9 @@ $('.researcher-editable').change(
         const target = event.target;
         target.disabled = true;
         const currentResponseId = target.closest('tr').dataset.responseId;
-        const fieldName = 'researcher_' + target.name.replace("-", "_");
-        // The Star element's value is "on"/"off" but the database needs a boolean
-        const fieldValue = (target.name == "star") ? target.checked : target.value;
+        const fieldName = target.dataset.field || ('researcher_' + target.name.replace("-", "_"));
+        // Checkbox elements' values are "on"/"off" but the database needs a boolean
+        const fieldValue = (target.type === "checkbox") ? target.checked : target.value;
         const data = {
             responseId: currentResponseId,
             field: fieldName,
@@ -210,7 +210,7 @@ const resp_table = $("#individualResponsesTable").DataTable({
     order: [[2, 'desc']], // Sort on "Response ID" column (most recent first). Sorting on Date doesn't work as expected.
     columnDefs: [
         { className: "column-text-search", targets: [1, 2, 4] }, // add class to text search columns
-        { className: "column-dropdown-search", targets: [5, 6, 7] }, // add class to dropdown search columns
+        { className: "column-dropdown-search", targets: [0, 5, 6, 7, 8] }, // add class to dropdown search columns
         // This tells datatables to sort "Time Elapsed" and "Date" by "Response ID" column's data. Date sorting isn't working (it doesn't take the full timestamp into account). The right way to do this is to pass the full timestamp into the template and tell datatables how to parse and display it, but I couldn't get that to work (docs https://datatables.net/examples/datetime/.)
         { orderData: 2, targets: [2, 3, 4] },
         { targets: 3, type: 'date', render: dateColRender}
@@ -238,6 +238,14 @@ function updateAJAXCellData(target) {
             el.classList.toggle('icon-star-filled')
         })
         td.dataset.sort = "False" == td.dataset.sort ? "True" : "False"
+        // JS uses unicode rather than HTML &# chars. &#9733; = \u2605, &#9734; = \u2606
+        td.dataset.filter = target.checked ? "Starred \u2605" : "Unstarred \u2606"
+    } else if (classes.contains("valid-checkbox")) {
+        td.querySelector('.icon-valid-check').classList.toggle('icon-valid-filled')
+        td.querySelector('.icon-valid-xmark').classList.toggle('icon-invalid-filled')
+        td.dataset.sort = "False" == td.dataset.sort ? "True" : "False"
+        // JS uses unicode rather than HTML &# chars. &#10004; = \u2714, &#10008; = \u2718
+        td.dataset.filter = target.checked ? "Valid \u2714" : "Invalid \u2718"
     }
 
     resp_table.rows().invalidate("dom").draw(false);
