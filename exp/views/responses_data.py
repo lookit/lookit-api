@@ -382,6 +382,12 @@ RESPONSE_COLUMNS = [
         extractor=lambda resp: resp.researcher_star,
         name="Star",
     ),
+    ResponseDataColumn(
+        id="response__is_valid",
+        description="Whether this response is counted as valid",
+        extractor=lambda resp: resp.is_valid,
+        name="Valid Response",
+    ),
 ]
 
 # Columns for demographic data downloads. Extractor functions expect Response values dict,

@@ -132,7 +132,7 @@ def get_response_headers(
     }
     selected_standard_header_ids = [
         col.id
-        for col in RESPONSE_COLUMNS[0:-2]
+        for col in RESPONSE_COLUMNS[0:-3]
         if col.id not in unselected_optional_ids
     ]
     return selected_standard_header_ids + sorted(
@@ -879,6 +879,7 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
             "response__researcher_payment_status",
             "response__researcher_session_status",
             "response__researcher_star",
+            "response__is_valid",
         ]
 
         context["session_status_options"] = list(Response.SESSION_STATUS_CHOICES)
@@ -1120,6 +1121,7 @@ class StudyResponseSetResearcherFields(
         "researcher_session_status",
         "researcher_payment_status",
         "researcher_star",
+        "is_valid",
     ]
 
     def user_can_edit_response(self):
@@ -1193,6 +1195,14 @@ class StudyResponseSetResearcherFields(
             if not isinstance(value, bool):
                 return JsonResponse(
                     {"error": "Invalid request: Star field must be a boolean value."},
+                    status=400,
+                )
+        elif field_id == self.EDITABLE_FIELDS[3]:
+            if not isinstance(value, bool):
+                return JsonResponse(
+                    {
+                        "error": "Invalid request: Valid Response must be a boolean value."
+                    },
                     status=400,
                 )
 
