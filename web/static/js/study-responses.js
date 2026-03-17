@@ -98,7 +98,7 @@ $('.researcher-editable').change(
                 if (!response.ok) {
                     // If the response is not successful then parse the JSON for the error message and re-throw
                     return response.json().then(errorData => {
-                        const errMsg = (errorData && errorData.error) ? errorData.error : "Request to update a response field has failed.";
+                        const errMsg = (errorData && errorData.error) ? errorData.error : `Request to update a response field has failed for response ${currentResponseId}.`;
                         throw new Error(errMsg);
                     });
                 }
@@ -108,6 +108,21 @@ $('.researcher-editable').change(
                 target.disabled = false;
                 updateAJAXCellData(target);
                 if (data.success) console.log(data.success);
+                if (fieldName === 'is_valid') {
+                    const container = document.getElementById('is-valid-toast-container');
+                    const toast = document.createElement('div');
+                    toast.className = `toast align-items-center border-0 ${fieldValue ? 'text-bg-success' : 'text-bg-secondary'}`;
+                    toast.setAttribute('role', 'status');
+                    toast.innerHTML = `<div class="d-flex">
+                        <div class="toast-body">${fieldValue ? `Response ${currentResponseId} marked as valid.` : `Response ${currentResponseId} marked as invalid.`}</div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>`;
+                    container.appendChild(toast);
+                    // or use { autohide: false } if we want the message to stay until manually dismissed
+                    const bsToast = new bootstrap.Toast(toast, { delay: 5000 });
+                    toast.addEventListener('hidden.bs.toast', () => toast.remove());
+                    bsToast.show();
+                }
             })
             .catch(error => {
                 // If the update fails, log the reason to the console and revert to the previous value by reloading the page.
