@@ -1297,6 +1297,13 @@ class Response(models.Model):
             "date": self.most_recent_ruling_date,
         }
 
+    @property
+    def effective_is_valid(self) -> bool:
+        """Return the effective is_valid value, using the researcher override if set."""
+        if self.is_valid_researcher_override is not None:
+            return self.is_valid_researcher_override
+        return self.is_valid
+
     def exit_frame_properties(self, property):
         if self.study_type.is_ember_frame_player:
             return self.exit_frame_properties_efp(property)
