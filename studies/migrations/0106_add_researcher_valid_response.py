@@ -15,40 +15,39 @@ def compute_is_valid(apps, schema_editor):
     - completed is True
     - completed_consent_frame is True
     - the most recent consent ruling is not "rejected"
+
+    All responses start as False (the field default). This function marks passing responses True.
     """
     Response = apps.get_model("studies", "Response")
     ConsentRuling = apps.get_model("studies", "ConsentRuling")
 
-    # Step 1: Mark all preview responses as invalid
-    Response.objects.filter(is_preview=True).update(is_valid=False)
+    # Filter on eligibiliety (must be "Eligible" or an empty array for backwards compatibility)
+    eligible_filter = models.Q(eligibility=[]) | models.Q(
+        eligibility__contains=["Eligible"]
+    )
 
-    # Step 2: Mark responses with ineligible eligibility as invalid
-    # Valid eligibility: empty list OR contains "Eligible"
-    # Invalid: non-empty list that doesn't contain "Eligible"
-    Response.objects.exclude(
-        models.Q(eligibility=[]) | models.Q(eligibility__contains=["Eligible"])
-    ).update(is_valid=False)
+    # Change is_valid for external study responses to True if: non-preview, eligible
+    Response.objects.filter(
+        study__study_type_id=EXTERNAL_STUDY_TYPE_ID,
+        is_preview=False,
+    ).filter(eligible_filter).update(is_valid=True)
 
-    # Step 3: For internal studies only, mark incomplete responses and responses without consent frames as invalid
-    Response.objects.exclude(study__study_type_id=EXTERNAL_STUDY_TYPE_ID).filter(
-        models.Q(completed=False) | models.Q(completed_consent_frame=False)
-    ).update(is_valid=False)
-
-    # Step 4: For internal studies, mark responses with rejected consent as invalid
-    # Get the most recent consent ruling for each response using a subquery
+    # Change is_valid internal study responses to True if: non-preview, eligible, completed, has consent, consent not rejected
     newest_ruling_subquery = models.Subquery(
         ConsentRuling.objects.filter(response=models.OuterRef("pk"))
         .order_by("-created_at")
         .values("action")[:1]
     )
-    rejected_response_ids = list(
+    valid_internal_ids = list(
         Response.objects.exclude(study__study_type_id=EXTERNAL_STUDY_TYPE_ID)
+        .filter(is_preview=False, completed=True, completed_consent_frame=True)
+        .filter(eligible_filter)
         .annotate(current_ruling=newest_ruling_subquery)
-        .filter(current_ruling=REJECTED)
+        .exclude(current_ruling=REJECTED)
         .values_list("id", flat=True)
     )
-    if rejected_response_ids:
-        Response.objects.filter(id__in=rejected_response_ids).update(is_valid=False)
+    if valid_internal_ids:
+        Response.objects.filter(id__in=valid_internal_ids).update(is_valid=True)
 
 
 class Migration(migrations.Migration):
@@ -60,7 +59,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="response",
             name="is_valid",
-            field=models.BooleanField(default=True),
+            field=models.BooleanField(default=False),
         ),
         migrations.RunPython(compute_is_valid, migrations.RunPython.noop),
+        migrations.AddField(
+            model_name="response",
+            name="is_valid_researcher_override",
+            field=models.BooleanField(blank=True, default=None, null=True),
+        ),
     ]

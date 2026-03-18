@@ -1213,7 +1213,10 @@ class Response(models.Model):
         choices=SESSION_STATUS_CHOICES, max_length=22, blank=True
     )
     researcher_star = models.BooleanField(default=False)
-    is_valid = models.BooleanField(default=True)
+    is_valid = models.BooleanField(default=False)
+    is_valid_researcher_override = models.BooleanField(
+        null=True, blank=True, default=None
+    )
 
     def __str__(self):
         return self.display_name
