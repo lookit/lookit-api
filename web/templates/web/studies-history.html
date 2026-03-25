@@ -76,7 +76,7 @@
                     </div>
                 </div>
                 <h4 class="card-title">{% trans "Study Responses" %}</h4>
-                {% for response in study.responses.all %}
+                {% for response in study.response_page %}
                     <div class="row mb-3">
                         {% if form.past_studies_tabs|studies_tab_selected == "0" %}
                             <div class="col-3 d-flex flex-column">
@@ -140,6 +140,25 @@
                         </div>
                     </div>
                 {% endfor %}
+                {% if study.response_page.paginator.num_pages > 1 %}
+                    <div class="text-end px-5">
+                        {% if study.response_page.has_previous %}
+                            <a class="text-decoration-none"
+                               aria-label="{% trans "Go to previous page of responses" %}"
+                               href="?{% response_page_transform request study.pk study.response_page.previous_page_number %}">
+                                {% bs_icon "chevron-left" %}
+                            </a>
+                        {% endif %}
+                        {% trans "Page" %} {{ study.response_page.number }} {% trans "of" %} {{ study.response_page.paginator.num_pages }}
+                        {% if study.response_page.has_next %}
+                            <a class="text-decoration-none"
+                               aria-label="{% trans "Go to next page of responses" %}"
+                               href="?{% response_page_transform request study.pk study.response_page.next_page_number %}">
+                                {% bs_icon "chevron-right" %}
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
             </div>
         </div>
     {% empty %}
@@ -151,4 +170,5 @@
             {% endif %}
         </div>
     {% endfor %}
+    {% include "studies/_paginator.html" with page=object_list %}
 {% endblock content %}
