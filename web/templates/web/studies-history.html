@@ -141,7 +141,7 @@
                     </div>
                 {% endfor %}
                 {% if study.response_page.paginator.num_pages > 1 %}
-                    <div class="text-end px-5">Study responses</div>
+                    <div class="text-end px-5">{% trans "Study responses" %}</div>
                     <div class="text-end px-5">
                         {% if study.response_page.has_previous %}
                             <a class="text-decoration-none"
@@ -171,6 +171,8 @@
             {% endif %}
         </div>
     {% endfor %}
-    <div class="text-end px-5">Previous studies</div>
-    {% include "studies/_paginator.html" with page=object_list %}
+    {% if object_list.paginator.num_pages > 1 %}
+        <div class="text-end px-5">{% trans "Previous studies" %}</div>
+        {% include "studies/_paginator.html" with page=object_list %}
+    {% endif %}
 {% endblock content %}
