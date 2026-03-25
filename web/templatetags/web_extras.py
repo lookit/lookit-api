@@ -341,5 +341,9 @@ def response_page_transform(request, study_pk, page_number):
     (e.g. the study-level page number and tab selection).
     """
     updated = request.GET.copy()
-    updated[f"response_page_{study_pk}"] = str(page_number)
+    key = f"response_page_{study_pk}"
+    if page_number == 1:
+        updated.pop(key, None)
+    else:
+        updated[key] = str(page_number)
     return updated.urlencode()
