@@ -291,6 +291,13 @@ class StudyListView(
         context["sort"] = self.request.GET.get("sort", "name")
         context["page"] = self.request.GET.get("page", "1")
         context["can_create_study"] = self.request.user.can_create_study()
+        if self.request.user.is_superuser:
+            context["study_types"] = StudyType.objects.all()
+            context["admin_uuid"] = self.request.GET.get("uuid", "")
+            context["admin_study_type"] = self.request.GET.get("study_type", "")
+            context["admin_lab"] = self.request.GET.get("lab", "")
+            context["admin_public"] = self.request.GET.get("public", "")
+            context["admin_creator"] = self.request.GET.get("creator", "")
         return context
 
 

@@ -372,6 +372,31 @@ def get_study_list_qs(user, query_dict):
             )
         )
 
+    if user.is_superuser:
+        uuid_filter = "".join(query_dict.get("uuid", []))
+        if uuid_filter:
+            queryset = queryset.filter(uuid__icontains=uuid_filter)
+
+        study_type_filter = "".join(query_dict.get("study_type", []))
+        if study_type_filter:
+            queryset = queryset.filter(study_type_id=study_type_filter)
+
+        lab_filter = "".join(query_dict.get("lab", []))
+        if lab_filter:
+            queryset = queryset.filter(lab__name__icontains=lab_filter)
+
+        public_filter = "".join(query_dict.get("public", []))
+        if public_filter in ("true", "false"):
+            queryset = queryset.filter(public=(public_filter == "true"))
+
+        creator_filter = "".join(query_dict.get("creator", []))
+        if creator_filter:
+            queryset = queryset.filter(
+                Q(creator__given_name__icontains=creator_filter)
+                | Q(creator__family_name__icontains=creator_filter)
+                | Q(creator__username__icontains=creator_filter)
+            )
+
     # Sort value is in a list
     sort = "".join(query_dict.get("sort", []))
     if sort:
