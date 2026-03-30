@@ -17,7 +17,7 @@
     {% else %}
         {% page_title "Manage Studies" %}
     {% endif %}
-    <div class="mt-2 p-2 border rounded bg-white">
+    <div class="mt-2 p-2 pb-4 border rounded bg-white">
         <form method="get" class="search-bar">
             <div class="row g-2">
                 <div class="col-lg-10">
@@ -38,7 +38,7 @@
             <input type="hidden" name="page" value="1" />
             {% if request.user.is_superuser %}
                 <div class="text-muted d-block mb-1 mt-3">Admin filters</div>
-                <div class="row g-2 mb-3">
+                <div class="row g-2">
                     <div class="col-lg-6">
                         <input class="form-control"
                                name="uuid"
