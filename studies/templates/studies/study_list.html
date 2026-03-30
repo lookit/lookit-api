@@ -10,24 +10,76 @@
     {% bs_icon "plus" as bs_icon_plus %}
     {% url 'exp:study-create' as url_study_create %}
     {% button_primary_classes as btn_primary_classes %}
+    {% button_primary_light_classes as btn_primary_lgt_classes %}
     {% bootstrap_button bs_icon_plus|add:"Create Study" href=url_study_create button_class=btn_primary_classes as btn_create_study %}
     {% if can_create_study %}
         {% page_title "Manage Studies" right_side_elements=btn_create_study %}
     {% else %}
         {% page_title "Manage Studies" %}
     {% endif %}
-    <form method="get" class="search-bar">
-        <input id="search-studies"
-               class="form-control"
-               name="match"
-               placeholder="Filter name or description"
-               size="50"
-               type="text"
-               value="{{ match }}" />
-        <input type="hidden" name="sort" value="{{ sort }}" />
-        <input type="hidden" name="state" value="{{ state }}" />
-        <input type="hidden" name="page" value="1" />
-    </form>
+    <div class="mt-2 p-2 border rounded bg-white">
+        <form method="get" class="search-bar">
+            <div class="row g-2">
+                <div class="col-lg-10">
+                    <input id="search-studies"
+                        class="form-control"
+                        name="match"
+                        placeholder="Filter name or description"
+                        size="50"
+                        type="text"
+                        value="{{ match }}" />
+                </div>
+                <div class="col-lg-2 text-center text-lg-end">
+                    {% bootstrap_button "Search" button_type="submit" button_class=btn_primary_lgt_classes %}
+                </div>
+            </div>
+            <input type="hidden" name="sort" value="{{ sort }}" />
+            <input type="hidden" name="state" value="{{ state }}" />
+            <input type="hidden" name="page" value="1" />
+            {% if request.user.is_superuser %}
+                <div class="text-muted d-block mb-1 mt-3">Admin filters</div>
+                <div class="row g-2 mb-3">
+                    <div class="col-lg-6">
+                        <input class="form-control"
+                               name="uuid"
+                               placeholder="Study UUID"
+                               size="35"
+                               type="text"
+                               value="{{ admin_uuid }}" />
+                    </div>
+                    <div class="col-lg-3">
+                        <select class="form-select" name="study_type">
+                            <option value="">All study types</option>
+                            {% for st in study_types %}
+                                <option value="{{ st.id }}" {% if admin_study_type == st.id|stringformat:"s" %}selected{% endif %}>{{ st.name|before_paren }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-lg-3">
+                        <select class="form-select" name="public">
+                            <option value="">Public: any</option>
+                            <option value="true" {% if admin_public == "true" %}selected{% endif %}>Public: yes</option>
+                            <option value="false" {% if admin_public == "false" %}selected{% endif %}>Public: no</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-6">
+                        <input class="form-control"
+                               name="lab"
+                               placeholder="Lab name"
+                               type="text"
+                               value="{{ admin_lab }}" />
+                    </div>
+                    <div class="col-lg-6">
+                        <input class="form-control"
+                               name="creator"
+                               placeholder="Study creator name or email"
+                               type="text"
+                               value="{{ admin_creator }}" />
+                    </div>
+                </div>
+            {% endif %}
+        </form>
+    </div>
     <div class="row text-center mb-5 mt-2">
         <ul class="nav nav-pills justify-content-center">
             {% nav_link request 'exp:study-list-active' 'Active' %}
