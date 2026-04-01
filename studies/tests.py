@@ -22,7 +22,15 @@ from studies.helpers import (
     get_experiment_absolute_url,
     send_mail,
 )
-from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum, Video
+from studies.models import (
+    Lab,
+    Response,
+    Study,
+    StudyLog,
+    StudyType,
+    StudyTypeEnum,
+    Video,
+)
 from studies.permissions import StudyPermission
 from studies.tasks import (
     MessageTarget,
@@ -860,6 +868,48 @@ class StudyModelTestCase(TestCase):
         assign_perm(StudyPermission.READ_STUDY_RESPONSE_DATA.codename, user, study)
 
         self.assertIn(response, study.responses_for_researcher(user))
+
+
+class DaysSubmittedTestCase(TestCase):
+    def setUp(self):
+        self.study = G(
+            Study,
+            study_type=StudyType.get_ember_frame_player(),
+            state="created",
+            status_change_date=None,
+        )
+
+    def test_non_submitted_state_returns_none(self):
+        self.study.state = "active"
+        self.assertIsNone(self.study.days_submitted)
+
+    def test_submitted_with_status_change_date(self):
+        ten_days_ago = datetime.now(timezone.utc) - timedelta(days=10)
+        self.study.state = "submitted"
+        self.study.status_change_date = ten_days_ago
+        self.study.save()
+        self.assertEqual(self.study.days_submitted, 10)
+
+    def test_submitted_null_status_change_date_falls_back_to_studylog(self):
+        five_days_ago = datetime.now(timezone.utc) - timedelta(days=5)
+        self.study.state = "submitted"
+        self.study.status_change_date = None
+        self.study.save()
+        log = StudyLog.objects.create(study=self.study, action="submitted")
+        StudyLog.objects.filter(pk=log.pk).update(created_at=five_days_ago)
+        self.assertEqual(self.study.days_submitted, 5)
+
+    def test_submitted_multiple_studylogs_uses_most_recent(self):
+        ten_days_ago = datetime.now(timezone.utc) - timedelta(days=10)
+        three_days_ago = datetime.now(timezone.utc) - timedelta(days=3)
+        self.study.state = "submitted"
+        self.study.status_change_date = None
+        self.study.save()
+        log_old = StudyLog.objects.create(study=self.study, action="submitted")
+        StudyLog.objects.filter(pk=log_old.pk).update(created_at=ten_days_ago)
+        log_recent = StudyLog.objects.create(study=self.study, action="submitted")
+        StudyLog.objects.filter(pk=log_recent.pk).update(created_at=three_days_ago)
+        self.assertEqual(self.study.days_submitted, 3)
 
 
 class VideoModelTestCase(TestCase):

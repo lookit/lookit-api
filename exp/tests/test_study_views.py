@@ -10,7 +10,9 @@ from unittest.mock import (
     patch,
     sentinel,
 )
+from zoneinfo import ZoneInfo
 
+from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
@@ -31,7 +33,7 @@ from exp.views.study import (
     StudyDetailView,
     StudyPreviewDetailView,
 )
-from studies.models import Lab, Study, StudyType
+from studies.models import Lab, Study, StudyLog, StudyType
 from studies.permissions import LabPermission, StudyPermission
 
 
@@ -1479,6 +1481,44 @@ class StudyListViewTestCase(TestCase):
         # Sending study2's UUID should not make it visible to creator1
         response = self.client.get(self.url, {"uuid": str(self.study2.uuid)})
         self.assertNotContains(response, self.study2.name)
+
+    def test_status_change_date_display_shows_status_change_date(self):
+        """Study with non-null status_change_date shows it formatted in the list."""
+        known_date = datetime.datetime(2020, 6, 15, tzinfo=ZoneInfo(settings.TIME_ZONE))
+        self.study1.status_change_date = known_date
+        self.study1.save()
+        self.client.force_login(self.superuser)
+        response = self.client.get(self.url)
+        self.assertContains(response, "Jun 15, 2020")
+
+    def test_status_change_date_display_falls_back_to_studylog(self):
+        """Study with null status_change_date shows date from matching StudyLog entry."""
+        known_date = datetime.datetime(2021, 3, 15, tzinfo=ZoneInfo(settings.TIME_ZONE))
+        # Explicitly set state to "created" so we know the matching StudyLog action.
+        # The post_save signal always creates a StudyLog(action="created") on study creation.
+        self.study1.state = "created"
+        self.study1.status_change_date = None
+        self.study1.save()
+        StudyLog.objects.filter(study=self.study1, action="created").update(
+            created_at=known_date
+        )
+        self.client.force_login(self.superuser)
+        response = self.client.get(self.url)
+        self.assertContains(response, "Mar 15, 2021")
+
+    def test_status_change_date_display_is_na_without_date_or_log(self):
+        """Study with null status_change_date and no matching StudyLog shows N/A."""
+        # Set state to "submitted" so the fallback looks for action="submitted" logs,
+        # but no such log exists (only the action="created" log from the post_save signal).
+        self.study1.state = "submitted"
+        self.study1.status_change_date = None
+        self.study1.save()
+        # Use the submitted-state tab so only study1 is visible.
+        submitted_url = reverse("exp:study-list-submitted")
+        self.client.force_login(self.superuser)
+        response = self.client.get(submitted_url)
+        self.assertContains(response, self.study1.name)
+        self.assertContains(response, "N/A")
 
 
 # TODO: StudyCreateView
