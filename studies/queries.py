@@ -357,6 +357,16 @@ def get_study_list_qs(user, query_dict):
                 .filter(action="deactivated")
                 .values("created_at")[:1]
             ),
+            status_change_date_display=Coalesce(
+                F("status_change_date"),
+                Subquery(
+                    StudyLog.objects.filter(
+                        study=OuterRef("pk"), action=OuterRef("state")
+                    )
+                    .order_by("-created_at")
+                    .values("created_at")[:1]
+                ),
+            ),
         )
     )
 

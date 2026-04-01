@@ -130,10 +130,10 @@
             <strong>Last Status Change</strong>
             <a class="text-decoration-none"
                aria-label="Sort studies by end date"
-               href="?{% query_transform request page='1' sort='status_change_date' %}">{% bs_icon "chevron-up" %}</a>
+               href="?{% query_transform request page='1' sort='status_change_date_display' %}">{% bs_icon "chevron-up" %}</a>
             <a class="text-decoration-none"
                aria-label="Reverse sort studies by end date"
-               href="?{% query_transform request page='1' sort='-status_change_date' %}">{% bs_icon "chevron-down" %}</a>
+               href="?{% query_transform request page='1' sort='-status_change_date_display' %}">{% bs_icon "chevron-down" %}</a>
         </div>
     </div>
     {% for study in object_list %}
@@ -155,7 +155,7 @@
                             {% endblock status_change_label %}
                         </strong>
                         {% block status_change_date %}
-                            {{ study.status_change_date|date:"M d, Y"|default:"N/A" }}
+                            {{ study.status_change_date_display|date:"M d, Y"|default:"N/A" }}
                         {% endblock status_change_date %}
                     </div>
                 </div>
