@@ -298,6 +298,10 @@ class StudyListView(
             context["admin_lab"] = self.request.GET.get("lab", "")
             context["admin_public"] = self.request.GET.get("public", "")
             context["admin_creator"] = self.request.GET.get("creator", "")
+            if self.state == "submitted":
+                context["admin_submission_history"] = self.request.GET.get(
+                    "submission_history", ""
+                )
         return context
 
 

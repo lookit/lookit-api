@@ -5,7 +5,16 @@ from functools import reduce
 
 from django.core.exceptions import FieldError
 from django.db import models
-from django.db.models import Count, F, IntegerField, OuterRef, Q, Subquery, Value
+from django.db.models import (
+    Count,
+    Exists,
+    F,
+    IntegerField,
+    OuterRef,
+    Q,
+    Subquery,
+    Value,
+)
 from django.db.models.fields import CharField
 from django.db.models.functions import Coalesce, Concat
 from django.utils.timezone import now
@@ -396,6 +405,30 @@ def get_study_list_qs(user, query_dict):
                 | Q(creator__family_name__icontains=creator_filter)
                 | Q(creator__username__icontains=creator_filter)
             )
+
+        if state == "submitted":
+            submission_history = "".join(query_dict.get("submission_history", []))
+            if submission_history:
+                ever_approved = Exists(
+                    StudyLog.objects.filter(study=OuterRef("pk"), action="approved")
+                )
+                ever_rejected = Exists(
+                    StudyLog.objects.filter(study=OuterRef("pk"), action="rejected")
+                )
+                if submission_history == "first_submission":
+                    queryset = queryset.filter(~ever_approved, ~ever_rejected)
+                elif submission_history == "previously_rejected":
+                    queryset = queryset.filter(~ever_approved, ever_rejected)
+                elif submission_history == "previously_approved":
+                    queryset = queryset.filter(ever_approved)
+                elif submission_history == "other":
+                    # Complement of the three exhaustive categories above — always empty
+                    # in practice, but kept as a filter option for data anomalies
+                    queryset = queryset.exclude(
+                        Q(~ever_approved, ~ever_rejected)
+                        | Q(~ever_approved, ever_rejected)
+                        | Q(ever_approved)
+                    )
 
     # Sort value is in a list
     sort = "".join(query_dict.get("sort", []))

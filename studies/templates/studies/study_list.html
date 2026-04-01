@@ -76,6 +76,17 @@
                                type="text"
                                value="{{ admin_creator }}" />
                     </div>
+                    {% if state == "submitted" %}
+                        <div class="col-lg-6">
+                            <select class="form-select" name="submission_history">
+                                <option value="">Submission history: all</option>
+                                <option value="first_submission" {% if admin_submission_history == "first_submission" %}selected{% endif %}>First submission</option>
+                                <option value="previously_rejected" {% if admin_submission_history == "previously_rejected" %}selected{% endif %}>Previously rejected</option>
+                                <option value="previously_approved" {% if admin_submission_history == "previously_approved" %}selected{% endif %}>Previously approved</option>
+                                <option value="other" {% if admin_submission_history == "other" %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                    {% endif %}
                 </div>
             {% endif %}
         </form>
