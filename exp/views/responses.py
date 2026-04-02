@@ -505,7 +505,7 @@ def build_zip_for_psychds(
     all_response_filename,
     all_response_json_path,
 ):
-    zipped_file = io.BytesIO()
+    zipped_file = tempfile.NamedTemporaryFile(suffix=".zip")
     with zipfile.ZipFile(zipped_file, "w", zipfile.ZIP_DEFLATED) as zipped:
         for data, filename, sidecar_metadata, sidecar_filename in response_data:
             # write data file for response
