@@ -370,29 +370,30 @@ def make_chunk(paginator, page_num, header_options):
     return chunk
 
 
-"""Takes session_data dict list and converts it to csv formatted string
+"""Writes session data to a temp CSV file and returns the path.
 
     Args:
-        session_list(list of strings): list of strings representing rows of the csv
-        header_list(list of strings): list of headers to include at top of csv string
+        session_list(list of dicts): list of dicts representing rows of the csv
+        header_list(list of strings): list of headers to include at top of csv
 
     Returns:
-        (string): csv-formattted string for response data file.
+        (string): path to the temp file (caller is responsible for deletion)
     """
 
 
-def build_overview_str(session_list, header_list):
-    session_strings = [
-        ",".join(
-            [
-                (f'"{str(session_row[key])}"' if key in session_row else "")
+def write_overview_to_temp_file(session_list, header_list):
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".csv", mode="w")
+    tmp.write(",".join(header_list))
+    for session_row in session_list:
+        tmp.write(
+            "\n"
+            + ",".join(
+                f'"{str(session_row[key])}"' if key in session_row else ""
                 for key in header_list
-            ]
+            )
         )
-        for session_row in session_list
-    ]
-    header_str = ",".join(header_list)
-    return "\n".join([header_str] + session_strings)
+    tmp.close()
+    return tmp.name
 
 
 """Aggregates child data over responses and returns list of dictionaries for each row of csv
@@ -438,8 +439,8 @@ def get_child_overview_csv(paginator, study, header_options):
         header_options(list of strings): list of selected headers from header_options
         study_uuid(string): uuid for study object, either truncated or untruncated
         truncate_uuids(boolean): Represents whether user has selected to truncate their uuids in filenames
-        overview_str(string): string representing response overview file
-        child_overview_str(string): string representing child overview file
+        overview_path(string): path to temp file containing response overview CSV
+        child_overview_path(string): path to temp file containing child overview CSV
         metadata_json(dict): JSON object for global metadata file (variableMeasured will be added)
         all_response_filename(string): filename for response overview file
         all_response_json_path(string): path to temp file containing all-responses JSON
@@ -457,8 +458,8 @@ def build_zip_for_psychds(
     header_options,
     study_uuid,
     truncate_uuids,
-    overview_str,
-    child_overview_str,
+    overview_path,
+    child_overview_path,
     metadata_json,
     all_response_filename,
     all_response_json_path,
@@ -501,14 +502,14 @@ def build_zip_for_psychds(
             all_children += "_identifiable-true"
 
         # save response overview
-        zipped.writestr(
+        zipped.write(
+            overview_path,
             f"data/overview/study-{study_uuid}_{all_responses}_data.csv",
-            overview_str,
         )
         # save children overview
-        zipped.writestr(
+        zipped.write(
+            child_overview_path,
             f"data/overview/study-{study_uuid}_{all_children}_data.csv",
-            child_overview_str,
         )
         if not study.use_generator:
             # save study protocol
@@ -1579,12 +1580,14 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
         session_list, header_options, header_list = get_study_responses_csv(
             self, paginator, study
         )
-        overview_str = build_overview_str(session_list, header_list)
+        tmp_overview = write_overview_to_temp_file(session_list, header_list)
         # gets data necessary for building child overview file
         child_session_list, child_header_list = get_child_overview_csv(
             paginator, study, header_options
         )
-        child_overview_str = build_overview_str(child_session_list, child_header_list)
+        tmp_child_overview = write_overview_to_temp_file(
+            child_session_list, child_header_list
+        )
         # builds "all response" json download
         all_response_filename = "all_responses{}.json".format(
             ("_identifiable" if IDENTIFIABLE_DATA_HEADERS & header_options else ""),
@@ -1602,8 +1605,8 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
                 header_options,
                 study_uuid,
                 truncate_uuids,
-                overview_str,
-                child_overview_str,
+                tmp_overview,
+                tmp_child_overview,
                 metadata_json,
                 all_response_filename,
                 all_response_json_path=tmp_all_response.name,
@@ -1612,6 +1615,8 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
             )
         finally:
             os.unlink(tmp_all_response.name)
+            os.unlink(tmp_overview)
+            os.unlink(tmp_child_overview)
 
         return response
 
