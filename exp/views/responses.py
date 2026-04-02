@@ -2,6 +2,8 @@ import datetime
 import io
 import json
 import logging
+import os
+import tempfile
 import zipfile
 from functools import cached_property
 from typing import Dict, KeysView, List, NamedTuple, Set, Text, Union
@@ -501,7 +503,7 @@ def build_zip_for_psychds(
     child_overview_str,
     metadata_json,
     all_response_filename,
-    all_response_json_str,
+    all_response_json_path,
 ):
     zipped_file = io.BytesIO()
     with zipfile.ZipFile(zipped_file, "w", zipfile.ZIP_DEFLATED) as zipped:
@@ -564,10 +566,7 @@ def build_zip_for_psychds(
             VIDEOS_README_STR,
         )
         # save all responses json
-        zipped.writestr(
-            f"data/raw/{all_response_filename}",
-            all_response_json_str,
-        )
+        zipped.write(all_response_json_path, f"data/raw/{all_response_filename}")
         # save psychds-ignore file to avoid NOT_INCLUDED warnings
         zipped.writestr(
             ".psychds-ignore",
@@ -1607,35 +1606,38 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
         all_response_filename = "all_responses{}.json".format(
             ("_identifiable" if IDENTIFIABLE_DATA_HEADERS & header_options else ""),
         )
-        all_response_json_str = "".join(
-            [
-                make_chunk(paginator, page_num, header_options)
-                for page_num in paginator.page_range
-            ]
-        )
-        # construct more informative variablesMeasured object
-        variables_measured_objects = [
-            {
-                "@type": "PropertyValue",
-                "name": column,
-                "description": descriptions[column.split(".")[0]],
-            }
-            for column in list(set(variables_measured))
-        ]
-        # add final variables list to metadata
-        metadata_json["variableMeasured"] = variables_measured_objects
+        tmp_all_response = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
 
-        response = build_zip_for_psychds(
-            response_data,
-            study,
-            header_options,
-            study_uuid,
-            overview_str,
-            child_overview_str,
-            metadata_json,
-            all_response_filename,
-            all_response_json_str,
-        )
+        try:
+            with open(tmp_all_response.name, "w") as f:
+                for page_num in paginator.page_range:
+                    f.write(make_chunk(paginator, page_num, header_options))
+
+            # construct more informative variablesMeasured object
+            variables_measured_objects = [
+                {
+                    "@type": "PropertyValue",
+                    "name": column,
+                    "description": descriptions[column.split(".")[0]],
+                }
+                for column in list(set(variables_measured))
+            ]
+            # add final variables list to metadata
+            metadata_json["variableMeasured"] = variables_measured_objects
+
+            response = build_zip_for_psychds(
+                response_data,
+                study,
+                header_options,
+                study_uuid,
+                overview_str,
+                child_overview_str,
+                metadata_json,
+                all_response_filename,
+                all_response_json_path=tmp_all_response.name,
+            )
+        finally:
+            os.unlink(tmp_all_response.name)
 
         return response
 
