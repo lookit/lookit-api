@@ -469,17 +469,17 @@ def build_zip_for_psychds(
     zipped_file = tempfile.NamedTemporaryFile(suffix=".zip")
     with zipfile.ZipFile(zipped_file, "w", zipfile.ZIP_DEFLATED) as zipped:
         # write frame data for each response directly into the zip, one at a time
-        variables_measured = []
+        variables_measured = set()
         for page_num in paginator.page_range:
             page_of_responses = paginator.page(page_num)
             for resp in page_of_responses:
                 response_uuid = resp.uuid.hex[:8] if truncate_uuids else resp.uuid.hex
                 data = build_single_response_framedata_csv(resp)
                 # collect column headers for variableMeasured metadata
-                variables_measured += [
+                variables_measured |= {
                     column.strip('"')
                     for column in data.split("\n")[0].strip().split(",")
-                ]
+                }
                 keywords = {"study": study_uuid, "response": response_uuid}
                 filename = keyword_filename(keywords, "csv")
                 sidecar_metadata = {
@@ -573,14 +573,14 @@ def build_zip_for_psychds(
             "materials/study_ad_info.json", f"{json.dumps(study_ad, indent=4)}"
         )
         # build variableMeasured from frame data headers + overview headers, then finalise metadata
-        variables_measured += header_list + CHILD_CSV_HEADERS
+        variables_measured |= set(header_list + CHILD_CSV_HEADERS)
         variables_measured_objects = [
             {
                 "@type": "PropertyValue",
                 "name": column,
                 "description": descriptions[column.split(".")[0]],
             }
-            for column in list(set(variables_measured))
+            for column in variables_measured
         ]
         metadata_json["variableMeasured"] = variables_measured_objects
         # save global metadata file
