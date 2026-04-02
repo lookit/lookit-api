@@ -433,6 +433,7 @@ def _apply_superuser_filters(queryset, state, query_dict):
             Q(creator__given_name__icontains=creator_filter)
             | Q(creator__family_name__icontains=creator_filter)
             | Q(creator__username__icontains=creator_filter)
+            | Q(creator_name__icontains=creator_filter)
         )
 
     if state == "submitted":

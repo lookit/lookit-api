@@ -1450,6 +1450,12 @@ class StudyListViewTestCase(TestCase):
         self.assertContains(response, self.study1.name)
         self.assertNotContains(response, self.study2.name)
 
+    def test_superuser_filter_by_creator_full_name(self):
+        self.client.force_login(self.superuser)
+        response = self.client.get(self.url, {"creator": "Alice Anderson"})
+        self.assertContains(response, self.study1.name)
+        self.assertNotContains(response, self.study2.name)
+
     def test_superuser_combined_name_and_lab_filter(self):
         self.client.force_login(self.superuser)
         # Both studies match "Study" but only study1 is in Alpha Lab
