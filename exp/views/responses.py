@@ -1,5 +1,4 @@
 import datetime
-import io
 import json
 import logging
 import os
@@ -1637,7 +1636,7 @@ class StudyResponsesFrameDataCSV(ResponseDownloadMixin, generic.list.ListView):
 
             return study_responses_all(study)
 
-        zipped_file = io.BytesIO()
+        zipped_file = tempfile.NamedTemporaryFile(suffix=".zip")
         with zipfile.ZipFile(zipped_file, "w", zipfile.ZIP_DEFLATED) as zipped:
             for page_num in paginator.page_range:
                 page_of_responses = paginator.page(page_num)
