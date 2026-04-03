@@ -1745,13 +1745,16 @@ class StudyDemographicsJSON(DemographicDownloadMixin, generic.list.ListView):
         study = self.study
         header_options = self.request.GET.getlist("demo_options")
 
-        json_responses = []
         paginator = context["paginator"]
-        for page_num in paginator.page_range:
-            page_of_responses = paginator.page(page_num)
-            for resp in page_of_responses:
-                json_responses.append(
-                    json.dumps(
+
+        def json_generator():
+            yield "[\n"
+            first = True
+            for page_num in paginator.page_range:
+                for resp in paginator.page(page_num):
+                    if not first:
+                        yield ",\n"
+                    yield json.dumps(
                         construct_response_dictionary(
                             resp,
                             DEMOGRAPHIC_COLUMNS,
@@ -1761,12 +1764,13 @@ class StudyDemographicsJSON(DemographicDownloadMixin, generic.list.ListView):
                         indent="\t",
                         default=str,
                     )
-                )
-        cleaned_data = f"[ {', '.join(json_responses)} ]"
+                    first = False
+            yield "\n]"
+
         filename = "{}_{}.json".format(
             study_name_for_files(study.name), "all-demographic-snapshots"
         )
-        response = HttpResponse(cleaned_data, content_type="text/json")
+        response = StreamingHttpResponse(json_generator(), content_type="text/json")
         set_content_disposition(response, filename)
         return response
 
