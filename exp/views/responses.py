@@ -1524,17 +1524,28 @@ class StudyChildrenCSV(ResponseDownloadMixin, generic.list.ListView):
             paginator, study, header_options
         )
 
-        output, writer = csv_dict_output_and_writer(header_list)
+        tmp = tempfile.NamedTemporaryFile(suffix=".csv")
+        text_wrapper = io.TextIOWrapper(tmp, encoding="utf-8", newline="")
+        writer = csv.DictWriter(
+            text_wrapper,
+            quoting=csv.QUOTE_NONNUMERIC,
+            fieldnames=header_list,
+            restval="",
+            extrasaction="ignore",
+        )
+        writer.writeheader()
         writer.writerows(session_list)
-        cleaned_data = output.getvalue()
+        text_wrapper.flush()
+        text_wrapper.detach()
+        tmp.seek(0)
 
         filename = "all-children{}".format(
             ("-identifiable" if IDENTIFIABLE_DATA_HEADERS & header_options else ""),
         )
         filename = csv_filename(study, filename)
-        response = HttpResponse(cleaned_data, content_type=CONTENT_TYPE)
-        set_content_disposition(response, filename)
-        return response
+        return FileResponse(
+            tmp, as_attachment=True, filename=filename, content_type=CONTENT_TYPE
+        )
 
 
 class StudyChildrenDictCSV(CanViewStudyResponsesMixin, View):
