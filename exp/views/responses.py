@@ -1,4 +1,6 @@
+import csv
 import datetime
+import io
 import json
 import logging
 import os
@@ -1449,18 +1451,29 @@ class StudyResponsesCSV(ResponseDownloadMixin, generic.list.ListView):
         session_list, header_options, header_list = get_study_responses_csv(
             self, paginator, study
         )
-        output, writer = csv_dict_output_and_writer(header_list)
+        tmp = tempfile.NamedTemporaryFile(suffix=".csv")
+        text_wrapper = io.TextIOWrapper(tmp, encoding="utf-8", newline="")
+        writer = csv.DictWriter(
+            text_wrapper,
+            quoting=csv.QUOTE_NONNUMERIC,
+            fieldnames=header_list,
+            restval="",
+            extrasaction="ignore",
+        )
+        writer.writeheader()
         writer.writerows(session_list)
-        cleaned_data = output.getvalue()
+        text_wrapper.flush()
+        text_wrapper.detach()
+        tmp.seek(0)
 
         all_responses = "all-responses"
         if IDENTIFIABLE_DATA_HEADERS & header_options:
             all_responses += "-identifiable"
 
         filename = csv_filename(study, all_responses)
-        response = HttpResponse(cleaned_data, content_type=CONTENT_TYPE)
-        set_content_disposition(response, filename)
-        return response
+        return FileResponse(
+            tmp, as_attachment=True, filename=filename, content_type=CONTENT_TYPE
+        )
 
 
 class StudyResponsesDictCSV(CanViewStudyResponsesMixin, View):
