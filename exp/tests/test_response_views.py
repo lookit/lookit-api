@@ -3,6 +3,7 @@ import datetime
 import io
 import json
 import re
+import zipfile
 
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
@@ -1372,6 +1373,95 @@ class ResponseDataDownloadTestCase(TestCase):
 
         # Assumes n_previews fit on one page
         self.assertEqual(n_matches, self.n_previews)
+
+    def _get_psychds_zip(self, query_string=""):
+        url = reverse(
+            "exp:study-responses-download-frame-data-zip-psychds",
+            kwargs={"pk": self.study.pk},
+        )
+        response = self.client.get(f"{url}?{query_string}" if query_string else url)
+        zip_bytes = b"".join(response.streaming_content)
+        return response, zip_bytes
+
+    def test_psychds_download_returns_zip(self):
+        self.client.force_login(self.study_reader)
+        response, zip_bytes = self._get_psychds_zip()
+        self.assertEqual(response.status_code, 200)
+        self.assertRegex(
+            response.get("Content-Disposition"),
+            r'^attachment; filename=".*--psychds\.zip"',
+        )
+        # Verify content is a valid zip file
+        zipfile.ZipFile(io.BytesIO(zip_bytes))
+
+    def test_psychds_download_zip_structure(self):
+        self.client.force_login(self.study_reader)
+        _, zip_bytes = self._get_psychds_zip()
+        with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+            names = zf.namelist()
+        self.assertIn("dataset_description.json", names)
+        self.assertIn("README.md", names)
+        self.assertIn(".psychds-ignore", names)
+        self.assertTrue(
+            any(n.startswith("data/framedata-per-response/") for n in names)
+        )
+        self.assertTrue(any(n.startswith("data/overview/") for n in names))
+        self.assertTrue(
+            any(n.startswith("data/raw/") and n.endswith(".json") for n in names)
+        )
+
+    def test_psychds_download_dataset_description_has_variables_measured(self):
+        self.client.force_login(self.study_reader)
+        _, zip_bytes = self._get_psychds_zip()
+        with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+            metadata = json.loads(zf.read("dataset_description.json"))
+        self.assertIn("variableMeasured", metadata)
+        self.assertIsInstance(metadata["variableMeasured"], list)
+        self.assertGreater(len(metadata["variableMeasured"]), 0)
+
+    def test_psychds_download_frame_data_file_per_response(self):
+        self.client.force_login(self.study_reader)
+        _, zip_bytes = self._get_psychds_zip()
+        with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+            framedata_csv_files = [
+                n
+                for n in zf.namelist()
+                if n.startswith("data/framedata-per-response/") and n.endswith(".csv")
+            ]
+        self.assertEqual(
+            len(framedata_csv_files),
+            self.n_responses + self.n_previews,
+            "Expected one frame data CSV file per consented response",
+        )
+
+    def test_psychds_download_all_responses_json_count(self):
+        self.client.force_login(self.study_reader)
+        _, zip_bytes = self._get_psychds_zip()
+        with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+            all_responses_json = [
+                n
+                for n in zf.namelist()
+                if n.startswith("data/raw/") and n.endswith(".json")
+            ]
+            self.assertEqual(len(all_responses_json), 1)
+            all_responses = json.loads(zf.read(all_responses_json[0]))
+        self.assertEqual(
+            len(all_responses),
+            self.n_responses + self.n_previews,
+            "Unexpected number of responses in all_responses JSON",
+        )
+
+    def test_psychds_download_excludes_unconsented_responses(self):
+        self.client.force_login(self.study_reader)
+        _, zip_bytes = self._get_psychds_zip()
+        with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+            for name in zf.namelist():
+                content = zf.read(name).decode("utf-8", errors="replace")
+                self.assertNotIn(
+                    self.poison_string,
+                    content,
+                    f"Data from unconsented response found in {name}",
+                )
 
 
 class ResponseViewResearcherUpdateFieldsTestCase(TestCase):
