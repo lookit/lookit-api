@@ -1785,21 +1785,30 @@ class StudyDemographicsCSV(DemographicDownloadMixin, generic.list.ListView):
         paginator = context["paginator"]
         header_options = set(self.request.GET.getlist("demo_options"))
 
-        participant_list = []
         headers_for_download = get_demographic_headers(header_options)
+        tmp = tempfile.NamedTemporaryFile(suffix=".csv")
+        text_wrapper = io.TextIOWrapper(tmp, encoding="utf-8", newline="")
+        writer = csv.DictWriter(
+            text_wrapper,
+            quoting=csv.QUOTE_NONNUMERIC,
+            fieldnames=headers_for_download,
+            restval="",
+            extrasaction="ignore",
+        )
+        writer.writeheader()
         for page_num in paginator.page_range:
-            page_of_responses = paginator.page(page_num)
-            for resp in page_of_responses:
-                row_data = {col.id: col.extractor(resp) for col in DEMOGRAPHIC_COLUMNS}
-                participant_list.append(row_data)
-        output, writer = csv_dict_output_and_writer(headers_for_download)
-        writer.writerows(participant_list)
-        cleaned_data = output.getvalue()
+            for resp in paginator.page(page_num):
+                writer.writerow(
+                    {col.id: col.extractor(resp) for col in DEMOGRAPHIC_COLUMNS}
+                )
+        text_wrapper.flush()
+        text_wrapper.detach()
+        tmp.seek(0)
 
         filename = csv_filename(study, "all-demographic-snapshots")
-        response = HttpResponse(cleaned_data, content_type=CONTENT_TYPE)
-        set_content_disposition(response, filename)
-        return response
+        return FileResponse(
+            tmp, as_attachment=True, filename=filename, content_type=CONTENT_TYPE
+        )
 
 
 class StudyDemographicsDictCSV(DemographicDownloadMixin, generic.list.ListView):
