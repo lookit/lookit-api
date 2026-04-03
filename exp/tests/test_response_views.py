@@ -400,6 +400,12 @@ class ResponseViewsTestCase(TestCase):
 
 
 class ResponseDataDownloadTestCase(TestCase):
+    def _decode_response(self, response):
+        """Read content from either a streaming or regular response."""
+        if hasattr(response, "streaming_content"):
+            return b"".join(response.streaming_content).decode("utf-8")
+        return response.content.decode("utf-8")
+
     def setUp(self):
         self.client = Force2FAClient()
 
@@ -689,7 +695,7 @@ class ResponseDataDownloadTestCase(TestCase):
         self.client.force_login(self.study_reader)
         query_string = urlencode({"data_options": self.optionset_1}, doseq=True)
         response = self.client.get(f"{self.response_summary_url}?{query_string}")
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
@@ -800,7 +806,7 @@ class ResponseDataDownloadTestCase(TestCase):
         self.client.force_login(self.study_reader)
         query_string = urlencode({"data_options": self.optionset_2}, doseq=True)
         response = self.client.get(f"{self.response_summary_url}?{query_string}")
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
@@ -933,7 +939,7 @@ class ResponseDataDownloadTestCase(TestCase):
         ]
 
         csv_response = self.client.get(self.response_summary_url)
-        content = csv_response.content.decode("utf-8")
+        content = self._decode_response(csv_response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
@@ -1107,7 +1113,7 @@ class ResponseDataDownloadTestCase(TestCase):
         self.client.force_login(self.study_reader)
         query_string = urlencode({"data_options": self.optionset_1}, doseq=True)
         response = self.client.get(f"{self.response_summary_url}?{query_string}")
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
@@ -1138,7 +1144,7 @@ class ResponseDataDownloadTestCase(TestCase):
                 "exp:study-responses-children-summary-csv", kwargs={"pk": self.study.pk}
             )
         )
-        content = csv_response.content.decode("utf-8")
+        content = self._decode_response(csv_response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_body.pop(0)
@@ -1161,7 +1167,7 @@ class ResponseDataDownloadTestCase(TestCase):
                 "exp:study-responses-children-summary-csv", kwargs={"pk": self.study.pk}
             )
         )
-        content = csv_response.content.decode("utf-8")
+        content = self._decode_response(csv_response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_body.pop(0)
@@ -1178,7 +1184,7 @@ class ResponseDataDownloadTestCase(TestCase):
         response = self.client.get(
             reverse("exp:study-demographics", kwargs={"pk": self.study.pk})
         )
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
         self.assertIn(
             f"{self.n_previews + self.n_responses} snapshot",
             content,
@@ -1191,7 +1197,7 @@ class ResponseDataDownloadTestCase(TestCase):
         response = self.client.get(
             reverse("exp:study-demographics", kwargs={"pk": self.study.pk})
         )
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
         self.assertIn(
             f"{self.n_previews} snapshot",
             content,
@@ -1208,7 +1214,7 @@ class ResponseDataDownloadTestCase(TestCase):
         csv_response = self.client.get(
             reverse("exp:study-demographics-download-csv", kwargs={"pk": self.study.pk})
         )
-        content = csv_response.content.decode("utf-8")
+        content = self._decode_response(csv_response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
@@ -1235,7 +1241,7 @@ class ResponseDataDownloadTestCase(TestCase):
         csv_response = self.client.get(
             reverse("exp:study-demographics-download-csv", kwargs={"pk": self.study.pk})
         )
-        content = csv_response.content.decode("utf-8")
+        content = self._decode_response(csv_response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
@@ -1268,7 +1274,7 @@ class ResponseDataDownloadTestCase(TestCase):
             {"demo_options": ["participant__global_id"]}, doseq=True
         )
         csv_response = self.client.get(f"{demographic_csv_url}?{query_string}")
-        content = csv_response.content.decode("utf-8")
+        content = self._decode_response(csv_response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
@@ -1278,7 +1284,7 @@ class ResponseDataDownloadTestCase(TestCase):
         # Without participant__global_id selected, should not be in header and data should not be included
         query_string = urlencode({"demo_options": []}, doseq=True)
         csv_response = self.client.get(f"{demographic_csv_url}?{query_string}")
-        content = csv_response.content.decode("utf-8")
+        content = self._decode_response(csv_response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
@@ -1296,7 +1302,7 @@ class ResponseDataDownloadTestCase(TestCase):
             {"demo_options": ["participant__global_id"]}, doseq=True
         )
         response = self.client.get(f"{demographic_json_url}?{query_string}")
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
         data = json.loads(content)
         for demo in data:
             self.assertIn("global_id", demo["participant"])
@@ -1310,7 +1316,7 @@ class ResponseDataDownloadTestCase(TestCase):
         # Without participant__global_id selected, this info is absent
         query_string = urlencode({"demo_options": []}, doseq=True)
         response = self.client.get(f"{demographic_json_url}?{query_string}")
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
         data = json.loads(content)
         for demo in data:
             self.assertNotIn("global_id", demo["participant"])
@@ -1328,7 +1334,7 @@ class ResponseDataDownloadTestCase(TestCase):
         response = self.client.get(
             f"{reverse('exp:study-responses-list', kwargs={'pk': self.study.pk})}"
         )
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
         matches = re.finditer('data-response-uuid="(.*)"', content)
         for m in matches:
             n_matches += 1
@@ -1359,7 +1365,7 @@ class ResponseDataDownloadTestCase(TestCase):
         response = self.client.get(
             reverse("exp:study-responses-list", kwargs={"pk": self.study.pk})
         )
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
 
         matches = re.finditer('data-response-uuid="(.*)"', content)
         n_matches = 0
