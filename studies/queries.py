@@ -5,7 +5,16 @@ from functools import reduce
 
 from django.core.exceptions import FieldError
 from django.db import models
-from django.db.models import Count, F, IntegerField, OuterRef, Q, Subquery, Value
+from django.db.models import (
+    Count,
+    Exists,
+    F,
+    IntegerField,
+    OuterRef,
+    Q,
+    Subquery,
+    Value,
+)
 from django.db.models.fields import CharField
 from django.db.models.functions import Coalesce, Concat
 from django.utils.timezone import now
@@ -264,19 +273,8 @@ def get_pending_responses_qs():
     )
 
 
-def get_study_list_qs(user, query_dict):
-    """Gets a study list query set annotated with response counts.
-
-    TODO: Factor in all the query mutation from the (view) caller.
-    TODO: Upgrade to Django 2.x and use the improved query mechanisms to clean this up.
-
-    Args:
-        user: django.utils.functional.SimpleLazyObject masquerading as a user.
-        query_dict: django.http.QueryDict from the self.request.GET property.
-
-    Returns:
-        A heavily annotated queryset for the list of studies.
-    """
+def _build_study_list_base_qs(user):
+    """Build the base annotated queryset for the study list."""
     annotated_responses_qs = get_annotated_responses_qs().only(
         "id",
         "completed",
@@ -286,7 +284,7 @@ def get_study_list_qs(user, query_dict):
         "is_preview",
     )
 
-    queryset = (
+    return (
         studies_for_which_user_has_perm(user, StudyPermission.READ_STUDY_DETAILS)
         # .select_related("lab")
         # .select_related("creator")
@@ -348,19 +346,31 @@ def get_study_list_qs(user, query_dict):
                 .filter(action="deactivated")
                 .values("created_at")[:1]
             ),
+            status_change_date_display=Coalesce(
+                F("status_change_date"),
+                Subquery(
+                    StudyLog.objects.filter(
+                        study=OuterRef("pk"), action=OuterRef("state")
+                    )
+                    .order_by("-created_at")
+                    .values("created_at")[:1]
+                ),
+            ),
         )
     )
 
-    # Request filtering
 
-    state = query_dict.get("state")
+def _apply_state_filter(queryset, user, state):
+    """Filter queryset by state or restrict to the current user's studies."""
     if state and state != "all":
         if state == "myStudies":
-            queryset = queryset.filter(creator=user)
-        else:
-            queryset = queryset.filter(state=state)
+            return queryset.filter(creator=user)
+        return queryset.filter(state=state)
+    return queryset
 
-    match = query_dict.get("match")
+
+def _apply_match_filter(queryset, match):
+    """Filter queryset to studies whose name or description contain all search terms."""
     if match:
         queryset = queryset.filter(
             reduce(
@@ -371,14 +381,95 @@ def get_study_list_qs(user, query_dict):
                 ),
             )
         )
+    return queryset
 
-    # Sort value is in a list
-    sort = "".join(query_dict.get("sort", []))
+
+def _apply_submission_history_filter(queryset, submission_history):
+    """Filter submitted studies by their approval/rejection history."""
+    ever_approved = Exists(
+        StudyLog.objects.filter(study=OuterRef("pk"), action="approved")
+    )
+    ever_rejected = Exists(
+        StudyLog.objects.filter(study=OuterRef("pk"), action="rejected")
+    )
+    if submission_history == "first_submission":
+        return queryset.filter(~ever_approved, ~ever_rejected)
+    elif submission_history == "previously_rejected":
+        return queryset.filter(~ever_approved, ever_rejected)
+    elif submission_history == "previously_approved":
+        return queryset.filter(ever_approved)
+    elif submission_history == "other":
+        # Complement of the three exhaustive categories above — always empty
+        # in practice, but kept as a filter option for data anomalies
+        return queryset.exclude(
+            Q(~ever_approved, ~ever_rejected)
+            | Q(~ever_approved, ever_rejected)
+            | Q(ever_approved)
+        )
+    return queryset
+
+
+def _apply_superuser_filters(queryset, state, query_dict):
+    """Apply admin-only search filters from the query string."""
+    uuid_filter = "".join(query_dict.get("uuid", []))
+    if uuid_filter:
+        queryset = queryset.filter(uuid__icontains=uuid_filter)
+
+    study_type_filter = "".join(query_dict.get("study_type", []))
+    if study_type_filter:
+        queryset = queryset.filter(study_type_id=study_type_filter)
+
+    lab_filter = "".join(query_dict.get("lab", []))
+    if lab_filter:
+        queryset = queryset.filter(lab__name__icontains=lab_filter)
+
+    public_filter = "".join(query_dict.get("public", []))
+    if public_filter in ("true", "false"):
+        queryset = queryset.filter(public=(public_filter == "true"))
+
+    creator_filter = "".join(query_dict.get("creator", []))
+    if creator_filter:
+        queryset = queryset.filter(
+            Q(creator__given_name__icontains=creator_filter)
+            | Q(creator__family_name__icontains=creator_filter)
+            | Q(creator__username__icontains=creator_filter)
+            | Q(creator_name__icontains=creator_filter)
+        )
+
+    if state == "submitted":
+        submission_history = "".join(query_dict.get("submission_history", []))
+        if submission_history:
+            queryset = _apply_submission_history_filter(queryset, submission_history)
+
+    return queryset
+
+
+def _apply_sort(queryset, sort):
+    """Sort queryset by the given field name, ignoring invalid field names."""
     if sort:
         try:
             queryset = queryset.order_by(sort)
         except FieldError:
             # if someone attempts to manually enter a field that doesn't exist
             pass
+    return queryset
 
+
+def get_study_list_qs(user, query_dict):
+    """Gets a study list query set annotated with response counts.
+
+    Args:
+        user: django.utils.functional.SimpleLazyObject masquerading as a user.
+        query_dict: django.http.QueryDict from the self.request.GET property.
+
+    Returns:
+        A heavily annotated queryset for the list of studies.
+    """
+    state = query_dict.get("state")
+    queryset = _build_study_list_base_qs(user)
+    queryset = _apply_state_filter(queryset, user, state)
+    queryset = _apply_match_filter(queryset, query_dict.get("match"))
+    if user.is_superuser:
+        queryset = _apply_superuser_filters(queryset, state, query_dict)
+    queryset = _apply_sort(queryset, "".join(query_dict.get("sort", [])))
     return queryset

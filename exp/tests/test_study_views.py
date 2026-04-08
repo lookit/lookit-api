@@ -10,7 +10,9 @@ from unittest.mock import (
     patch,
     sentinel,
 )
+from zoneinfo import ZoneInfo
 
+from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
@@ -31,7 +33,7 @@ from exp.views.study import (
     StudyDetailView,
     StudyPreviewDetailView,
 )
-from studies.models import Lab, Study, StudyType
+from studies.models import Lab, Study, StudyLog, StudyType
 from studies.permissions import LabPermission, StudyPermission
 
 
@@ -1321,6 +1323,210 @@ class StudyParticipatedViewTestCase(TestCase):
         self.assertSetEqual(set(study.must_not_have_participated.all()), set())
 
 
+class StudyListViewTestCase(TestCase):
+    """Tests for StudyListView (Manage Studies page), including admin-only search/filter inputs and queries."""
+
+    def setUp(self):
+        self.client = Force2FAClient()
+        self.url = reverse("exp:study-list")
+
+        self.lab1 = G(Lab, name="Alpha Lab", approved_to_test=True)
+        self.lab2 = G(Lab, name="Beta Lab", approved_to_test=True)
+
+        self.study_type_efp = StudyType.objects.get(id=1)
+        self.study_type_jspsych = StudyType.objects.get(id=3)
+
+        self.creator1 = G(
+            User,
+            is_active=True,
+            is_researcher=True,
+            given_name="Alice",
+            family_name="Anderson",
+        )
+        self.creator2 = G(
+            User,
+            is_active=True,
+            is_researcher=True,
+            given_name="Bob",
+            family_name="Brown",
+        )
+        self.superuser = G(
+            User,
+            is_active=True,
+            is_researcher=True,
+            is_superuser=True,
+        )
+
+        self.study1 = G(
+            Study,
+            name="Apples Study",
+            lab=self.lab1,
+            public=True,
+            creator=self.creator1,
+            study_type=self.study_type_efp,
+        )
+        self.study2 = G(
+            Study,
+            name="Bananas Study",
+            lab=self.lab2,
+            public=False,
+            creator=self.creator2,
+            study_type=self.study_type_jspsych,
+        )
+
+        # Give creator1 READ_STUDY_DETAILS on study1 only
+        assign_perm(
+            StudyPermission.READ_STUDY_DETAILS.prefixed_codename,
+            self.creator1,
+            self.study1,
+        )
+
+    def test_superuser_sees_admin_filter_section(self):
+        self.client.force_login(self.superuser)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Admin filters")
+        self.assertContains(response, 'name="uuid"')
+        self.assertContains(response, 'name="study_type"')
+        self.assertContains(response, 'name="lab"')
+        self.assertContains(response, 'name="public"')
+        self.assertContains(response, 'name="creator"')
+
+    def test_non_superuser_does_not_see_admin_filter_section(self):
+        self.client.force_login(self.creator1)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'name="match"')
+        self.assertNotContains(response, "Admin filters")
+        self.assertNotContains(response, 'name="uuid"')
+        self.assertNotContains(response, 'name="creator"')
+
+    def test_superuser_filter_by_uuid(self):
+        self.client.force_login(self.superuser)
+        partial_uuid = str(self.study1.uuid)[:8]
+        response = self.client.get(self.url, {"uuid": partial_uuid})
+        self.assertContains(response, self.study1.name)
+        self.assertNotContains(response, self.study2.name)
+
+    def test_superuser_filter_by_study_type(self):
+        self.client.force_login(self.superuser)
+        response = self.client.get(self.url, {"study_type": self.study_type_efp.id})
+        self.assertContains(response, self.study1.name)
+        self.assertNotContains(response, self.study2.name)
+
+    def test_superuser_filter_by_lab_name(self):
+        self.client.force_login(self.superuser)
+        response = self.client.get(self.url, {"lab": "Beta"})
+        self.assertContains(response, self.study2.name)
+        self.assertNotContains(response, self.study1.name)
+
+    def test_superuser_filter_by_public_true(self):
+        self.client.force_login(self.superuser)
+        response = self.client.get(self.url, {"public": "true"})
+        self.assertContains(response, self.study1.name)
+        self.assertNotContains(response, self.study2.name)
+
+    def test_superuser_filter_by_public_false(self):
+        self.client.force_login(self.superuser)
+        response = self.client.get(self.url, {"public": "false"})
+        self.assertNotContains(response, self.study1.name)
+        self.assertContains(response, self.study2.name)
+
+    def test_superuser_filter_by_creator_given_name(self):
+        self.client.force_login(self.superuser)
+        response = self.client.get(self.url, {"creator": "Alice"})
+        self.assertContains(response, self.study1.name)
+        self.assertNotContains(response, self.study2.name)
+
+    def test_superuser_filter_by_creator_family_name(self):
+        self.client.force_login(self.superuser)
+        response = self.client.get(self.url, {"creator": "Brown"})
+        self.assertNotContains(response, self.study1.name)
+        self.assertContains(response, self.study2.name)
+
+    def test_superuser_filter_by_creator_email(self):
+        self.client.force_login(self.superuser)
+        response = self.client.get(self.url, {"creator": self.creator1.username})
+        self.assertContains(response, self.study1.name)
+        self.assertNotContains(response, self.study2.name)
+
+    def test_superuser_filter_by_creator_full_name(self):
+        self.client.force_login(self.superuser)
+        response = self.client.get(self.url, {"creator": "Alice Anderson"})
+        self.assertContains(response, self.study1.name)
+        self.assertNotContains(response, self.study2.name)
+
+    def test_superuser_combined_name_and_lab_filter(self):
+        self.client.force_login(self.superuser)
+        # Both studies match "Study" but only study1 is in Alpha Lab
+        response = self.client.get(self.url, {"match": "Study", "lab": "Alpha"})
+        self.assertContains(response, self.study1.name)
+        self.assertNotContains(response, self.study2.name)
+
+    def test_superuser_invalid_public_value_ignored(self):
+        self.client.force_login(self.superuser)
+        # Values other than "true"/"false" should be ignored
+        response = self.client.get(self.url, {"public": "maybe"})
+        self.assertContains(response, self.study1.name)
+        self.assertContains(response, self.study2.name)
+
+    def test_non_superuser_admin_filter_params_are_ignored(self):
+        self.client.force_login(self.creator1)
+        # creator1 only has permission on study1; filtering by lab2 should be ignored
+        response = self.client.get(self.url, {"lab": self.lab2.name})
+        self.assertContains(response, self.study1.name)
+
+    def test_non_superuser_cannot_see_study_outside_permissions(self):
+        self.client.force_login(self.creator1)
+        # study2 is not in creator1's permissions — should never appear
+        response = self.client.get(self.url)
+        self.assertNotContains(response, self.study2.name)
+
+    def test_non_superuser_uuid_param_does_not_expand_visible_studies(self):
+        self.client.force_login(self.creator1)
+        # Sending study2's UUID should not make it visible to creator1
+        response = self.client.get(self.url, {"uuid": str(self.study2.uuid)})
+        self.assertNotContains(response, self.study2.name)
+
+    def test_status_change_date_display_shows_status_change_date(self):
+        """Study with non-null status_change_date shows it formatted in the list."""
+        known_date = datetime.datetime(2020, 6, 15, tzinfo=ZoneInfo(settings.TIME_ZONE))
+        self.study1.status_change_date = known_date
+        self.study1.save()
+        self.client.force_login(self.superuser)
+        response = self.client.get(self.url)
+        self.assertContains(response, "Jun 15, 2020")
+
+    def test_status_change_date_display_falls_back_to_studylog(self):
+        """Study with null status_change_date shows date from matching StudyLog entry."""
+        known_date = datetime.datetime(2021, 3, 15, tzinfo=ZoneInfo(settings.TIME_ZONE))
+        # Explicitly set state to "created" so we know the matching StudyLog action.
+        # The post_save signal always creates a StudyLog(action="created") on study creation.
+        self.study1.state = "created"
+        self.study1.status_change_date = None
+        self.study1.save()
+        StudyLog.objects.filter(study=self.study1, action="created").update(
+            created_at=known_date
+        )
+        self.client.force_login(self.superuser)
+        response = self.client.get(self.url)
+        self.assertContains(response, "Mar 15, 2021")
+
+    def test_status_change_date_display_is_na_without_date_or_log(self):
+        """Study with null status_change_date and no matching StudyLog shows N/A."""
+        # Set state to "submitted" so the fallback looks for action="submitted" logs,
+        # but no such log exists (only the action="created" log from the post_save signal).
+        self.study1.state = "submitted"
+        self.study1.status_change_date = None
+        self.study1.save()
+        # Use the submitted-state tab so only study1 is visible.
+        submitted_url = reverse("exp:study-list-submitted")
+        self.client.force_login(self.superuser)
+        response = self.client.get(submitted_url)
+        self.assertContains(response, self.study1.name)
+        self.assertContains(response, "N/A")
+
+
 # TODO: StudyCreateView
 # - check user has to be in a lab with perms to create study to get
 # TODO: StudyUpdateView
@@ -1328,9 +1534,6 @@ class StudyParticipatedViewTestCase(TestCase):
 # - check posting change works
 # - check invalid metadata not saved
 # - check can't change lab to one you're not in, or at all w/o perms to change lab
-# TODO: StudyListView
-# - check can get as researcher only
-# - check you see exactly studies you have view details perms for
 # TODO: StudyPreviewProxyView
 # - add checks analogous to preview detail view
 # - check for correct redirect
