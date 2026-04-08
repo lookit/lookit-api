@@ -38,6 +38,7 @@ from accounts.queries import (
     get_child_eligibility_for_study,
 )
 from accounts.utils import hash_id
+from exp.mixins.paginator_mixin import PaginatorMixin
 from project import settings
 from studies.helpers import get_experiment_absolute_url
 from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum, Video
@@ -654,7 +655,9 @@ class LabStudiesListView(StudiesListView):
             )
 
 
-class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
+class StudiesHistoryView(
+    LoginRequiredMixin, PaginatorMixin, generic.ListView, FormView
+):
     """
     List all active, public studies.
     """
@@ -662,6 +665,7 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
     template_name = "web/studies-history.html"
     model = Study
     form_class = PastStudiesForm
+    responses_per_study = 10
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
@@ -677,39 +681,58 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
     def get_queryset(self):
         tab_value = self.request.session.get("past_studies_tabs", "0")
 
-        response_query = Q()
+        self._response_query = Q()
         study_query = Q()
 
         if tab_value == PastStudiesFormTabChoices.lookit_studies.value[0]:
             study_query = Q(
                 study_type__name=StudyTypeEnum.ember_frame_player.value
             ) | Q(study_type__name=StudyTypeEnum.jspsych.value)
-            response_query = Q(completed_consent_frame=True)
+            self._response_query = Q(completed_consent_frame=True)
         elif tab_value == PastStudiesFormTabChoices.external_studies.value[0]:
             study_query = Q(study_type__name=StudyTypeEnum.external.value)
 
-        children_ids = Child.objects.filter(user__id=self.request.user.id).values_list(
-            "id", flat=True
-        )
-        responses = (
-            Response.objects.filter(Q(child__id__in=children_ids) & response_query)
-            .select_related("child")
-            .prefetch_related(
-                Prefetch(
-                    "videos",
-                    queryset=Video.objects.order_by("pipe_numeric_id", "s3_timestamp"),
-                ),
-                "consent_rulings",
-                "feedback",
+        self._children_ids = Child.objects.filter(
+            user__id=self.request.user.id
+        ).values_list("id", flat=True)
+
+        study_ids = Response.objects.filter(
+            Q(child__id__in=self._children_ids) & self._response_query
+        ).values_list("study_id", flat=True)
+
+        return Study.objects.filter(Q(id__in=study_ids) & study_query)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        page = self.request.GET.get("page", 1)
+        studies_page = self.paginated_queryset(context["object_list"], page, 10)
+
+        for study in studies_page:
+            response_page_num = self.request.GET.get(f"response_page_{study.pk}", 1)
+            study_responses = (
+                Response.objects.filter(
+                    Q(child__id__in=self._children_ids) & self._response_query,
+                    study=study,
+                )
+                .select_related("child")
+                .prefetch_related(
+                    Prefetch(
+                        "videos",
+                        queryset=Video.objects.order_by(
+                            "pipe_numeric_id", "s3_timestamp"
+                        ),
+                    ),
+                    "consent_rulings",
+                    "feedback",
+                )
+                .order_by("-date_created")
             )
-            .order_by("-date_created")
-        )
+            study.response_page = self.paginated_queryset(
+                study_responses, response_page_num, self.responses_per_study
+            )
 
-        study_ids = responses.values_list("study_id", flat=True)
-
-        return Study.objects.filter(Q(id__in=study_ids) & study_query).prefetch_related(
-            Prefetch("responses", queryset=responses)
-        )
+        context["object_list"] = studies_page
+        return context
 
     def get_success_url(self):
         return reverse("web:studies-history")
