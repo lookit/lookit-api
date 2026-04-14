@@ -607,8 +607,23 @@ class Study(models.Model):
 
     @property
     def days_submitted(self):
-        if self.status_change_date:
-            return (dutimezone.now() - self.status_change_date).days
+        if self.state != "submitted":
+            return None
+        # status_change_date is set on every workflow state transition, so for a submitted study it is the submission date.
+        # It was added in a migration without a backfill, so it may be null for older studies.
+        date = self.status_change_date
+        if not date:
+            log = (
+                StudyLog.objects.filter(study=self, action="submitted")
+                .order_by("-created_at")
+                .first()
+            )
+            if log:
+                date = log.created_at
+        if date:
+            return (dutimezone.now() - date).days
+        else:
+            return None
 
     @property
     def approved_by(self):

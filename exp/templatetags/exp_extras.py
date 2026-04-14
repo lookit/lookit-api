@@ -70,3 +70,9 @@ def get_bit_label(bit_handler, bit_number):
 @register.filter
 def pretty_json(value):
     return json.dumps(value, indent=4, default=str)
+
+
+@register.filter
+def before_paren(value):
+    """Return the portion of a string before the first '(', stripped of whitespace."""
+    return value.partition("(")[0].strip()
