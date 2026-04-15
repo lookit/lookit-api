@@ -3,6 +3,7 @@ import datetime
 import io
 import json
 import re
+import uuid
 
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
@@ -12,7 +13,10 @@ from django_dynamic_fixture import G
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, DemographicData, User
 from accounts.utils import hash_id
-from exp.views.responses import StudyResponseSetResearcherFields
+from exp.views.responses import (
+    StudyResponseSetResearcherFields,
+    get_frame_data,
+)
 from studies.models import ConsentRuling, Lab, Response, Study, StudyType, Video
 
 
@@ -1654,6 +1658,86 @@ class ResponseViewResearcherUpdateFieldsTestCase(TestCase):
         )
         success_str = f"Response {self.response.id} field {self.editable_fields[2]} updated to {False}"
         self.assertIn(success_str, post_response.json().get("success"))
+
+
+class GetFrameDataTestCase(TestCase):
+    """Unit tests for the get_frame_data helper function."""
+
+    BASE_RESP = {
+        "child__uuid": uuid.UUID("00000000-0000-0000-0000-000000000001"),
+        "study__uuid": uuid.UUID("00000000-0000-0000-0000-000000000002"),
+        "study__salt": uuid.UUID("00000000-0000-0000-0000-000000000003"),
+        "study__hash_digits": 6,
+        "uuid": uuid.UUID("00000000-0000-0000-0000-000000000004"),
+        "global_event_timings": [],
+    }
+
+    def _make_resp(self, exp_data):
+        return {**self.BASE_RESP, "exp_data": exp_data}
+
+    def test_non_dict_frame_value_produces_row(self):
+        """A top-level exp_data value that is a string or int should produce a
+        FrameDataRow with that frame_id, a blank key, and the raw value — rather
+        than raising an error."""
+        resp = self._make_resp(
+            {
+                "0-intro": {"frameType": "DEFAULT", "someKey": "someValue"},
+                "top-level-string": "unexpected string",
+                "top-level-int": 42,
+            }
+        )
+        rows = get_frame_data(resp)
+
+        frame_ids = [row.frame_id for row in rows]
+        self.assertIn("top-level-string", frame_ids)
+        self.assertIn("top-level-int", frame_ids)
+
+        string_row = next(r for r in rows if r.frame_id == "top-level-string")
+        self.assertEqual(string_row.key, "")
+        self.assertEqual(string_row.value, "unexpected string")
+
+        int_row = next(r for r in rows if r.frame_id == "top-level-int")
+        self.assertEqual(int_row.key, "")
+        self.assertEqual(int_row.value, 42)
+
+    def test_jspsych_non_dict_list_element_produces_row(self):
+        """For jsPsych responses, normalized_exp_data zips sequence with exp_data into a
+        dict. A non-dict element in the list becomes a non-dict value in that dict. It
+        should produce a row with a blank key and the raw value rather than raising."""
+        # Simulate what normalized_exp_data returns for a jsPsych response where one
+        # trial's data is a bare string.
+        resp = self._make_resp(
+            {
+                "0-survey-likert": {
+                    "trial_type": "survey-likert",
+                    "response": {"q0": 3},
+                },
+                "1-bad-trial": "unexpected string",
+            }
+        )
+        rows = get_frame_data(resp)
+
+        frame_ids = [row.frame_id for row in rows]
+        self.assertIn("1-bad-trial", frame_ids)
+
+        bad_row = next(r for r in rows if r.frame_id == "1-bad-trial")
+        self.assertEqual(bad_row.key, "")
+        self.assertEqual(bad_row.value, "unexpected string")
+
+    def test_normal_dict_frame_values_still_included(self):
+        """Normal dict-valued frames should still produce rows as expected."""
+        resp = self._make_resp(
+            {"0-intro": {"frameType": "DEFAULT", "someKey": "someValue"}}
+        )
+        rows = get_frame_data(resp)
+
+        frame_ids = [row.frame_id for row in rows]
+        self.assertIn("0-intro", frame_ids)
+
+        key_row = next(
+            r for r in rows if r.frame_id == "0-intro" and r.key == "someKey"
+        )
+        self.assertEqual(key_row.value, "someValue")
 
     # TODO: test individual file downloads from response-list
     #       * cannot get response from another study,
