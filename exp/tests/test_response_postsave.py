@@ -165,6 +165,42 @@ class ResponseSaveHandlingTestCase(TestCase):
         self.withdrawn_response_after_exit_frame.save()  # to run post-save hook
         self.assertEqual(len(self.withdrawn_response_after_exit_frame.videos.all()), 0)
 
+    def test_exit_frame_properties_with_non_dict_value_does_not_raise(self):
+        """Accessing exit-frame-derived response properties (withdrawn, privacy, databrary)
+        should not raise when exp_data contains non-dict values."""
+        response = G(
+            Response,
+            child=self.child,
+            study=self.study,
+            completed=False,
+            completed_consent_frame=True,
+            sequence=["0-video-config", "1-exit-frame"],
+            exp_data={
+                "0-video-config": {"frameType": "DEFAULT"},
+                "1-exit-frame": "unexpected string",
+            },
+        )
+        _ = response.withdrawn
+        _ = response.privacy
+        _ = response.databrary
+
+    def test_non_dict_exp_data_value_does_not_raise(self):
+        """Saving an EFP response where the current frame's exp_data value is not a dict
+        should not raise an error."""
+        response = G(
+            Response,
+            child=self.child,
+            study=self.study,
+            completed=False,
+            completed_consent_frame=True,
+            sequence=["0-video-config", "1-non-dict-frame"],
+            exp_data={
+                "0-video-config": {"frameType": "DEFAULT"},
+                "1-non-dict-frame": "unexpected string",
+            },
+        )
+        response.save()
+
     def test_responses_per_study_type(self):
         user = G(User)
         researcher = G(User, is_active=True, is_researcher=True, username="Researcher")
@@ -263,3 +299,28 @@ class JspsychResponseSaveHandlingTestCase(TestCase):
         self.assertFalse(self.response.videos.first().is_consent_footage)
         self.response.save()
         self.assertTrue(self.response.videos.first().is_consent_footage)
+
+    def test_non_dict_element_does_not_raise(self):
+        """Saving a jsPsych response where an exp_data element is not a dict
+        should not raise an error."""
+        self.response.exp_data = [{"chs_type": "consent", "response": {}}, "not-a-dict"]
+        self.response.sequence = ["0-consent", "1-bad"]
+        self.response.save()
+
+    def test_non_dict_only_element_does_not_raise(self):
+        """Saving a jsPsych response where the sole exp_data element is not a dict
+        should not raise an error."""
+        self.response.exp_data = ["not-a-dict"]
+        self.response.sequence = ["0-bad"]
+        self.response.save()
+
+    def test_exit_frame_properties_with_non_dict_element_does_not_raise(self):
+        """Accessing exit-frame-derived response properties (withdrawn, privacy, databrary)
+        should not raise when exp_data contains non-dict elements."""
+        self.response.exp_data = [
+            {"chs_type": "exit", "response": {"withdrawal": True}},
+            "not-a-dict",
+        ]
+        _ = self.response.withdrawn
+        _ = self.response.privacy
+        _ = self.response.databrary
