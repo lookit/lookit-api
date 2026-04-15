@@ -266,6 +266,18 @@ def get_frame_data(resp: Union[Response, Dict]) -> List[FrameDataRow]:
     # Next add all data in exp_data
     event_prefix = "eventTimings."
     for frame_id, frame_data in resp["exp_data"].items():
+        if not isinstance(frame_data, dict):
+            frame_data_tuples.append(
+                FrameDataRow(
+                    child_hashed_id=child_hashed_id,
+                    response_uuid=str(resp["uuid"]),
+                    frame_id=frame_id,
+                    key="",
+                    event_number="",
+                    value=frame_data,
+                )
+            )
+            continue
         for key, value in flatten_dict(frame_data).items():
             # Process event data separately and include event_number within frame
             if key.startswith(event_prefix):
