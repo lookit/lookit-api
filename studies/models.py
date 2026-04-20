@@ -607,8 +607,23 @@ class Study(models.Model):
 
     @property
     def days_submitted(self):
-        if self.status_change_date:
-            return (dutimezone.now() - self.status_change_date).days
+        if self.state != "submitted":
+            return None
+        # status_change_date is set on every workflow state transition, so for a submitted study it is the submission date.
+        # It was added in a migration without a backfill, so it may be null for older studies.
+        date = self.status_change_date
+        if not date:
+            log = (
+                StudyLog.objects.filter(study=self, action="submitted")
+                .order_by("-created_at")
+                .first()
+            )
+            if log:
+                date = log.created_at
+        if date:
+            return (dutimezone.now() - date).days
+        else:
+            return None
 
     @property
     def approved_by(self):
@@ -1151,7 +1166,7 @@ class Response(models.Model):
         exit_frame_values = [
             f.get(property, None)
             for f in self.exp_data.values()
-            if f.get("frameType", None) == "EXIT"
+            if isinstance(f, dict) and f.get("frameType", None) == "EXIT"
         ]
         if exit_frame_values and exit_frame_values != [None]:
             return exit_frame_values[-1]
@@ -1159,7 +1174,9 @@ class Response(models.Model):
             return None
 
     def exit_frame_properties_jspsych(self, property):
-        exit_frame_filter_fn = lambda x: x.get("chs_type") == "exit"
+        exit_frame_filter_fn = (
+            lambda x: isinstance(x, dict) and x.get("chs_type") == "exit"
+        )
         exit_frame_filter = filter(exit_frame_filter_fn, self.exp_data)
         exit_frame_list = list(exit_frame_filter)
 
@@ -1464,7 +1481,8 @@ class Video(models.Model):
         # >95% of the time.
         is_consent_footage = (
             marked_as_consent
-            or response.exp_data.get(frame_id, {}).get("frameType", "") == "CONSENT"
+            or isinstance(response.exp_data.get(frame_id), dict)
+            and response.exp_data[frame_id].get("frameType", "") == "CONSENT"
         )
 
         # Once we've completed the renaming, create our db object referencing it

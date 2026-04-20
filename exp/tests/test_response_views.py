@@ -3,6 +3,8 @@ import datetime
 import io
 import json
 import re
+import uuid
+import zipfile
 
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
@@ -12,7 +14,10 @@ from django_dynamic_fixture import G
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, DemographicData, User
 from accounts.utils import hash_id
-from exp.views.responses import StudyResponseSetResearcherFields
+from exp.views.responses import (
+    StudyResponseSetResearcherFields,
+    get_frame_data,
+)
 from studies.models import ConsentRuling, Lab, Response, Study, StudyType, Video
 
 
@@ -399,6 +404,12 @@ class ResponseViewsTestCase(TestCase):
 
 
 class ResponseDataDownloadTestCase(TestCase):
+    def _decode_response(self, response):
+        """Read content from either a streaming or regular response."""
+        if hasattr(response, "streaming_content"):
+            return b"".join(response.streaming_content).decode("utf-8")
+        return response.content.decode("utf-8")
+
     def setUp(self):
         self.client = Force2FAClient()
 
@@ -688,7 +699,7 @@ class ResponseDataDownloadTestCase(TestCase):
         self.client.force_login(self.study_reader)
         query_string = urlencode({"data_options": self.optionset_1}, doseq=True)
         response = self.client.get(f"{self.response_summary_url}?{query_string}")
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
@@ -799,7 +810,7 @@ class ResponseDataDownloadTestCase(TestCase):
         self.client.force_login(self.study_reader)
         query_string = urlencode({"data_options": self.optionset_2}, doseq=True)
         response = self.client.get(f"{self.response_summary_url}?{query_string}")
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
@@ -932,7 +943,7 @@ class ResponseDataDownloadTestCase(TestCase):
         ]
 
         csv_response = self.client.get(self.response_summary_url)
-        content = csv_response.content.decode("utf-8")
+        content = self._decode_response(csv_response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
@@ -1106,7 +1117,7 @@ class ResponseDataDownloadTestCase(TestCase):
         self.client.force_login(self.study_reader)
         query_string = urlencode({"data_options": self.optionset_1}, doseq=True)
         response = self.client.get(f"{self.response_summary_url}?{query_string}")
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
@@ -1137,7 +1148,7 @@ class ResponseDataDownloadTestCase(TestCase):
                 "exp:study-responses-children-summary-csv", kwargs={"pk": self.study.pk}
             )
         )
-        content = csv_response.content.decode("utf-8")
+        content = self._decode_response(csv_response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_body.pop(0)
@@ -1160,7 +1171,7 @@ class ResponseDataDownloadTestCase(TestCase):
                 "exp:study-responses-children-summary-csv", kwargs={"pk": self.study.pk}
             )
         )
-        content = csv_response.content.decode("utf-8")
+        content = self._decode_response(csv_response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_body.pop(0)
@@ -1177,7 +1188,7 @@ class ResponseDataDownloadTestCase(TestCase):
         response = self.client.get(
             reverse("exp:study-demographics", kwargs={"pk": self.study.pk})
         )
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
         self.assertIn(
             f"{self.n_previews + self.n_responses} snapshot",
             content,
@@ -1190,7 +1201,7 @@ class ResponseDataDownloadTestCase(TestCase):
         response = self.client.get(
             reverse("exp:study-demographics", kwargs={"pk": self.study.pk})
         )
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
         self.assertIn(
             f"{self.n_previews} snapshot",
             content,
@@ -1207,7 +1218,7 @@ class ResponseDataDownloadTestCase(TestCase):
         csv_response = self.client.get(
             reverse("exp:study-demographics-download-csv", kwargs={"pk": self.study.pk})
         )
-        content = csv_response.content.decode("utf-8")
+        content = self._decode_response(csv_response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
@@ -1234,7 +1245,7 @@ class ResponseDataDownloadTestCase(TestCase):
         csv_response = self.client.get(
             reverse("exp:study-demographics-download-csv", kwargs={"pk": self.study.pk})
         )
-        content = csv_response.content.decode("utf-8")
+        content = self._decode_response(csv_response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
@@ -1267,7 +1278,7 @@ class ResponseDataDownloadTestCase(TestCase):
             {"demo_options": ["participant__global_id"]}, doseq=True
         )
         csv_response = self.client.get(f"{demographic_csv_url}?{query_string}")
-        content = csv_response.content.decode("utf-8")
+        content = self._decode_response(csv_response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
@@ -1277,7 +1288,7 @@ class ResponseDataDownloadTestCase(TestCase):
         # Without participant__global_id selected, should not be in header and data should not be included
         query_string = urlencode({"demo_options": []}, doseq=True)
         csv_response = self.client.get(f"{demographic_csv_url}?{query_string}")
-        content = csv_response.content.decode("utf-8")
+        content = self._decode_response(csv_response)
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
@@ -1295,7 +1306,7 @@ class ResponseDataDownloadTestCase(TestCase):
             {"demo_options": ["participant__global_id"]}, doseq=True
         )
         response = self.client.get(f"{demographic_json_url}?{query_string}")
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
         data = json.loads(content)
         for demo in data:
             self.assertIn("global_id", demo["participant"])
@@ -1309,7 +1320,7 @@ class ResponseDataDownloadTestCase(TestCase):
         # Without participant__global_id selected, this info is absent
         query_string = urlencode({"demo_options": []}, doseq=True)
         response = self.client.get(f"{demographic_json_url}?{query_string}")
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
         data = json.loads(content)
         for demo in data:
             self.assertNotIn("global_id", demo["participant"])
@@ -1327,7 +1338,7 @@ class ResponseDataDownloadTestCase(TestCase):
         response = self.client.get(
             f"{reverse('exp:study-responses-list', kwargs={'pk': self.study.pk})}"
         )
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
         matches = re.finditer('data-response-uuid="(.*)"', content)
         for m in matches:
             n_matches += 1
@@ -1358,7 +1369,7 @@ class ResponseDataDownloadTestCase(TestCase):
         response = self.client.get(
             reverse("exp:study-responses-list", kwargs={"pk": self.study.pk})
         )
-        content = response.content.decode("utf-8")
+        content = self._decode_response(response)
 
         matches = re.finditer('data-response-uuid="(.*)"', content)
         n_matches = 0
@@ -1372,6 +1383,95 @@ class ResponseDataDownloadTestCase(TestCase):
 
         # Assumes n_previews fit on one page
         self.assertEqual(n_matches, self.n_previews)
+
+    def _get_psychds_zip(self, query_string=""):
+        url = reverse(
+            "exp:study-responses-download-frame-data-zip-psychds",
+            kwargs={"pk": self.study.pk},
+        )
+        response = self.client.get(f"{url}?{query_string}" if query_string else url)
+        zip_bytes = b"".join(response.streaming_content)
+        return response, zip_bytes
+
+    def test_psychds_download_returns_zip(self):
+        self.client.force_login(self.study_reader)
+        response, zip_bytes = self._get_psychds_zip()
+        self.assertEqual(response.status_code, 200)
+        self.assertRegex(
+            response.get("Content-Disposition"),
+            r'^attachment; filename=".*--psychds\.zip"',
+        )
+        # Verify content is a valid zip file
+        zipfile.ZipFile(io.BytesIO(zip_bytes))
+
+    def test_psychds_download_zip_structure(self):
+        self.client.force_login(self.study_reader)
+        _, zip_bytes = self._get_psychds_zip()
+        with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+            names = zf.namelist()
+        self.assertIn("dataset_description.json", names)
+        self.assertIn("README.md", names)
+        self.assertIn(".psychds-ignore", names)
+        self.assertTrue(
+            any(n.startswith("data/framedata-per-response/") for n in names)
+        )
+        self.assertTrue(any(n.startswith("data/overview/") for n in names))
+        self.assertTrue(
+            any(n.startswith("data/raw/") and n.endswith(".json") for n in names)
+        )
+
+    def test_psychds_download_dataset_description_has_variables_measured(self):
+        self.client.force_login(self.study_reader)
+        _, zip_bytes = self._get_psychds_zip()
+        with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+            metadata = json.loads(zf.read("dataset_description.json"))
+        self.assertIn("variableMeasured", metadata)
+        self.assertIsInstance(metadata["variableMeasured"], list)
+        self.assertGreater(len(metadata["variableMeasured"]), 0)
+
+    def test_psychds_download_frame_data_file_per_response(self):
+        self.client.force_login(self.study_reader)
+        _, zip_bytes = self._get_psychds_zip()
+        with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+            framedata_csv_files = [
+                n
+                for n in zf.namelist()
+                if n.startswith("data/framedata-per-response/") and n.endswith(".csv")
+            ]
+        self.assertEqual(
+            len(framedata_csv_files),
+            self.n_responses + self.n_previews,
+            "Expected one frame data CSV file per consented response",
+        )
+
+    def test_psychds_download_all_responses_json_count(self):
+        self.client.force_login(self.study_reader)
+        _, zip_bytes = self._get_psychds_zip()
+        with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+            all_responses_json = [
+                n
+                for n in zf.namelist()
+                if n.startswith("data/raw/") and n.endswith(".json")
+            ]
+            self.assertEqual(len(all_responses_json), 1)
+            all_responses = json.loads(zf.read(all_responses_json[0]))
+        self.assertEqual(
+            len(all_responses),
+            self.n_responses + self.n_previews,
+            "Unexpected number of responses in all_responses JSON",
+        )
+
+    def test_psychds_download_excludes_unconsented_responses(self):
+        self.client.force_login(self.study_reader)
+        _, zip_bytes = self._get_psychds_zip()
+        with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+            for name in zf.namelist():
+                content = zf.read(name).decode("utf-8", errors="replace")
+                self.assertNotIn(
+                    self.poison_string,
+                    content,
+                    f"Data from unconsented response found in {name}",
+                )
 
 
 class ResponseViewResearcherUpdateFieldsTestCase(TestCase):
@@ -1654,6 +1754,86 @@ class ResponseViewResearcherUpdateFieldsTestCase(TestCase):
         )
         success_str = f"Response {self.response.id} field {self.editable_fields[2]} updated to {False}"
         self.assertIn(success_str, post_response.json().get("success"))
+
+
+class GetFrameDataTestCase(TestCase):
+    """Unit tests for the get_frame_data helper function."""
+
+    BASE_RESP = {
+        "child__uuid": uuid.UUID("00000000-0000-0000-0000-000000000001"),
+        "study__uuid": uuid.UUID("00000000-0000-0000-0000-000000000002"),
+        "study__salt": uuid.UUID("00000000-0000-0000-0000-000000000003"),
+        "study__hash_digits": 6,
+        "uuid": uuid.UUID("00000000-0000-0000-0000-000000000004"),
+        "global_event_timings": [],
+    }
+
+    def _make_resp(self, exp_data):
+        return {**self.BASE_RESP, "exp_data": exp_data}
+
+    def test_non_dict_frame_value_produces_row(self):
+        """A top-level exp_data value that is a string or int should produce a
+        FrameDataRow with that frame_id, a blank key, and the raw value — rather
+        than raising an error."""
+        resp = self._make_resp(
+            {
+                "0-intro": {"frameType": "DEFAULT", "someKey": "someValue"},
+                "top-level-string": "unexpected string",
+                "top-level-int": 42,
+            }
+        )
+        rows = get_frame_data(resp)
+
+        frame_ids = [row.frame_id for row in rows]
+        self.assertIn("top-level-string", frame_ids)
+        self.assertIn("top-level-int", frame_ids)
+
+        string_row = next(r for r in rows if r.frame_id == "top-level-string")
+        self.assertEqual(string_row.key, "")
+        self.assertEqual(string_row.value, "unexpected string")
+
+        int_row = next(r for r in rows if r.frame_id == "top-level-int")
+        self.assertEqual(int_row.key, "")
+        self.assertEqual(int_row.value, 42)
+
+    def test_jspsych_non_dict_list_element_produces_row(self):
+        """For jsPsych responses, normalized_exp_data zips sequence with exp_data into a
+        dict. A non-dict element in the list becomes a non-dict value in that dict. It
+        should produce a row with a blank key and the raw value rather than raising."""
+        # Simulate what normalized_exp_data returns for a jsPsych response where one
+        # trial's data is a bare string.
+        resp = self._make_resp(
+            {
+                "0-survey-likert": {
+                    "trial_type": "survey-likert",
+                    "response": {"q0": 3},
+                },
+                "1-bad-trial": "unexpected string",
+            }
+        )
+        rows = get_frame_data(resp)
+
+        frame_ids = [row.frame_id for row in rows]
+        self.assertIn("1-bad-trial", frame_ids)
+
+        bad_row = next(r for r in rows if r.frame_id == "1-bad-trial")
+        self.assertEqual(bad_row.key, "")
+        self.assertEqual(bad_row.value, "unexpected string")
+
+    def test_normal_dict_frame_values_still_included(self):
+        """Normal dict-valued frames should still produce rows as expected."""
+        resp = self._make_resp(
+            {"0-intro": {"frameType": "DEFAULT", "someKey": "someValue"}}
+        )
+        rows = get_frame_data(resp)
+
+        frame_ids = [row.frame_id for row in rows]
+        self.assertIn("0-intro", frame_ids)
+
+        key_row = next(
+            r for r in rows if r.frame_id == "0-intro" and r.key == "someKey"
+        )
+        self.assertEqual(key_row.value, "someValue")
 
     # TODO: test individual file downloads from response-list
     #       * cannot get response from another study,
