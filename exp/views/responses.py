@@ -1996,9 +1996,9 @@ class StudyAttachments(CanViewStudyResponsesMixin, generic.ListView):
 
 
 DEMOGRAPHICS_README_STR = """
-    For participant anonymity reasons, we don't include demographic data in this download. 
-    You can download the demographics data and place it here for your own uses, but make sure 
-    not to share it carelessly, as it contains information that could be used to identify participants.
+    Each response is associated with a demographic data snapshot that captures the state of the participant's demographic survey at the time of the response. You may use this data to check on demographics of your study population, for instance to check how representative your sample is with respect to parental education, and you may report your findings in aggregate.
+
+    Important: To reduce re-identification risks to participants, we don't automatically include demographic data in this download. You can download the demographics data and place it in this subfolder if you need it, but be cautious when sharing data. This data must never be published in conjunction with study video such that it would be possible to link the two - e.g., to determine that the person pictured has an approximate family income of $50K or lives in Iowa. At minimum, this likely means redacting all response and participant identifiers from the downloaded demographic file if publishing raw data.
 """
 
 PSYCHDS_README_STR = """# {study_title}
@@ -2071,13 +2071,17 @@ Remember, even if you didn't check any of the boxes for data that CHS knows are 
 
 #### `framedata-per-response`
 
-This subfolder contains frame-by-frame data files for each individual response. The contents of these files are identical to the output of the "frame data" download option:
+This subfolder contains frame-by-frame data files for each individual response. The contents of these files are identical to the output of the "frame data" download option.
+Additionally, for each data file, there is one "metadata sidecar" file with the same name and a .json extension. These files serve a similar function to the dataset_description.json file, but they include metadata pertaining only to their corresponding data file.
 
 ```
 framedata-per-response/
       study-1111aaaa_response-2b2b2b2b_data.csv
+      study-1111aaaa_response-2b2b2b2b_data.json
       study-1111aaaa_response-3c3c3c3c_data.csv
+      study-1111aaaa_response-3c3c3c3c_data.json
       study-1111aaaa_response-4d4d4d4d_data.csv
+      study-1111aaaa_response-4d4d4d4d_data.json
       etc...
 ```
 
