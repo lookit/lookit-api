@@ -1304,6 +1304,35 @@ class Response(models.Model):
             return self.is_valid_researcher_override
         return self.is_valid
 
+    def compute_is_valid(self) -> bool:
+        """Compute the system-defined is_valid value for this response.
+
+        A response is valid if:
+        - is_preview is False
+        - eligibility is "Eligible" or blank/empty (backwards compatibility)
+
+        For internal (non-external) studies, responses must also:
+        - completed is True
+        - completed_consent_frame is True
+        - the most recent consent ruling is not "rejected"
+        """
+        if self.is_preview:
+            return False
+
+        eligible = (
+            not self.eligibility or ResponseEligibility.ELIGIBLE in self.eligibility
+        )
+        if not eligible:
+            return False
+
+        if self.study_type.is_external:
+            return True
+
+        if not (self.completed and self.completed_consent_frame):
+            return False
+
+        return not self.currently_rejected
+
     def exit_frame_properties(self, property):
         if self.study_type.is_ember_frame_player:
             return self.exit_frame_properties_efp(property)
@@ -1742,3 +1771,26 @@ class ConsentRuling(models.Model):
 
     def __str__(self):
         return f"<{self.arbiter.get_short_name()}: {self.action} {self.response} @ {self.created_at:%c}>"
+
+
+@receiver(post_save, sender=Response)
+def update_is_valid_on_response_save(sender, instance, update_fields, **kwargs):
+    """Recompute is_valid whenever a Response is saved.
+
+    Uses .update() instead of .save() to avoid re-triggering this signal.
+    Skips recomputation if this save was itself only updating is_valid.
+    """
+    if update_fields is not None and update_fields == frozenset({"is_valid"}):
+        return
+    new_value = instance.compute_is_valid()
+    if instance.is_valid != new_value:
+        Response.objects.filter(pk=instance.pk).update(is_valid=new_value)
+        instance.is_valid = new_value
+
+
+@receiver(post_save, sender=ConsentRuling)
+def update_is_valid_on_consent_ruling_save(sender, instance, **kwargs):
+    """Recompute is_valid for the related Response when a ConsentRuling is saved."""
+    response = instance.response
+    new_value = response.compute_is_valid()
+    Response.objects.filter(pk=response.pk).update(is_valid=new_value)
