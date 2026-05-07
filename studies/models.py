@@ -557,46 +557,20 @@ class Study(models.Model):
 
     @property
     def valid_response_count(self) -> int:
-        """Return the count of valid responses for max_responses limit.
+        """Return the count of effectively valid responses for the max_responses limit.
 
-        A response is counted as valid if:
-        - is_preview is False
-        - eligibility is "Eligible" or blank/empty (backwards compatibility)
-
-        And for internal studies, responses must also meet the following conditions:
-        - completed is True
-        - completed_consent_frame is True
-        - the consent has not been rejected (must be either pending or accepted)
-
-        For external studies, the completed, completed_consent_frame, and consent requirements are ignored.
+        Uses the stored is_valid field (set and kept in sync by the update_is_valid_on_response_save
+        and update_is_valid_on_consent_ruling_save signals), with is_valid_researcher_override
+        taking precedence when set.
 
         Returns:
             int: Count of valid responses
         """
-        # Filter out preview responses
-        responses = self.responses.filter(is_preview=False)
-
-        # For internal study types, also require completed_consent_frame=True, completed=True, and consent not rejected
-        if not self.study_type.is_external:
-            responses = responses.filter(completed=True, completed_consent_frame=True)
-            newest_ruling_subquery = models.Subquery(
-                ConsentRuling.objects.filter(response=models.OuterRef("pk"))
-                .order_by("-created_at")
-                .values("action")[:1]
-            )
-            # Filter out responses with rejected consent, and explicitly allow NULL consent rulings (pending, i.e. no judgment has been submitted).
-            responses = responses.annotate(
-                current_ruling=newest_ruling_subquery
-            ).filter(
-                models.Q(current_ruling__isnull=True)
-                | ~models.Q(current_ruling=REJECTED)
-            )
-
-        # Filter out ineligible responses
-        return responses.filter(
-            models.Q(eligibility=[])
-            | models.Q(eligibility__contains=[ResponseEligibility.ELIGIBLE])
-        ).count()
+        is_effectively_valid = models.Q(
+            is_valid_researcher_override__isnull=False,
+            is_valid_researcher_override=True,
+        ) | models.Q(is_valid_researcher_override__isnull=True, is_valid=True)
+        return self.responses.filter(is_effectively_valid).count()
 
     @property
     def has_reached_max_responses(self) -> bool:
