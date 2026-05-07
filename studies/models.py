@@ -1014,6 +1014,31 @@ class Study(models.Model):
                 "child__additional_information",
             ]
 
+    def columns_included_in_status(self):
+        """A list of columns used in the researchers experiment data
+        view that relate to the response valid/invalid status. There is an assumption that summary columns for jspsych and EFP
+        experiments will be the same.
+
+        Returns:
+            List[Str]: columns for response status summary
+        """
+        response_status_columns = [
+            "response__eligibility",
+            "response__is_preview",
+            "response__is_valid_researcher_override",
+        ]
+        if not self.study_type.is_external:
+            response_status_columns.extend(
+                [
+                    "response__completed",
+                    "response__withdrawn",
+                    "response__eligibility",
+                    "response__is_preview",
+                ]
+            )
+
+        return response_status_columns
+
 
 # Using Direct foreign keys for guardian, see:
 # https://django-guardian.readthedocs.io/en/stable/userguide/performance.html

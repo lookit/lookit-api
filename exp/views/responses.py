@@ -870,6 +870,7 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
         context = super().get_context_data(**kwargs)
         context["study"] = study = self.study
         columns_included_in_summary = study.columns_included_in_summary()
+        columns_included_in_status = study.columns_included_in_status()
 
         columns_included_in_table = [
             "child__hashed_id",
@@ -910,6 +911,16 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
                 }
                 for col in RESPONSE_COLUMNS
                 if col.id in columns_included_in_summary
+            ]
+            # info needed for response status table
+            this_resp_data["status"] = [
+                {
+                    "name": col.name,
+                    "value": col.extractor(resp),
+                    "description": col.description,
+                }
+                for col in RESPONSE_COLUMNS
+                if col.id in columns_included_in_status
             ]
 
             this_resp_data["videos"] = [
