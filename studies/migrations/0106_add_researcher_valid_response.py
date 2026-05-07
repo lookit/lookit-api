@@ -21,7 +21,7 @@ def compute_is_valid(apps, schema_editor):
     Response = apps.get_model("studies", "Response")
     ConsentRuling = apps.get_model("studies", "ConsentRuling")
 
-    # Filter on eligibiliety (must be "Eligible" or an empty array for backwards compatibility)
+    # Filter on eligibility (must be "Eligible" or an empty array for backwards compatibility)
     eligible_filter = models.Q(eligibility=[]) | models.Q(
         eligibility__contains=["Eligible"]
     )
