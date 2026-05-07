@@ -873,10 +873,7 @@ class StudyModelTestCase(TestCase):
         completed_consent_frame=True,
         is_preview=False,
     ):
-        """Create a response and update its eligibility.
-
-        Note: Response.save() auto-sets eligibility, so we use .update() after creation.
-        """
+        """Create a response and update its eligibility."""
         if eligibility is None:
             eligibility = [ResponseEligibility.ELIGIBLE]
         user = child.user
@@ -889,7 +886,8 @@ class StudyModelTestCase(TestCase):
             completed_consent_frame=completed_consent_frame,
             is_preview=is_preview,
         )
-        Response.objects.filter(pk=r.pk).update(eligibility=eligibility)
+        r.eligibility = eligibility
+        r.save()
         return r
 
     def _create_eligible_responses(self, study, count):
