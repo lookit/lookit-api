@@ -48,15 +48,15 @@
         {% page_title "All Responses" %}
     {% endif %}
     <div class="row">
-        <div class="col">{% include "studies/_response_nav_tabs.html" with active=active %}</div>
+        <div class="col">{% include "studies/responses/_response_nav_tabs.html" with active=active %}</div>
     </div>
     <div class="row my-4 all-responses">
         <div class="col">
             {% if active == 'all' %}
                 <form id="data-options" method="get">
                     {% if n_responses %}
+                        Data about {{ n_responses }} response{{ n_responses|pluralize }} are available.
                         <p>
-                            Data about {{ n_responses }} response{{ n_responses|pluralize }} are available.
                             {% if can_view_regular_responses and not can_view_preview_responses %}
                                 <span><em>(Based on your permissions, no preview responses are included.)</em></span>
                             {% endif %}
