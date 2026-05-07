@@ -44,7 +44,10 @@ from studies.models import Feedback, Response, Study, Video
 from studies.permissions import StudyPermission
 from studies.queries import (
     get_consent_statistics,
+    get_response_type_counts,
+    get_response_type_counts_external,
     get_responses_with_current_rulings_and_videos,
+    get_summary_statistics_external,
 )
 from studies.tasks import build_framedata_dict, build_zipfile_of_videos
 
@@ -936,7 +939,19 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
         preview_only = not self.request.user.has_study_perms(
             StudyPermission.CODE_STUDY_CONSENT, study
         )
-        context["summary_statistics"] = get_consent_statistics(study.id, preview_only)
+        if study.study_type.is_external:
+            context["summary_statistics"] = get_summary_statistics_external(
+                study, preview_only
+            )
+            context["response_type_counts"] = get_response_type_counts_external(study)
+        else:
+            # There is some overlap in the DB queries for get_consent_statistics and get_response_type_counts.
+            # This probably isn't the bottleneck for page load time, and they have different base querysets and purposes.
+            # But if we want to reduce the query count, we could try to combine them into a single SQL/annotation here.
+            context["summary_statistics"] = get_consent_statistics(
+                study.id, preview_only
+            )
+            context["response_type_counts"] = get_response_type_counts(study)
 
         return context
 
@@ -1376,9 +1391,14 @@ class StudyResponsesAll(
         In addition to the study, adds several items to the context dictionary.
         """
         context = super().get_context_data(**kwargs)
+        study = self.study
         context["n_responses"] = (
             context["study"].responses_for_researcher(self.request.user).count()
         )
+        if study.study_type.is_external:
+            context["response_type_counts"] = get_response_type_counts_external(study)
+        else:
+            context["response_type_counts"] = get_response_type_counts(study)
         context["data_options"] = [col for col in RESPONSE_COLUMNS if col.optional]
         context["can_delete_preview_data"] = self.request.user.has_study_perms(
             StudyPermission.DELETE_ALL_PREVIEW_DATA, context["study"]
@@ -1389,6 +1409,17 @@ class StudyResponsesAll(
         context["can_view_preview_responses"] = self.request.user.has_study_perms(
             StudyPermission.READ_STUDY_PREVIEW_DATA, context["study"]
         )
+        preview_only = not self.request.user.has_study_perms(
+            StudyPermission.CODE_STUDY_CONSENT, study
+        )
+        if study.study_type.is_external:
+            context["summary_statistics"] = get_summary_statistics_external(
+                study, preview_only
+            )
+        else:
+            context["summary_statistics"] = get_consent_statistics(
+                study.id, preview_only
+            )
         return context
 
 
@@ -1730,6 +1761,7 @@ class StudyDemographics(
         Adds information for displaying how many and which types of responses are available.
         """
         context = super().get_context_data(**kwargs)
+        study = self.study
         context["n_responses"] = (
             context["study"].responses_for_researcher(self.request.user).count()
         )
@@ -1739,6 +1771,19 @@ class StudyDemographics(
         context["can_view_preview_responses"] = self.request.user.has_study_perms(
             StudyPermission.READ_STUDY_PREVIEW_DATA, context["study"]
         )
+        preview_only = not self.request.user.has_study_perms(
+            StudyPermission.CODE_STUDY_CONSENT, study
+        )
+        if study.study_type.is_external:
+            context["summary_statistics"] = get_summary_statistics_external(
+                study, preview_only
+            )
+            context["response_type_counts"] = get_response_type_counts_external(study)
+        else:
+            context["summary_statistics"] = get_consent_statistics(
+                study.id, preview_only
+            )
+            context["response_type_counts"] = get_response_type_counts(study)
         return context
 
 

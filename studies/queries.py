@@ -2,6 +2,7 @@ import operator
 from collections import defaultdict
 from datetime import timedelta
 from functools import reduce
+from typing import Dict
 
 from django.core.exceptions import FieldError
 from django.db import models
@@ -175,7 +176,7 @@ def studies_for_which_user_has_perm(user, study_perm: StudyPermission):
 
 
 def get_consent_statistics(study_id, preview_only):
-    """Retrieve summary statistics for consent manager view.
+    """Retrieve summary statistics for consent manager and responses views.
 
     Required Fields:
     # Pending Responses
@@ -248,6 +249,136 @@ def get_consent_statistics(study_id, preview_only):
     )
 
     return statistics
+
+
+def get_summary_statistics_external(study, preview_only: bool) -> Dict:
+    """Build summary_statistics for external studies (no consent rulings).
+
+    The external-study version of get_consent_statistics, which is used to get summary data without any consent-related
+    properties (accepted, pending, rejected, with_accepted_responses, without_accepted_responses).
+
+    Returns a dict with the following keys:
+    - total_responses: total response count
+    - total children: total unique children who have responded
+    """
+    response_qs = study.responses.all()
+    if preview_only:
+        response_qs = response_qs.filter(is_preview=True)
+    total = response_qs.count()
+    total_children = response_qs.values("child_id").distinct().count()
+    return {
+        "total_responses": total,
+        "total_children": total_children,
+    }
+
+
+def get_response_type_counts_external(study) -> Dict:
+    """Like get_response_type_counts but for external studies, which have no consent rulings.
+
+    Returns a dict with the following keys:
+    - preview: preview responses
+    - invalid: all effectively invalid non-preview responses
+    - valid: all effectively valid non-preview responses
+    - total: all responses (preview/valid/invalid)
+    """
+    is_effectively_valid = Q(
+        is_valid_researcher_override__isnull=False, is_valid_researcher_override=True
+    ) | Q(is_valid_researcher_override__isnull=True, is_valid=True)
+    is_effectively_invalid = Q(
+        is_valid_researcher_override__isnull=False, is_valid_researcher_override=False
+    ) | Q(is_valid_researcher_override__isnull=True, is_valid=False)
+
+    counts = study.responses.aggregate(
+        preview=Count("id", filter=Q(is_preview=True)),
+        valid=Count("id", filter=Q(is_preview=False) & is_effectively_valid),
+        invalid=Count("id", filter=Q(is_preview=False) & is_effectively_invalid),
+    )
+    counts["total"] = counts["preview"] + counts["valid"] + counts["invalid"]
+    return counts
+
+
+def get_response_type_counts(study) -> Dict:
+    """Produce a break down of consent status x valid/invalid/preview status for internal studies.
+
+    The breakdown is somewhat non-intuitive because the pending repsonses count towards the study's valid/invalid response counts (for the purpose of response limits), but rejected counts do not. Responses with rejected consents are automatically invalid, which means that rejected consent responses are not broken down into valid/invalid.
+
+    Returns a dict with the following keys:
+    - preview_approved: preview responses with accepted consent
+    - preview_pending: preview responses with pending/null consent ruling
+    - preview_rejected: preview responses with rejected consent
+    - valid_approved: non-preview, effectively valid, accepted consent
+    - valid_pending: non-preview, effectively valid, pending/null consent ruling
+    - invalid_approved: non-preview, effectively invalid, accepted consent
+    - invalid_pending: non-preview, effectively invalid, pending/null consent ruling
+    - nonpreview_rejected: non-preview responses with rejected consent
+    - preview: all preview responses (preview_approved + preview_pending)
+    - valid: all effectively valid non-preview responses (valid_approved + valid_pending)
+    - invalid: all effectively invalid non-preview responses (invalid_approved + invalid_pending)
+    - total_available: all responses with accepted consent (preview_approved + valid_approved + invalid_approved)
+    - total_pending: all responses with pending/null consent (preview_pending + valid_pending + invalid_pending)
+    - total_rejected: all responses with rejected consent (preview_rejected + nonpreview_rejected)
+    - total: total_available + total_pending (excludes rejected)
+    """
+    is_effectively_valid = Q(
+        is_valid_researcher_override__isnull=False, is_valid_researcher_override=True
+    ) | Q(is_valid_researcher_override__isnull=True, is_valid=True)
+    is_effectively_invalid = Q(
+        is_valid_researcher_override__isnull=False, is_valid_researcher_override=False
+    ) | Q(is_valid_researcher_override__isnull=True, is_valid=False)
+    newest_ruling = Subquery(
+        ConsentRuling.objects.filter(response=OuterRef("pk"))
+        .order_by("-created_at")
+        .values("action")[:1]
+    )
+    is_pending_ruling = Q(current_ruling__isnull=True) | Q(current_ruling="pending")
+    counts = study.responses.annotate(current_ruling=newest_ruling).aggregate(
+        preview_approved=Count(
+            "id", filter=Q(is_preview=True) & Q(current_ruling="accepted")
+        ),
+        preview_pending=Count("id", filter=Q(is_preview=True) & is_pending_ruling),
+        preview_rejected=Count(
+            "id", filter=Q(is_preview=True) & Q(current_ruling="rejected")
+        ),
+        valid_approved=Count(
+            "id",
+            filter=Q(is_preview=False)
+            & is_effectively_valid
+            & Q(current_ruling="accepted"),
+        ),
+        valid_pending=Count(
+            "id",
+            filter=Q(is_preview=False) & is_effectively_valid & is_pending_ruling,
+        ),
+        invalid_approved=Count(
+            "id",
+            filter=Q(is_preview=False)
+            & is_effectively_invalid
+            & Q(current_ruling="accepted"),
+        ),
+        invalid_pending=Count(
+            "id",
+            filter=Q(is_preview=False) & is_effectively_invalid & is_pending_ruling,
+        ),
+        nonpreview_rejected=Count(
+            "id", filter=Q(is_preview=False) & Q(current_ruling="rejected")
+        ),
+    )
+    counts["preview"] = counts["preview_approved"] + counts["preview_pending"]
+    counts["valid"] = counts["valid_approved"] + counts["valid_pending"]
+    counts["invalid"] = counts["invalid_approved"] + counts["invalid_pending"]
+    counts["total_available"] = (
+        counts["preview_approved"]
+        + counts["valid_approved"]
+        + counts["invalid_approved"]
+    )
+    counts["total_pending"] = (
+        counts["preview_pending"] + counts["valid_pending"] + counts["invalid_pending"]
+    )
+    counts["total_rejected"] = (
+        counts["preview_rejected"] + counts["nonpreview_rejected"]
+    )
+    counts["total"] = counts["total_available"] + counts["total_pending"]
+    return counts
 
 
 def get_consented_responses_qs():
