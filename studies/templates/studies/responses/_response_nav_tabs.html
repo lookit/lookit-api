@@ -24,4 +24,10 @@
                {% if active == 'attachments' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>Videos</a>
         </li>
     {% endif %}
+    <li class="nav-item">
+        <a href="{% url 'exp:study-responses-count-summary' study.id %}"
+           {% if active == 'summary' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>
+            Response <span class="d-none d-md-inline">Count</span> Summary
+        </a>
+    </li>
 </ul>

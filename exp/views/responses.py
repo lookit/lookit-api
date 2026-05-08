@@ -1385,6 +1385,36 @@ class StudyResponsesConsentManager(
             return super().get(request, *args, **kwargs)
 
 
+class StudyResponsesSummary(
+    CanViewStudyResponsesMixin, SingleObjectFetchProtocol[Study], generic.DetailView
+):
+    """
+    View showing response count summary statistics for a study.
+    """
+
+    template_name = "studies/study_responses_count_summary.html"
+    queryset = Study.objects.all()
+    http_method_names = ["get"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        study = context["study"]
+        preview_only = not self.request.user.has_study_perms(
+            StudyPermission.CODE_STUDY_CONSENT, study
+        )
+        if study.study_type.is_external:
+            context["summary_statistics"] = get_summary_statistics_external(
+                study, preview_only
+            )
+            context["response_type_counts"] = get_response_type_counts_external(study)
+        else:
+            context["summary_statistics"] = get_consent_statistics(
+                study.id, preview_only
+            )
+            context["response_type_counts"] = get_response_type_counts(study)
+        return context
+
+
 class StudyResponsesAll(
     CanViewStudyResponsesMixin, SingleObjectFetchProtocol[Study], generic.DetailView
 ):
