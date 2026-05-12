@@ -936,94 +936,94 @@ class StudyModelTestCase(TestCase):
 
         self.assertIn(response, study.responses_for_researcher(user))
 
-    def test_valid_response_count_internal_study(self):
-        """Test that valid_response_count correctly counts eligible, completed, non-preview responses."""
+    def test_tallied_response_count_internal_study(self):
+        """Test that tallied_response_count correctly counts eligible, completed, non-preview responses."""
         study, _, child = self._create_study_with_participant()
 
-        # Valid: completed, consent frame completed, not preview, empty eligibility
+        # tallied: completed, consent frame completed, not preview, empty eligibility
         self._create_response(study, child, eligibility=[])
 
-        # Valid: completed, consent frame completed, not preview, eligible
+        # tallied: completed, consent frame completed, not preview, eligible
         self._create_response(study, child)
 
-        # Invalid: preview response
+        # untallied: preview response
         self._create_response(study, child, is_preview=True)
 
-        # Invalid: not completed
+        # untallied: not completed
         self._create_response(study, child, completed=False)
 
-        # Invalid: ineligible
+        # untallied: ineligible
         self._create_response(
             study, child, eligibility=[ResponseEligibility.INELIGIBLE_OLD]
         )
 
-        # Invalid: consent frame not completed
+        # untallied: consent frame not completed
         self._create_response(study, child, completed_consent_frame=False)
 
-        self.assertEqual(study.valid_response_count, 2)
+        self.assertEqual(study.tallied_response_count, 2)
 
-    def test_valid_response_count_external_study(self):
-        """Test that valid_response_count for external studies ignores completed field."""
+    def test_tallied_response_count_external_study(self):
+        """Test that tallied_response_count for external studies ignores completed field."""
         study, _, child = self._create_study_with_participant(
             study_type=StudyType.get_external()
         )
 
-        # Valid: not preview, eligible, completed
+        # tallied: not preview, eligible, completed
         self._create_response(study, child)
 
-        # Valid: not preview, eligible, NOT completed (should still count for external)
+        # tallied: not preview, eligible, NOT completed (should still count for external)
         self._create_response(study, child, completed=False)
 
-        # Valid: not preview, empty eligibility, NOT completed
+        # tallied: not preview, empty eligibility, NOT completed
         self._create_response(study, child, completed=False, eligibility=[])
 
-        # Invalid: preview response (should not count)
+        # untallied: preview response (should not count)
         self._create_response(study, child, is_preview=True)
 
-        # Invalid: ineligible (should not count)
+        # untallied: ineligible (should not count)
         self._create_response(
             study, child, eligibility=[ResponseEligibility.INELIGIBLE_CRITERIA]
         )
 
-        # 3 valid responses (completed field ignored for external)
-        self.assertEqual(study.valid_response_count, 3)
+        # 3 tallied responses (completed field ignored for external)
+        self.assertEqual(study.tallied_response_count, 3)
 
-    def test_valid_response_count_excludes_rejected_consent_internal(self):
-        """Test that valid_response_count excludes responses with rejected consent for internal studies."""
+    def test_tallied_response_count_excludes_rejected_consent_internal(self):
+        """Test that tallied_response_count excludes responses with rejected consent for internal studies."""
         study, user, child = self._create_study_with_participant()
 
-        # Valid: no consent ruling (pending)
+        # tallied: no consent ruling (pending)
         self._create_response(study, child)
 
-        # Valid: accepted consent
+        # tallied: accepted consent
         r2 = self._create_response(study, child)
         ConsentRuling.objects.create(response=r2, action="accepted", arbiter=user)
 
-        # Invalid: consent rejected
+        # untallied: consent rejected
         r3 = self._create_response(study, child)
         ConsentRuling.objects.create(response=r3, action=REJECTED, arbiter=user)
 
-        # 2 valid: r1 (no ruling = pending) and r2 (accepted). r3 excluded (rejected).
-        self.assertEqual(study.valid_response_count, 2)
+        # 2 tallied: r1 (no ruling = pending) and r2 (accepted). r3 excluded (rejected).
+        self.assertEqual(study.tallied_response_count, 2)
 
-    def test_valid_response_count_uses_most_recent_consent_ruling(self):
+    def test_tallied_response_count_uses_most_recent_consent_ruling(self):
         """Test that only the most recent consent ruling is considered."""
         study, user, child = self._create_study_with_participant()
 
-        # Response with rejected then accepted consent (most recent = accepted, so valid)
+        # Response with rejected then accepted consent (most recent = accepted, so tallied)
         r1 = self._create_response(study, child)
         ConsentRuling.objects.create(response=r1, action=REJECTED, arbiter=user)
         ConsentRuling.objects.create(response=r1, action="accepted", arbiter=user)
 
-        # Response with accepted then rejected consent (most recent = rejected, so invalid)
+        # Response with accepted then rejected consent (most recent = rejected, so untallied)
         r2 = self._create_response(study, child)
         ConsentRuling.objects.create(response=r2, action="accepted", arbiter=user)
         ConsentRuling.objects.create(response=r2, action=REJECTED, arbiter=user)
 
-        # Only r1 is valid (most recent ruling is accepted)
-        self.assertEqual(study.valid_response_count, 1)
+        # Only r1 is tallied (most recent ruling is accepted)
+        self.assertEqual(study.tallied_response_count, 1)
 
-    def test_valid_response_count_consent_ignored_for_external(self):
+    def test_tallied_response_count_consent_ignored_for_external(self):
         """Test that consent rulings are not checked for external studies."""
         study, user, child = self._create_study_with_participant(
             study_type=StudyType.get_external()
@@ -1034,7 +1034,7 @@ class StudyModelTestCase(TestCase):
         ConsentRuling.objects.create(response=r1, action=REJECTED, arbiter=user)
 
         # Should count because external studies don't check consent
-        self.assertEqual(study.valid_response_count, 1)
+        self.assertEqual(study.tallied_response_count, 1)
 
     def test_has_reached_max_responses_no_limit(self):
         """Test that has_reached_max_responses returns False when max_responses is None."""
