@@ -277,54 +277,58 @@ def get_response_type_counts_external(study) -> Dict:
 
     Returns a dict with the following keys:
     - preview: preview responses
-    - invalid: all effectively invalid non-preview responses
-    - valid: all effectively valid non-preview responses
-    - total: all responses (preview/valid/invalid)
+    - untallied: all effectively untallied non-preview responses
+    - tallied: all effectively tallied non-preview responses
+    - total: all responses (preview/tallied/untallied)
     """
-    is_effectively_valid = Q(
-        is_valid_researcher_override__isnull=False, is_valid_researcher_override=True
-    ) | Q(is_valid_researcher_override__isnull=True, is_valid=True)
-    is_effectively_invalid = Q(
-        is_valid_researcher_override__isnull=False, is_valid_researcher_override=False
-    ) | Q(is_valid_researcher_override__isnull=True, is_valid=False)
+    is_effectively_tallied = Q(
+        is_tallied_researcher_override__isnull=False,
+        is_tallied_researcher_override=True,
+    ) | Q(is_tallied_researcher_override__isnull=True, is_tallied=True)
+    is_effectively_untallied = Q(
+        is_tallied_researcher_override__isnull=False,
+        is_tallied_researcher_override=False,
+    ) | Q(is_tallied_researcher_override__isnull=True, is_tallied=False)
 
     counts = study.responses.aggregate(
         preview=Count("id", filter=Q(is_preview=True)),
-        valid=Count("id", filter=Q(is_preview=False) & is_effectively_valid),
-        invalid=Count("id", filter=Q(is_preview=False) & is_effectively_invalid),
+        tallied=Count("id", filter=Q(is_preview=False) & is_effectively_tallied),
+        untallied=Count("id", filter=Q(is_preview=False) & is_effectively_untallied),
     )
-    counts["total"] = counts["preview"] + counts["valid"] + counts["invalid"]
+    counts["total"] = counts["preview"] + counts["tallied"] + counts["untallied"]
     return counts
 
 
 def get_response_type_counts(study) -> Dict:
-    """Produce a break down of consent status x valid/invalid/preview status for internal studies.
+    """Produce a break down of consent status x tallied/untallied/preview status for internal studies.
 
-    The breakdown is somewhat non-intuitive because the pending repsonses count towards the study's valid/invalid response counts (for the purpose of response limits), but rejected counts do not. Responses with rejected consents are automatically invalid, which means that rejected consent responses are not broken down into valid/invalid.
+    The breakdown is somewhat non-intuitive because the pending repsonses count towards the study's tallied/untallied response counts (for the purpose of response limits), but rejected counts do not. Responses with rejected consents are automatically untallied, which means that rejected consent responses are not broken down into tallied/untallied.
 
     Returns a dict with the following keys:
     - preview_approved: preview responses with accepted consent
     - preview_pending: preview responses with pending/null consent ruling
     - preview_rejected: preview responses with rejected consent
-    - valid_approved: non-preview, effectively valid, accepted consent
-    - valid_pending: non-preview, effectively valid, pending/null consent ruling
-    - invalid_approved: non-preview, effectively invalid, accepted consent
-    - invalid_pending: non-preview, effectively invalid, pending/null consent ruling
+    - tallied_approved: non-preview, effectively tallied, accepted consent
+    - tallied_pending: non-preview, effectively tallied, pending/null consent ruling
+    - untallied_approved: non-preview, effectively untallied, accepted consent
+    - untallied_pending: non-preview, effectively untallied, pending/null consent ruling
     - nonpreview_rejected: non-preview responses with rejected consent
     - preview: all preview responses (preview_approved + preview_pending)
-    - valid: all effectively valid non-preview responses (valid_approved + valid_pending)
-    - invalid: all effectively invalid non-preview responses (invalid_approved + invalid_pending)
-    - total_available: all responses with accepted consent (preview_approved + valid_approved + invalid_approved)
-    - total_pending: all responses with pending/null consent (preview_pending + valid_pending + invalid_pending)
+    - tallied: all effectively tallied non-preview responses (tallied_approved + tallied_pending)
+    - untallied: all effectively untallied non-preview responses (untallied_approved + untallied_pending)
+    - total_available: all responses with accepted consent (preview_approved + tallied_approved + untallied_approved)
+    - total_pending: all responses with pending/null consent (preview_pending + tallied_pending + untallied_pending)
     - total_rejected: all responses with rejected consent (preview_rejected + nonpreview_rejected)
     - total: total_available + total_pending (excludes rejected)
     """
-    is_effectively_valid = Q(
-        is_valid_researcher_override__isnull=False, is_valid_researcher_override=True
-    ) | Q(is_valid_researcher_override__isnull=True, is_valid=True)
-    is_effectively_invalid = Q(
-        is_valid_researcher_override__isnull=False, is_valid_researcher_override=False
-    ) | Q(is_valid_researcher_override__isnull=True, is_valid=False)
+    is_effectively_tallied = Q(
+        is_tallied_researcher_override__isnull=False,
+        is_tallied_researcher_override=True,
+    ) | Q(is_tallied_researcher_override__isnull=True, is_tallied=True)
+    is_effectively_untallied = Q(
+        is_tallied_researcher_override__isnull=False,
+        is_tallied_researcher_override=False,
+    ) | Q(is_tallied_researcher_override__isnull=True, is_tallied=False)
     newest_ruling = Subquery(
         ConsentRuling.objects.filter(response=OuterRef("pk"))
         .order_by("-created_at")
@@ -339,40 +343,42 @@ def get_response_type_counts(study) -> Dict:
         preview_rejected=Count(
             "id", filter=Q(is_preview=True) & Q(current_ruling="rejected")
         ),
-        valid_approved=Count(
+        tallied_approved=Count(
             "id",
             filter=Q(is_preview=False)
-            & is_effectively_valid
+            & is_effectively_tallied
             & Q(current_ruling="accepted"),
         ),
-        valid_pending=Count(
+        tallied_pending=Count(
             "id",
-            filter=Q(is_preview=False) & is_effectively_valid & is_pending_ruling,
+            filter=Q(is_preview=False) & is_effectively_tallied & is_pending_ruling,
         ),
-        invalid_approved=Count(
+        untallied_approved=Count(
             "id",
             filter=Q(is_preview=False)
-            & is_effectively_invalid
+            & is_effectively_untallied
             & Q(current_ruling="accepted"),
         ),
-        invalid_pending=Count(
+        untallied_pending=Count(
             "id",
-            filter=Q(is_preview=False) & is_effectively_invalid & is_pending_ruling,
+            filter=Q(is_preview=False) & is_effectively_untallied & is_pending_ruling,
         ),
         nonpreview_rejected=Count(
             "id", filter=Q(is_preview=False) & Q(current_ruling="rejected")
         ),
     )
     counts["preview"] = counts["preview_approved"] + counts["preview_pending"]
-    counts["valid"] = counts["valid_approved"] + counts["valid_pending"]
-    counts["invalid"] = counts["invalid_approved"] + counts["invalid_pending"]
+    counts["tallied"] = counts["tallied_approved"] + counts["tallied_pending"]
+    counts["untallied"] = counts["untallied_approved"] + counts["untallied_pending"]
     counts["total_available"] = (
         counts["preview_approved"]
-        + counts["valid_approved"]
-        + counts["invalid_approved"]
+        + counts["tallied_approved"]
+        + counts["untallied_approved"]
     )
     counts["total_pending"] = (
-        counts["preview_pending"] + counts["valid_pending"] + counts["invalid_pending"]
+        counts["preview_pending"]
+        + counts["tallied_pending"]
+        + counts["untallied_pending"]
     )
     counts["total_rejected"] = (
         counts["preview_rejected"] + counts["nonpreview_rejected"]
