@@ -883,7 +883,7 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
             "response__researcher_payment_status",
             "response__researcher_session_status",
             "response__researcher_star",
-            "response__is_valid",
+            "response__is_tallied",
         ]
 
         context["session_status_options"] = list(Response.SESSION_STATUS_CHOICES)
@@ -1147,7 +1147,7 @@ class StudyResponseSetResearcherFields(
         "researcher_session_status",
         "researcher_payment_status",
         "researcher_star",
-        "is_valid",
+        "is_tallied",
     ]
 
     def user_can_edit_response(self):
@@ -1227,7 +1227,7 @@ class StudyResponseSetResearcherFields(
             if not isinstance(value, bool):
                 return JsonResponse(
                     {
-                        "error": "Invalid request: Valid Response must be a boolean value."
+                        "error": "Invalid request: Tallied Response must be a boolean value."
                     },
                     status=400,
                 )
