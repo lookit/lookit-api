@@ -1342,7 +1342,7 @@ class Response(models.Model):
         exit_frame_values = [
             f.get(property, None)
             for f in self.exp_data.values()
-            if f.get("frameType", None) == "EXIT"
+            if isinstance(f, dict) and f.get("frameType", None) == "EXIT"
         ]
         if exit_frame_values and exit_frame_values != [None]:
             return exit_frame_values[-1]
