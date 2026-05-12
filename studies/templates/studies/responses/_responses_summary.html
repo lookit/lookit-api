@@ -5,7 +5,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col">
-                        {% include "studies/responses/_response_count_list.html" with show_headers=True highlight_success=True group_title="Total Responses" group_description="Total number of responses with either approved consent or that are pending consent judgment. This valid response count is used to determine if your study has met/exceeded the study's response limit." group_total=response_type_counts.total group_valid=response_type_counts.valid group_invalid=response_type_counts.invalid group_preview=response_type_counts.preview %}
+                        {% include "studies/responses/_response_count_list.html" with show_headers=True highlight_success=True group_title="Total Responses" group_description="Total number of responses with either approved consent or that are pending consent judgment. This tallied response count is used to determine if your study has met/exceeded the study's response limit." group_total=response_type_counts.total group_tallied=response_type_counts.tallied group_untallied=response_type_counts.untallied group_preview=response_type_counts.preview %}
                     </div>
                 </div>
             </div>
@@ -19,7 +19,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col">
-                        {% include "studies/responses/_response_count_list.html" with show_headers=False highlight_success=True group_title="Consent Approved" group_description="These responses have approved consents and are available now to view and download." group_total=response_type_counts.total_available group_valid=response_type_counts.valid_approved group_invalid=response_type_counts.invalid_approved group_preview=response_type_counts.preview_approved %}
+                        {% include "studies/responses/_response_count_list.html" with show_headers=False highlight_success=True group_title="Consent Approved" group_description="These responses have approved consents and are available now to view and download." group_total=response_type_counts.total_available group_tallied=response_type_counts.tallied_approved group_untallied=response_type_counts.untallied_approved group_preview=response_type_counts.preview_approved %}
                     </div>
                 </div>
                 <div class="row">
@@ -39,7 +39,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col">
-                        {% include "studies/responses/_response_count_list.html" with show_headers=False highlight_success=True group_title="Pending Consent Judgment" group_description="These are the responses that are still pending consent judgment. The values show the counts in each category if their consents are approved. These counts are included in your total response counts." group_total=response_type_counts.total_pending group_valid=response_type_counts.valid_pending group_invalid=response_type_counts.invalid_pending group_preview=response_type_counts.preview_pending %}
+                        {% include "studies/responses/_response_count_list.html" with show_headers=False highlight_success=True group_title="Pending Consent Judgment" group_description="These are the responses that are still pending consent judgment. The values show the counts in each category if their consents are approved. These counts are included in your total response counts." group_total=response_type_counts.total_pending group_tallied=response_type_counts.tallied_pending group_untallied=response_type_counts.untallied_pending group_preview=response_type_counts.preview_pending %}
                     </div>
                 </div>
                 <div class="row">
@@ -59,7 +59,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col">
-                        {% include "studies/responses/_response_count_list.html" with show_headers=False highlight_success=False group_title="Consent rejected" group_description="These are the untallied and preview counts of responses with rejected consents. The tallied category is empty because responses with rejected consents are never tallied." group_total=response_type_counts.total_rejected group_valid="NA" group_invalid=response_type_counts.nonpreview_rejected group_preview=response_type_counts.preview_rejected %}
+                        {% include "studies/responses/_response_count_list.html" with show_headers=False highlight_success=False group_title="Consent rejected" group_description="These are the untallied and preview counts of responses with rejected consents. The tallied category is empty because responses with rejected consents are never tallied." group_total=response_type_counts.total_rejected group_tallied="NA" group_untallied=response_type_counts.nonpreview_rejected group_preview=response_type_counts.preview_rejected %}
                     </div>
                 </div>
                 <div class="row">
