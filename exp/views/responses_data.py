@@ -383,10 +383,16 @@ RESPONSE_COLUMNS = [
         name="Star",
     ),
     ResponseDataColumn(
-        id="response__is_valid",
-        description="Whether this response is counted as valid",
-        extractor=lambda resp: resp.is_valid,
-        name="Valid Response",
+        id="response__is_tallied",
+        description="Whether this response is counted as tallied",
+        extractor=lambda resp: resp.effective_is_tallied,
+        name="Tallied Response",
+    ),
+    ResponseDataColumn(
+        id="response__is_tallied_researcher_override",
+        description="Whether this response tallied/not tallied status was overridden by a researcher",
+        extractor=lambda resp: resp.is_tallied_researcher_override,
+        name="Researcher override",
     ),
 ]
 
