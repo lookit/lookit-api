@@ -60,7 +60,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col">
-                        {% include "studies/responses/_response_count_list.html" with show_headers=False highlight_success=False group_title="Consent rejected" group_description="These are the untallied and preview counts of responses with rejected consents. The tallied category is empty because responses with rejected consents are never tallied." group_total=response_type_counts.total_rejected group_tallied="NA" group_untallied=response_type_counts.nonpreview_rejected group_preview=response_type_counts.preview_rejected %}
+                        {% include "studies/responses/_response_count_list.html" with show_headers=False highlight_success=False group_title="Consent rejected" group_description="These are the non-preview and preview counts of responses with rejected consents. Responses with rejected consents are automatically untallied." group_total=response_type_counts.total_rejected group_tallied="NA" group_untallied=response_type_counts.nonpreview_rejected group_preview=response_type_counts.preview_rejected %}
                     </div>
                 </div>
                 <div class="row">
