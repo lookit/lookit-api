@@ -42,6 +42,7 @@
     {% url 'exp:study-demographics-download-csv' pk=study.id as url_demographics_download_csv %}
     {% url 'exp:study-demographics-download-dict-csv' pk=study.id as url_demographics_download_dict %}
     {% button_primary_classes as btn_primary_classes %}
+    {% button_secondary_classes as btn_secondary_classes %}
     {% if active == 'demographics' %}
         {% page_title "Demographic Snapshots" %}
     {% else %}
@@ -52,10 +53,14 @@
     </div>
     <div class="row my-4 all-responses">
         <div class="col">
-            {% if active == 'all' %}
-                <form id="data-options" method="get">
+            <div class="row justify-content-left">
+                <div class="col-auto mb-0">
                     {% if n_responses %}
-                        Data about {{ n_responses }} response{{ n_responses|pluralize }} are available.
+                        {% if  study.study_type.is_external %}
+                            {% include "studies/responses/_study_response_count_external_card.html" with fullheight=False tallied=study.max_responses %}
+                        {% else %}
+                            {% include "studies/responses/_study_response_count_internal_card.html" with fullheight=False tallied=study.max_responses %}
+                        {% endif %}
                         <p>
                             {% if can_view_regular_responses and not can_view_preview_responses %}
                                 <span><em>(Based on your permissions, no preview responses are included.)</em></span>
@@ -69,6 +74,11 @@
                             There are no responses with confirmed consent yet. Once there are responses with confirmed consent, data will be available for download. Data dictionaries for the overview and child data files are available for planning analyses.
                         </p>
                     {% endif %}
+                </div>
+            </div>
+            {% if active == 'all' %}
+            <div class="row">
+                <form id="data-options" method="get">
                     <p>
                         The following options allow you to download files with the minimal identifying information needed for your analysis. Names and birthdates are available for download as needed, but must be redacted prior to publication. Files with names, global IDs, birthdates, exact ages at participation, or "additional info" fields are marked as identifiable in the filename.
                     </p>
@@ -253,8 +263,10 @@
                         </div>
                     </form>
                 {% endif %}
+            </div>
             {% endif %}
             {% if active == 'demographics' %}
+            <div class="row">
                 <form id="data-options-demo" method="get">
                     <p>Data download options:</p>
                     <div>
@@ -311,6 +323,7 @@
                         </div>
                     </div>
                 </form>
+            </div>
             {% endif %}
         </div>
     </div>
