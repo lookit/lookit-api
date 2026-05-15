@@ -22,7 +22,7 @@
     {% include "studies/responses/_response_nav_tabs.html" with active="summary" %}
     <div class="row my-4 mx-auto w-85">
         <div class="col">
-            {% include "studies/responses/_responses_summary.html" %}
+            {% include "studies/responses/_responses_summary.html" with is_external=study.study_type.is_external %}
         </div>
     </div>
 {% endblock content %}
