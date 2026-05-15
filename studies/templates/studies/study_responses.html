@@ -69,11 +69,13 @@
                                     <th scope="col">Response ID</th>
                                     <th scope="col">Date UTC</th>
                                     <th scope="col">Time Elapsed</th>
-                                    <th scope="col">
-                                        Exit Frame
-                                        <br>
-                                        Status
-                                    </th>
+                                    {% if not study.study_type.is_external %}
+                                        <th scope="col">
+                                            Exit Frame
+                                            <br>
+                                            Status
+                                        </th>
+                                    {% endif %}
                                     <th scope="col">
                                         Payment
                                         <br>
@@ -122,14 +124,16 @@
                                                 {{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}
                                             {% endlocaltime %}
                                         </td>
-                                        <td>{{ response.response__date_created|timesince }}</td>
-                                        <td>
-                                            {% if response.response__completed %}
-                                                Complete
-                                            {% else %}
-                                                Incomplete
-                                            {% endif %}
-                                        </td>
+                                        <td>{{ response.response__date_created|timesince|linebreak_on_comma }}</td>
+                                        {% if not study.study_type.is_external %}
+                                            <td>
+                                                {% if response.response__completed %}
+                                                    Complete
+                                                {% else %}
+                                                    Incomplete
+                                                {% endif %}
+                                            </td>
+                                        {% endif %}
                                         <td data-filter="{{response.response__researcher_payment_status}}"
                                             data-sort="{{response.response__researcher_payment_status}}">
                                             <select name="payment-status"
@@ -223,17 +227,19 @@
                                                class="form-control"
                                                placeholder="Filter Time Elapsed" />
                                     </th>
-                                    <th scope="col">
-                                        <select name="filter-exit-status" 
-                                            id="filter-exit-status" 
-                                            class="form-select" 
-                                            autocomplete="off" 
-                                            aria-label="Filter on whether the exit frame was marked complete">
-                                            <option value="" selected=""></option>
-                                            <option value="complete">Complete</option>
-                                            <option value="incomplete">Incomplete</option>
-                                        </select>
-                                    </th>
+                                    {% if not study.study_type.is_external %}
+                                        <th scope="col">
+                                            <select name="filter-exit-status" 
+                                                id="filter-exit-status" 
+                                                class="form-select" 
+                                                autocomplete="off" 
+                                                aria-label="Filter on whether the exit frame was marked complete">
+                                                <option value="" selected=""></option>
+                                                <option value="complete">Complete</option>
+                                                <option value="incomplete">Incomplete</option>
+                                            </select>
+                                        </th>
+                                    {% endif %}
                                     <th scope="col">
                                         <select name="filter-payment-status"
                                             id="filter-payment-status"
