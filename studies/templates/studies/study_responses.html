@@ -98,7 +98,7 @@
                                         <td title="{% if response.response__is_tallied %}Tallied.{% else %}Not tallied.{% endif %} Click for details." class="{% if response.response__is_preview %}ps-3{% endif %}" data-sort="{{response.response__is_tallied}}"
                                             data-filter="{% if response.response__is_preview %}Preview{% elif response.response__is_tallied %}Tallied &#10004;{% else %}Untallied &#10008;{% endif %}">
                                             {% if response.response__is_preview %}
-                                                P
+                                                <strong>P</strong>
                                             {% else %}
                                                 {% if study.max_responses %}
                                                     <input type="checkbox"
