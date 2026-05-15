@@ -21,7 +21,142 @@ $('.selectable-response').click(function () {
     const responseId = $(this).data("response-id");
     $('form.download [name=response_id]').val(responseId);
     showFeedbackList(responseId);
+    flashCard(document.getElementById('selected-response-card'));
+    flashCard(document.getElementById(`response-summary-${index}`));
+    flashCard(document.getElementById(`response-status-container-${index}`));
 });
+
+// Scroll to the response-status-container when clicking the tally status cell (first column)
+if (hasMaxResponses) {
+    $('#individualResponsesTable').on('click', 'tbody tr td:first-child', function () {
+        const row = $(this).closest('tr');
+        const index = extractIdNumber(row[0].id);
+        const container = document.getElementById(`response-status-container-${index}`);
+        if (container) {
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+}
+
+if (hasMaxResponses) document.getElementById('tallyConfirmModal').addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const responseId = button.dataset.responseId;
+    const responseIndex = button.dataset.responseIndex;
+    const checkbox = document.getElementById(`tallied-checkbox-${responseIndex}`);
+    const currentlyTallied = checkbox ? checkbox.checked : false;
+    const newValue = !currentlyTallied;
+
+    const statusWord = currentlyTallied ? 'tallied' : 'not tallied';
+    const actionWord = currentlyTallied ? 'untally' : 'tally';
+    const additional_text = currentlyTallied ?
+        '<div class="text-muted mt-3">If the correct child participated, was eligible, completed the study, and the family participated in good faith (not a confirmed spammer), then the response should be tallied. This is true even if you are not able to use this response in your analysis, for instance because the child was fussy or there were technical problems.</div>':
+        '<div></div>';
+    document.getElementById('tallyConfirmModalLabel').textContent =
+        `Change tallied status of response ${responseId}`;
+    document.getElementById('tallyConfirmModalBody').innerHTML =
+        `<div class="fs-5 text-center">This response is currently <strong>${statusWord}</strong>.<br>Are you sure you want to <strong>${actionWord}</strong> it?</div>` + additional_text;
+
+    const updateBtn = document.getElementById('tallyConfirmModalUpdateBtn');
+    updateBtn.dataset.pendingResponseId = responseId;
+    updateBtn.dataset.pendingResponseIndex = responseIndex;
+    updateBtn.dataset.pendingValue = newValue;
+});
+
+if (hasMaxResponses) document.getElementById('tallyConfirmModalUpdateBtn').addEventListener('click', function () {
+    const responseId = this.dataset.pendingResponseId;
+    const responseIndex = this.dataset.pendingResponseIndex;
+    const newValue = this.dataset.pendingValue === 'true';
+
+    bootstrap.Modal.getInstance(document.getElementById('tallyConfirmModal')).hide();
+
+    const { token, url } = getCsrfTokenAndUrl();
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': token
+        },
+        body: JSON.stringify({ responseId, field: 'is_tallied', value: newValue })
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    const errMsg = (errorData && errorData.error) ? errorData.error :
+                        `Request to update tallied status has failed for response ${responseId}.`;
+                    throw new Error(errMsg);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            const checkbox = document.getElementById(`tallied-checkbox-${responseIndex}`);
+            if (checkbox) {
+                checkbox.checked = newValue;
+                updateAJAXCellData(checkbox);
+            }
+            // Manually change the 'researcher override' value on the tally status card, as this info is only set on page load
+            const researcher_override_row = document.getElementById(`resp-status-researcher-override-${responseId}`);
+            if (newValue) {
+                researcher_override_row.classList.add('list-group-item-success');
+                researcher_override_row.querySelector('td.resp-status-value').innerHTML = 'Tallied';
+            } else if (newValue === false) {
+                researcher_override_row.classList.add('list-group-item-danger');
+                researcher_override_row.querySelector('td.resp-status-value').innerHTML = 'Untallied';
+            }
+            // Update the tally status title via show response (which gets the tally/untally value via the checkbox for this response, which has been modified)
+            showResponse(responseIndex);
+            if (data.counts) {
+                document.getElementById('count-tallied').textContent = data.counts.tallied;
+                document.getElementById('count-untallied').textContent = data.counts.untallied;
+                document.getElementById('count-preview').textContent = data.counts.preview;
+                const approvedEl = document.getElementById('count-tallied-approved');
+                const pendingEl = document.getElementById('count-tallied-pending');
+                if (approvedEl) approvedEl.textContent = data.counts.tallied_approved;
+                if (pendingEl) pendingEl.textContent = data.counts.tallied_pending;
+            }
+            const container = document.getElementById('is-tallied-toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center border-0 ${newValue ? 'text-bg-success' : 'text-bg-secondary'}`;
+            toast.setAttribute('role', 'status');
+            toast.innerHTML = `<div class="d-flex">
+                <div class="toast-body">${newValue ? `Response ${responseId} marked as tallied.` : `Response ${responseId} marked as not tallied.`}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>`;
+            container.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast, { delay: 5000 });
+            toast.addEventListener('hidden.bs.toast', () => toast.remove());
+            bsToast.show();
+            if (data.success) console.log(data.success);
+        })
+        .catch(error => {
+            console.error(error);
+            showErrorToast(error.message || 'Something went wrong. The tally status change failed.');
+        });
+});
+
+function showErrorToast(message) {
+    const container = document.getElementById('is-tallied-toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast align-items-center border-0 text-bg-danger';
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `<div class="d-flex">
+        <div class="toast-body">${message}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>`;
+    container.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast, { autohide: false });
+    toast.addEventListener('hidden.bs.toast', () => toast.remove());
+    bsToast.show();
+}
+
+function flashCard(el) {
+    if (!el) return;
+    el.classList.remove('card-highlight');
+    void el.offsetWidth; // force reflow so animation restarts
+    el.classList.add('card-highlight');
+    el.addEventListener('animationend', () => el.classList.remove('card-highlight'), { once: true });
+}
 
 function updateInfoBox(index) {
     // TO DO: fix this to remove the use of row/list indicies for getting info from summary table
