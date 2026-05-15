@@ -168,6 +168,13 @@ function showResponse(index) {
     // Shows individual response summary
     $('.response-summary').hide();
     $('#response-summary-' + index).show();
+    if (hasMaxResponses) {
+        // Shows individual response tallied/untallied status container and sets title based on current tallied status
+        $('.response-status-container').hide();
+        $('#response-status-container-' + index).show();
+        const resp_status = document.querySelector(`tr#response-${index}`).children[0].dataset.filter;
+        document.querySelector('span#response-status-title-' + index).textContent = (resp_status == "Preview" | resp_status == "Untallied ✘") ? "Not tallied ✘" : "Tallied ✔";
+    }
 }
 
 function showHideColumns() {
