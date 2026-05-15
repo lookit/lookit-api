@@ -13,7 +13,7 @@ tr.preview-row {
 }
 
 // Input elements in the responses table
-input[type="checkbox"].researcher-editable.input-checkbox-hidden {
+input[type="checkbox"].input-checkbox-hidden {
     display: none;
 }
 
@@ -31,30 +31,41 @@ select.researcher-editable:disabled {
     cursor: not-allowed;
 }
 
-input[type="checkbox"].researcher-editable:disabled+label .icon-star,
-input[type="checkbox"].researcher-editable:disabled+label .icon-valid-check,
-input[type="checkbox"].researcher-editable:disabled+label .icon-valid-xmark {
+input[type="checkbox"].researcher-editable:disabled+label .icon-star {
     color: lightgray;
     fill: lightgray;
     cursor: not-allowed;
 }
 
-// Valid/invalid response icons: show check or xmark, only one at a time
-.icon-valid-check,
-.icon-valid-xmark {
+// tallied/untallied response icons: show check or xmark based on checkbox :checked state
+.icon-tallied-check,
+.icon-tallied-xmark {
     display: none;
 }
 
-.icon-valid-check.icon-valid-filled {
+// .icon-tallied-check.d-inline selector allows us to bypass the checkbox:checked requirement by adding the .d-inline class
+input.tallied-checkbox:checked + label .icon-tallied-check, .icon-tallied-check.d-inline {
     display: inline;
     color: var(--bs-success);
     fill: var(--bs-success);
 }
 
-.icon-valid-xmark.icon-invalid-filled {
+input.tallied-checkbox:not(:checked) + label .icon-tallied-xmark, .icon-tallied-xmark.d-inline {
     display: inline;
     color: $red;
     fill: $red;
+}
+
+input.tallied-checkbox:disabled + label .icon-tallied-check,
+input.tallied-checkbox:disabled + label .icon-tallied-xmark {
+    color: lightgray;
+    fill: lightgray;
+    cursor: not-allowed;
+}
+
+tr.selected input.tallied-checkbox:checked + label .icon-tallied-check,
+tr.selected input.tallied-checkbox:not(:checked) + label .icon-tallied-xmark {
+    filter: brightness(1.5);
 }
 
 // Response info box
