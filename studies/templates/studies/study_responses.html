@@ -306,6 +306,39 @@
         </div>
         <div class="row my-4">
             <div class="col">
+                {% if study.max_responses %}
+                    {% for response in response_data %}
+                    <div class="card bg-light my-4 response-status-container"
+                            id="response-status-container-{{ forloop.counter }}"
+                            style="display:none">
+                        <div class="card-body">
+                            <h5 class="card-title response-status">Response {{ response.response__id }}: <span id="response-status-title-{{ forloop.counter }}"></span></h5>
+                            <table class="table table-sm table-hover response-status-table">
+                                <caption class="visually-hidden">Response tallied status</caption>
+                                <tbody>
+                                    {% for pair in response.status %}
+                                        <tr id="resp-status-{{ pair.name|slugify }}-{{ response.response__id }}" class="{% if pair.name == 'Completed' %} {% if pair.value == True %} list-group-item-success {% else %} list-group-item-danger {% endif %} {% endif %} {% if pair.name == 'Withdrawn' %} {% if pair.value == False %} list-group-item-success {% else %} list-group-item-danger {% endif %} {% endif %} {% if pair.name == 'Eligibility' %} {% for el in pair.value %} {% if '_' in el %} list-group-item-danger {% else %} list-group-item-success {% endif %} {% endfor %} {% endif %} {% if pair.name == 'Preview' %} {% if pair.value == False %} list-group-item-success {% else %} list-group-item-danger {% endif %} {% endif %} {% if pair.name == 'Researcher override' %} {% if pair.value == True %} list-group-item-success {% elif pair.value == False %} list-group-item-danger {% endif %} {% endif %}">
+                                            <td class="resp-status-name">{{ pair.name }}</td>
+                                            <td class="resp-status-value">{% if pair.name == 'Researcher override' %} {% if pair.value == True %} Tallied {% elif pair.value == False %} Untallied {% elif pair.value == None %} None {% endif %} {% else %} {{ pair.value }} {% endif %}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% if can_edit_feedback and not response.response__is_preview %}
+                            <div class="d-flex justify-content-evenly">
+                                <button class="{{ btn_primary_classes }}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#tallyConfirmModal"
+                                        data-response-id="{{ response.response__id }}"
+                                        data-response-index="{{ forloop.counter }}">
+                                    Change tallied status of this response
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
                 {% if study.show_videos %}
                     <div class="card bg-light my-4">
                         <div class="card-body">
@@ -459,7 +492,34 @@
                 {% endfor %}
             </div>
         </div>
+    {% if study.max_responses %}
+    <div class="modal fade"
+         id="tallyConfirmModal"
+         tabindex="-1"
+         aria-labelledby="tallyConfirmModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tallyConfirmModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="tallyConfirmModalBody"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="{{ btn_primary_classes }}" id="tallyConfirmModalUpdateBtn">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
     {% else %}
-        <div class="empty-text">No responses with confirmed consent.</div>
+        {% if study.study_type.is_external %}
+            <div class="empty-text">No responses yet.</div>
+        {% else %}
+            <div class="empty-text">No responses with confirmed consent.</div>
+        {% endif %}
     {% endif %}
 {% endblock content %}
