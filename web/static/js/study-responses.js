@@ -1,3 +1,6 @@
+const hasMaxResponses = document.getElementById('tallyConfirmModal') !== null;
+const isExternal = document.getElementById('filter-exit-status') === null;
+
 $(".selectable-response").first().addClass('selected');
 let currentResponseId = $(".selectable-response").first().data("response-id");
 showResponse(1);
