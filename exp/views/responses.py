@@ -1234,18 +1234,26 @@ class StudyResponseSetResearcherFields(
 
         # Try updating the Response object
         try:
-            setattr(response_obj, field_id, value)
+            db_field = (
+                "is_tallied_researcher_override"
+                if field_id == "is_tallied"
+                else field_id
+            )
+            setattr(response_obj, db_field, value)
             response_obj.save()
         except Exception as e:
             logger.error(f"""An error occurred: {e}""")
             raise
 
-        return JsonResponse(
-            {
-                "success": f"""Response {response_id} field {field_id} updated to {value}"""
-            },
-            status=200,
-        )
+        response_data = {
+            "success": f"""Response {response_id} field {field_id} updated to {value}"""
+        }
+        if field_id == "is_tallied":
+            if self.study.study_type.is_external:
+                response_data["counts"] = get_response_type_counts_external(self.study)
+            else:
+                response_data["counts"] = get_response_type_counts(self.study)
+        return JsonResponse(response_data, status=200)
 
 
 class StudyResponsesConsentManager(
