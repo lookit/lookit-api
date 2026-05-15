@@ -24,12 +24,15 @@ $('.selectable-response').click(function () {
 });
 
 function updateInfoBox(index) {
+    // TO DO: fix this to remove the use of row/list indicies for getting info from summary table
     // Select table rows of response details table.
     const rows = document
         .querySelector(`#response-summary-${index}`)
         ?.querySelectorAll('table tbody tr');
+    // Select row from responses table
+    const selected_response = document.querySelector(`tr#response-${index}`);
 
-    if (!rows) return
+    if (!rows || !selected_response) return
 
     // construct parent ID
     const parentName = rows[13].children[1].textContent
@@ -46,11 +49,11 @@ function updateInfoBox(index) {
     const url = new URL(document.querySelector('.contact-family').href);
     url.searchParams.set("recipient", parentUUID);
 
-    // Short ID for child
+    // Response ID, child short ID, and date
+    document.querySelector('.response-id').textContent =
+        `Response ${selected_response.dataset.responseId}, `;
     document.querySelector('.short-child-id').textContent =
-        rows[15].children[1].textContent;
-
-    // Create date for response with formatted date
+        `Child ${selected_response.children[1].textContent}`;
     document.querySelector('.response-date').textContent = moment.utc(
         rows[2].children[1].textContent
     ).format('M/D/YYYY h:mm A z');
@@ -178,8 +181,10 @@ function showResponse(index) {
 }
 
 function showHideColumns() {
-    // Elements containing links 
-    const show_hide_columns = [{ col: 3, name: "Date" }, { col: 4, name: "Time Elapsed" }, { col: 5, name: "Exit Frame Status" }, { col: 6, name: "Payment Status" }, { col: 7, name: "Session Status" }, { col: 8, name: "Star" }]
+    // Elements containing links
+    const show_hide_columns = isExternal
+        ? [{ col: 3, name: "Date" }, { col: 4, name: "Time Elapsed" }, { col: 5, name: "Payment Status" }, { col: 6, name: "Session Status" }, { col: 7, name: "Star" }]
+        : [{ col: 3, name: "Date" }, { col: 4, name: "Time Elapsed" }, { col: 5, name: "Exit Frame Status" }, { col: 6, name: "Payment Status" }, { col: 7, name: "Session Status" }, { col: 8, name: "Star" }]
     const hide_show_elements = show_hide_columns.map(el => {
         return `<a href class="toggle-vis" data-column="${el.col}">${el.name}</a>`
     })
@@ -249,7 +254,7 @@ const resp_table = $("#individualResponsesTable").DataTable({
     order: [[2, 'desc']], // Sort on "Response ID" column (most recent first). Sorting on Date doesn't work as expected.
     columnDefs: [
         { className: "column-text-search", targets: [1, 2, 4] }, // add class to text search columns
-        { className: "column-dropdown-search", targets: [0, 5, 6, 7, 8] }, // add class to dropdown search columns
+        { className: "column-dropdown-search", targets: isExternal ? [0, 5, 6, 7] : [0, 5, 6, 7, 8] }, // add class to dropdown search columns
         // This tells datatables to sort "Time Elapsed" and "Date" by "Response ID" column's data. Date sorting isn't working (it doesn't take the full timestamp into account). The right way to do this is to pass the full timestamp into the template and tell datatables how to parse and display it, but I couldn't get that to work (docs https://datatables.net/examples/datetime/.)
         { orderData: 2, targets: [2, 3, 4] },
         { targets: 3, type: 'date', render: dateColRender}
