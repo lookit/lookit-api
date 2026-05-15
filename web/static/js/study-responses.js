@@ -72,10 +72,18 @@ function getCsrfTokenAndUrl() {
     return { token, url };
 }
 
+// Capture the current value of selects before the user changes them, so we can revert on failure
+$('.researcher-editable').on('mousedown', function () {
+    if (this.type !== 'checkbox') {
+        this.dataset.previousValue = this.value;
+    }
+});
+
 // Send the researcher-editable field/value to the server when the user changes those input elements
 $('.researcher-editable').change(
     function (event) {
         const target = event.target;
+        const previousValue = (target.type === 'checkbox') ? !target.checked : target.dataset.previousValue;
         target.disabled = true;
         const currentResponseId = target.closest('tr').dataset.responseId;
         const fieldName = target.dataset.field || ('researcher_' + target.name.replace("-", "_"));
@@ -100,6 +108,7 @@ $('.researcher-editable').change(
             .then(response => {
                 if (!response.ok) {
                     // If the response is not successful then parse the JSON for the error message and re-throw
+                    // to send this to the .catch block.
                     return response.json().then(errorData => {
                         const errMsg = (errorData && errorData.error) ? errorData.error : `Request to update a response field has failed for response ${currentResponseId}.`;
                         throw new Error(errMsg);
@@ -128,7 +137,12 @@ $('.researcher-editable').change(
                 }
             })
             .catch(error => {
-                // If the update fails, log the reason to the console and revert to the previous value by reloading the page.
+                target.disabled = false;
+                if (target.type === 'checkbox') {
+                    target.checked = previousValue;
+                } else {
+                    target.value = previousValue;
+                }
                 console.error(error);
                 location.reload();
             });
