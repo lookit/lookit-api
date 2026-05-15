@@ -144,7 +144,7 @@ $('.researcher-editable').change(
                     target.value = previousValue;
                 }
                 console.error(error);
-                location.reload();
+                showErrorToast(error.message || 'Something went wrong. The response update failed.');
             });
     }
 );
@@ -272,12 +272,10 @@ function updateAJAXCellData(target) {
         td.dataset.sort = "False" == td.dataset.sort ? "True" : "False"
         // JS uses unicode rather than HTML &# chars. &#9733; = \u2605, &#9734; = \u2606
         td.dataset.filter = target.checked ? "Starred \u2605" : "Unstarred \u2606"
-    } else if (classes.contains("valid-checkbox")) {
-        td.querySelector('.icon-valid-check').classList.toggle('icon-valid-filled')
-        td.querySelector('.icon-valid-xmark').classList.toggle('icon-invalid-filled')
+    } else if (classes.contains("tallied-checkbox")) {
         td.dataset.sort = "False" == td.dataset.sort ? "True" : "False"
         // JS uses unicode rather than HTML &# chars. &#10004; = \u2714, &#10008; = \u2718
-        td.dataset.filter = target.checked ? "Valid \u2714" : "Invalid \u2718"
+        td.dataset.filter = target.checked ? "Tallied \u2714" : "Untallied \u2718"
     }
 
     resp_table.rows().invalidate("dom").draw(false);
