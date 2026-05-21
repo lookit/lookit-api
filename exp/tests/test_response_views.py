@@ -14,6 +14,10 @@ from accounts.models import Child, DemographicData, User
 from accounts.utils import hash_id
 from exp.views.responses import StudyResponseSetResearcherFields
 from studies.models import ConsentRuling, Lab, Response, Study, StudyType, Video
+from studies.queries import (
+    get_response_type_counts_external,
+    get_summary_statistics_external,
+)
 
 
 class Force2FAClient(Client):
@@ -1687,3 +1691,672 @@ class ResponseViewResearcherUpdateFieldsTestCase(TestCase):
     #       video from another study, no non-preview video wo perms).
     # TODO: Check can download/view video pk from appropriate set only.
     #       (path: "study-response-video-download" (pk, video))
+
+
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+@override_settings(CELERY_TASK_EAGER_PROPAGATES=False)
+class ResponseCountHelperFunctionTests(TestCase):
+    """Unit tests for get_summary_statistics_external and get_response_type_counts_external."""
+
+    def setUp(self):
+        self.lab = G(Lab, name="Test Lab")
+        self.researcher = G(User, is_active=True, is_researcher=True)
+        self.participant = G(User, is_active=True, given_name="Parent")
+        self.child = G(
+            Child,
+            user=self.participant,
+            given_name="Child",
+            birthday=datetime.date.today() - datetime.timedelta(60),
+        )
+        self.study = G(
+            Study,
+            creator=self.researcher,
+            lab=self.lab,
+            study_type=StudyType.get_external(),
+            min_age_years=0,
+            max_age_years=18,
+            max_responses=20,
+        )
+        self.study.admin_group.user_set.add(self.researcher)
+
+        # 2 tallied non-preview responses (is_tallied set True by signal for eligible external responses)
+        for _ in range(2):
+            G(
+                Response,
+                child=self.child,
+                study=self.study,
+                study_type=self.study.study_type,
+                is_preview=False,
+            )
+        # 1 untallied non-preview response (researcher override to False)
+        G(
+            Response,
+            child=self.child,
+            study=self.study,
+            study_type=self.study.study_type,
+            is_preview=False,
+            is_tallied_researcher_override=False,
+        )
+        # 1 preview response
+        G(
+            Response,
+            child=self.child,
+            study=self.study,
+            study_type=self.study.study_type,
+            is_preview=True,
+        )
+        # Totals: 2 tallied + 1 untallied + 1 preview = 4 responses
+
+    def test_get_summary_statistics_external_accepted_equals_total(self):
+        stats = get_summary_statistics_external(self.study, preview_only=False)
+        self.assertEqual(stats["total_responses"], 4)
+
+    def test_get_summary_statistics_external_preview_only_filters_to_previews(self):
+        stats = get_summary_statistics_external(self.study, preview_only=True)
+        self.assertEqual(stats["total_responses"], 1)
+
+    def test_get_summary_statistics_external_consent_keys_are_absent(self):
+        stats = get_summary_statistics_external(self.study, preview_only=False)
+        self.assertNotIn("responses", stats)
+
+    def test_get_response_type_counts_external_tallied_count(self):
+        counts = get_response_type_counts_external(self.study)
+        self.assertEqual(counts["tallied"], 2)
+
+    def test_get_response_type_counts_external_untallied_count(self):
+        counts = get_response_type_counts_external(self.study)
+        self.assertEqual(counts["untallied"], 1)
+
+    def test_get_response_type_counts_external_preview_count(self):
+        counts = get_response_type_counts_external(self.study)
+        self.assertEqual(counts["preview"], 1)
+
+    def test_get_response_type_counts_external_totals(self):
+        counts = get_response_type_counts_external(self.study)
+        self.assertEqual(counts["total"], 4)
+
+    def test_get_response_type_counts_external_consent_related_keys_are_none(self):
+        counts = get_response_type_counts_external(self.study)
+        for key in (
+            "tallied_approved",
+            "untallied_approved",
+            "tallied_pending",
+            "untallied_pending",
+            "preview_approved",
+            "preview_pending",
+            "preview_rejected",
+            "nonpreview_rejected",
+            "total_pending",
+            "total_rejected",
+        ):
+            with self.subTest(key=key):
+                self.assertNotIn(key, counts)
+
+    def test_get_response_type_counts_external_positive_override_counts_as_tallied(
+        self,
+    ):
+        """A response with is_tallied_researcher_override=True should count as tallied."""
+        G(
+            Response,
+            child=self.child,
+            study=self.study,
+            study_type=self.study.study_type,
+            is_preview=False,
+            is_tallied_researcher_override=True,
+        )
+        counts = get_response_type_counts_external(self.study)
+        self.assertEqual(counts["tallied"], 3)
+        self.assertEqual(counts["untallied"], 1)
+
+
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+@override_settings(CELERY_TASK_EAGER_PROPAGATES=False)
+class ResponseCountContextDataTests(TestCase):
+    """Tests for response count context data across 4 study type × max_responses conditions.
+
+    For each combination (internal/external × with/without max_responses), verifies that
+    summary_statistics and response_type_counts are correctly set in the view context.
+
+    Internal study fixture (per study):
+        - 2 tallied approved:  completed + consent accepted  → tallied_approved
+        - 1 untallied approved: incomplete + consent accepted → untallied_approved
+        - 1 tallied pending:    completed + no ruling         → tallied_pending
+        - 1 preview approved: preview + consent accepted   → preview_approved
+        Summary: accepted=4, pending=1, rejected=0
+
+    External study fixture (per study):
+        - 2 tallied: non-preview, no override  → tallied_approved
+        - 1 untallied: non-preview, override=False → untallied_approved
+        - 1 preview: is_preview=True         → preview
+        Summary: accepted=total=4, pending=None, rejected=None
+    """
+
+    def _create_internal_responses(self, study):
+        child = G(
+            Child,
+            user=self.participant,
+            given_name="Child",
+            birthday=datetime.date.today() - datetime.timedelta(60),
+        )
+        # 2 tallied approved (completed + accepted consent ruling)
+        for _ in range(2):
+            resp = G(
+                Response,
+                child=child,
+                study=study,
+                study_type=study.study_type,
+                completed=True,
+                completed_consent_frame=True,
+                is_preview=False,
+            )
+            G(ConsentRuling, response=resp, action="accepted", arbiter=self.researcher)
+        # 1 untallied approved (incomplete + accepted consent ruling)
+        resp = G(
+            Response,
+            child=child,
+            study=study,
+            study_type=study.study_type,
+            completed=False,
+            completed_consent_frame=True,
+            is_preview=False,
+        )
+        G(ConsentRuling, response=resp, action="accepted", arbiter=self.researcher)
+        # 1 tallied pending (completed + no consent ruling → current_ruling=NULL)
+        G(
+            Response,
+            child=child,
+            study=study,
+            study_type=study.study_type,
+            completed=True,
+            completed_consent_frame=True,
+            is_preview=False,
+        )
+        # 1 preview approved (preview + accepted consent ruling)
+        resp = G(
+            Response,
+            child=child,
+            study=study,
+            study_type=study.study_type,
+            completed=False,
+            completed_consent_frame=True,
+            is_preview=True,
+        )
+        G(ConsentRuling, response=resp, action="accepted", arbiter=self.researcher)
+        # 3 preview pending (preview + explicit pending consent ruling)
+        for _ in range(3):
+            resp = G(
+                Response,
+                child=child,
+                study=study,
+                study_type=study.study_type,
+                completed=False,
+                completed_consent_frame=True,
+                is_preview=True,
+            )
+            G(ConsentRuling, response=resp, action="pending", arbiter=self.researcher)
+        # 1 would-be-untallied rejected (ineligible + rejected consent ruling)
+        resp = G(
+            Response,
+            child=child,
+            study=study,
+            study_type=study.study_type,
+            completed=True,
+            completed_consent_frame=True,
+            is_preview=False,
+            eligibility=["Ineligible_TooOld"],
+        )
+        G(ConsentRuling, response=resp, action="rejected", arbiter=self.researcher)
+        # 1 would-be-tallied rejected (rejected consent ruling)
+        resp = G(
+            Response,
+            child=child,
+            study=study,
+            study_type=study.study_type,
+            completed=True,
+            completed_consent_frame=True,
+            is_preview=False,
+        )
+        G(ConsentRuling, response=resp, action="rejected", arbiter=self.researcher)
+
+    def _create_external_responses(self, study):
+        child = G(
+            Child,
+            user=self.participant,
+            given_name="Child",
+            birthday=datetime.date.today() - datetime.timedelta(60),
+        )
+        # 2 tallied (is_tallied set True by signal for eligible external non-preview responses)
+        for _ in range(2):
+            G(
+                Response,
+                child=child,
+                study=study,
+                study_type=study.study_type,
+                is_preview=False,
+            )
+        # 1 untallied (researcher override to False)
+        G(
+            Response,
+            child=child,
+            study=study,
+            study_type=study.study_type,
+            is_preview=False,
+            is_tallied_researcher_override=False,
+        )
+        # 1 preview
+        G(
+            Response,
+            child=child,
+            study=study,
+            study_type=study.study_type,
+            is_preview=True,
+        )
+
+    def setUp(self):
+        self.client = Force2FAClient()
+        self.lab = G(Lab, name="Test Lab")
+        self.researcher = G(User, is_active=True, is_researcher=True)
+        self.participant = G(User, is_active=True, given_name="Parent")
+
+        self.internal_no_max = G(
+            Study,
+            creator=self.researcher,
+            lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
+            min_age_years=0,
+            max_age_years=18,
+            max_responses=None,
+        )
+        self.internal_with_max = G(
+            Study,
+            creator=self.researcher,
+            lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
+            min_age_years=0,
+            max_age_years=18,
+            max_responses=20,
+        )
+        self.external_no_max = G(
+            Study,
+            creator=self.researcher,
+            lab=self.lab,
+            study_type=StudyType.get_external(),
+            min_age_years=0,
+            max_age_years=18,
+            max_responses=None,
+        )
+        self.external_with_max = G(
+            Study,
+            creator=self.researcher,
+            lab=self.lab,
+            study_type=StudyType.get_external(),
+            min_age_years=0,
+            max_age_years=18,
+            max_responses=20,
+        )
+
+        for study in (
+            self.internal_no_max,
+            self.internal_with_max,
+            self.external_no_max,
+            self.external_with_max,
+        ):
+            study.admin_group.user_set.add(self.researcher)
+
+        self._create_internal_responses(self.internal_no_max)
+        self._create_internal_responses(self.internal_with_max)
+        self._create_external_responses(self.external_no_max)
+        self._create_external_responses(self.external_with_max)
+
+    # StudyResponsesList view - individual responses page
+
+    def _get_responses_list_context(self, study):
+        self.client.force_login(self.researcher)
+        url = reverse("exp:study-responses-list", kwargs={"pk": study.pk})
+        return self.client.get(url).context
+
+    def test_responses_list_internal_no_max_summary_statistics(self):
+        # internal without max_responses, summary stats: responses: total/accepted/pending/rejected
+        ctx = self._get_responses_list_context(self.internal_no_max)
+        stats = ctx["summary_statistics"]["responses"]
+        self.assertEqual(stats["accepted"], 4)
+        self.assertEqual(stats["pending"], 4)
+        self.assertEqual(stats["rejected"], 2)
+        self.assertEqual(stats["total"], 10)  # accepted + pending + rejected
+        self.assertNotIn("total_responses", ctx["summary_statistics"])
+        self.assertNotIn("total_children", ctx["summary_statistics"])
+
+    def test_responses_list_internal_no_max_response_type_counts(self):
+        # internal without max_responses, response type counts:
+        ctx = self._get_responses_list_context(self.internal_no_max)
+        counts = ctx["response_type_counts"]
+        # tallied
+        self.assertEqual(counts["tallied_approved"], 2)
+        self.assertEqual(counts["tallied_pending"], 1)
+        self.assertEqual(counts["tallied"], 3)  # tallied_approved + tallied_pending
+        # untallied
+        self.assertEqual(counts["untallied_approved"], 1)
+        self.assertEqual(counts["untallied_pending"], 0)
+        self.assertEqual(
+            counts["untallied"], 1
+        )  # untallied_approved + untallied_pending
+        # preview
+        self.assertEqual(counts["preview_approved"], 1)
+        self.assertEqual(counts["preview_pending"], 3)
+        self.assertEqual(counts["preview"], 4)  # preview_approved + preview_pending
+        # available
+        self.assertEqual(
+            counts["total_available"], 4
+        )  # preview_approved + tallied_approved + untallied_approved
+        # pending
+        self.assertEqual(
+            counts["total_pending"], 4
+        )  # preview_pending + tallied_pending + untallied_pending
+        # rejected
+        self.assertEqual(counts["preview_rejected"], 0)
+        self.assertEqual(counts["nonpreview_rejected"], 2)
+        self.assertEqual(
+            counts["total_rejected"], 2
+        )  # preview_rejected + nonpreview_rejected
+        # total
+        self.assertEqual(
+            counts["total"], 10
+        )  # total_available + total_pending + total_rejected
+
+    def test_responses_list_internal_with_max_summary_statistics(self):
+        # internal with max_responses, summary stats: responses: total/accepted/pending/rejected
+        ctx = self._get_responses_list_context(self.internal_with_max)
+        stats = ctx["summary_statistics"]["responses"]
+        self.assertEqual(stats["accepted"], 4)
+        self.assertEqual(stats["pending"], 4)
+        self.assertEqual(stats["rejected"], 2)
+        self.assertEqual(stats["total"], 10)  # includes rejected
+        self.assertNotIn("total_responses", ctx["summary_statistics"])
+        self.assertNotIn("total_children", ctx["summary_statistics"])
+
+    def test_responses_list_internal_with_max_response_type_counts(self):
+        # internal without max_responses, response type counts:
+        ctx = self._get_responses_list_context(self.internal_no_max)
+        counts = ctx["response_type_counts"]
+        # tallied
+        self.assertEqual(counts["tallied_approved"], 2)
+        self.assertEqual(counts["tallied_pending"], 1)
+        self.assertEqual(counts["tallied"], 3)  # tallied_approved + tallied_pending
+        # untallied
+        self.assertEqual(counts["untallied_approved"], 1)
+        self.assertEqual(counts["untallied_pending"], 0)
+        self.assertEqual(
+            counts["untallied"], 1
+        )  # untallied_approved + untallied_pending
+        # preview
+        self.assertEqual(counts["preview_approved"], 1)
+        self.assertEqual(counts["preview_pending"], 3)
+        self.assertEqual(counts["preview"], 4)  # preview_approved + preview_pending
+        # available
+        self.assertEqual(
+            counts["total_available"], 4
+        )  # preview_approved + tallied_approved + untallied_approved
+        # pending
+        self.assertEqual(
+            counts["total_pending"], 4
+        )  # preview_pending + tallied_pending + untallied_pending
+        # rejected
+        self.assertEqual(counts["preview_rejected"], 0)
+        self.assertEqual(counts["nonpreview_rejected"], 2)
+        self.assertEqual(
+            counts["total_rejected"], 2
+        )  # preview_rejected + nonpreview_rejected
+        # total
+        self.assertEqual(
+            counts["total"], 10
+        )  # total_available + total_pending + total_rejected
+
+    def test_responses_list_external_no_max_summary_statistics(self):
+        # external without max_responses, summary stats: total responses, total children
+        ctx = self._get_responses_list_context(self.external_no_max)
+        self.assertEqual(ctx["summary_statistics"]["total_responses"], 4)
+        self.assertEqual(ctx["summary_statistics"]["total_children"], 1)
+        self.assertNotIn("pending", ctx["summary_statistics"])
+        self.assertNotIn("rejected", ctx["summary_statistics"])
+        self.assertNotIn("approved", ctx["summary_statistics"])
+
+    def test_responses_list_external_no_max_response_type_counts(self):
+        # external without max_responses, response type counts:
+        ctx = self._get_responses_list_context(self.external_no_max)
+        counts = ctx["response_type_counts"]
+        self.assertEqual(counts["tallied"], 2)
+        self.assertEqual(counts["untallied"], 1)
+        self.assertEqual(counts["preview"], 1)
+        self.assertEqual(counts["total"], 4)
+
+    def test_responses_list_external_with_max_summary_statistics(self):
+        # external with max_responses, summary stats: total_responses, total_children
+        ctx = self._get_responses_list_context(self.external_with_max)
+        stats = ctx["summary_statistics"]
+        self.assertEqual(stats["total_responses"], 4)
+        self.assertEqual(stats["total_children"], 1)
+        self.assertNotIn("pending", stats)
+        self.assertNotIn("rejected", stats)
+        self.assertNotIn("approved", stats)
+
+    def test_responses_list_external_with_max_response_type_counts(self):
+        # external with max_responses, response type counts:
+        ctx = self._get_responses_list_context(self.external_with_max)
+        counts = ctx["response_type_counts"]
+        self.assertEqual(counts["tallied"], 2)
+        self.assertEqual(counts["untallied"], 1)
+        self.assertEqual(counts["preview"], 1)
+        self.assertNotIn("tallied_pending", counts)
+        self.assertNotIn("total_rejected", counts)
+
+    # StudyResponsesSummary view - response count summary page
+
+    def _get_count_summary_context(self, study):
+        self.client.force_login(self.researcher)
+        url = reverse("exp:study-responses-count-summary", kwargs={"pk": study.pk})
+        return self.client.get(url).context
+
+    def test_count_summary_internal_response_type_counts(self):
+        ctx = self._get_count_summary_context(self.internal_with_max)
+        # internal with max, response type counts:
+        counts = ctx["response_type_counts"]
+        # tallied
+        self.assertEqual(counts["tallied_approved"], 2)
+        self.assertEqual(counts["tallied_pending"], 1)
+        self.assertEqual(counts["tallied"], 3)  # tallied_approved + tallied_pending
+        # untallied
+        self.assertEqual(counts["untallied_approved"], 1)
+        self.assertEqual(counts["untallied_pending"], 0)
+        self.assertEqual(
+            counts["untallied"], 1
+        )  # untallied_approved + untallied_pending
+        # preview
+        self.assertEqual(counts["preview_approved"], 1)
+        self.assertEqual(counts["preview_pending"], 3)
+        self.assertEqual(counts["preview"], 4)  # preview_approved + preview_pending
+        # available
+        self.assertEqual(
+            counts["total_available"], 4
+        )  # preview_approved + tallied_approved + untallied_approved
+        # pending
+        self.assertEqual(
+            counts["total_pending"], 4
+        )  # preview_pending + tallied_pending + untallied_pending
+        # rejected
+        self.assertEqual(counts["preview_rejected"], 0)
+        self.assertEqual(counts["nonpreview_rejected"], 2)
+        self.assertEqual(
+            counts["total_rejected"], 2
+        )  # preview_rejected + nonpreview_rejected
+        # total
+        self.assertEqual(
+            counts["total"], 10
+        )  # total_available + total_pending + total_rejected
+
+    def test_count_summary_external_response_type_counts(self):
+        ctx = self._get_count_summary_context(self.external_with_max)
+        # external with max, response type counts:
+        counts = ctx["response_type_counts"]
+        self.assertEqual(counts["tallied"], 2)
+        self.assertEqual(counts["untallied"], 1)
+        self.assertEqual(counts["preview"], 1)
+
+    def test_count_summary_internal_summary_statistics(self):
+        ctx = self._get_count_summary_context(self.internal_with_max)
+        # internal with max responses, summary stats: responses: total/accepted/pending/rejected
+        stats = ctx["summary_statistics"]["responses"]
+        self.assertEqual(stats["accepted"], 4)
+        self.assertEqual(stats["pending"], 4)
+        self.assertEqual(stats["rejected"], 2)
+        self.assertEqual(stats["total"], 10)  # includes rejected
+        self.assertNotIn("total_responses", ctx["summary_statistics"])
+        self.assertNotIn("total_children", ctx["summary_statistics"])
+
+    def test_count_summary_external_summary_statistics(self):
+        ctx = self._get_count_summary_context(self.external_with_max)
+        # external with max responses, summary stats: total_responses, total_children
+        self.assertEqual(ctx["summary_statistics"]["total_responses"], 4)
+        self.assertEqual(ctx["summary_statistics"]["total_children"], 1)
+
+    # StudyResponsesAll - all response download page
+
+    def _get_responses_all_context(self, study):
+        self.client.force_login(self.researcher)
+        url = reverse("exp:study-responses-all", kwargs={"pk": study.pk})
+        return self.client.get(url).context
+
+    def test_responses_all_internal_response_type_counts(self):
+        ctx = self._get_responses_all_context(self.internal_with_max)
+        counts = ctx["response_type_counts"]
+        # tallied
+        self.assertEqual(counts["tallied_approved"], 2)
+        self.assertEqual(counts["tallied_pending"], 1)
+        self.assertEqual(counts["tallied"], 3)  # tallied_approved + tallied_pending
+        # untallied
+        self.assertEqual(counts["untallied_approved"], 1)
+        self.assertEqual(counts["untallied_pending"], 0)
+        self.assertEqual(
+            counts["untallied"], 1
+        )  # untallied_approved + untallied_pending
+        # preview
+        self.assertEqual(counts["preview_approved"], 1)
+        self.assertEqual(counts["preview_pending"], 3)
+        self.assertEqual(counts["preview"], 4)  # preview_approved + preview_pending
+        # available
+        self.assertEqual(
+            counts["total_available"], 4
+        )  # preview_approved + tallied_approved + untallied_approved
+        # pending
+        self.assertEqual(
+            counts["total_pending"], 4
+        )  # preview_pending + tallied_pending + untallied_pending
+        # rejected
+        self.assertEqual(counts["preview_rejected"], 0)
+        self.assertEqual(counts["nonpreview_rejected"], 2)
+        self.assertEqual(
+            counts["total_rejected"], 2
+        )  # preview_rejected + nonpreview_rejected
+        # total
+        self.assertEqual(
+            counts["total"], 10
+        )  # total_available + total_pending + total_rejected
+
+    def test_responses_all_external_response_type_counts(self):
+        ctx = self._get_responses_all_context(self.external_with_max)
+        counts = ctx["response_type_counts"]
+        self.assertEqual(counts["tallied"], 2)
+        self.assertEqual(counts["untallied"], 1)
+        self.assertEqual(counts["preview"], 1)
+
+    # StudyDemographics view - demographics download page
+
+    def _get_demographics_context(self, study):
+        self.client.force_login(self.researcher)
+        url = reverse("exp:study-demographics", kwargs={"pk": study.pk})
+        return self.client.get(url).context
+
+    def test_demographics_internal_response_type_counts(self):
+        ctx = self._get_demographics_context(self.internal_with_max)
+        counts = ctx["response_type_counts"]
+        # tallied
+        self.assertEqual(counts["tallied_approved"], 2)
+        self.assertEqual(counts["tallied_pending"], 1)
+        self.assertEqual(counts["tallied"], 3)  # tallied_approved + tallied_pending
+        # untallied
+        self.assertEqual(counts["untallied_approved"], 1)
+        self.assertEqual(counts["untallied_pending"], 0)
+        self.assertEqual(
+            counts["untallied"], 1
+        )  # untallied_approved + untallied_pending
+        # preview
+        self.assertEqual(counts["preview_approved"], 1)
+        self.assertEqual(counts["preview_pending"], 3)
+        self.assertEqual(counts["preview"], 4)  # preview_approved + preview_pending
+        # available
+        self.assertEqual(
+            counts["total_available"], 4
+        )  # preview_approved + tallied_approved + untallied_approved
+        # pending
+        self.assertEqual(
+            counts["total_pending"], 4
+        )  # preview_pending + tallied_pending + untallied_pending
+        # rejected
+        self.assertEqual(counts["preview_rejected"], 0)
+        self.assertEqual(counts["nonpreview_rejected"], 2)
+        self.assertEqual(
+            counts["total_rejected"], 2
+        )  # preview_rejected + nonpreview_rejected
+        # total
+        self.assertEqual(
+            counts["total"], 10
+        )  # total_available + total_pending + total_rejected
+
+    def test_demographics_external_response_type_counts(self):
+        ctx = self._get_demographics_context(self.external_with_max)
+        counts = ctx["response_type_counts"]
+        self.assertEqual(counts["tallied"], 2)
+        self.assertEqual(counts["untallied"], 1)
+        self.assertEqual(counts["preview"], 1)
+
+    def test_demographics_internal_summary_statistics(self):
+        ctx = self._get_demographics_context(self.internal_with_max)
+        stats = ctx["summary_statistics"]["responses"]
+        self.assertEqual(stats["accepted"], 4)
+        self.assertEqual(stats["pending"], 4)
+        self.assertEqual(stats["rejected"], 2)
+        self.assertEqual(stats["total"], 10)  # includes rejected
+        self.assertNotIn("total_responses", ctx["summary_statistics"])
+        self.assertNotIn("total_children", ctx["summary_statistics"])
+
+    def test_demographics_external_summary_statistics(self):
+        ctx = self._get_demographics_context(self.external_with_max)
+        self.assertEqual(ctx["summary_statistics"]["total_responses"], 4)
+        self.assertEqual(ctx["summary_statistics"]["total_children"], 1)
+
+    # StudyResponseSetResearcherFields AJAX endpoint
+
+    def _post_is_tallied_update(self, study, response_obj, value):
+        self.client.force_login(self.researcher)
+        url = reverse("exp:study-responses-researcher-update", kwargs={"pk": study.pk})
+        data = {"responseId": response_obj.id, "field": "is_tallied", "value": value}
+        return self.client.post(url, json.dumps(data), content_type="application/json")
+
+    def test_is_tallied_update_internal_returns_consent_based_counts(self):
+        """Updating is_tallied on an internal study response returns consent-ruling-aware counts."""
+        response_obj = self.internal_with_max.responses.filter(is_preview=False).first()
+        resp = self._post_is_tallied_update(self.internal_with_max, response_obj, True)
+        self.assertEqual(resp.status_code, 200)
+        counts = resp.json()["counts"]
+        # consent-related keys must be integers, not None
+        self.assertIsNotNone(counts["tallied_pending"])
+        self.assertIsNotNone(counts["total_rejected"])
+
+    def test_is_tallied_update_external_returns_consent_free_counts(self):
+        """Updating is_tallied on an external study response returns consent-free counts."""
+        response_obj = self.external_with_max.responses.filter(is_preview=False).first()
+        resp = self._post_is_tallied_update(self.external_with_max, response_obj, True)
+        self.assertEqual(resp.status_code, 200)
+        counts = resp.json()["counts"]
+        # consent-related keys do not exist for external studies
+        self.assertNotIn("tallied_pending", counts)
+        self.assertNotIn("total_rejected", counts)
