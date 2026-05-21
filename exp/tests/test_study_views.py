@@ -737,9 +737,8 @@ class ActivateStudyMaxResponsesTestCase(TestCase):
                 completed=True,
                 is_preview=False,
             )
-            Response.objects.filter(pk=r.pk).update(
-                eligibility=[ResponseEligibility.ELIGIBLE]
-            )
+            r.eligibility = [ResponseEligibility.ELIGIBLE]
+            r.save()
 
     def _get_error_messages(self, response):
         """Extract error-level messages from a followed response."""
@@ -1599,9 +1598,8 @@ class StudyUpdateMaxResponsesTestCase(TestCase):
                 completed=True,
                 is_preview=False,
             )
-            Response.objects.filter(pk=r.pk).update(
-                eligibility=[ResponseEligibility.ELIGIBLE]
-            )
+            r.eligibility = [ResponseEligibility.ELIGIBLE]
+            r.save()
 
     def _get_warning_messages(self, response):
         """Extract warning-level messages from a followed response."""
