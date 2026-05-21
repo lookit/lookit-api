@@ -1124,8 +1124,14 @@ class ResponseDataDownloadTestCase(TestCase):
         researcher_editable_field_headers = [
             "response__" + field for field in self.editable_fields
         ]
-        for field in researcher_editable_field_headers:
-            self.assertIn(field, csv_headers)
+        for field_header in researcher_editable_field_headers:
+            self.assertIn(field_header, csv_headers)
+        field_to_col = {h: i for i, h in enumerate(csv_headers)}
+        for row in csv_body:
+            for field in self.editable_fields:
+                header = "response__" + field
+                expected_csv = str(self.fields_default_values[field])
+                self.assertEqual(row[field_to_col[header]], expected_csv)
 
     def test_get_researcher_editable_fields_in_json_downloads(self):
         self.client.force_login(self.study_reader)
