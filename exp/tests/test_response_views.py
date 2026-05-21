@@ -375,9 +375,13 @@ class ResponseViewsTestCase(TestCase):
         )
         for resp in self.responses:
             for field in self.editable_fields:
-                self.assertEqual(
-                    getattr(resp, field), self.fields_default_values[field]
+                # is_tallied writes go to is_tallied_researcher_override; use effective_is_tallied to read back
+                actual_default = (
+                    resp.effective_is_tallied
+                    if field == "is_tallied"
+                    else getattr(resp, field)
                 )
+                self.assertEqual(actual_default, self.fields_default_values[field])
                 data = {
                     "responseId": resp.id,
                     "field": field,
@@ -390,12 +394,17 @@ class ResponseViewsTestCase(TestCase):
                 success_str = f"Response {resp.id} field {field} updated to {self.fields_new_values[field]}"
                 self.assertIn(success_str, response.json().get("success"))
                 updated_resp = Response.objects.get(id=resp.id)
-                self.assertEqual(
-                    getattr(updated_resp, field),
-                    self.fields_new_values[field],
+                actual_new = (
+                    updated_resp.effective_is_tallied
+                    if field == "is_tallied"
+                    else getattr(updated_resp, field)
                 )
+                self.assertEqual(actual_new, self.fields_new_values[field])
                 # Reset the response object to default values
-                setattr(updated_resp, field, self.fields_default_values[field])
+                if field == "is_tallied":
+                    updated_resp.is_tallied_researcher_override = None
+                else:
+                    setattr(updated_resp, field, self.fields_default_values[field])
                 updated_resp.save()
 
 
@@ -1112,7 +1121,6 @@ class ResponseDataDownloadTestCase(TestCase):
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
         csv_headers = csv_body.pop(0)
-        self.assertEqual(True, True)
         researcher_editable_field_headers = [
             "response__" + field for field in self.editable_fields
         ]
@@ -1520,21 +1528,24 @@ class ResponseViewResearcherUpdateFieldsTestCase(TestCase):
         url = reverse(
             "exp:study-responses-researcher-update", kwargs={"pk": self.study.pk}
         )
-        # These correspond to the fields: session status, payment status, star, valid response
+        # These correspond to the fields: session status, payment status, star, tallied response
         err_strings = [
             "Invalid request: Session Status must be one of ",
             "Invalid request: Payment Status must be one of ",
             "Invalid request: Star field must be a boolean value.",
-            "Invalid request: Valid Response must be a boolean value.",
+            "Invalid request: Tallied Response must be a boolean value.",
         ]
         fields_err_strings = {
             self.editable_fields[i]: err_strings[i]
             for i in range(len(self.editable_fields))
         }
         for field in self.editable_fields:
-            self.assertEqual(
-                getattr(self.response, field), self.fields_default_values[field]
+            actual = (
+                self.response.effective_is_tallied
+                if field == "is_tallied"
+                else getattr(self.response, field)
             )
+            self.assertEqual(actual, self.fields_default_values[field])
             data_invalid = {
                 "responseId": self.response.id,
                 "field": field,
