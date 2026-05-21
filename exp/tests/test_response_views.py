@@ -204,15 +204,15 @@ class ResponseViewsTestCase(TestCase):
             ),
             reverse("exp:study-attachments", kwargs={"pk": self.study.pk}),
         ]
-        # For testing researcher-editable response fields: researcher_session_status, researcher_payment_status, researcher_star, is_valid
+        # For testing researcher-editable response fields: researcher_session_status, researcher_payment_status, researcher_star, is_tallied
         self.editable_fields = StudyResponseSetResearcherFields.EDITABLE_FIELDS
         default_values = [
             "",
             "",
             False,
-            True,
-        ]  # These correspond to session status, payment status, star, and valid response
-        new_values = ["follow_up", "to_pay", True, False]
+            False,
+        ]  # These correspond to session status, payment status, star, and tallied response
+        new_values = ["follow_up", "to_pay", True, True]
         self.fields_default_values = {
             self.editable_fields[i]: default_values[i]
             for i in range(len(self.editable_fields))
@@ -679,8 +679,8 @@ class ResponseDataDownloadTestCase(TestCase):
             "",
             "",
             False,
-            True,
-        ]  # These correspond to session status, payment status, star, and valid response
+            False,
+        ]  # These correspond to session status, payment status, star, and tallied response
         self.fields_default_values = {
             self.editable_fields[i]: default_values[i]
             for i in range(len(self.editable_fields))
@@ -1459,15 +1459,15 @@ class ResponseViewResearcherUpdateFieldsTestCase(TestCase):
             action="accepted",
             arbiter=self.other_researcher,
         )
-        # For testing researcher-editable response fields: researcher_session_status, researcher_payment_status, researcher_star, is_valid
+        # For testing researcher-editable response fields: researcher_session_status, researcher_payment_status, researcher_star, is_tallied
         self.editable_fields = StudyResponseSetResearcherFields.EDITABLE_FIELDS
         default_values = [
             "",
             "",
             False,
-            True,
-        ]  # These correspond to session status, payment status, star, and valid response
-        new_values = ["follow_up", "to_pay", True, False]
+            False,
+        ]  # These correspond to session status, payment status, star, and tallied response
+        new_values = ["follow_up", "to_pay", True, True]
         invalid_values = ["some_other_string", 42, "true", "not_a_bool"]
         self.fields_default_values = {
             self.editable_fields[i]: default_values[i]
