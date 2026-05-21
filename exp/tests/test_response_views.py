@@ -1680,6 +1680,65 @@ class ResponseViewResearcherUpdateFieldsTestCase(TestCase):
         success_str = f"Response {self.response.id} field {self.editable_fields[2]} updated to {False}"
         self.assertIn(success_str, post_response.json().get("success"))
 
+    def test_is_tallied_via_view_writes_to_override_not_system_field(self):
+        """Posting is_tallied=True writes is_tallied_researcher_override, leaving is_tallied unchanged."""
+        self.client.force_login(self.study_admin)
+        url = reverse(
+            "exp:study-responses-researcher-update", kwargs={"pk": self.study.pk}
+        )
+        # Force system is_tallied to False in DB to contrast with the override
+        Response.objects.filter(pk=self.response.pk).update(is_tallied=False)
+        self.response.refresh_from_db()
+        self.assertFalse(self.response.is_tallied)
+
+        data = {"responseId": self.response.id, "field": "is_tallied", "value": True}
+        resp = self.client.post(url, json.dumps(data), content_type="application/json")
+        self.assertEqual(resp.status_code, 200)
+
+        updated = Response.objects.get(pk=self.response.pk)
+        self.assertFalse(updated.is_tallied)  # system field unchanged
+        self.assertTrue(updated.is_tallied_researcher_override)  # override set
+        self.assertTrue(updated.effective_is_tallied)
+
+    def test_is_tallied_researcher_override_can_be_changed_multiple_times(self):
+        """Researcher can toggle is_tallied (override) repeatedly via the view."""
+        self.client.force_login(self.study_admin)
+        url = reverse(
+            "exp:study-responses-researcher-update", kwargs={"pk": self.study.pk}
+        )
+
+        for value in [True, False, True, False]:
+            data = {
+                "responseId": self.response.id,
+                "field": "is_tallied",
+                "value": value,
+            }
+            resp = self.client.post(
+                url, json.dumps(data), content_type="application/json"
+            )
+            self.assertEqual(resp.status_code, 200)
+            updated = Response.objects.get(pk=self.response.pk)
+            self.assertEqual(updated.is_tallied_researcher_override, value)
+            self.assertEqual(updated.effective_is_tallied, value)
+
+    def test_is_tallied_researcher_override_field_cannot_be_set_directly_via_view(self):
+        """is_tallied_researcher_override is not in EDITABLE_FIELDS, so direct edits are rejected."""
+        self.client.force_login(self.study_admin)
+        url = reverse(
+            "exp:study-responses-researcher-update", kwargs={"pk": self.study.pk}
+        )
+        data = {
+            "responseId": self.response.id,
+            "field": "is_tallied_researcher_override",
+            "value": True,
+        }
+        resp = self.client.post(url, json.dumps(data), content_type="application/json")
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn(
+            "Invalid request: Invalid field is_tallied_researcher_override",
+            resp.json()["error"],
+        )
+
     # TODO: test individual file downloads from response-list
     #       * cannot get response from another study,
     #       * cannot get real data if only preview perms
