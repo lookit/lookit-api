@@ -319,7 +319,7 @@ def get_response_type_counts(study) -> Dict:
     - total_available: all responses with accepted consent (preview_approved + tallied_approved + untallied_approved)
     - total_pending: all responses with pending/null consent (preview_pending + tallied_pending + untallied_pending)
     - total_rejected: all responses with rejected consent (preview_rejected + nonpreview_rejected)
-    - total: total_available + total_pending (excludes rejected)
+    - total: total_available + total_pending + total_rejected
     """
     is_effectively_tallied = Q(
         is_tallied_researcher_override__isnull=False,
@@ -383,7 +383,9 @@ def get_response_type_counts(study) -> Dict:
     counts["total_rejected"] = (
         counts["preview_rejected"] + counts["nonpreview_rejected"]
     )
-    counts["total"] = counts["total_available"] + counts["total_pending"]
+    counts["total"] = (
+        counts["total_available"] + counts["total_pending"] + counts["total_rejected"]
+    )
     return counts
 
 
