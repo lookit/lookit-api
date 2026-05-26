@@ -54,24 +54,24 @@ input[type="checkbox"].researcher-editable:disabled + label .icon-star {
 .icon-tallied-xmark {
   display: none; }
 
-input.tallied-checkbox:checked + label .icon-tallied-check, .icon-tallied-check.d-inline {
+input.tallied-checkbox:checked + span .icon-tallied-check, .icon-tallied-check.d-inline {
   display: inline;
   color: var(--bs-success);
   fill: var(--bs-success); }
 
-input.tallied-checkbox:not(:checked) + label .icon-tallied-xmark, .icon-tallied-xmark.d-inline {
+input.tallied-checkbox:not(:checked) + span .icon-tallied-xmark, .icon-tallied-xmark.d-inline {
   display: inline;
   color: #ff5f5c;
   fill: #ff5f5c; }
 
-input.tallied-checkbox:disabled + label .icon-tallied-check,
-input.tallied-checkbox:disabled + label .icon-tallied-xmark {
+input.tallied-checkbox:disabled + span .icon-tallied-check,
+input.tallied-checkbox:disabled + span .icon-tallied-xmark {
   color: lightgray;
   fill: lightgray;
   cursor: not-allowed; }
 
-tr.selected input.tallied-checkbox:checked + label .icon-tallied-check,
-tr.selected input.tallied-checkbox:not(:checked) + label .icon-tallied-xmark {
+tr.selected input.tallied-checkbox:checked + span .icon-tallied-check,
+tr.selected input.tallied-checkbox:not(:checked) + span .icon-tallied-xmark {
   filter: brightness(1.5); }
 
 .truncate-parent-feedback {
