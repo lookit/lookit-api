@@ -1151,10 +1151,11 @@ class StudyModelTestCase(TestCase):
     @patch("studies.models.send_mail")
     def test_check_and_pause_no_researcher_email_by_default(self, mock_send_mail):
         """Researcher notification email is not sent by default."""
-        study = self._create_study_with_lab(
-            "No Email Test", max_responses=2, state="active"
-        )
+        # Create responses while not active so the signal does not pre-emptively pause
+        study = self._create_study_with_lab("No Email Test", max_responses=2)
         self._create_eligible_responses(study, count=2)
+        study.state = "active"
+        study.save()
 
         study.check_and_pause_if_at_max_responses()
 
@@ -1171,10 +1172,11 @@ class StudyModelTestCase(TestCase):
         self, mock_messages, mock_send_mail
     ):
         """A Django messages warning is added when request is provided."""
-        study = self._create_study_with_lab(
-            "Banner Test", max_responses=2, state="active"
-        )
+        # Create responses while not active so the signal does not pre-emptively pause
+        study = self._create_study_with_lab("Banner Test", max_responses=2)
         self._create_eligible_responses(study, count=2)
+        study.state = "active"
+        study.save()
         mock_request = MagicMock()
 
         study.check_and_pause_if_at_max_responses(request=mock_request)
