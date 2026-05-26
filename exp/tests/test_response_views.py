@@ -2134,8 +2134,8 @@ class ResponseCountContextDataTests(TestCase):
         self.assertNotIn("total_children", ctx["summary_statistics"])
 
     def test_responses_list_internal_with_max_response_type_counts(self):
-        # internal without max_responses, response type counts:
-        ctx = self._get_responses_list_context(self.internal_no_max)
+        # internal with max_responses, response type counts:
+        ctx = self._get_responses_list_context(self.internal_with_max)
         counts = ctx["response_type_counts"]
         # tallied
         self.assertEqual(counts["tallied_approved"], 2)
