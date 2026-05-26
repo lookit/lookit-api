@@ -82,7 +82,7 @@ if (hasMaxResponses) document.getElementById('tallyConfirmModalUpdateBtn').addEv
         .then(response => {
             if (!response.ok) {
                 return response.json().then(errorData => {
-                    const errMsg = (errorData && errorData.error) ? errorData.error :
+                    const errMsg = errorData?.error ??
                         `Request to update tallied status has failed for response ${responseId}.`;
                     throw new Error(errMsg);
                 });
@@ -153,7 +153,7 @@ function showErrorToast(message) {
 function flashCard(el) {
     if (!el) return;
     el.classList.remove('card-highlight');
-    void el.offsetWidth; // force reflow so animation restarts
+    el.getBoundingClientRect(); // force reflow so animation restarts
     el.classList.add('card-highlight');
     el.addEventListener('animationend', () => el.classList.remove('card-highlight'), { once: true });
 }
@@ -248,7 +248,7 @@ $('.researcher-editable').change(
                     // If the response is not successful then parse the JSON for the error message and re-throw
                     // to send this to the .catch block.
                     return response.json().then(errorData => {
-                        const errMsg = (errorData && errorData.error) ? errorData.error : `Request to update a response field has failed for response ${currentResponseId}.`;
+                        const errMsg = errorData?.error ?? `Request to update a response field has failed for response ${currentResponseId}.`;
                         throw new Error(errMsg);
                     });
                 }
