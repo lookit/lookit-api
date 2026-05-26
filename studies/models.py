@@ -1785,11 +1785,16 @@ def update_is_tallied_on_response_save(sender, instance, update_fields, **kwargs
     if instance.is_tallied != new_value:
         Response.objects.filter(pk=instance.pk).update(is_tallied=new_value)
         instance.is_tallied = new_value
+        instance.study.check_and_pause_if_at_max_responses(send_researcher_email=True)
 
 
 @receiver(post_save, sender=ConsentRuling)
 def update_is_tallied_on_consent_ruling_save(sender, instance, **kwargs):
     """Recompute is_tallied for the related Response when a ConsentRuling is saved."""
     response = instance.response
+    old_value = response.is_tallied
     new_value = response.compute_is_tallied()
     Response.objects.filter(pk=response.pk).update(is_tallied=new_value)
+    response.is_tallied = new_value
+    if old_value != new_value:
+        response.study.check_and_pause_if_at_max_responses(send_researcher_email=True)
