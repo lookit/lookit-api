@@ -1,4 +1,5 @@
 import datetime
+from unittest.mock import patch
 
 from django.conf import settings
 from django.test import TestCase
@@ -667,6 +668,133 @@ class IsTalliedSignalTestCase(TestCase):
         ruling.save()
         resp.refresh_from_db()
         self.assertFalse(resp.is_tallied)
+
+    @patch("studies.models.send_mail")
+    def test_response_save_pauses_active_study_when_tallied_count_reaches_max(
+        self, mock_send_mail
+    ):
+        """Saving a response that changes is_tallied to True pauses the study when max_responses is reached."""
+        self.internal_study.max_responses = 1
+        self.internal_study.state = "active"
+        self.internal_study.save()
+
+        resp = G(
+            Response,
+            child=self.child,
+            study=self.internal_study,
+            study_type=self.internal_study.study_type,
+            is_preview=False,
+            completed=False,
+            completed_consent_frame=True,
+        )
+        resp.refresh_from_db()
+        self.assertFalse(resp.is_tallied)
+        self.internal_study.refresh_from_db()
+        self.assertEqual(self.internal_study.state, "active")
+
+        resp.completed = True
+        resp.save()
+        resp.refresh_from_db()
+        self.assertTrue(resp.is_tallied)
+        self.internal_study.refresh_from_db()
+        self.assertEqual(self.internal_study.state, "paused")
+
+    @patch("studies.models.send_mail")
+    def test_consent_ruling_accepted_pauses_active_study_when_tallied_count_reaches_max(
+        self, mock_send_mail
+    ):
+        """Accepting consent for a previously-rejected response pauses the study when max_responses is reached."""
+        # Use a high max_responses so creating the response doesn't pause the study yet
+        self.internal_study.max_responses = 99
+        self.internal_study.state = "active"
+        self.internal_study.save()
+
+        resp = G(
+            Response,
+            child=self.child,
+            study=self.internal_study,
+            study_type=self.internal_study.study_type,
+            is_preview=False,
+            completed=True,
+            completed_consent_frame=True,
+        )
+        G(ConsentRuling, response=resp, action="rejected")
+        resp.refresh_from_db()
+        self.assertFalse(resp.is_tallied)
+
+        # Now lower max_responses to 1 so that an accepted ruling will trigger a pause
+        self.internal_study.max_responses = 1
+        self.internal_study.save()
+        self.internal_study.refresh_from_db()
+        self.assertEqual(self.internal_study.state, "active")
+
+        G(ConsentRuling, response=resp, action="accepted")
+        resp.refresh_from_db()
+        self.assertTrue(resp.is_tallied)
+        self.internal_study.refresh_from_db()
+        self.assertEqual(self.internal_study.state, "paused")
+
+    def test_consent_ruling_accepted_does_not_pause_when_is_tallied_unchanged(self):
+        """Creating an accepted ruling for an already-tallied response does not trigger pausing."""
+        self.internal_study.max_responses = 2
+        self.internal_study.state = "active"
+        self.internal_study.save()
+
+        # No ruling = pending (not rejected) → tallied for a complete response
+        resp = G(
+            Response,
+            child=self.child,
+            study=self.internal_study,
+            study_type=self.internal_study.study_type,
+            is_preview=False,
+            completed=True,
+            completed_consent_frame=True,
+        )
+        resp.refresh_from_db()
+        self.assertTrue(resp.is_tallied)
+        self.internal_study.refresh_from_db()
+        self.assertEqual(self.internal_study.state, "active")  # 1 < max=2
+
+        # Accepted ruling: is_tallied stays True (old=True, new=True) → no check_and_pause call
+        G(ConsentRuling, response=resp, action="accepted")
+        resp.refresh_from_db()
+        self.assertTrue(resp.is_tallied)
+        self.internal_study.refresh_from_db()
+        self.assertEqual(self.internal_study.state, "active")
+
+    @patch("studies.models.send_mail")
+    def test_study_stays_paused_after_consent_rejection_drops_below_max(
+        self, mock_send_mail
+    ):
+        """Rejecting consent drops is_tallied to False; the study stays paused without auto-unpausing."""
+        self.internal_study.max_responses = 1
+        self.internal_study.state = "active"
+        self.internal_study.save()
+
+        resp = G(
+            Response,
+            child=self.child,
+            study=self.internal_study,
+            study_type=self.internal_study.study_type,
+            is_preview=False,
+            completed=True,
+            completed_consent_frame=True,
+        )
+        resp.refresh_from_db()
+        self.assertTrue(resp.is_tallied)
+        self.internal_study.refresh_from_db()
+        self.assertEqual(
+            self.internal_study.state, "paused"
+        )  # auto-paused (1 >= max=1)
+
+        G(ConsentRuling, response=resp, action="rejected")
+        resp.refresh_from_db()
+        self.assertFalse(resp.is_tallied)
+        self.internal_study.refresh_from_db()
+        self.assertFalse(self.internal_study.has_reached_max_responses)
+        self.assertEqual(
+            self.internal_study.state, "paused"
+        )  # Still paused, no auto-unpause
 
 
 class EffectiveIsTalliedTestCase(TestCase):
