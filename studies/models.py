@@ -1790,7 +1790,10 @@ def update_is_tallied_on_response_save(sender, instance, update_fields, **kwargs
 
 @receiver(post_save, sender=ConsentRuling)
 def update_is_tallied_on_consent_ruling_save(sender, instance, **kwargs):
-    """Recompute is_tallied for the related Response when a ConsentRuling is saved."""
+    """Recompute is_tallied for the related Response when a ConsentRuling is saved.
+
+    Use .update() instead of .save() when setting Response is_tallied to avoid triggering the Response post-save signals.
+    """
     response = instance.response
     old_value = response.is_tallied
     new_value = response.compute_is_tallied()
