@@ -3,6 +3,7 @@ import datetime
 import io
 import json
 import re
+from unittest.mock import patch
 
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
@@ -1739,6 +1740,102 @@ class ResponseViewResearcherUpdateFieldsTestCase(TestCase):
             resp.json()["error"],
         )
 
+    @patch("studies.models.send_mail")
+    def test_set_tallied_true_pauses_active_study_and_returns_reached_max_message(
+        self, mock_send_mail
+    ):
+        """POSTing is_tallied=True pauses an active study when max_responses is reached and returns the message."""
+        self.study.max_responses = 1
+        self.study.state = "active"
+        self.study.save()
+
+        # Make the response not effectively tallied so the count starts at 0
+        Response.objects.filter(pk=self.response.pk).update(
+            is_tallied=False, is_tallied_researcher_override=None
+        )
+        self.response.refresh_from_db()
+        self.assertFalse(self.response.effective_is_tallied)
+        self.assertFalse(self.study.has_reached_max_responses)
+
+        self.client.force_login(self.study_admin)
+        url = reverse(
+            "exp:study-responses-researcher-update", kwargs={"pk": self.study.pk}
+        )
+        data = {"responseId": self.response.id, "field": "is_tallied", "value": True}
+        resp = self.client.post(url, json.dumps(data), content_type="application/json")
+
+        self.assertEqual(resp.status_code, 200)
+        self.study.refresh_from_db()
+        self.assertEqual(self.study.state, "paused")
+        self.assertIn("reached the response limit", resp.json().get("message", ""))
+
+    def test_set_tallied_false_when_was_at_max_returns_dropped_below_message(self):
+        """POSTing is_tallied=False when the study was at max_responses returns a 'dropped below' message."""
+        self.study.max_responses = 1
+        self.study.state = "paused"
+        self.study.save()
+
+        # Ensure the response is effectively tallied so tallied_count=1 = max
+        Response.objects.filter(pk=self.response.pk).update(
+            is_tallied=True, is_tallied_researcher_override=None
+        )
+        self.response.refresh_from_db()
+        self.assertTrue(self.response.effective_is_tallied)
+        self.assertTrue(self.study.has_reached_max_responses)
+
+        self.client.force_login(self.study_admin)
+        url = reverse(
+            "exp:study-responses-researcher-update", kwargs={"pk": self.study.pk}
+        )
+        data = {"responseId": self.response.id, "field": "is_tallied", "value": False}
+        resp = self.client.post(url, json.dumps(data), content_type="application/json")
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn(
+            "dropped back below the response limit", resp.json().get("message", "")
+        )
+        self.study.refresh_from_db()
+        self.assertEqual(self.study.state, "paused")  # Still paused, no auto-unpause
+
+    def test_set_tallied_false_does_not_unpause_study_below_max(self):
+        """Setting is_tallied=False keeps the study paused even after dropping below max_responses."""
+        self.study.max_responses = 1
+        self.study.state = "paused"
+        self.study.save()
+        Response.objects.filter(pk=self.response.pk).update(
+            is_tallied=True, is_tallied_researcher_override=None
+        )
+
+        self.client.force_login(self.study_admin)
+        url = reverse(
+            "exp:study-responses-researcher-update", kwargs={"pk": self.study.pk}
+        )
+        data = {"responseId": self.response.id, "field": "is_tallied", "value": False}
+        self.client.post(url, json.dumps(data), content_type="application/json")
+
+        self.study.refresh_from_db()
+        self.assertFalse(self.study.has_reached_max_responses)
+        self.assertEqual(self.study.state, "paused")
+
+    def test_set_tallied_no_message_when_not_crossing_max_threshold(self):
+        """No message is returned when the tallied status change does not cross the max_responses threshold."""
+        self.study.max_responses = 5
+        self.study.save()
+        Response.objects.filter(pk=self.response.pk).update(
+            is_tallied=True, is_tallied_researcher_override=None
+        )
+
+        self.client.force_login(self.study_admin)
+        url = reverse(
+            "exp:study-responses-researcher-update", kwargs={"pk": self.study.pk}
+        )
+        # Set to False: count goes from 1 to 0, still below max=5
+        data = {"responseId": self.response.id, "field": "is_tallied", "value": False}
+        resp = self.client.post(url, json.dumps(data), content_type="application/json")
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotIn("message", resp.json())
+
     # TODO: test individual file downloads from response-list
     #       * cannot get response from another study,
     #       * cannot get real data if only preview perms
@@ -1750,6 +1847,111 @@ class ResponseViewResearcherUpdateFieldsTestCase(TestCase):
     #       video from another study, no non-preview video wo perms).
     # TODO: Check can download/view video pk from appropriate set only.
     #       (path: "study-response-video-download" (pk, video))
+
+
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+@override_settings(CELERY_TASK_EAGER_PROPAGATES=False)
+class StudyResponsesConsentManagerMaxResponsesTestCase(TestCase):
+    """Tests for max_responses behavior triggered via the consent manager view."""
+
+    def setUp(self):
+        self.client = Force2FAClient()
+        self.researcher = G(User, is_active=True, is_researcher=True)
+        participant = G(User, is_active=True)
+        self.child = G(
+            Child,
+            user=participant,
+            birthday=datetime.date.today() - datetime.timedelta(60),
+        )
+        self.lab = G(Lab, name="Test Lab")
+        self.study = G(
+            Study,
+            creator=self.researcher,
+            lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
+            min_age_years=0,
+            min_age_months=0,
+            min_age_days=0,
+            max_age_years=18,
+            max_age_months=0,
+            max_age_days=0,
+            criteria_expression="",
+            max_responses=2,
+        )
+        self.study.admin_group.user_set.add(self.researcher)
+
+        for _ in range(2):
+            G(
+                Response,
+                child=self.child,
+                study=self.study,
+                study_type=self.study.study_type,
+                is_preview=False,
+                completed=True,
+                completed_consent_frame=True,
+            )
+        # Force both responses as tallied to ensure tallied_count=2=max_responses
+        Response.objects.filter(study=self.study).update(is_tallied=True)
+        self.tallied_response = Response.objects.filter(study=self.study).first()
+
+    def test_consent_manager_shows_dropped_below_message_when_ruling_reduces_count(
+        self,
+    ):
+        """Rejecting consent that drops tallied count below max_responses shows a 'dropped below' message."""
+        self.client.force_login(self.researcher)
+        self.assertTrue(self.study.has_reached_max_responses)
+
+        url = reverse(
+            "exp:study-responses-consent-manager", kwargs={"pk": self.study.pk}
+        )
+        data = {
+            "comments": json.dumps({}),
+            "rejected": str(self.tallied_response.uuid),
+        }
+        http_response = self.client.post(url, data, follow=True)
+
+        message_texts = [str(m) for m in http_response.context["messages"]]
+        self.assertTrue(
+            any(
+                "dropped back below the response limit" in text
+                for text in message_texts
+            )
+        )
+        self.study.refresh_from_db()
+        self.assertFalse(self.study.has_reached_max_responses)
+
+    def test_consent_manager_shows_reached_max_message_when_ruling_increases_count(
+        self,
+    ):
+        """Accepting a rejected response that brings the tallied count to max_responses shows a 'reached max' warning."""
+        # Reject one response so the study starts below max (count=1 < max=2)
+        not_tallied_response = Response.objects.filter(study=self.study).last()
+        G(ConsentRuling, response=not_tallied_response, action="rejected")
+        not_tallied_response.refresh_from_db()
+        self.assertFalse(not_tallied_response.is_tallied)
+
+        # Set study to active so accepting the ruling will also trigger the auto-pause
+        self.study.state = "active"
+        self.study.save()
+        self.assertFalse(self.study.has_reached_max_responses)  # count=1 < max=2
+
+        self.client.force_login(self.researcher)
+        url = reverse(
+            "exp:study-responses-consent-manager", kwargs={"pk": self.study.pk}
+        )
+        data = {
+            "comments": json.dumps({}),
+            "accepted": str(not_tallied_response.uuid),
+        }
+        http_response = self.client.post(url, data, follow=True)
+
+        message_texts = [str(m) for m in http_response.context["messages"]]
+        self.assertTrue(
+            any("reached the response limit" in text for text in message_texts)
+        )
+        self.study.refresh_from_db()
+        self.assertTrue(self.study.has_reached_max_responses)
+        self.assertEqual(self.study.state, "paused")
 
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
