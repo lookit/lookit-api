@@ -1206,6 +1206,55 @@ class StudyModelTestCase(TestCase):
 
         mock_messages.warning.assert_not_called()
 
+    def test_study_remains_paused_after_dropping_below_max(self):
+        """A study paused due to max_responses stays paused after the tallied count drops below max."""
+        study = self._create_study_with_lab(
+            "Stay Paused", max_responses=2, state="active"
+        )
+        self._create_eligible_responses(study, count=2)
+        study.check_and_pause_if_at_max_responses()
+        study.refresh_from_db()
+        self.assertEqual(study.state, "paused")
+        self.assertTrue(study.has_reached_max_responses)
+
+        response = Response.objects.filter(study=study).first()
+        response.is_tallied_researcher_override = False
+        response.save()
+
+        study.refresh_from_db()
+        self.assertFalse(study.has_reached_max_responses)
+        self.assertEqual(study.state, "paused")
+
+    def test_cannot_activate_when_at_max_responses(self):
+        """Activating a study that has reached max_responses raises a RuntimeError."""
+        study = self._create_study_with_lab("Cannot Activate", max_responses=2)
+        study.built = True
+        study.state = "paused"
+        study.save()
+        self._create_eligible_responses(study, count=2)
+
+        self.assertTrue(study.has_reached_max_responses)
+        with self.assertRaises(RuntimeError) as ctx:
+            study.activate()
+        self.assertIn("maximum number of responses", str(ctx.exception))
+        study.refresh_from_db()
+        self.assertEqual(study.state, "paused")
+
+    def test_can_activate_when_below_max_responses(self):
+        """Activating a study below max_responses succeeds when the study is otherwise ready."""
+        study = self._create_study_with_lab("Can Activate", max_responses=3)
+        study.built = True
+        study.state = "paused"
+        study.save()
+        self._create_eligible_responses(study, count=1)
+
+        self.assertFalse(study.has_reached_max_responses)
+        # Patch the activation notification callback since no user is available in this test context
+        with patch.object(study, "notify_administrators_of_activation"):
+            study.activate()
+        study.refresh_from_db()
+        self.assertEqual(study.state, "active")
+
 
 class VideoModelTestCase(TestCase):
     def setUp(self):
