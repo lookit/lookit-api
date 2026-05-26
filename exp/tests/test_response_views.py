@@ -1933,7 +1933,9 @@ class StudyResponsesConsentManagerMaxResponsesTestCase(TestCase):
         # Set study to active so accepting the ruling will also trigger the auto-pause
         self.study.state = "active"
         self.study.save()
-        self.assertFalse(self.study.has_reached_max_responses)  # count=1 < max=2
+        self.assertFalse(
+            self.study.has_reached_max_responses
+        )  # count is 1, which is less than the max (2)
 
         self.client.force_login(self.researcher)
         url = reverse(

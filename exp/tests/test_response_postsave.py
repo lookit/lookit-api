@@ -753,7 +753,9 @@ class IsTalliedSignalTestCase(TestCase):
         resp.refresh_from_db()
         self.assertTrue(resp.is_tallied)
         self.internal_study.refresh_from_db()
-        self.assertEqual(self.internal_study.state, "active")  # 1 < max=2
+        self.assertEqual(
+            self.internal_study.state, "active"
+        )  # count is still 1, which is less than the max (2)
 
         # Accepted ruling: is_tallied stays True (old=True, new=True) → no check_and_pause call
         G(ConsentRuling, response=resp, action="accepted")
