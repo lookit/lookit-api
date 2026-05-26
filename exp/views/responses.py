@@ -1160,20 +1160,62 @@ class StudyResponseSetResearcherFields(
 
     test_func = user_can_edit_response
 
+    def _validate_value(self, field_id, value):
+        """Return an error message string if value is invalid for field_id, else None."""
+        if field_id == "researcher_session_status":
+            if value not in Response.SESSION_STATUS_CHOICES:
+                return (
+                    f"Session Status must be one of {Response.SESSION_STATUS_CHOICES}."
+                )
+        elif field_id == "researcher_payment_status":
+            if value not in Response.PAYMENT_STATUS_CHOICES:
+                return (
+                    f"Payment Status must be one of {Response.PAYMENT_STATUS_CHOICES}."
+                )
+        elif field_id in ("researcher_star", "is_tallied"):
+            label = (
+                "Star field" if field_id == "researcher_star" else "Tallied Response"
+            )
+            if not isinstance(value, bool):
+                return f"{label} must be a boolean value."
+        return None
+
+    def _build_is_tallied_update_data(self, study, was_at_max):
+        """Return additional response data keys after saving an is_tallied change."""
+        study.check_and_pause_if_at_max_responses(send_researcher_email=True)
+        study.refresh_from_db()
+        extra = {}
+        if was_at_max and not study.has_reached_max_responses:
+            extra["message"] = (
+                f"Your study has dropped back below the response limit: "
+                f"{study.tallied_response_count}/{study.max_responses}"
+            )
+        elif not was_at_max and study.has_reached_max_responses:
+            extra["message"] = (
+                f"Your study has reached the response limit and has been automatically paused: "
+                f"{study.tallied_response_count}/{study.max_responses}"
+            )
+        extra["counts"] = (
+            get_response_type_counts_external(study)
+            if study.study_type.is_external
+            else get_response_type_counts(study)
+        )
+        return extra
+
     def post(self, request, *args, **kwargs):
         """
         Edit the researcher-editable fields in the Individual Responses table. Pass field and response_id to edit that response field.
         """
         data = json.loads(request.body)
-        response_id = data.get("responseId", None)
-        field_id = data.get("field", None)
-        value = data.get("value", None)
+        response_id = data.get("responseId")
+        field_id = data.get("field")
+        value = data.get("value")
 
-        # Data validation checks
         if response_id is None or field_id is None or value is None:
             return JsonResponse(
                 {
-                    "error": f"""Invalid request: One or more of the required arguments is missing. Response ID {response_id}, field {field_id}, and/or value {value}."""
+                    "error": f"Invalid request: One or more of the required arguments is missing. "
+                    f"Response ID {response_id}, field {field_id}, and/or value {value}."
                 },
                 status=400,
             )
@@ -1183,7 +1225,7 @@ class StudyResponseSetResearcherFields(
         except ObjectDoesNotExist:
             return JsonResponse(
                 {
-                    "error": f"""Invalid request: Response object {response_id} does not exist"""
+                    "error": f"Invalid request: Response object {response_id} does not exist"
                 },
                 status=400,
             )
@@ -1191,87 +1233,46 @@ class StudyResponseSetResearcherFields(
         if response_obj.study_id != self.study.pk:
             return JsonResponse(
                 {
-                    "error": f"""Invalid request: Response object {response_id} is not from this study."""
+                    "error": f"Invalid request: Response object {response_id} is not from this study."
                 },
                 status=400,
             )
 
         if field_id not in self.EDITABLE_FIELDS:
             return JsonResponse(
-                {"error": f"""Invalid request: Invalid field {field_id}"""}, status=400
+                {"error": f"Invalid request: Invalid field {field_id}"}, status=400
             )
 
-        if field_id == self.EDITABLE_FIELDS[0]:
-            if value not in Response.SESSION_STATUS_CHOICES:
-                return JsonResponse(
-                    {
-                        "error": f"""Invalid request: Session Status must be one of {Response.SESSION_STATUS_CHOICES}."""
-                    },
-                    status=400,
-                )
-        elif field_id == self.EDITABLE_FIELDS[1]:
-            if value not in Response.PAYMENT_STATUS_CHOICES:
-                return JsonResponse(
-                    {
-                        "error": f"""Invalid request: Payment Status must be one of {Response.PAYMENT_STATUS_CHOICES}."""
-                    },
-                    status=400,
-                )
-        elif field_id == self.EDITABLE_FIELDS[2]:
-            if not isinstance(value, bool):
-                return JsonResponse(
-                    {"error": "Invalid request: Star field must be a boolean value."},
-                    status=400,
-                )
-        elif field_id == self.EDITABLE_FIELDS[3]:
-            if not isinstance(value, bool):
-                return JsonResponse(
-                    {
-                        "error": "Invalid request: Tallied Response must be a boolean value."
-                    },
-                    status=400,
-                )
+        value_error = self._validate_value(field_id, value)
+        if value_error:
+            return JsonResponse(
+                {"error": f"Invalid request: {value_error}"}, status=400
+            )
 
         study = self.study
         was_at_max = (
-            study.max_responses is not None and study.has_reached_max_responses
+            (study.max_responses is not None and study.has_reached_max_responses)
             if field_id == "is_tallied"
             else False
         )
 
-        # Try updating the Response object
+        db_field = (
+            "is_tallied_researcher_override" if field_id == "is_tallied" else field_id
+        )
+        setattr(response_obj, db_field, value)
         try:
-            db_field = (
-                "is_tallied_researcher_override"
-                if field_id == "is_tallied"
-                else field_id
-            )
-            setattr(response_obj, db_field, value)
             response_obj.save()
         except Exception as e:
-            logger.error(f"""An error occurred: {e}""")
+            logger.error(
+                f"An error occurred while trying to save researcher-editable response field: {e}"
+            )
             raise
 
         response_data = {
-            "success": f"""Response {response_id} field {field_id} updated to {value}"""
+            "success": f"Response {response_id} field {field_id} updated to {value}"
         }
         if field_id == "is_tallied":
-            study.check_and_pause_if_at_max_responses(send_researcher_email=True)
-            study.refresh_from_db()
-            if was_at_max and not study.has_reached_max_responses:
-                response_data["message"] = (
-                    f"Your study has dropped back below the response limit: "
-                    f"{study.tallied_response_count}/{study.max_responses}"
-                )
-            elif not was_at_max and study.has_reached_max_responses:
-                response_data["message"] = (
-                    f"Your study has reached the response limit and has been automatically paused: "
-                    f"{study.tallied_response_count}/{study.max_responses}"
-                )
-            if study.study_type.is_external:
-                response_data["counts"] = get_response_type_counts_external(study)
-            else:
-                response_data["counts"] = get_response_type_counts(study)
+            response_data.update(self._build_is_tallied_update_data(study, was_at_max))
         return JsonResponse(response_data, status=200)
 
 
