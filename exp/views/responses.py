@@ -1232,6 +1232,13 @@ class StudyResponseSetResearcherFields(
                     status=400,
                 )
 
+        study = self.study
+        was_at_max = (
+            study.max_responses is not None and study.has_reached_max_responses
+            if field_id == "is_tallied"
+            else False
+        )
+
         # Try updating the Response object
         try:
             db_field = (
@@ -1249,10 +1256,22 @@ class StudyResponseSetResearcherFields(
             "success": f"""Response {response_id} field {field_id} updated to {value}"""
         }
         if field_id == "is_tallied":
-            if self.study.study_type.is_external:
-                response_data["counts"] = get_response_type_counts_external(self.study)
+            study.check_and_pause_if_at_max_responses(send_researcher_email=True)
+            study.refresh_from_db()
+            if was_at_max and not study.has_reached_max_responses:
+                response_data["message"] = (
+                    f"Your study has dropped back below the response limit: "
+                    f"{study.tallied_response_count}/{study.max_responses}"
+                )
+            elif not was_at_max and study.has_reached_max_responses:
+                response_data["message"] = (
+                    f"Your study has reached the response limit and has been automatically paused: "
+                    f"{study.tallied_response_count}/{study.max_responses}"
+                )
+            if study.study_type.is_external:
+                response_data["counts"] = get_response_type_counts_external(study)
             else:
-                response_data["counts"] = get_response_type_counts(self.study)
+                response_data["counts"] = get_response_type_counts(study)
         return JsonResponse(response_data, status=200)
 
 
@@ -1349,6 +1368,7 @@ class StudyResponsesConsentManager(
         form_data = self.request.POST
         user = self.request.user
         study = self.get_object()
+        was_at_max = study.max_responses is not None and study.has_reached_max_responses
         preview_only = not self.request.user.has_study_perms(
             StudyPermission.CODE_STUDY_CONSENT, study
         )
@@ -1376,6 +1396,22 @@ class StudyResponsesConsentManager(
                 response = responses.get(uuid=resp_uuid)
                 response.consent_rulings.create(
                     action=response.most_recent_ruling, arbiter=user, comments=comment
+                )
+
+        if study.max_responses is not None:
+            study.refresh_from_db()
+            is_now_at_max = study.has_reached_max_responses
+            if was_at_max and not is_now_at_max:
+                messages.info(
+                    request,
+                    f"Your study has dropped back below the response limit: "
+                    f"{study.tallied_response_count}/{study.max_responses}",
+                )
+            elif not was_at_max and is_now_at_max:
+                messages.warning(
+                    request,
+                    f"Your study has reached the response limit and has been automatically paused: "
+                    f"{study.tallied_response_count}/{study.max_responses}",
                 )
 
         return HttpResponseRedirect(

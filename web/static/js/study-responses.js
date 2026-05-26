@@ -127,6 +127,7 @@ if (hasMaxResponses) document.getElementById('tallyConfirmModalUpdateBtn').addEv
             const bsToast = new bootstrap.Toast(toast, { delay: 5000 });
             toast.addEventListener('hidden.bs.toast', () => toast.remove());
             bsToast.show();
+            if (data.message) showWarningToast(data.message);
             if (data.success) console.log(data.success);
         })
         .catch(error => {
@@ -134,6 +135,21 @@ if (hasMaxResponses) document.getElementById('tallyConfirmModalUpdateBtn').addEv
             showErrorToast(error.message || 'Something went wrong. The tally status change failed.');
         });
 });
+
+function showWarningToast(message) {
+    const container = document.getElementById('is-tallied-toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast align-items-center border-0 text-bg-warning';
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `<div class="d-flex">
+        <div class="toast-body">${message}</div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>`;
+    container.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast, { autohide: false });
+    toast.addEventListener('hidden.bs.toast', () => toast.remove());
+    bsToast.show();
+}
 
 function showErrorToast(message) {
     const container = document.getElementById('is-tallied-toast-container');
