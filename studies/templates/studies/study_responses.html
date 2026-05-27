@@ -95,7 +95,7 @@
                                         id="response-{{ forloop.counter }}"
                                         data-response-id="{{ response.response__id }}"
                                         data-response-uuid="{{ response.response__uuid }}">
-                                        <td title="{% if response.response__is_tallied %}Tallied.{% else %}Not tallied.{% endif %} Click for details." class="{% if response.response__is_preview %}ps-3{% endif %}" data-sort="{{response.response__is_tallied}}"
+                                        <td {% if study.max_responses %}title="{% if response.response__is_tallied %}Tallied.{% else %}Not tallied.{% endif %} Click for details." class="{% if response.response__is_preview %}ps-3{% endif %}" data-sort="{{response.response__is_tallied}}"{% endif %}
                                             data-filter="{% if response.response__is_preview %}Preview{% elif response.response__is_tallied %}Tallied &#10004;{% else %}Untallied &#10008;{% endif %}">
                                             {% if response.response__is_preview %}
                                                 <strong>P</strong>
