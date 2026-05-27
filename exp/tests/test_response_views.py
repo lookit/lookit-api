@@ -1768,6 +1768,11 @@ class ResponseViewResearcherUpdateFieldsTestCase(TestCase):
         self.study.refresh_from_db()
         self.assertEqual(self.study.state, "paused")
         self.assertIn("reached the response limit", resp.json().get("message", ""))
+        self.assertIn("1/1", resp.json()["message"])
+        self.assertIn("counts", resp.json())
+        counts = resp.json()["counts"]
+        self.assertEqual(counts["tallied"], 1)
+        self.assertEqual(counts["total"], 1)
 
     def test_set_tallied_false_when_was_at_max_returns_dropped_below_message(self):
         """POSTing is_tallied=False when the study was at max_responses returns a 'dropped below' message."""
@@ -1794,6 +1799,11 @@ class ResponseViewResearcherUpdateFieldsTestCase(TestCase):
         self.assertIn(
             "dropped back below the response limit", resp.json().get("message", "")
         )
+        self.assertIn("0/1", resp.json()["message"])
+        self.assertIn("counts", resp.json())
+        counts = resp.json()["counts"]
+        self.assertEqual(counts["tallied"], 0)
+        self.assertEqual(counts["total"], 1)
         self.study.refresh_from_db()
         self.assertEqual(self.study.state, "paused")  # Still paused, no auto-unpause
 
@@ -1835,6 +1845,53 @@ class ResponseViewResearcherUpdateFieldsTestCase(TestCase):
 
         self.assertEqual(resp.status_code, 200)
         self.assertNotIn("message", resp.json())
+        self.assertIn("counts", resp.json())
+
+    def test_set_tallied_on_external_study_returns_external_counts(self):
+        """For external studies, counts returned after setting is_tallied use external keys (no tallied_approved/tallied_pending)."""
+        external_study = G(
+            Study,
+            creator=self.study_admin,
+            shared_preview=False,
+            name="External Test Study",
+            lab=self.lab,
+            study_type=StudyType.get_external(),
+        )
+        external_study.admin_group.user_set.add(self.study_admin)
+        external_response = G(
+            Response,
+            child=self.child,
+            study=external_study,
+            study_type=external_study.study_type,
+            completed=True,
+        )
+        # External responses may be auto-tallied via signal; force to untallied to test the transition
+        Response.objects.filter(pk=external_response.pk).update(
+            is_tallied=False, is_tallied_researcher_override=None
+        )
+        external_response.refresh_from_db()
+        self.assertFalse(external_response.effective_is_tallied)
+
+        self.client.force_login(self.study_admin)
+        url = reverse(
+            "exp:study-responses-researcher-update", kwargs={"pk": external_study.pk}
+        )
+        data = {
+            "responseId": external_response.id,
+            "field": "is_tallied",
+            "value": True,
+        }
+        resp = self.client.post(url, json.dumps(data), content_type="application/json")
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("counts", resp.json())
+        counts = resp.json()["counts"]
+        self.assertEqual(counts["tallied"], 1)
+        self.assertEqual(counts["untallied"], 0)
+        self.assertEqual(counts["preview"], 0)
+        self.assertEqual(counts["total"], 1)
+        self.assertNotIn("tallied_approved", counts)
+        self.assertNotIn("tallied_pending", counts)
 
     # TODO: test individual file downloads from response-list
     #       * cannot get response from another study,
