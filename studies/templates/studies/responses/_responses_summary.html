@@ -5,74 +5,48 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col">
-                        {% include "studies/responses/_response_count_list.html" with show_headers=True highlight_success=True group_title="Total Responses" group_description="Total number of responses with either approved consent or that are pending consent judgment. This tallied response count is used to determine if your study has met/exceeded the study's response limit." group_total=response_type_counts.total group_tallied=response_type_counts.tallied group_untallied=response_type_counts.untallied group_preview=response_type_counts.preview %}
+                        {% if is_external %}
+                            {% include "studies/responses/_response_count_list.html" with show_headers=True highlight_tallied=False group_title_1="Total" group_tallied=response_type_counts.tallied group_untallied=response_type_counts.untallied %}
+                        {% else %}
+                            {% include "studies/responses/_response_count_list.html" with show_headers=True highlight_tallied=False group_title_1="Total" group_title_2="(Pending consent judgment)" group_tallied=response_type_counts.tallied group_tallied_pending=response_type_counts.tallied_pending group_untallied=response_type_counts.untallied group_untallied_pending=response_type_counts.untallied_pending %}
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col">
+        <p>
+            This table shows total number of tallied and untallied responses for this study (all preview responses are ignored). {% if not is_external %}The total number of tallied responses includes those with either approved or pending consent judgments. {% endif %}The tallied response count is used to determine if your study has met/exceeded the study's response limit.
+        </p>
+        <p>
+            A response is automatically categorized as tallied if:
+            <ul>
+                <li>It is not a preview</li>
+                <li>The participating child is eligible</li>
+                {% if not is_external %}
+                    <li>The family completed a consent frame</li>
+                    <li>The consent has not been rejected</li>
+                    <li>The participant completed the study</li>
+                {% endif %}
+            </ul>
+        </p>
+        {% if not is_external %}
+            <p>
+                The values in parentheses show the number of responses out of the total that are still pending consent judgment. These are categorized with the assumption that their consents will be approved. If a tallied response with pending consent turns out <em>not</em> have valid consent, then it will become untallied when you reject the consent, which will decrease the study's tallied response count. Please make sure that you handle any pending consents to keep your tallied count accurate. The remaining responses have approved consents and are available now to view and download.
+            </p>
+        {% endif %}
+        <p>
+            You can override the automatic tallied/untallied categorization on the Individual Responses page.
+            {% if is_external %}
+                Responses are categorized with the assumption that, when a family clicks the button to participate or schedule a time to participate, they will complete the study. You may need to change tallied responses to untallied when a family clicks this button but does not actaully complete the experiment or schedule/attend a synchronous session.
+            {% else %}
+                You may find that some untallied responses should be changed to tallied, for instance, because the participant finished most of the study but missed the last trial, so their session was marked as incomplete. However, changing a response from tallied to untallied should be relatively rare. Tallied responses do not need to be analyzeable in your research, for instance, because the child was fussy or inattentive.
+            {% endif %}
+            Responses should be tallied if they meet the criteria above and the family participated in good faith.
+        </p>
     </div>
 </div>
 <hr class="border border-dark border-3"/>
-{% if not is_external %}
-<div class="row mb-3">
-    <div class="col">
-        <div class="card bg-light">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col">
-                        {% include "studies/responses/_response_count_list.html" with show_headers=False highlight_success=True group_title="Consent Approved" group_description="These responses have approved consents and are available now to view and download." group_total=response_type_counts.total_available group_tallied=response_type_counts.tallied_approved group_untallied=response_type_counts.untallied_approved group_preview=response_type_counts.preview_approved %}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col align-items-start">
-                        <div class="ms-auto mt-3">
-                            <a href="{% url 'exp:study-responses-consent-manager' pk=study.pk %}" class="{% button_secondary_classes %}">See available responses</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row mb-3">
-    <div class="col">
-        <div class="card bg-light">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col">
-                        {% include "studies/responses/_response_count_list.html" with show_headers=False highlight_success=True group_title="Pending Consent Judgment" group_description="These are the responses that are still pending consent judgment. The values show the counts in each category if their consents are approved. These counts are included in your total response counts." group_total=response_type_counts.total_pending group_tallied=response_type_counts.tallied_pending group_untallied=response_type_counts.untallied_pending group_preview=response_type_counts.preview_pending %}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col align-items-start ">
-                        <div class="ms-auto mt-3">
-                            <a href="{% url 'exp:study-responses-consent-manager' pk=study.pk %}" class="{% button_secondary_classes %}">See consent manager</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row mb-3">
-    <div class="col">
-        <div class="card bg-light">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col">
-                        {% include "studies/responses/_response_count_list.html" with show_headers=False highlight_success=False group_title="Consent rejected" group_description="These are the non-preview and preview counts of responses with rejected consents. Responses with rejected consents are automatically untallied." group_total=response_type_counts.total_rejected group_tallied="NA" group_untallied=response_type_counts.nonpreview_rejected group_preview=response_type_counts.preview_rejected %}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col align-items-start ">
-                        <div class="ms-auto mt-3">
-                            <a href="{% url 'exp:study-responses-consent-manager' pk=study.pk %}" class="{% button_secondary_classes %}">See consent manager</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<hr class="border border-dark border-3"/>
-{% endif %}
