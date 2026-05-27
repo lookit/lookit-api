@@ -48,9 +48,17 @@ if (hasMaxResponses) document.getElementById('tallyConfirmModal').addEventListen
 
     const statusWord = currentlyTallied ? 'tallied' : 'not tallied';
     const actionWord = currentlyTallied ? 'untally' : 'tally';
-    const additional_text = currentlyTallied ?
-        '<div class="text-muted mt-3">If the correct child participated, was eligible, completed the study, and the family participated in good faith (not a confirmed spammer), then the response should be tallied. This is true even if you are not able to use this response in your analysis, for instance because the child was fussy or there were technical problems.</div>':
-        '<div></div>';
+    let additional_text;
+    if (!currentlyTallied) {
+        additional_text = '<div></div>';
+    } else {
+        // additional text if changing tallied to untallied
+        additional_text = '<div class="text-muted mt-3">If the correct child participated, was eligible, completed the study, and the family participated in good faith (not a confirmed spammer), then the response should be tallied. This is true even if you are not able to use this response in your analysis, for instance because the child was fussy or there were technical problems.';
+        if (isExternal) {
+            additional_text += '<br><br>The response should NOT be tallied if, in this response, the family:<ul><li>did not complete the study during this session (asynchronous studies)</li><li>did not schedule a time to participate, or scheduled a session but did not show up (synchronous studies)</li></ul>';
+        }
+        additional_text += '</div>';
+    }
     document.getElementById('tallyConfirmModalLabel').textContent =
         `Change tallied status of response ${responseId}`;
     document.getElementById('tallyConfirmModalBody').innerHTML =
