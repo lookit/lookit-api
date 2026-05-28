@@ -556,58 +556,32 @@ class Study(models.Model):
         return Video.objects.filter(response_id__in=self.consented_responses)
 
     @property
-    def valid_response_count(self) -> int:
-        """Return the count of valid responses for max_responses limit.
+    def tallied_response_count(self) -> int:
+        """Return the count of effectively tallied responses for the max_responses limit.
 
-        A response is counted as valid if:
-        - is_preview is False
-        - eligibility is "Eligible" or blank/empty (backwards compatibility)
-
-        And for internal studies, responses must also meet the following conditions:
-        - completed is True
-        - completed_consent_frame is True
-        - the consent has not been rejected (must be either pending or accepted)
-
-        For external studies, the completed, completed_consent_frame, and consent requirements are ignored.
+        Uses the stored is_tallied field (set and kept in sync by the update_is_tallied_on_response_save
+        and update_is_tallied_on_consent_ruling_save signals), with is_tallied_researcher_override
+        taking precedence when set.
 
         Returns:
-            int: Count of valid responses
+            int: Count of tallied responses
         """
-        # Filter out preview responses
-        responses = self.responses.filter(is_preview=False)
-
-        # For internal study types, also require completed_consent_frame=True, completed=True, and consent not rejected
-        if not self.study_type.is_external:
-            responses = responses.filter(completed=True, completed_consent_frame=True)
-            newest_ruling_subquery = models.Subquery(
-                ConsentRuling.objects.filter(response=models.OuterRef("pk"))
-                .order_by("-created_at")
-                .values("action")[:1]
-            )
-            # Filter out responses with rejected consent, and explicitly allow NULL consent rulings (pending, i.e. no judgment has been submitted).
-            responses = responses.annotate(
-                current_ruling=newest_ruling_subquery
-            ).filter(
-                models.Q(current_ruling__isnull=True)
-                | ~models.Q(current_ruling=REJECTED)
-            )
-
-        # Filter out ineligible responses
-        return responses.filter(
-            models.Q(eligibility=[])
-            | models.Q(eligibility__contains=[ResponseEligibility.ELIGIBLE])
-        ).count()
+        is_effectively_tallied = models.Q(
+            is_tallied_researcher_override__isnull=False,
+            is_tallied_researcher_override=True,
+        ) | models.Q(is_tallied_researcher_override__isnull=True, is_tallied=True)
+        return self.responses.filter(is_effectively_tallied).count()
 
     @property
     def has_reached_max_responses(self) -> bool:
-        """Check if the study has reached its maximum number of valid responses.
+        """Check if the study has reached its maximum number of tallied responses.
 
         Returns:
             bool: True if max_responses is set and the limit has been reached
         """
         if self.max_responses is None:
             return False
-        return self.valid_response_count >= self.max_responses
+        return self.tallied_response_count >= self.max_responses
 
     def check_and_pause_if_at_max_responses(
         self, send_researcher_email=False, request=None
@@ -647,14 +621,14 @@ class Study(models.Model):
                 messages.warning(
                     request,
                     f'Study "{self.name}" has been automatically paused because it '
-                    f"reached the response limit ({self.valid_response_count}/{self.max_responses}).",
+                    f"reached the response limit ({self.tallied_response_count}/{self.max_responses}).",
                 )
         else:
             # Study is not active, so not state transition is needed. Just notify the researcher that they cannot start the study.
             if request:
                 messages.warning(
                     request,
-                    f'Study "{self.name}" has reached the response limit ({self.valid_response_count}/{self.max_responses}).',
+                    f'Study "{self.name}" has reached the response limit ({self.tallied_response_count}/{self.max_responses}).',
                 )
 
     @property
@@ -928,7 +902,7 @@ class Study(models.Model):
             "study_id": self.pk,
             "study_uuid": str(self.uuid),
             "max_responses": self.max_responses,
-            "valid_response_count": self.valid_response_count,
+            "tallied_response_count": self.tallied_response_count,
         }
         send_mail.delay(
             "notify_researchers_of_max_responses_pause",
@@ -1039,6 +1013,31 @@ class Study(models.Model):
                 "child__condition_list",
                 "child__additional_information",
             ]
+
+    def columns_included_in_status(self):
+        """A list of columns used in the researchers experiment data
+        view that relate to the response tallied/untallied status. There is an assumption that summary columns for jspsych and EFP
+        experiments will be the same.
+
+        Returns:
+            List[Str]: columns for response status summary
+        """
+        response_status_columns = [
+            "response__eligibility",
+            "response__is_preview",
+            "response__is_tallied_researcher_override",
+        ]
+        if not self.study_type.is_external:
+            response_status_columns.extend(
+                [
+                    "response__completed",
+                    "response__withdrawn",
+                    "response__eligibility",
+                    "response__is_preview",
+                ]
+            )
+
+        return response_status_columns
 
 
 # Using Direct foreign keys for guardian, see:
@@ -1172,7 +1171,6 @@ class Response(models.Model):
         ("communication_complete", _("Communication complete")),
         ("withdrawn_closed", _("Withdrawn or closed")),
     )
-
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     study = models.ForeignKey(
         Study, on_delete=models.PROTECT, related_name="responses"
@@ -1214,6 +1212,10 @@ class Response(models.Model):
         choices=SESSION_STATUS_CHOICES, max_length=22, blank=True
     )
     researcher_star = models.BooleanField(default=False)
+    is_tallied = models.BooleanField(default=False)
+    is_tallied_researcher_override = models.BooleanField(
+        null=True, blank=True, default=None
+    )
 
     def __str__(self):
         return self.display_name
@@ -1294,6 +1296,42 @@ class Response(models.Model):
             "date": self.most_recent_ruling_date,
         }
 
+    @property
+    def effective_is_tallied(self) -> bool:
+        """Return the effective is_tallied value, using the researcher override if set."""
+        if self.is_tallied_researcher_override is not None:
+            return self.is_tallied_researcher_override
+        return self.is_tallied
+
+    def compute_is_tallied(self) -> bool:
+        """Compute the system-defined is_tallied value for this response.
+
+        A response is tallied if:
+        - is_preview is False
+        - eligibility is "Eligible" or blank/empty (backwards compatibility)
+
+        For internal (non-external) studies, responses must also:
+        - completed is True
+        - completed_consent_frame is True
+        - the most recent consent ruling is not "rejected"
+        """
+        if self.is_preview:
+            return False
+
+        eligible = (
+            not self.eligibility or ResponseEligibility.ELIGIBLE in self.eligibility
+        )
+        if not eligible:
+            return False
+
+        if self.study_type.is_external:
+            return True
+
+        if not (self.completed and self.completed_consent_frame):
+            return False
+
+        return not self.currently_rejected
+
     def exit_frame_properties(self, property):
         if self.study_type.is_ember_frame_player:
             return self.exit_frame_properties_efp(property)
@@ -1304,7 +1342,7 @@ class Response(models.Model):
         exit_frame_values = [
             f.get(property, None)
             for f in self.exp_data.values()
-            if f.get("frameType", None) == "EXIT"
+            if isinstance(f, dict) and f.get("frameType", None) == "EXIT"
         ]
         if exit_frame_values and exit_frame_values != [None]:
             return exit_frame_values[-1]
@@ -1732,3 +1770,34 @@ class ConsentRuling(models.Model):
 
     def __str__(self):
         return f"<{self.arbiter.get_short_name()}: {self.action} {self.response} @ {self.created_at:%c}>"
+
+
+@receiver(post_save, sender=Response)
+def update_is_tallied_on_response_save(sender, instance, update_fields, **kwargs):
+    """Recompute is_tallied whenever a Response is saved.
+
+    Uses .update() instead of .save() to avoid re-triggering this signal.
+    Skips recomputation if this save was itself only updating is_tallied.
+    """
+    if update_fields is not None and update_fields == frozenset({"is_tallied"}):
+        return
+    new_value = instance.compute_is_tallied()
+    if instance.is_tallied != new_value:
+        Response.objects.filter(pk=instance.pk).update(is_tallied=new_value)
+        instance.is_tallied = new_value
+        instance.study.check_and_pause_if_at_max_responses(send_researcher_email=True)
+
+
+@receiver(post_save, sender=ConsentRuling)
+def update_is_tallied_on_consent_ruling_save(sender, instance, **kwargs):
+    """Recompute is_tallied for the related Response when a ConsentRuling is saved.
+
+    Use .update() instead of .save() when setting Response is_tallied to avoid triggering the Response post-save signals.
+    """
+    response = instance.response
+    old_value = response.is_tallied
+    new_value = response.compute_is_tallied()
+    Response.objects.filter(pk=response.pk).update(is_tallied=new_value)
+    response.is_tallied = new_value
+    if old_value != new_value:
+        response.study.check_and_pause_if_at_max_responses(send_researcher_email=True)

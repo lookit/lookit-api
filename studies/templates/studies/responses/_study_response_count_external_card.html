@@ -1,0 +1,27 @@
+{% if tallied %} 
+    <div class="card bg-light {% if fullheight %}h-100{% endif %}">
+        <div class="card-body">
+            <div class="row">
+                <div class="col mb-4 mb-lg-0">
+                    <div class="mb-3 d-flex align-items-center">
+                        <div class="me-2">
+                            <span class="fw-bold">Responses available: </span>{{ summary_statistics.total_responses }} (<span id="count-tallied">{{ response_type_counts.tallied }}</span> tallied).<br>
+                            <span id="count-untallied" class="d-none">{{ response_type_counts.untallied }}</span>
+                            <span id="count-preview" class="d-none">{{ response_type_counts.preview }}</span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-evenly">
+                        <div class="flex-shrink-0">
+                            <a href="{% url 'exp:study-responses-count-summary' study.id %}" class="{{ btn_secondary_classes }}" rel="noopener noreferrer" target="_blank">See response count summary</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="me-2 ms-4 mt-4">
+        <span class="fw-bold">Responses available: </span>{{ summary_statistics.total_responses }}
+        <span id="count-preview" class="d-none">{{ response_type_counts.preview }}</span>
+    </div>
+{% endif %}

@@ -382,6 +382,18 @@ RESPONSE_COLUMNS = [
         extractor=lambda resp: resp.researcher_star,
         name="Star",
     ),
+    ResponseDataColumn(
+        id="response__is_tallied",
+        description="Whether this response is counted as tallied",
+        extractor=lambda resp: resp.effective_is_tallied,
+        name="Tallied Response",
+    ),
+    ResponseDataColumn(
+        id="response__is_tallied_researcher_override",
+        description="Whether this response tallied/not tallied status was overridden by a researcher",
+        extractor=lambda resp: resp.is_tallied_researcher_override,
+        name="Researcher override",
+    ),
 ]
 
 # Columns for demographic data downloads. Extractor functions expect Response values dict,

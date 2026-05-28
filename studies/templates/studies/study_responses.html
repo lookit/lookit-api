@@ -31,51 +31,26 @@
 {% endblock breadcrumb %}
 {% block content %}
     {% button_primary_classes as btn_primary_classes %}
+    {% button_secondary_classes as btn_secondary_classes %}
     {% button_primary_classes "float-end my-3" as btn_primary_classes_create %}
     {% page_title "Individual Responses" %}
+    <div id="is-tallied-toast-container" class="toast-container position-fixed bottom-0 end-0 p-3" aria-live="polite" aria-atomic="false"></div>
     <div class="row">
-        <div class="col">{% include "studies/_response_nav_tabs.html" with active="individual" %}</div>
+        <div class="col">{% include "studies/responses/_response_nav_tabs.html" with active="individual" %}</div>
     </div>
     {% if response_data %}
-    <div class="row my-4">
-        <div class="col">
-            <p>
-                Data about
-                {{ summary_statistics.responses.accepted }}
-                {{ summary_statistics.responses.accepted|pluralize:"response is,responses are" }}
-                available.
-                {{ summary_statistics.responses.pending }}
-                additional
-                {{ summary_statistics.responses.pending|pluralize:"response,responses" }}
-                awaiting consent judgement;
-                {{ summary_statistics.responses.rejected }}
-                {{ summary_statistics.responses.rejected|pluralize:"consent,consents" }}
-                rejected.
-            </p>
-            <p>
-                <a href="{% url 'exp:study-responses-consent-manager' pk=study.pk %}">Go to consent manager</a>
-            </p>
-        </div>
-        <div class="col">
-            <div class="card bg-light">
-                <div class="card-body">
-                    <div>
-                        Selected response <span class="short-child-id"></span> (<span class="response-date"></span>).
-                    </div>
-                    <div>
-                        <div class="truncate-parent-feedback">
-                            <span class="fw-bold">Parent/guardian feedback:</span>
-                            <span class="parent-feedback"></span>
-                        </div>
-                    </div>
-                    <a rel="noopener noreferrer"
-                       target="_blank"
-                       class="contact-family"
-                       href="{% url "exp:study-participant-contact" study.id %}">Send a message to this family (<span class="parent-id"></span>)</a>
-                </div>
+        <div class="row my-4">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                {% if  study.study_type.is_external %}
+                    {% include "studies/responses/_study_response_count_external_card.html" with fullheight=True tallied=study.max_responses %}
+                {% else %}
+                    {% include "studies/responses/_study_response_count_internal_card.html" with fullheight=True tallied=study.max_responses %}
+                {% endif %}
+            </div>
+            <div class="col-lg-6">
+                {% include "studies/responses/_study_response_selected_card.html" %}
             </div>
         </div>
-    </div>
         <div class="row my-4">
             <div class="col">
                 <div class="card">
@@ -94,11 +69,13 @@
                                     <th scope="col">Response ID</th>
                                     <th scope="col">Date UTC</th>
                                     <th scope="col">Time Elapsed</th>
-                                    <th scope="col">
-                                        Exit Frame
-                                        <br>
-                                        Status
-                                    </th>
+                                    {% if not study.study_type.is_external %}
+                                        <th scope="col">
+                                            Exit Frame
+                                            <br>
+                                            Status
+                                        </th>
+                                    {% endif %}
                                     <th scope="col">
                                         Payment
                                         <br>
@@ -118,8 +95,26 @@
                                         id="response-{{ forloop.counter }}"
                                         data-response-id="{{ response.response__id }}"
                                         data-response-uuid="{{ response.response__uuid }}">
-                                        <td>
-                                            {% if response.response__is_preview %}P{% endif %}
+                                        <td {% if study.max_responses %}title="{% if response.response__is_tallied %}Tallied.{% else %}Not tallied.{% endif %} Click for details." class="{% if response.response__is_preview %}ps-3{% endif %}" data-sort="{{response.response__is_tallied}}"{% endif %}
+                                            data-filter="{% if response.response__is_preview %}Preview{% elif response.response__is_tallied %}Tallied &#10004;{% else %}Untallied &#10008;{% endif %}">
+                                            {% if response.response__is_preview %}
+                                                <strong>P</strong>
+                                            {% else %}
+                                                {% if study.max_responses %}
+                                                    <input type="checkbox"
+                                                        name="is-tallied"
+                                                        data-field="is_tallied"
+                                                        id="tallied-checkbox-{{ forloop.counter }}"
+                                                        class="input-checkbox-hidden tallied-checkbox"
+                                                        aria-label="Toggle tallied response status"
+                                                        {% if response.response__is_tallied %}checked{% endif %}
+                                                        {% if not can_edit_feedback %}disabled{% endif %} />
+                                                    <span aria-hidden="true">
+                                                        <svg class="icon-tallied-check" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M530.8 134.1C545.1 144.5 548.3 164.5 537.9 178.8L281.9 530.8C276.4 538.4 267.9 543.1 258.5 543.9C249.1 544.7 240 541.2 233.4 534.6L105.4 406.6C92.9 394.1 92.9 373.8 105.4 361.3C117.9 348.8 138.2 348.8 150.7 361.3L252.2 462.8L486.2 141.1C496.6 126.8 516.6 123.6 530.9 134z"/></svg>
+                                                        <svg class="icon-tallied-xmark" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M504.6 148.5C515.9 134.9 514.1 114.7 500.5 103.4C486.9 92.1 466.7 93.9 455.4 107.5L320 270L184.6 107.5C173.3 93.9 153.1 92.1 139.5 103.4C125.9 114.7 124.1 134.9 135.4 148.5L278.3 320L135.4 491.5C124.1 505.1 125.9 525.3 139.5 536.6C153.1 547.9 173.3 546.1 184.6 532.5L320 370L455.4 532.5C466.7 546.1 486.9 547.9 500.5 536.6C514.1 525.3 515.9 505.1 504.6 491.5L361.7 320L504.6 148.5z"/></svg>
+                                                    </span>
+                                                {% endif %}
+                                            {% endif %}
                                         </td>
                                         <td>{{ response.child_id_slug }}</td>
                                         <td>{{ response.response__id }}</td>
@@ -129,14 +124,16 @@
                                                 {{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}
                                             {% endlocaltime %}
                                         </td>
-                                        <td>{{ response.response__date_created|timesince }}</td>
-                                        <td>
-                                            {% if response.response__completed %}
-                                                Complete
-                                            {% else %}
-                                                Incomplete
-                                            {% endif %}
-                                        </td>
+                                        <td>{{ response.response__date_created|timesince|linebreak_on_comma }}</td>
+                                        {% if not study.study_type.is_external %}
+                                            <td>
+                                                {% if response.response__completed %}
+                                                    Complete
+                                                {% else %}
+                                                    Incomplete
+                                                {% endif %}
+                                            </td>
+                                        {% endif %}
                                         <td data-filter="{{response.response__researcher_payment_status}}"
                                             data-sort="{{response.response__researcher_payment_status}}">
                                             <select name="payment-status"
@@ -169,7 +166,8 @@
                                                 {% endfor %}
                                             </select>
                                         </td>
-                                        <td data-sort="{{response.response__researcher_star}}">
+                                        <td data-sort="{{response.response__researcher_star}}"
+                                            data-filter="{% if response.response__researcher_star %}Starred &#9733;{% else %}Unstarred &#9734;{% endif %}">
                                             <input type="checkbox"
                                                    name="star"
                                                    id="star-checkbox-{{ forloop.counter }}"
@@ -186,7 +184,32 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th scope="col"></th>
+                                    {% if study.max_responses %}
+                                        <th scope="col">
+                                            <select name="filter-tallied-status"
+                                                id="filter-tallied-status"
+                                                class="form-select"
+                                                autocomplete="off"
+                                                aria-label="Filter on preview or tallied response status">
+                                                <option value="" selected=""></option>
+                                                <option value="preview">Preview</option>
+                                                <option value="tallied">Tallied &#10004;</option>
+                                                <option value="untallied">Untallied &#10008;</option>
+                                            </select>
+                                        </th>
+                                    {% else %}
+                                        <th scope="col">
+                                            <select name="filter-preview-status"
+                                                id="filter-preview-status"
+                                                class="form-select"
+                                                autocomplete="off"
+                                                aria-label="Filter on preview response status">
+                                                <option value="" selected=""></option>
+                                                <option value="preview">Preview</option>
+                                                <option value="notpreview">Not preview</option>
+                                            </select>
+                                        </th>
+                                    {% endif %}
                                     <th scope="col">
                                         <input type="text" class="form-control" placeholder="Filter Child ID" />
                                     </th>
@@ -204,17 +227,19 @@
                                                class="form-control"
                                                placeholder="Filter Time Elapsed" />
                                     </th>
-                                    <th scope="col">
-                                        <select name="filter-exit-status" 
-                                            id="filter-exit-status" 
-                                            class="form-select" 
-                                            autocomplete="off" 
-                                            aria-label="Filter on whether the exit frame was marked complete">
-                                            <option value="" selected=""></option>
-                                            <option value="complete">Complete</option>
-                                            <option value="incomplete">Incomplete</option>
-                                        </select>
-                                    </th>
+                                    {% if not study.study_type.is_external %}
+                                        <th scope="col">
+                                            <select name="filter-exit-status" 
+                                                id="filter-exit-status" 
+                                                class="form-select" 
+                                                autocomplete="off" 
+                                                aria-label="Filter on whether the exit frame was marked complete">
+                                                <option value="" selected=""></option>
+                                                <option value="complete">Complete</option>
+                                                <option value="incomplete">Incomplete</option>
+                                            </select>
+                                        </th>
+                                    {% endif %}
                                     <th scope="col">
                                         <select name="filter-payment-status"
                                             id="filter-payment-status"
@@ -242,7 +267,15 @@
                                         </select>
                                     </th>
                                     <th scope="col">
-                                        {% comment %} Empty footer element for the star column {% endcomment %}
+                                        <select name="filter-star-status"
+                                            id="filter-star-status"
+                                            class="form-select"
+                                            autocomplete="off"
+                                            aria-label="Filter on star status">
+                                            <option value="" selected=""></option>
+                                            <option value="starred">Starred &#9733;</option>
+                                            <option value="unstarred">Unstarred &#9734;</option>
+                                        </select>
                                     </th>
                                 </tr>
                             </tfoot>
@@ -273,6 +306,45 @@
         </div>
         <div class="row my-4">
             <div class="col">
+                {% if study.max_responses %}
+                    {% for response in response_data %}
+                    <div class="card bg-light my-4 response-status-container"
+                            id="response-status-container-{{ forloop.counter }}"
+                            style="display:none">
+                        <div class="card-body">
+                            <h5 class="card-title response-status">Response {{ response.response__id }}: <span id="response-status-title-{{ forloop.counter }}"></span></h5>
+                            <table class="table table-sm table-hover response-status-table">
+                                <caption class="visually-hidden">Response tallied status</caption>
+                                <thead class="visually-hidden">
+                                    <tr>
+                                        <th scope="col">Status item</th>
+                                        <th scope="col">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for pair in response.status %}
+                                        <tr id="resp-status-{{ pair.name|slugify }}-{{ response.response__id }}" class="{% if pair.name == 'Completed' %} {% if pair.value == True %} list-group-item-success {% else %} list-group-item-danger {% endif %} {% endif %} {% if pair.name == 'Withdrawn' %} {% if pair.value == False %} list-group-item-success {% else %} list-group-item-danger {% endif %} {% endif %} {% if pair.name == 'Eligibility' %} {% for el in pair.value %} {% if '_' in el %} list-group-item-danger {% else %} list-group-item-success {% endif %} {% endfor %} {% endif %} {% if pair.name == 'Preview' %} {% if pair.value == False %} list-group-item-success {% else %} list-group-item-danger {% endif %} {% endif %} {% if pair.name == 'Researcher override' %} {% if pair.value == True %} list-group-item-success {% elif pair.value == False %} list-group-item-danger {% endif %} {% endif %}">
+                                            <td class="resp-status-name">{{ pair.name }}</td>
+                                            <td class="resp-status-value">{% if pair.name == 'Researcher override' %} {% if pair.value == True %} Tallied {% elif pair.value == False %} Untallied {% elif pair.value == None %} None {% endif %} {% else %} {{ pair.value }} {% endif %}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% if can_edit_feedback and not response.response__is_preview %}
+                            <div class="d-flex justify-content-evenly">
+                                <button class="{{ btn_primary_classes }}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#tallyConfirmModal"
+                                        data-response-id="{{ response.response__id }}"
+                                        data-response-index="{{ forloop.counter }}">
+                                    Change tallied status of this response
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
                 {% if study.show_videos %}
                     <div class="card bg-light my-4">
                         <div class="card-body">
@@ -426,7 +498,34 @@
                 {% endfor %}
             </div>
         </div>
+    {% if study.max_responses %}
+    <div class="modal fade"
+         id="tallyConfirmModal"
+         tabindex="-1"
+         aria-labelledby="tallyConfirmModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tallyConfirmModalLabel">Change tallied status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="tallyConfirmModalBody"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="{{ btn_primary_classes }}" id="tallyConfirmModalUpdateBtn">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
     {% else %}
-        <div class="empty-text">No responses with confirmed consent.</div>
+        {% if study.study_type.is_external %}
+            <div class="empty-text">No responses yet.</div>
+        {% else %}
+            <div class="empty-text">No responses with confirmed consent.</div>
+        {% endif %}
     {% endif %}
 {% endblock content %}
