@@ -22,7 +22,7 @@
             This table shows total number of tallied and untallied responses for this study (all preview responses are ignored). {% if not is_external %}The total number of tallied responses includes those with either approved or pending consent judgments. {% endif %}The tallied response count is used to determine if your study has met/exceeded the study's response limit.
         </p>
         <p>
-            A response is automatically categorized as tallied if:
+            Because this is an {% if is_external %}external{% else %}internal{% endif %} study, a response is automatically categorized as tallied when:
             <ul>
                 <li>It is not a preview</li>
                 <li>The participating child is eligible</li>
@@ -41,7 +41,7 @@
         <p>
             You can override the automatic tallied/untallied categorization on the Individual Responses page.
             {% if is_external %}
-                Responses are categorized with the assumption that, when a family clicks the button to participate or schedule a time to participate, they will complete the study. You may need to change tallied responses to untallied when a family clicks this button but does not actaully complete the experiment or schedule/attend a synchronous session.
+                Responses are categorized with the assumption that, when a family clicks the button to participate or schedule a time to participate, they will complete the study. You may need to change tallied responses to untallied when a family clicks this button but does not actaully complete the experiment or schedule a synchronous session.
             {% else %}
                 You may find that some untallied responses should be changed to tallied, for instance, because the participant finished most of the study but missed the last trial, so their session was marked as incomplete. However, changing a response from tallied to untallied should be relatively rare. Tallied responses do not need to be analyzeable in your research, for instance, because the child was fussy or inattentive.
             {% endif %}
