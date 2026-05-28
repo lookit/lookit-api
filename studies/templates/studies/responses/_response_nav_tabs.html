@@ -1,5 +1,13 @@
 {% load exp_extras %}
 <ul class="nav nav-tabs mt-2">
+    {% if study.max_responses %}
+        <li class="nav-item">
+            <a href="{% url 'exp:study-responses-count-summary' study.id %}"
+            {% if active == 'summary' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>
+                Response <span class="d-none d-md-inline">Count</span> Summary
+            </a>
+        </li>
+    {% endif %}
     <li class="nav-item">
         <a href="{% url 'exp:study-responses-list' study.id %}"
            {% if active == 'individual' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>
@@ -9,19 +17,19 @@
     <li class="nav-item">
         <a href="{% url 'exp:study-responses-all' study.id %}"
            {% if active == 'all' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>
-            All <span class="d-none d-md-inline">Responses</span>
+            Download All <span class="d-none d-md-inline">Responses</span>
         </a>
     </li>
     <li class="nav-item">
         <a href="{% url 'exp:study-demographics' study.id %}"
            {% if active == 'demographics' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>
-            Demographic <span class="d-none d-md-inline">Snapshots</span>
+            Download Demographic <span class="d-none d-md-inline">Snapshots</span>
         </a>
     </li>
     {% if study.show_videos %}
         <li class="nav-item">
             <a href="{% url 'exp:study-attachments' study.id %}"
-               {% if active == 'attachments' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>Videos</a>
+               {% if active == 'attachments' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>Download Videos</a>
         </li>
     {% endif %}
 </ul>

@@ -55,6 +55,7 @@ from exp.views import (
     StudyResponsesFrameDataPsychDS,
     StudyResponsesJSON,
     StudyResponsesList,
+    StudyResponsesSummary,
     StudyResponseSubmitFeedback,
     StudyResponseVideoAttachment,
     StudySingleResponseDownload,
@@ -171,6 +172,11 @@ urlpatterns = [
         "studies/<int:pk>/responses/all/",
         StudyResponsesAll.as_view(),
         name="study-responses-all",
+    ),
+    path(
+        "studies/<int:pk>/responses/count-summary/",
+        StudyResponsesSummary.as_view(),
+        name="study-responses-count-summary",
     ),
     path(
         "studies/<int:pk>/responses/delete_preview/",

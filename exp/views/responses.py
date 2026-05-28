@@ -47,7 +47,10 @@ from studies.models import Feedback, Response, Study, Video
 from studies.permissions import StudyPermission
 from studies.queries import (
     get_consent_statistics,
+    get_response_type_counts,
+    get_response_type_counts_external,
     get_responses_with_current_rulings_and_videos,
+    get_summary_statistics_external,
 )
 from studies.tasks import build_framedata_dict, build_zipfile_of_videos
 
@@ -135,7 +138,7 @@ def get_response_headers(
     }
     selected_standard_header_ids = [
         col.id
-        for col in RESPONSE_COLUMNS[0:-2]
+        for col in RESPONSE_COLUMNS[0:-3]
         if col.id not in unselected_optional_ids
     ]
     return selected_standard_header_ids + sorted(
@@ -868,6 +871,7 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
         context = super().get_context_data(**kwargs)
         context["study"] = study = self.study
         columns_included_in_summary = study.columns_included_in_summary()
+        columns_included_in_status = study.columns_included_in_status()
 
         columns_included_in_table = [
             "child__hashed_id",
@@ -880,6 +884,7 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
             "response__researcher_payment_status",
             "response__researcher_session_status",
             "response__researcher_star",
+            "response__is_tallied",
         ]
 
         context["session_status_options"] = list(Response.SESSION_STATUS_CHOICES)
@@ -907,6 +912,16 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
                 }
                 for col in RESPONSE_COLUMNS
                 if col.id in columns_included_in_summary
+            ]
+            # info needed for response status table
+            this_resp_data["status"] = [
+                {
+                    "name": col.name,
+                    "value": col.extractor(resp),
+                    "description": col.description,
+                }
+                for col in RESPONSE_COLUMNS
+                if col.id in columns_included_in_status
             ]
 
             this_resp_data["videos"] = [
@@ -936,7 +951,19 @@ class StudyResponsesList(CanViewStudyResponsesMixin, generic.ListView):
         preview_only = not self.request.user.has_study_perms(
             StudyPermission.CODE_STUDY_CONSENT, study
         )
-        context["summary_statistics"] = get_consent_statistics(study.id, preview_only)
+        if study.study_type.is_external:
+            context["summary_statistics"] = get_summary_statistics_external(
+                study, preview_only
+            )
+            context["response_type_counts"] = get_response_type_counts_external(study)
+        else:
+            # There is some overlap in the DB queries for get_consent_statistics and get_response_type_counts.
+            # This probably isn't the bottleneck for page load time, and they have different base querysets and purposes.
+            # But if we want to reduce the query count, we could try to combine them into a single SQL/annotation here.
+            context["summary_statistics"] = get_consent_statistics(
+                study.id, preview_only
+            )
+            context["response_type_counts"] = get_response_type_counts(study)
 
         return context
 
@@ -1121,6 +1148,7 @@ class StudyResponseSetResearcherFields(
         "researcher_session_status",
         "researcher_payment_status",
         "researcher_star",
+        "is_tallied",
     ]
 
     def user_can_edit_response(self):
@@ -1133,20 +1161,62 @@ class StudyResponseSetResearcherFields(
 
     test_func = user_can_edit_response
 
+    def _validate_value(self, field_id, value):
+        """Return an error message string if value is invalid for field_id, else None."""
+        if field_id == "researcher_session_status":
+            if value not in Response.SESSION_STATUS_CHOICES:
+                return (
+                    f"Session Status must be one of {Response.SESSION_STATUS_CHOICES}."
+                )
+        elif field_id == "researcher_payment_status":
+            if value not in Response.PAYMENT_STATUS_CHOICES:
+                return (
+                    f"Payment Status must be one of {Response.PAYMENT_STATUS_CHOICES}."
+                )
+        elif field_id in ("researcher_star", "is_tallied"):
+            label = (
+                "Star field" if field_id == "researcher_star" else "Tallied Response"
+            )
+            if not isinstance(value, bool):
+                return f"{label} must be a boolean value."
+        return None
+
+    def _build_is_tallied_update_data(self, study, was_at_max):
+        """Return additional response data keys after saving an is_tallied change."""
+        study.check_and_pause_if_at_max_responses(send_researcher_email=True)
+        study.refresh_from_db()
+        extra = {}
+        if was_at_max and not study.has_reached_max_responses:
+            extra["message"] = (
+                f"Your study has dropped back below the response limit: "
+                f"{study.tallied_response_count}/{study.max_responses}"
+            )
+        elif not was_at_max and study.has_reached_max_responses:
+            extra["message"] = (
+                f"Your study has reached the response limit and has been automatically paused: "
+                f"{study.tallied_response_count}/{study.max_responses}"
+            )
+        extra["counts"] = (
+            get_response_type_counts_external(study)
+            if study.study_type.is_external
+            else get_response_type_counts(study)
+        )
+        return extra
+
     def post(self, request, *args, **kwargs):
         """
         Edit the researcher-editable fields in the Individual Responses table. Pass field and response_id to edit that response field.
         """
         data = json.loads(request.body)
-        response_id = data.get("responseId", None)
-        field_id = data.get("field", None)
-        value = data.get("value", None)
+        response_id = data.get("responseId")
+        field_id = data.get("field")
+        value = data.get("value")
 
-        # Data validation checks
         if response_id is None or field_id is None or value is None:
             return JsonResponse(
                 {
-                    "error": f"""Invalid request: One or more of the required arguments is missing. Response ID {response_id}, field {field_id}, and/or value {value}."""
+                    "error": f"Invalid request: One or more of the required arguments is missing. "
+                    f"Response ID {response_id}, field {field_id}, and/or value {value}."
                 },
                 status=400,
             )
@@ -1156,7 +1226,7 @@ class StudyResponseSetResearcherFields(
         except ObjectDoesNotExist:
             return JsonResponse(
                 {
-                    "error": f"""Invalid request: Response object {response_id} does not exist"""
+                    "error": f"Invalid request: Response object {response_id} does not exist"
                 },
                 status=400,
             )
@@ -1164,53 +1234,47 @@ class StudyResponseSetResearcherFields(
         if response_obj.study_id != self.study.pk:
             return JsonResponse(
                 {
-                    "error": f"""Invalid request: Response object {response_id} is not from this study."""
+                    "error": f"Invalid request: Response object {response_id} is not from this study."
                 },
                 status=400,
             )
 
         if field_id not in self.EDITABLE_FIELDS:
             return JsonResponse(
-                {"error": f"""Invalid request: Invalid field {field_id}"""}, status=400
+                {"error": f"Invalid request: Invalid field {field_id}"}, status=400
             )
 
-        if field_id == self.EDITABLE_FIELDS[0]:
-            if value not in Response.SESSION_STATUS_CHOICES:
-                return JsonResponse(
-                    {
-                        "error": f"""Invalid request: Session Status must be one of {Response.SESSION_STATUS_CHOICES}."""
-                    },
-                    status=400,
-                )
-        elif field_id == self.EDITABLE_FIELDS[1]:
-            if value not in Response.PAYMENT_STATUS_CHOICES:
-                return JsonResponse(
-                    {
-                        "error": f"""Invalid request: Payment Status must be one of {Response.PAYMENT_STATUS_CHOICES}."""
-                    },
-                    status=400,
-                )
-        elif field_id == self.EDITABLE_FIELDS[2]:
-            if not isinstance(value, bool):
-                return JsonResponse(
-                    {"error": "Invalid request: Star field must be a boolean value."},
-                    status=400,
-                )
+        value_error = self._validate_value(field_id, value)
+        if value_error:
+            return JsonResponse(
+                {"error": f"Invalid request: {value_error}"}, status=400
+            )
 
-        # Try updating the Response object
+        study = self.study
+        was_at_max = (
+            (study.max_responses is not None and study.has_reached_max_responses)
+            if field_id == "is_tallied"
+            else False
+        )
+
+        db_field = (
+            "is_tallied_researcher_override" if field_id == "is_tallied" else field_id
+        )
+        setattr(response_obj, db_field, value)
         try:
-            setattr(response_obj, field_id, value)
             response_obj.save()
         except Exception as e:
-            logger.error(f"""An error occurred: {e}""")
+            logger.exception(
+                f"An error occurred while trying to save researcher-editable response field: {e}"
+            )
             raise
 
-        return JsonResponse(
-            {
-                "success": f"""Response {response_id} field {field_id} updated to {value}"""
-            },
-            status=200,
-        )
+        response_data = {
+            "success": f"Response {response_id} field {field_id} updated to {value}"
+        }
+        if field_id == "is_tallied":
+            response_data.update(self._build_is_tallied_update_data(study, was_at_max))
+        return JsonResponse(response_data, status=200)
 
 
 class StudyResponsesConsentManager(
@@ -1306,6 +1370,7 @@ class StudyResponsesConsentManager(
         form_data = self.request.POST
         user = self.request.user
         study = self.get_object()
+        was_at_max = study.max_responses is not None and study.has_reached_max_responses
         preview_only = not self.request.user.has_study_perms(
             StudyPermission.CODE_STUDY_CONSENT, study
         )
@@ -1335,6 +1400,22 @@ class StudyResponsesConsentManager(
                     action=response.most_recent_ruling, arbiter=user, comments=comment
                 )
 
+        if study.max_responses is not None:
+            study.refresh_from_db()
+            is_now_at_max = study.has_reached_max_responses
+            if was_at_max and not is_now_at_max:
+                messages.info(
+                    request,
+                    f"Your study has dropped back below the response limit: "
+                    f"{study.tallied_response_count}/{study.max_responses}",
+                )
+            elif not was_at_max and is_now_at_max:
+                messages.warning(
+                    request,
+                    f"Your study has reached the response limit and has been automatically paused: "
+                    f"{study.tallied_response_count}/{study.max_responses}",
+                )
+
         return HttpResponseRedirect(
             reverse(
                 "exp:study-responses-consent-manager",
@@ -1348,6 +1429,36 @@ class StudyResponsesConsentManager(
             return HttpResponseRedirect(reverse("exp:study", kwargs=kwargs))
         else:
             return super().get(request, *args, **kwargs)
+
+
+class StudyResponsesSummary(
+    CanViewStudyResponsesMixin, SingleObjectFetchProtocol[Study], generic.DetailView
+):
+    """
+    View showing response count summary statistics for a study.
+    """
+
+    template_name = "studies/study_responses_count_summary.html"
+    queryset = Study.objects.all()
+    http_method_names = ["get"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        study = context["study"]
+        preview_only = not self.request.user.has_study_perms(
+            StudyPermission.CODE_STUDY_CONSENT, study
+        )
+        if study.study_type.is_external:
+            context["summary_statistics"] = get_summary_statistics_external(
+                study, preview_only
+            )
+            context["response_type_counts"] = get_response_type_counts_external(study)
+        else:
+            context["summary_statistics"] = get_consent_statistics(
+                study.id, preview_only
+            )
+            context["response_type_counts"] = get_response_type_counts(study)
+        return context
 
 
 class StudyResponsesAll(
@@ -1367,9 +1478,14 @@ class StudyResponsesAll(
         In addition to the study, adds several items to the context dictionary.
         """
         context = super().get_context_data(**kwargs)
+        study = self.study
         context["n_responses"] = (
             context["study"].responses_for_researcher(self.request.user).count()
         )
+        if study.study_type.is_external:
+            context["response_type_counts"] = get_response_type_counts_external(study)
+        else:
+            context["response_type_counts"] = get_response_type_counts(study)
         context["data_options"] = [col for col in RESPONSE_COLUMNS if col.optional]
         context["can_delete_preview_data"] = self.request.user.has_study_perms(
             StudyPermission.DELETE_ALL_PREVIEW_DATA, context["study"]
@@ -1380,6 +1496,17 @@ class StudyResponsesAll(
         context["can_view_preview_responses"] = self.request.user.has_study_perms(
             StudyPermission.READ_STUDY_PREVIEW_DATA, context["study"]
         )
+        preview_only = not self.request.user.has_study_perms(
+            StudyPermission.CODE_STUDY_CONSENT, study
+        )
+        if study.study_type.is_external:
+            context["summary_statistics"] = get_summary_statistics_external(
+                study, preview_only
+            )
+        else:
+            context["summary_statistics"] = get_consent_statistics(
+                study.id, preview_only
+            )
         return context
 
 
@@ -1736,6 +1863,7 @@ class StudyDemographics(
         Adds information for displaying how many and which types of responses are available.
         """
         context = super().get_context_data(**kwargs)
+        study = self.study
         context["n_responses"] = (
             context["study"].responses_for_researcher(self.request.user).count()
         )
@@ -1745,6 +1873,19 @@ class StudyDemographics(
         context["can_view_preview_responses"] = self.request.user.has_study_perms(
             StudyPermission.READ_STUDY_PREVIEW_DATA, context["study"]
         )
+        preview_only = not self.request.user.has_study_perms(
+            StudyPermission.CODE_STUDY_CONSENT, study
+        )
+        if study.study_type.is_external:
+            context["summary_statistics"] = get_summary_statistics_external(
+                study, preview_only
+            )
+            context["response_type_counts"] = get_response_type_counts_external(study)
+        else:
+            context["summary_statistics"] = get_consent_statistics(
+                study.id, preview_only
+            )
+            context["response_type_counts"] = get_response_type_counts(study)
         return context
 
 

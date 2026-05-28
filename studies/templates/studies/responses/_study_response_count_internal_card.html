@@ -1,0 +1,27 @@
+<div class="card bg-light {% if fullheight %}h-100{% endif %}">
+    <div class="card-body">
+        <div class="row">
+            <div class="col mb-4 mb-lg-0">
+                <div class="mb-3 d-flex align-items-center">
+                    <div class="me-2">
+                        Data about {{ summary_statistics.responses.accepted }} response{{ summary_statistics.responses.accepted|pluralize }} {{ summary_statistics.responses.accepted|pluralize:"is,are" }} available.<br>
+                        <span class="fw-bold">Approved consent: </span>{{ summary_statistics.responses.accepted }} responses{% if tallied %} (<span id="count-tallied-approved">{{ response_type_counts.tallied_approved }}</span> tallied){% endif %}.<br><span class="fw-bold">Pending consent judgment: </span>{{ summary_statistics.responses.pending }} responses{% if tallied %} (<span id="count-tallied-pending">{{ response_type_counts.tallied_pending }}</span> tallied){% endif %}.<br><span class="fw-bold">Rejected consent: </span>{{ summary_statistics.responses.rejected }} responses.
+                        <span id="count-tallied" class="d-none">{{ response_type_counts.tallied }}</span>
+                        <span id="count-untallied" class="d-none">{{ response_type_counts.intallied }}</span>
+                        <span id="count-preview" class="d-none">{{ response_type_counts.preview }}</span>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-evenly">
+                    <div class="flex-shrink-0 {% if fullheight %}ms-1 me-1{% else %}ms-3 me-3{% endif %}">
+                        <a href="{% url 'exp:study-responses-consent-manager' pk=study.pk %}" class="{{ btn_secondary_classes }}" rel="noopener noreferrer" target="_blank">See consent manager</a>
+                    </div>
+                    {% if tallied %}
+                        <div class="flex-shrink-0 {% if fullheight %}ms-1 me-1{% else %}ms-3 me-3{% endif %}">
+                            <a href="{% url 'exp:study-responses-count-summary' study.id %}" class="{{ btn_secondary_classes }}" rel="noopener noreferrer" target="_blank">See response count summary</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

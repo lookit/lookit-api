@@ -8,6 +8,7 @@ import dateutil
 import fleep
 from botocore.exceptions import ClientError
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.models import Group, Permission
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -364,6 +365,12 @@ class Study(models.Model):
     is_building = models.BooleanField(default=False)
     compensation_description = models.TextField(blank=True)
     criteria_expression = models.TextField(blank=True, default="")
+    max_responses = models.IntegerField(
+        null=True,
+        blank=True,
+        default=None,
+        validators=[MinValueValidator(1)],
+    )
     must_have_participated = models.ManyToManyField(
         "self", blank=True, symmetrical=False, related_name="expected_participation"
     )
@@ -547,6 +554,82 @@ class Study(models.Model):
     def videos_for_consented_responses(self):
         """Gets videos but only for consented responses."""
         return Video.objects.filter(response_id__in=self.consented_responses)
+
+    @property
+    def tallied_response_count(self) -> int:
+        """Return the count of effectively tallied responses for the max_responses limit.
+
+        Uses the stored is_tallied field (set and kept in sync by the update_is_tallied_on_response_save
+        and update_is_tallied_on_consent_ruling_save signals), with is_tallied_researcher_override
+        taking precedence when set.
+
+        Returns:
+            int: Count of tallied responses
+        """
+        is_effectively_tallied = models.Q(
+            is_tallied_researcher_override__isnull=False,
+            is_tallied_researcher_override=True,
+        ) | models.Q(is_tallied_researcher_override__isnull=True, is_tallied=True)
+        return self.responses.filter(is_effectively_tallied).count()
+
+    @property
+    def has_reached_max_responses(self) -> bool:
+        """Check if the study has reached its maximum number of tallied responses.
+
+        Returns:
+            bool: True if max_responses is set and the limit has been reached
+        """
+        if self.max_responses is None:
+            return False
+        return self.tallied_response_count >= self.max_responses
+
+    def check_and_pause_if_at_max_responses(
+        self, send_researcher_email=False, request=None
+    ):
+        """Check if max responses reached and pause the study if so.
+
+        Only pauses if the study is currently active. Uses the state machine's
+        pause trigger to properly transition and run callbacks.
+        If the study is not active, this method is used to optionally display a banner message, with no state transition.
+
+        Args:
+            send_researcher_email: If True, send notification email to researchers
+                with CHANGE_STUDY_STATUS permission.
+            request: If provided, display a Django messages banner to the user.
+        """
+        if self.max_responses is None:
+            return
+
+        if not self.has_reached_max_responses:
+            return
+
+        # Refresh from DB to ensure the in-memory study is current before
+        # the pause transition triggers a save (via _finalize_state_change).
+        self.refresh_from_db()
+
+        # Use the state machine's pause trigger to properly transition
+        # and run callbacks (like notify_administrators_of_pause).
+        # Note: no explicit save() needed here because the state machine's
+        # _finalize_state_change callback already saves the model.
+        if self.state == "active":
+            self.pause()  # No user since this is system-triggered
+
+            if send_researcher_email:
+                self._notify_researchers_of_max_responses_pause()
+
+            if request:
+                messages.warning(
+                    request,
+                    f'Study "{self.name}" has been automatically paused because it '
+                    f"reached the response limit ({self.tallied_response_count}/{self.max_responses}).",
+                )
+        else:
+            # Study is not active, so not state transition is needed. Just notify the researcher that they cannot start the study.
+            if request:
+                messages.warning(
+                    request,
+                    f'Study "{self.name}" has reached the response limit ({self.tallied_response_count}/{self.max_responses}).',
+                )
 
     @property
     def consent_videos(self):
@@ -765,7 +848,19 @@ class Study(models.Model):
         """
         if self.needs_to_be_built:
             raise RuntimeError(
-                f'Cannot activate study - experiment runner for "{self.name}" ({self.id}) has not been built!'
+                f'Cannot activate the study "{self.name}" ({self.id}) because the experiment runner has not been built!'
+            )
+
+    def check_if_at_max_responses(self, ev):
+        """Check if study has reached its max responses value before activating/starting.
+
+        :param ev: The event object
+        :type ev: transitions.core.EventData
+        :raise: RuntimeError
+        """
+        if self.has_reached_max_responses:
+            raise RuntimeError(
+                f'Cannot activate the study "{self.name}" ({self.id}) because it has reached its maximum number of responses. Be sure to handle all pending consents and review existing responses, as this may open up slots. Then increase the response limit in the Study Ad if necessary, and try starting the study again.'
             )
 
     def notify_administrators_of_activation(self, ev):
@@ -790,12 +885,16 @@ class Study(models.Model):
         )
 
     def notify_administrators_of_pause(self, ev):
+        user = ev.kwargs.get("user")
+        caller_name = (
+            user.get_short_name() if user else "System (max responses reached)"
+        )
         context = {
             "lab_name": self.lab.name,
             "study_name": self.name,
             "study_id": self.pk,
             "study_uuid": str(self.uuid),
-            "researcher_name": ev.kwargs.get("user").get_short_name(),
+            "researcher_name": caller_name,
             "action": ev.transition.dest,
         }
         send_mail.delay(
@@ -806,6 +905,28 @@ class Study(models.Model):
                 Group.objects.get(
                     name=SiteAdminGroup.LOOKIT_ADMIN.name
                 ).user_set.values_list("username", flat=True)
+            ),
+            **context,
+        )
+
+    def _notify_researchers_of_max_responses_pause(self):
+        """Send email to researchers notifying them the study was auto-paused
+        because it reached the maximum number of responses."""
+        context = {
+            "study_name": self.name,
+            "study_id": self.pk,
+            "study_uuid": str(self.uuid),
+            "max_responses": self.max_responses,
+            "tallied_response_count": self.tallied_response_count,
+        }
+        send_mail.delay(
+            "notify_researchers_of_max_responses_pause",
+            f"{self.name}: Study paused - response limit reached",
+            settings.EMAIL_FROM_ADDRESS,
+            bcc=list(
+                self.users_with_study_perms(
+                    StudyPermission.CHANGE_STUDY_STATUS
+                ).values_list("username", flat=True)
             ),
             **context,
         )
@@ -908,6 +1029,31 @@ class Study(models.Model):
                 "child__additional_information",
             ]
 
+    def columns_included_in_status(self):
+        """A list of columns used in the researchers experiment data
+        view that relate to the response tallied/untallied status. There is an assumption that summary columns for jspsych and EFP
+        experiments will be the same.
+
+        Returns:
+            List[Str]: columns for response status summary
+        """
+        response_status_columns = [
+            "response__eligibility",
+            "response__is_preview",
+            "response__is_tallied_researcher_override",
+        ]
+        if not self.study_type.is_external:
+            response_status_columns.extend(
+                [
+                    "response__completed",
+                    "response__withdrawn",
+                    "response__eligibility",
+                    "response__is_preview",
+                ]
+            )
+
+        return response_status_columns
+
 
 # Using Direct foreign keys for guardian, see:
 # https://django-guardian.readthedocs.io/en/stable/userguide/performance.html
@@ -926,6 +1072,30 @@ def add_study_created_log(sender, instance, created, **kwargs):
         StudyLog.objects.create(action="created", study=instance, user=instance.creator)
 
 
+def _field_is_changed(field, current, new, build_changed_metadata):
+    """Return True if the field value has meaningfully changed."""
+    if (
+        field == "metadata"
+        and build_changed_metadata
+        and not current.get("last_known_player_sha", None)
+    ):
+        return False  # Skip, since we're technically just encoding the most recent SHA.
+    if (
+        field == "structure"
+        and current.get("frames") == new.get("frames")
+        and current.get("sequence") == new.get("sequence")
+    ):
+        return False  # Skip, since the actual JSON content is the same - only exact_text changing
+    if new != current:
+        # For file fields (e.g. image), None and "" are equivalent empty
+        # values that can differ between in-memory defaults and DB-loaded
+        # values. Treat them as unchanged.
+        if hasattr(current, "name") and hasattr(new, "name"):
+            return (current.name or "") != (new.name or "")
+        return True
+    return False
+
+
 @receiver(pre_save, sender=Study)
 def check_modification_of_approved_study(
     sender, instance, raw, using, update_fields, **kwargs
@@ -938,6 +1108,8 @@ def check_modification_of_approved_study(
     study_in_db = Study.objects.filter(pk=instance.id).first()
     if not study_in_db:
         return
+    if instance.state not in approved_states:
+        return
 
     field_transitions = {
         field: (getattr(study_in_db, field), getattr(instance, field))
@@ -946,27 +1118,12 @@ def check_modification_of_approved_study(
 
     build_changed_metadata = update_fields is not None and "metadata" in update_fields
 
-    # Special treatment for metadata and structure fields which may have superficial
-    # changes that shouldn't be treated as actual changes
-    important_fields_changed = False
-    for field, (current, new) in field_transitions.items():
-        if (
-            field == "metadata"
-            and build_changed_metadata
-            and not current.get("last_known_player_sha", None)
-        ):
-            continue  # Skip, since we're technically just encoding the most recent SHA.
-        if (
-            field == "structure"
-            and current.get("frames") == new.get("frames")
-            and current.get("sequence") == new.get("sequence")
-        ):
-            continue  # Skip, since the actual JSON content is the same - only exact_text changing
-        if new != current:
-            important_fields_changed = True
-            break
+    important_fields_changed = any(
+        _field_is_changed(field, current, new, build_changed_metadata)
+        for field, (current, new) in field_transitions.items()
+    )
 
-    if instance.state in approved_states and important_fields_changed:
+    if important_fields_changed:
         instance.state = "rejected"
         instance.comments = "Your study has been modified following approval.  You must resubmit this study to get it approved again."
         # Don't store a user because it's confusing unless that person is actually the one who made the change,
@@ -1034,7 +1191,6 @@ class Response(models.Model):
         ("communication_complete", _("Communication complete")),
         ("withdrawn_closed", _("Withdrawn or closed")),
     )
-
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     study = models.ForeignKey(
         Study, on_delete=models.PROTECT, related_name="responses"
@@ -1076,6 +1232,10 @@ class Response(models.Model):
         choices=SESSION_STATUS_CHOICES, max_length=22, blank=True
     )
     researcher_star = models.BooleanField(default=False)
+    is_tallied = models.BooleanField(default=False)
+    is_tallied_researcher_override = models.BooleanField(
+        null=True, blank=True, default=None
+    )
 
     def __str__(self):
         return self.display_name
@@ -1156,6 +1316,42 @@ class Response(models.Model):
             "date": self.most_recent_ruling_date,
         }
 
+    @property
+    def effective_is_tallied(self) -> bool:
+        """Return the effective is_tallied value, using the researcher override if set."""
+        if self.is_tallied_researcher_override is not None:
+            return self.is_tallied_researcher_override
+        return self.is_tallied
+
+    def compute_is_tallied(self) -> bool:
+        """Compute the system-defined is_tallied value for this response.
+
+        A response is tallied if:
+        - is_preview is False
+        - eligibility is "Eligible" or blank/empty (backwards compatibility)
+
+        For internal (non-external) studies, responses must also:
+        - completed is True
+        - completed_consent_frame is True
+        - the most recent consent ruling is not "rejected"
+        """
+        if self.is_preview:
+            return False
+
+        eligible = (
+            not self.eligibility or ResponseEligibility.ELIGIBLE in self.eligibility
+        )
+        if not eligible:
+            return False
+
+        if self.study_type.is_external:
+            return True
+
+        if not (self.completed and self.completed_consent_frame):
+            return False
+
+        return not self.currently_rejected
+
     def exit_frame_properties(self, property):
         if self.study_type.is_ember_frame_player:
             return self.exit_frame_properties_efp(property)
@@ -1219,7 +1415,7 @@ class Response(models.Model):
 
     @property
     def normalized_exp_data(self):
-        # Where study type is jspysch, convert experiment data to resemble EFP exp data.
+        # Where study type is jspsych, convert experiment data to resemble EFP exp data.
         if self.study_type.is_jspsych:
             return {key: value for key, value in zip(self.sequence, self.exp_data)}
         else:
@@ -1306,10 +1502,17 @@ def take_action_on_exp_data(sender, instance, created, **kwargs):
     """
     response = instance  # Aliasing because instance is hooked as a kwarg.
 
-    if created or not response.sequence:
+    if response.study.study_type.is_external:
+        # External studies: check if study has reached max responses and, if so, pause the study and email researchers.
+        response.study.check_and_pause_if_at_max_responses(send_researcher_email=True)
+    elif created or not response.sequence:
         return
     else:
         dispatch_frame_action(response)
+
+    # Internal studies: if response is complete, check if this study has reached max responses and, if so, pause the study and email researchers.
+    if response.completed:
+        response.study.check_and_pause_if_at_max_responses(send_researcher_email=True)
 
 
 class FeedbackApiManager(models.Manager):
@@ -1590,3 +1793,34 @@ class ConsentRuling(models.Model):
 
     def __str__(self):
         return f"<{self.arbiter.get_short_name()}: {self.action} {self.response} @ {self.created_at:%c}>"
+
+
+@receiver(post_save, sender=Response)
+def update_is_tallied_on_response_save(sender, instance, update_fields, **kwargs):
+    """Recompute is_tallied whenever a Response is saved.
+
+    Uses .update() instead of .save() to avoid re-triggering this signal.
+    Skips recomputation if this save was itself only updating is_tallied.
+    """
+    if update_fields is not None and update_fields == frozenset({"is_tallied"}):
+        return
+    new_value = instance.compute_is_tallied()
+    if instance.is_tallied != new_value:
+        Response.objects.filter(pk=instance.pk).update(is_tallied=new_value)
+        instance.is_tallied = new_value
+        instance.study.check_and_pause_if_at_max_responses(send_researcher_email=True)
+
+
+@receiver(post_save, sender=ConsentRuling)
+def update_is_tallied_on_consent_ruling_save(sender, instance, **kwargs):
+    """Recompute is_tallied for the related Response when a ConsentRuling is saved.
+
+    Use .update() instead of .save() when setting Response is_tallied to avoid triggering the Response post-save signals.
+    """
+    response = instance.response
+    old_value = response.is_tallied
+    new_value = response.compute_is_tallied()
+    Response.objects.filter(pk=response.pk).update(is_tallied=new_value)
+    response.is_tallied = new_value
+    if old_value != new_value:
+        response.study.check_and_pause_if_at_max_responses(send_researcher_email=True)

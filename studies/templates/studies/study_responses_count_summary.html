@@ -1,0 +1,28 @@
+{% extends "exp/base.html" %}
+{% load web_extras %}
+{% load static %}
+{% block title %}
+    Response Count Summary | {{ study.name }}
+{% endblock title %}
+{% block breadcrumb %}
+    <nav aria-label="breadcrumb" class="my-2">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:study-list' %}">Manage Studies</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:study' pk=study.id %}">{{ study.name }}</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Response Count Summary</li>
+        </ol>
+    </nav>
+{% endblock breadcrumb %}
+{% block content %}
+    {% page_title "Response Count Summary" %}
+    {% include "studies/responses/_response_nav_tabs.html" with active="summary" %}
+    <div class="row my-4 mx-auto w-85">
+        <div class="col">
+            {% include "studies/responses/_responses_summary.html" with is_external=study.study_type.is_external %}
+        </div>
+    </div>
+{% endblock content %}
