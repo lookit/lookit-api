@@ -1264,7 +1264,7 @@ class StudyResponseSetResearcherFields(
         try:
             response_obj.save()
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"An error occurred while trying to save researcher-editable response field: {e}"
             )
             raise
