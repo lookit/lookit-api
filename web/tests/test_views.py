@@ -839,11 +839,121 @@ class OneClickUnsubcribeTestCase(TestCase):
         )
 
 
+class StudiesHistoryViewTestCase(TestCase):
+    def setUp(self):
+        self.participant = G(User, is_active=True, is_researcher=False)
+        self.child = G(Child, user=self.participant)
+        self.second_child = G(Child, user=self.participant)
+        self.other_participant = G(User, is_active=True, is_researcher=False)
+        self.other_child = G(Child, user=self.other_participant)
+        self.study_type = StudyType.get_ember_frame_player()
+        self.study = self._make_study("Test Study")
+        self.url = reverse("web:studies-history")
+
+    def _make_study(self, name="Study"):
+        small_gif = (
+            b"\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04"
+            b"\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02"
+            b"\x02\x4c\x01\x00\x3b"
+        )
+        thumbnail = SimpleUploadedFile(
+            name="small.gif", content=small_gif, content_type="image/gif"
+        )
+        return G(Study, study_type=self.study_type, name=name, image=thumbnail)
+
+    def _make_response(self, child=None, study=None, completed_consent_frame=True):
+        return G(
+            Response,
+            child=child or self.child,
+            study=study or self.study,
+            study_type=self.study_type,
+            completed_consent_frame=completed_consent_frame,
+        )
+
+    def test_shows_study_with_completed_consent_frame(self):
+        """A response with completed_consent_frame=True appears even without a consent ruling (pending)."""
+        self.client.force_login(self.participant)
+        self._make_response()
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        studies = list(response.context["object_list"])
+        self.assertEqual(len(studies), 1)
+        self.assertEqual(studies[0].pk, self.study.pk)
+        self.assertEqual(len(list(studies[0].response_page)), 1)
+
+    def test_shows_shows_responses_for_multiple_children(self):
+        """If a user has multiple child accounts, they can see the responses for all of their children."""
+        self.client.force_login(self.participant)
+        self._make_response(child=self.child)
+        self._make_response(child=self.second_child)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        studies = list(response.context["object_list"])
+        self.assertEqual(len(studies), 1)
+        self.assertEqual(studies[0].pk, self.study.pk)
+        self.assertEqual(len(list(studies[0].response_page)), 2)
+
+    def test_excludes_response_without_completed_consent_frame(self):
+        """A response where the consent frame was not completed should not appear."""
+        self.client.force_login(self.participant)
+        self._make_response(completed_consent_frame=False)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(list(response.context["object_list"])), 0)
+
+    def test_excludes_other_users_responses(self):
+        """Responses for another user's child should not be visible."""
+        self.client.force_login(self.participant)
+        self._make_response(child=self.other_child)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(list(response.context["object_list"])), 0)
+
+    def test_study_pagination(self):
+        """Studies are paginated at 10 per page."""
+        self.client.force_login(self.participant)
+        for i in range(11):
+            self._make_response(study=self._make_study(f"Study {i}"))
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        page = response.context["object_list"]
+        self.assertEqual(len(list(page)), 10)
+        self.assertEqual(page.paginator.num_pages, 2)
+
+        response_p2 = self.client.get(self.url, {"page": 2})
+        self.assertEqual(len(list(response_p2.context["object_list"])), 1)
+
+    def test_response_pagination(self):
+        """Responses within a study are paginated at 10 per response page."""
+        self.client.force_login(self.participant)
+        for _ in range(11):
+            self._make_response()
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        studies = list(response.context["object_list"])
+        self.assertEqual(len(studies), 1)
+        self.assertEqual(studies[0].response_page.paginator.num_pages, 2)
+        self.assertEqual(len(list(studies[0].response_page)), 10)
+
+        response_p2 = self.client.get(self.url, {f"response_page_{self.study.pk}": 2})
+        studies_p2 = list(response_p2.context["object_list"])
+        self.assertEqual(len(list(studies_p2[0].response_page)), 1)
+
+
 # TODO: StudyDetailView
 # - check can see for public or private active study, unauthenticated or authenticated
 # - check context[children] has own children
 # TODO: StudiesHistoryView
-# - check can see several sessions where consent frame was completed (but consent not marked), not for someone else's
-# child, not for consent frame incomplete.
+# - external studies
 # TODO: ExperimentAssetsProxyView
 # - check have to be authenticated, maybe that's it for now?

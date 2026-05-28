@@ -264,6 +264,15 @@ def button_secondary_classes(extra_classes=None):
 
 
 @register.simple_tag
+def button_primary_light_classes(extra_classes=None):
+    classes = ["btn", "btn-light", "link-primary", "border-primary"]
+    if extra_classes:
+        classes.extend([extra_classes])
+
+    return " ".join(classes)
+
+
+@register.simple_tag
 def page_title(title, right_side_elements=None):
     if right_side_elements:
         html = f"""<div class="d-flex flex-row bd-highlight mb-4 align-items-center">
@@ -331,3 +340,19 @@ def staff_profile(name, img, blurb, type="large"):
 @register.simple_tag
 def absolute_url(name, *args, **kwargs):
     return get_absolute_url(reverse(name, args=args, kwargs=kwargs))
+
+
+@register.simple_tag
+def response_page_transform(request, study_pk, page_number):
+    """Build a query string for per-study response pagination.
+
+    Updates response_page_<study_pk> while preserving all other GET params
+    (e.g. the study-level page number and tab selection).
+    """
+    updated = request.GET.copy()
+    key = f"response_page_{study_pk}"
+    if page_number == 1:
+        updated.pop(key, None)
+    else:
+        updated[key] = str(page_number)
+    return updated.urlencode()

@@ -78,3 +78,9 @@ def pretty_json(value):
 def linebreak_on_comma(value, autoescape=True):
     escape = conditional_escape if autoescape else lambda x: x
     return mark_safe(escape(value).replace(", ", ",<br>"))
+
+
+@register.filter
+def before_paren(value):
+    """Return the portion of a string before the first '(', stripped of whitespace."""
+    return value.partition("(")[0].strip()

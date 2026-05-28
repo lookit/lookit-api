@@ -1,7 +1,10 @@
+import csv
 import datetime
 import io
 import json
 import logging
+import os
+import tempfile
 import zipfile
 from functools import cached_property
 from typing import Dict, KeysView, List, NamedTuple, Set, Text, Union
@@ -269,6 +272,18 @@ def get_frame_data(resp: Union[Response, Dict]) -> List[FrameDataRow]:
     # Next add all data in exp_data
     event_prefix = "eventTimings."
     for frame_id, frame_data in resp["exp_data"].items():
+        if not isinstance(frame_data, dict):
+            frame_data_tuples.append(
+                FrameDataRow(
+                    child_hashed_id=child_hashed_id,
+                    response_uuid=str(resp["uuid"]),
+                    frame_id=frame_id,
+                    key="",
+                    event_number="",
+                    value=frame_data,
+                )
+            )
+            continue
         for key, value in flatten_dict(frame_data).items():
             # Process event data separately and include event_number within frame
             if key.startswith(event_prefix):
@@ -371,29 +386,30 @@ def make_chunk(paginator, page_num, header_options):
     return chunk
 
 
-"""Takes session_data dict list and converts it to csv formatted string
+"""Writes session data to a temp CSV file and returns the path.
 
     Args:
-        session_list(list of strings): list of strings representing rows of the csv
-        header_list(list of strings): list of headers to include at top of csv string
+        session_list(list of dicts): list of dicts representing rows of the csv
+        header_list(list of strings): list of headers to include at top of csv
 
     Returns:
-        (string): csv-formattted string for response data file.
+        (string): path to the temp file (caller is responsible for deletion)
     """
 
 
-def build_overview_str(session_list, header_list):
-    session_strings = [
-        ",".join(
-            [
-                (f'"{str(session_row[key])}"' if key in session_row else "")
+def write_overview_to_temp_file(session_list, header_list):
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".csv", mode="w")
+    tmp.write(",".join(header_list))
+    for session_row in session_list:
+        tmp.write(
+            "\n"
+            + ",".join(
+                f'"{str(session_row[key])}"' if key in session_row else ""
                 for key in header_list
-            ]
+            )
         )
-        for session_row in session_list
-    ]
-    header_str = ",".join(header_list)
-    return "\n".join([header_str] + session_strings)
+    tmp.close()
+    return tmp.name
 
 
 """Aggregates child data over responses and returns list of dictionaries for each row of csv
@@ -431,64 +447,21 @@ def get_child_overview_csv(paginator, study, header_options):
     return session_list, header_list
 
 
-"""Grab all relevant frame data for framedata responses for psychds download
+"""Writes psych-ds formatted zip file based on all response data aggregated
 
     Args:
         paginator(Paginator): Serialized set of entries from the studies_responses table
         study(Study): Query object for the given study
-        truncate_uuids(boolean): Represents whether user has selected to truncate their uuids in filenames
-
-    Returns:
-        response_data(list of lists): contains necessary objects for building and writing files related to frame data for each response
-        variables_measured(list of strings): global record of which columns appeared in various response files
-    """
-
-
-# Helper function to grab all relevant data for framedata responses for psychds download
-def get_framedata_for_psychds(paginator, study, truncate_uuids):
-    study_uuid = study.uuid.hex[:8] if truncate_uuids else study.uuid.hex
-    response_data = []
-    variables_measured = []
-    for page_num in paginator.page_range:
-        page_of_responses = paginator.page(page_num)
-        for resp in page_of_responses:
-            response_uuid = resp.uuid.hex[:8] if truncate_uuids else study.uuid.hex
-            # get framedata for response
-            data = build_single_response_framedata_csv(resp)
-            # get column headers from first row
-            variables_measured += [
-                column.strip('"') for column in data.split("\n")[0].strip().split(",")
-            ]
-            # psych-DS files use "keyword" formatting
-            keywords = {"study": study_uuid, "response": response_uuid}
-            filename = keyword_filename(keywords, "csv")
-            # make a response-specific metadata file
-            sidecar_metadata = {
-                "response_uuid": resp.uuid.hex,
-                "eligibility": resp.eligibility,
-                "study_completed": resp.completed,
-            }
-            sidecar_filename = keyword_filename(keywords, "json")
-            response_data.append([data, filename, sidecar_metadata, sidecar_filename])
-    return response_data, variables_measured
-
-
-"""Writes psych-ds formatted zip file based on all response data aggregated
-
-    Args:
-        response_data(list of lists): list of the following objects for each response object:
-            data(string): framedata-per-response csv string
-            filename(string): formatted name for csv file
-            sidecar_metadata(dict): JSON object for sidecar metadata file
-            sidecar_filename(string): formatted name for sidecar file
-        study(Study): Query object for the given study
         header_options(list of strings): list of selected headers from header_options
         study_uuid(string): uuid for study object, either truncated or untruncated
-        overview_str(string): string representing reponse overview file 
-        child_overview_str(string): string representing child overview file
-        metadata_json(dict): JSON object for global metadata file
+        truncate_uuids(boolean): Represents whether user has selected to truncate their uuids in filenames
+        overview_path(string): path to temp file containing response overview CSV
+        child_overview_path(string): path to temp file containing child overview CSV
+        metadata_json(dict): JSON object for global metadata file (variableMeasured will be added)
         all_response_filename(string): filename for response overview file
-        all_response_json_str(string): string representing json for all response overview file
+        all_response_json_path(string): path to temp file containing all-responses JSON
+        descriptions(dict): mapping of column ids to column descriptions
+        header_list(list of strings): list of response overview column headers
 
     Returns:
         response(FileResponse): Formatted response object with constructed zipfile
@@ -496,26 +469,46 @@ def get_framedata_for_psychds(paginator, study, truncate_uuids):
 
 
 def build_zip_for_psychds(
-    response_data,
+    paginator,
     study,
     header_options,
     study_uuid,
-    overview_str,
-    child_overview_str,
+    truncate_uuids,
+    overview_path,
+    child_overview_path,
     metadata_json,
     all_response_filename,
-    all_response_json_str,
+    all_response_json_path,
+    descriptions,
+    header_list,
 ):
-    zipped_file = io.BytesIO()
+    zipped_file = tempfile.NamedTemporaryFile(suffix=".zip")
     with zipfile.ZipFile(zipped_file, "w", zipfile.ZIP_DEFLATED) as zipped:
-        for data, filename, sidecar_metadata, sidecar_filename in response_data:
-            # write data file for response
-            zipped.writestr(f"data/framedata-per-response/{filename}", data)
-            # write metadata sidecar for response
-            zipped.writestr(
-                f"data/framedata-per-response/{sidecar_filename}",
-                json.dumps(sidecar_metadata, indent=4),
-            )
+        # write frame data for each response directly into the zip, one at a time
+        variables_measured = set()
+        for page_num in paginator.page_range:
+            page_of_responses = paginator.page(page_num)
+            for resp in page_of_responses:
+                response_uuid = resp.uuid.hex[:8] if truncate_uuids else resp.uuid.hex
+                data = build_single_response_framedata_csv(resp)
+                # collect column headers for variableMeasured metadata
+                variables_measured |= {
+                    column.strip('"')
+                    for column in data.split("\n")[0].strip().split(",")
+                }
+                keywords = {"study": study_uuid, "response": response_uuid}
+                filename = keyword_filename(keywords, "csv")
+                sidecar_metadata = {
+                    "response_uuid": resp.uuid.hex,
+                    "eligibility": resp.eligibility,
+                    "study_completed": resp.completed,
+                }
+                sidecar_filename = keyword_filename(keywords, "json")
+                zipped.writestr(f"data/framedata-per-response/{filename}", data)
+                zipped.writestr(
+                    f"data/framedata-per-response/{sidecar_filename}",
+                    json.dumps(sidecar_metadata, indent=4),
+                )
 
         # mark response overview with identifiable keyword if identifiable columns were selected
         all_responses = "all-responses"
@@ -525,14 +518,14 @@ def build_zip_for_psychds(
             all_children += "_identifiable-true"
 
         # save response overview
-        zipped.writestr(
+        zipped.write(
+            overview_path,
             f"data/overview/study-{study_uuid}_{all_responses}_data.csv",
-            overview_str,
         )
         # save children overview
-        zipped.writestr(
+        zipped.write(
+            child_overview_path,
             f"data/overview/study-{study_uuid}_{all_children}_data.csv",
-            child_overview_str,
         )
         if not study.use_generator:
             # save study protocol
@@ -567,10 +560,7 @@ def build_zip_for_psychds(
             VIDEOS_README_STR,
         )
         # save all responses json
-        zipped.writestr(
-            f"data/raw/{all_response_filename}",
-            all_response_json_str,
-        )
+        zipped.write(all_response_json_path, f"data/raw/{all_response_filename}")
         # save psychds-ignore file to avoid NOT_INCLUDED warnings
         zipped.writestr(
             ".psychds-ignore",
@@ -598,6 +588,17 @@ def build_zip_for_psychds(
         zipped.writestr(
             "materials/study_ad_info.json", f"{json.dumps(study_ad, indent=4)}"
         )
+        # build variableMeasured from frame data headers + overview headers, then finalise metadata
+        variables_measured |= set(header_list + CHILD_CSV_HEADERS)
+        variables_measured_objects = [
+            {
+                "@type": "PropertyValue",
+                "name": column,
+                "description": descriptions[column.split(".")[0]],
+            }
+            for column in variables_measured
+        ]
+        metadata_json["variableMeasured"] = variables_measured_objects
         # save global metadata file
         zipped.writestr(
             "dataset_description.json", f"{json.dumps(metadata_json, indent=4)}"
@@ -1589,18 +1590,29 @@ class StudyResponsesCSV(ResponseDownloadMixin, generic.list.ListView):
         session_list, header_options, header_list = get_study_responses_csv(
             self, paginator, study
         )
-        output, writer = csv_dict_output_and_writer(header_list)
+        tmp = tempfile.NamedTemporaryFile(suffix=".csv")
+        text_wrapper = io.TextIOWrapper(tmp, encoding="utf-8", newline="")
+        writer = csv.DictWriter(
+            text_wrapper,
+            quoting=csv.QUOTE_NONNUMERIC,
+            fieldnames=header_list,
+            restval="",
+            extrasaction="ignore",
+        )
+        writer.writeheader()
         writer.writerows(session_list)
-        cleaned_data = output.getvalue()
+        text_wrapper.flush()
+        text_wrapper.detach()
+        tmp.seek(0)
 
         all_responses = "all-responses"
         if IDENTIFIABLE_DATA_HEADERS & header_options:
             all_responses += "-identifiable"
 
         filename = csv_filename(study, all_responses)
-        response = HttpResponse(cleaned_data, content_type=CONTENT_TYPE)
-        set_content_disposition(response, filename)
-        return response
+        return FileResponse(
+            tmp, as_attachment=True, filename=filename, content_type=CONTENT_TYPE
+        )
 
 
 class StudyResponsesDictCSV(CanViewStudyResponsesMixin, View):
@@ -1651,17 +1663,28 @@ class StudyChildrenCSV(ResponseDownloadMixin, generic.list.ListView):
             paginator, study, header_options
         )
 
-        output, writer = csv_dict_output_and_writer(header_list)
+        tmp = tempfile.NamedTemporaryFile(suffix=".csv")
+        text_wrapper = io.TextIOWrapper(tmp, encoding="utf-8", newline="")
+        writer = csv.DictWriter(
+            text_wrapper,
+            quoting=csv.QUOTE_NONNUMERIC,
+            fieldnames=header_list,
+            restval="",
+            extrasaction="ignore",
+        )
+        writer.writeheader()
         writer.writerows(session_list)
-        cleaned_data = output.getvalue()
+        text_wrapper.flush()
+        text_wrapper.detach()
+        tmp.seek(0)
 
         filename = "all-children{}".format(
             ("-identifiable" if IDENTIFIABLE_DATA_HEADERS & header_options else ""),
         )
         filename = csv_filename(study, filename)
-        response = HttpResponse(cleaned_data, content_type=CONTENT_TYPE)
-        set_content_disposition(response, filename)
-        return response
+        return FileResponse(
+            tmp, as_attachment=True, filename=filename, content_type=CONTENT_TYPE
+        )
 
 
 class StudyChildrenDictCSV(CanViewStudyResponsesMixin, View):
@@ -1719,50 +1742,43 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
         session_list, header_options, header_list = get_study_responses_csv(
             self, paginator, study
         )
-        overview_str = build_overview_str(session_list, header_list)
+        tmp_overview = write_overview_to_temp_file(session_list, header_list)
         # gets data necessary for building child overview file
         child_session_list, child_header_list = get_child_overview_csv(
             paginator, study, header_options
         )
-        child_overview_str = build_overview_str(child_session_list, child_header_list)
-        # gets data necessary for building psychds framedata files
-        response_data, variables_measured = get_framedata_for_psychds(
-            paginator, study, truncate_uuids
+        tmp_child_overview = write_overview_to_temp_file(
+            child_session_list, child_header_list
         )
-        variables_measured += header_list + CHILD_CSV_HEADERS
         # builds "all response" json download
         all_response_filename = "all_responses{}.json".format(
             ("_identifiable" if IDENTIFIABLE_DATA_HEADERS & header_options else ""),
         )
-        all_response_json_str = "".join(
-            [
-                make_chunk(paginator, page_num, header_options)
-                for page_num in paginator.page_range
-            ]
-        )
-        # construct more informative variablesMeasured object
-        variables_measured_objects = [
-            {
-                "@type": "PropertyValue",
-                "name": column,
-                "description": descriptions[column.split(".")[0]],
-            }
-            for column in list(set(variables_measured))
-        ]
-        # add final variables list to metadata
-        metadata_json["variableMeasured"] = variables_measured_objects
+        tmp_all_response = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
 
-        response = build_zip_for_psychds(
-            response_data,
-            study,
-            header_options,
-            study_uuid,
-            overview_str,
-            child_overview_str,
-            metadata_json,
-            all_response_filename,
-            all_response_json_str,
-        )
+        try:
+            with open(tmp_all_response.name, "w") as f:
+                for page_num in paginator.page_range:
+                    f.write(make_chunk(paginator, page_num, header_options))
+
+            response = build_zip_for_psychds(
+                paginator,
+                study,
+                header_options,
+                study_uuid,
+                truncate_uuids,
+                tmp_overview,
+                tmp_child_overview,
+                metadata_json,
+                all_response_filename,
+                all_response_json_path=tmp_all_response.name,
+                descriptions=descriptions,
+                header_list=header_list,
+            )
+        finally:
+            os.unlink(tmp_all_response.name)
+            os.unlink(tmp_overview)
+            os.unlink(tmp_child_overview)
 
         return response
 
@@ -1783,7 +1799,7 @@ class StudyResponsesFrameDataCSV(ResponseDownloadMixin, generic.list.ListView):
 
             return study_responses_all(study)
 
-        zipped_file = io.BytesIO()
+        zipped_file = tempfile.NamedTemporaryFile(suffix=".zip")
         with zipfile.ZipFile(zipped_file, "w", zipfile.ZIP_DEFLATED) as zipped:
             for page_num in paginator.page_range:
                 page_of_responses = paginator.page(page_num)
@@ -1882,13 +1898,16 @@ class StudyDemographicsJSON(DemographicDownloadMixin, generic.list.ListView):
         study = self.study
         header_options = self.request.GET.getlist("demo_options")
 
-        json_responses = []
         paginator = context["paginator"]
-        for page_num in paginator.page_range:
-            page_of_responses = paginator.page(page_num)
-            for resp in page_of_responses:
-                json_responses.append(
-                    json.dumps(
+
+        def json_generator():
+            yield "[\n"
+            first = True
+            for page_num in paginator.page_range:
+                for resp in paginator.page(page_num):
+                    if not first:
+                        yield ",\n"
+                    yield json.dumps(
                         construct_response_dictionary(
                             resp,
                             DEMOGRAPHIC_COLUMNS,
@@ -1898,12 +1917,13 @@ class StudyDemographicsJSON(DemographicDownloadMixin, generic.list.ListView):
                         indent="\t",
                         default=str,
                     )
-                )
-        cleaned_data = f"[ {', '.join(json_responses)} ]"
+                    first = False
+            yield "\n]"
+
         filename = "{}_{}.json".format(
             study_name_for_files(study.name), "all-demographic-snapshots"
         )
-        response = HttpResponse(cleaned_data, content_type="text/json")
+        response = StreamingHttpResponse(json_generator(), content_type="text/json")
         set_content_disposition(response, filename)
         return response
 
@@ -1918,21 +1938,30 @@ class StudyDemographicsCSV(DemographicDownloadMixin, generic.list.ListView):
         paginator = context["paginator"]
         header_options = set(self.request.GET.getlist("demo_options"))
 
-        participant_list = []
         headers_for_download = get_demographic_headers(header_options)
+        tmp = tempfile.NamedTemporaryFile(suffix=".csv")
+        text_wrapper = io.TextIOWrapper(tmp, encoding="utf-8", newline="")
+        writer = csv.DictWriter(
+            text_wrapper,
+            quoting=csv.QUOTE_NONNUMERIC,
+            fieldnames=headers_for_download,
+            restval="",
+            extrasaction="ignore",
+        )
+        writer.writeheader()
         for page_num in paginator.page_range:
-            page_of_responses = paginator.page(page_num)
-            for resp in page_of_responses:
-                row_data = {col.id: col.extractor(resp) for col in DEMOGRAPHIC_COLUMNS}
-                participant_list.append(row_data)
-        output, writer = csv_dict_output_and_writer(headers_for_download)
-        writer.writerows(participant_list)
-        cleaned_data = output.getvalue()
+            for resp in paginator.page(page_num):
+                writer.writerow(
+                    {col.id: col.extractor(resp) for col in DEMOGRAPHIC_COLUMNS}
+                )
+        text_wrapper.flush()
+        text_wrapper.detach()
+        tmp.seek(0)
 
         filename = csv_filename(study, "all-demographic-snapshots")
-        response = HttpResponse(cleaned_data, content_type=CONTENT_TYPE)
-        set_content_disposition(response, filename)
-        return response
+        return FileResponse(
+            tmp, as_attachment=True, filename=filename, content_type=CONTENT_TYPE
+        )
 
 
 class StudyDemographicsDictCSV(DemographicDownloadMixin, generic.list.ListView):
@@ -2108,9 +2137,9 @@ class StudyAttachments(CanViewStudyResponsesMixin, generic.ListView):
 
 
 DEMOGRAPHICS_README_STR = """
-    For participant anonymity reasons, we don't include demographic data in this download. 
-    You can download the demographics data and place it here for your own uses, but make sure 
-    not to share it carelessly, as it contains information that could be used to identify participants.
+    Each response is associated with a demographic data snapshot that captures the state of the participant's demographic survey at the time of the response. You may use this data to check on demographics of your study population, for instance to check how representative your sample is with respect to parental education, and you may report your findings in aggregate.
+
+    Important: To reduce re-identification risks to participants, we don't automatically include demographic data in this download. You can download the demographics data and place it in this subfolder if you need it, but be cautious when sharing data. This data must never be published in conjunction with study video such that it would be possible to link the two - e.g., to determine that the person pictured has an approximate family income of $50K or lives in Iowa. At minimum, this likely means redacting all response and participant identifiers from the downloaded demographic file if publishing raw data.
 """
 
 PSYCHDS_README_STR = """# {study_title}
@@ -2183,13 +2212,17 @@ Remember, even if you didn't check any of the boxes for data that CHS knows are 
 
 #### `framedata-per-response`
 
-This subfolder contains frame-by-frame data files for each individual response. The contents of these files are identical to the output of the "frame data" download option:
+This subfolder contains frame-by-frame data files for each individual response. The contents of these files are identical to the output of the "frame data" download option.
+Additionally, for each data file, there is one "metadata sidecar" file with the same name and a .json extension. These files serve a similar function to the dataset_description.json file, but they include metadata pertaining only to their corresponding data file.
 
 ```
 framedata-per-response/
       study-1111aaaa_response-2b2b2b2b_data.csv
+      study-1111aaaa_response-2b2b2b2b_data.json
       study-1111aaaa_response-3c3c3c3c_data.csv
+      study-1111aaaa_response-3c3c3c3c_data.json
       study-1111aaaa_response-4d4d4d4d_data.csv
+      study-1111aaaa_response-4d4d4d4d_data.json
       etc...
 ```
 

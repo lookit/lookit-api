@@ -178,10 +178,14 @@ class FrameActionDispatcher(object):
 
         if response.study_type.is_jspsych:
             exp_data = response.exp_data[-1]
+            if not isinstance(exp_data, dict):
+                return
             frame_data = exp_data.get("response")
             frame_type = exp_data.get("chs_type")
         elif response.study_type.is_ember_frame_player:
             frame_data = response.exp_data[current_frame_id]
+            if not isinstance(frame_data, dict):
+                return
             frame_type = frame_data.get("frameType")
 
         if not frame_type:
