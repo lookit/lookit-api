@@ -1,11 +1,11 @@
 {% load i18n %}
 <p>
-    {% trans "As of March 2023, there are over 950 researchers in our community, and over 90 universities affiliated with Lookit/Children Helping Science, including:" %}
+    {% trans "As of May 2026, there are over 3,000 researchers in our community, and around 200 universities affiliated with Lookit/Children Helping Science, including:" %}
 </p>
 {% for section, institutions in institution_sections %}
     <p>{{ section.name }}:</p>
     <ul style="columns:3">
-        {% for institution in institutions %}<li>{{ institution.name }}</li>{% endfor %}
+        {% for institution in institutions|dictsort:"name" %}<li>{{ institution.name }}</li>{% endfor %}
     </ul>
 {% endfor %}
 <p>
