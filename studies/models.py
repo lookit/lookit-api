@@ -1072,6 +1072,30 @@ def add_study_created_log(sender, instance, created, **kwargs):
         StudyLog.objects.create(action="created", study=instance, user=instance.creator)
 
 
+def _field_is_changed(field, current, new, build_changed_metadata):
+    """Return True if the field value has meaningfully changed."""
+    if (
+        field == "metadata"
+        and build_changed_metadata
+        and not current.get("last_known_player_sha", None)
+    ):
+        return False  # Skip, since we're technically just encoding the most recent SHA.
+    if (
+        field == "structure"
+        and current.get("frames") == new.get("frames")
+        and current.get("sequence") == new.get("sequence")
+    ):
+        return False  # Skip, since the actual JSON content is the same - only exact_text changing
+    if new != current:
+        # For file fields (e.g. image), None and "" are equivalent empty
+        # values that can differ between in-memory defaults and DB-loaded
+        # values. Treat them as unchanged.
+        if hasattr(current, "name") and hasattr(new, "name"):
+            return (current.name or "") != (new.name or "")
+        return True
+    return False
+
+
 @receiver(pre_save, sender=Study)
 def check_modification_of_approved_study(
     sender, instance, raw, using, update_fields, **kwargs
@@ -1084,6 +1108,8 @@ def check_modification_of_approved_study(
     study_in_db = Study.objects.filter(pk=instance.id).first()
     if not study_in_db:
         return
+    if instance.state not in approved_states:
+        return
 
     field_transitions = {
         field: (getattr(study_in_db, field), getattr(instance, field))
@@ -1092,33 +1118,12 @@ def check_modification_of_approved_study(
 
     build_changed_metadata = update_fields is not None and "metadata" in update_fields
 
-    # Special treatment for metadata and structure fields which may have superficial
-    # changes that shouldn't be treated as actual changes
-    important_fields_changed = False
-    for field, (current, new) in field_transitions.items():
-        if (
-            field == "metadata"
-            and build_changed_metadata
-            and not current.get("last_known_player_sha", None)
-        ):
-            continue  # Skip, since we're technically just encoding the most recent SHA.
-        if (
-            field == "structure"
-            and current.get("frames") == new.get("frames")
-            and current.get("sequence") == new.get("sequence")
-        ):
-            continue  # Skip, since the actual JSON content is the same - only exact_text changing
-        if new != current:
-            # For file fields (e.g. image), None and "" are equivalent empty
-            # values that can differ between in-memory defaults and DB-loaded
-            # values. Treat them as unchanged.
-            if hasattr(current, "name") and hasattr(new, "name"):
-                if (current.name or "") == (new.name or ""):
-                    continue
-            important_fields_changed = True
-            break
+    important_fields_changed = any(
+        _field_is_changed(field, current, new, build_changed_metadata)
+        for field, (current, new) in field_transitions.items()
+    )
 
-    if instance.state in approved_states and important_fields_changed:
+    if important_fields_changed:
         instance.state = "rejected"
         instance.comments = "Your study has been modified following approval.  You must resubmit this study to get it approved again."
         # Don't store a user because it's confusing unless that person is actually the one who made the change,
