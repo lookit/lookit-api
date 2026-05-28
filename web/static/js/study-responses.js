@@ -48,10 +48,8 @@ if (hasMaxResponses) document.getElementById('tallyConfirmModal').addEventListen
 
     const statusWord = currentlyTallied ? 'tallied' : 'not tallied';
     const actionWord = currentlyTallied ? 'untally' : 'tally';
-    let additional_text;
-    if (!currentlyTallied) {
-        additional_text = '<div></div>';
-    } else {
+    let additional_text = '<div></div>';
+    if (currentlyTallied) {
         // additional text if changing tallied to untallied
         additional_text = '<div class="text-muted mt-3">Responses should be tallied if:<ul><li>The correct child participated</li><li>The child was eligible for the study</li><li>The family participated in good faith (not a confirmed scammer)</li></ul>This is true even if you are not able to use this response in your analysis, for instance because the child was fussy or there were technical problems.';
         if (isExternal) {
