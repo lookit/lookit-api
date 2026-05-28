@@ -32,6 +32,7 @@ from studies.models import (
     StudyType,
     StudyTypeEnum,
     Video,
+    _field_is_changed,
 )
 from studies.permissions import StudyPermission
 from studies.tasks import (
@@ -2655,3 +2656,193 @@ class TestGetAbsoluteURLTestCase(TestCase):
         self.assertTrue(
             get_experiment_absolute_url("somepath"), f"{exp_fake_website}somepath"
         )
+
+
+class FieldIsChangedTestCase(TestCase):
+    """Unit tests for the _field_is_changed helper."""
+
+    def test_simple_field_unchanged_returns_false(self):
+        self.assertFalse(_field_is_changed("name", "Title", "Title", False))
+
+    def test_simple_field_changed_returns_true(self):
+        self.assertTrue(_field_is_changed("name", "Old Title", "New Title", False))
+
+    def test_metadata_no_sha_and_build_changed_metadata_returns_false(self):
+        """Saving metadata via update_fields when no prior SHA exists is not a meaningful change."""
+        self.assertFalse(
+            _field_is_changed("metadata", {}, {"last_known_player_sha": "abc"}, True)
+        )
+
+    def test_metadata_with_existing_sha_and_build_changed_metadata_returns_true(self):
+        """When current metadata already has a SHA, treat metadata changes as real changes."""
+        self.assertTrue(
+            _field_is_changed(
+                "metadata",
+                {"last_known_player_sha": "abc"},
+                {"last_known_player_sha": "def"},
+                True,
+            )
+        )
+
+    def test_metadata_changed_without_build_changed_metadata_returns_true(self):
+        """Without update_fields context, metadata changes are treated as real changes."""
+        self.assertTrue(_field_is_changed("metadata", {}, {"key": "value"}, False))
+
+    def test_structure_only_exact_text_differs_returns_false(self):
+        """Structure changes where frames and sequence are identical are not meaningful."""
+        current = {"frames": {"f1": {}}, "sequence": ["f1"], "exact_text": "old"}
+        new = {"frames": {"f1": {}}, "sequence": ["f1"], "exact_text": "new"}
+        self.assertFalse(_field_is_changed("structure", current, new, False))
+
+    def test_structure_frames_changed_returns_true(self):
+        current = {"frames": {"f1": {"type": "A"}}, "sequence": ["f1"]}
+        new = {"frames": {"f1": {"type": "B"}}, "sequence": ["f1"]}
+        self.assertTrue(_field_is_changed("structure", current, new, False))
+
+    def test_structure_sequence_changed_returns_true(self):
+        current = {"frames": {"f1": {}}, "sequence": ["f1"]}
+        new = {"frames": {"f1": {}}, "sequence": ["f1", "f2"]}
+        self.assertTrue(_field_is_changed("structure", current, new, False))
+
+    def test_file_field_none_and_empty_string_equivalent(self):
+        """None and '' are both treated as an absent file (not a meaningful change)."""
+        current = MagicMock()
+        current.name = None
+        new = MagicMock()
+        new.name = ""
+        self.assertFalse(_field_is_changed("image", current, new, False))
+
+    def test_file_field_different_names_returns_true(self):
+        current = MagicMock()
+        current.name = "study_images/old.jpg"
+        new = MagicMock()
+        new.name = "study_images/new.jpg"
+        self.assertTrue(_field_is_changed("image", current, new, False))
+
+    def test_file_field_same_name_returns_false(self):
+        current = MagicMock()
+        current.name = "study_images/pic.jpg"
+        new = MagicMock()
+        new.name = "study_images/pic.jpg"
+        self.assertFalse(_field_is_changed("image", current, new, False))
+
+
+class CheckModificationOfApprovedStudyTestCase(TestCase):
+    """Integration tests for the check_modification_of_approved_study pre_save signal."""
+
+    def setUp(self):
+        self.lab = Lab.objects.create(
+            name="Modification Check Test Lab",
+            institution="Test",
+            contact_email="mod-check@test.com",
+        )
+        self.study = Study.objects.create(
+            name="Approved Study",
+            lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
+            state="approved",
+        )
+
+    def _make_study(self, name, state, **kwargs):
+        return Study.objects.create(
+            name=name,
+            lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
+            state=state,
+            **kwargs,
+        )
+
+    def test_new_study_not_rejected(self):
+        """Creating a study does not trigger rejection even with state='approved'."""
+        study = self._make_study("Brand New Study", "approved")
+        study.refresh_from_db()
+        self.assertEqual(study.state, "approved")
+
+    def test_unapproved_state_field_change_not_rejected(self):
+        """Changing a monitored field on a study in an unapproved state does not reject it."""
+        study = self._make_study("Draft Study", "created")
+        study.name = "Changed Name"
+        study.save()
+        study.refresh_from_db()
+        self.assertEqual(study.state, "created")
+
+    def test_approved_state_field_change_rejected(self):
+        """Changing a monitored field on an approved study rejects it and logs the action."""
+        self.study.name = "Changed Name"
+        self.study.save()
+        self.study.refresh_from_db()
+        self.assertEqual(self.study.state, "rejected")
+        self.assertTrue(
+            StudyLog.objects.filter(study=self.study, action="rejected").exists()
+        )
+
+    def test_active_state_field_change_rejected(self):
+        study = self._make_study("Active Study", "active")
+        study.name = "Changed Name"
+        study.save()
+        study.refresh_from_db()
+        self.assertEqual(study.state, "rejected")
+
+    def test_paused_state_field_change_rejected(self):
+        study = self._make_study("Paused Study", "paused")
+        study.name = "Changed Name"
+        study.save()
+        study.refresh_from_db()
+        self.assertEqual(study.state, "rejected")
+
+    def test_deactivated_state_field_change_rejected(self):
+        study = self._make_study("Deactivated Study", "deactivated")
+        study.name = "Changed Name"
+        study.save()
+        study.refresh_from_db()
+        self.assertEqual(study.state, "rejected")
+
+    def test_non_monitored_field_change_not_rejected(self):
+        """Changing a field not in MONITORING_FIELDS does not reject an approved study."""
+        self.assertIsNone(self.study.max_responses)
+        self.study.max_responses = 99
+        self.study.save()
+        self.study.refresh_from_db()
+        self.assertEqual(self.study.state, "approved")
+
+    def test_structure_only_exact_text_changed_not_rejected(self):
+        """Structure changes where frames and sequence are identical are treated as unchanged."""
+        study = self._make_study(
+            "Structure Study",
+            "approved",
+            structure={"frames": {"f1": {}}, "sequence": ["f1"], "exact_text": "old"},
+        )
+        study.structure = {
+            "frames": {"f1": {}},
+            "sequence": ["f1"],
+            "exact_text": "new",
+        }
+        study.save()
+        study.refresh_from_db()
+        self.assertEqual(study.state, "approved")
+
+    def test_structure_frames_changed_rejected(self):
+        """Structure changes that modify frames reject an approved study."""
+        study = self._make_study(
+            "Structure Study 2",
+            "approved",
+            structure={"frames": {"f1": {"type": "A"}}, "sequence": ["f1"]},
+        )
+        study.structure = {"frames": {"f1": {"type": "B"}}, "sequence": ["f1"]}
+        study.save()
+        study.refresh_from_db()
+        self.assertEqual(study.state, "rejected")
+
+    def test_metadata_sha_update_not_rejected(self):
+        """Saving metadata via update_fields when no SHA exists is not treated as a meaningful change."""
+        self.study.metadata = {"last_known_player_sha": "newsha"}
+        self.study.save(update_fields=["metadata"])
+        self.study.refresh_from_db()
+        self.assertEqual(self.study.state, "approved")
+
+    def test_metadata_change_rejected(self):
+        """Changing metadata in a full save rejects an approved study."""
+        self.study.metadata = {"key": "value"}
+        self.study.save()
+        self.study.refresh_from_db()
+        self.assertEqual(self.study.state, "rejected")
