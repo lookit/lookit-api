@@ -36,8 +36,8 @@
             integrity="sha384-JNNpz6XWsC9uPPHlCuf9rr6LrSD2uYvbkApP5kAp6g/lFBue51K1kMzxGawS50nK"
             crossorigin="anonymous">
         <link rel="stylesheet"
-            href="https://unpkg.com/@lookit/style@0.3.0"
-            integrity="sha384-kmN9wmXS/lsT78dPkfu99YiznGYo4lNUhB5tLUJWL82ScmPucLsOrYj5np/FM/vC"
+            href="https://unpkg.com/@lookit/style@0.4.0"
+            integrity="sha384-e+HIPVgafegNi8YhAiKPvYDv1K+hihQ2g4qd/ZYHPtTBJyfTEDcfDLYyfDdk1lI/"
             crossorigin="anonymous">
     </head>
     <body>
@@ -82,23 +82,28 @@
         <script src="https://unpkg.com/@jspsych/plugin-survey-multi-choice@2.1.0"
                 integrity="sha384-NDx/PP6brJOK2yI3xA9yYbsgRe6I7BUZ3jcBD9aiVRWNYiei88wLmzsMEdWGJXOr"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-fullscreen@2.1.0" integrity="sha384-JQEV9wMXFDbTpp1eYJSU9G7uQeyZcLGabno5ZHQJGytUBG19mTZ+ZBV5dsm7m6Mf" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/@jspsych/plugin-fullscreen@2.1.0" 
+                integrity="sha384-JQEV9wMXFDbTpp1eYJSU9G7uQeyZcLGabno5ZHQJGytUBG19mTZ+ZBV5dsm7m6Mf"
+                crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/@jspsych-contrib/plugin-tangram-game"
+                integrity="sha384-baK1nai9zI/Ela9b8M1rPHE2echlvpfCWpE8f1FALUSteEUwYRA77m3nGKaV/IyZ"
+                crossorigin="anonymous"></script>
         {% comment %} Data and templates packages are peer dependencies and should be listed first. {% endcomment %}
         <script src="https://unpkg.com/@lookit/data@0.3.0"
                 integrity="sha384-kpjDWFQo7CQk9i6Bq58NNCC8i5mFCMAbapMhF3xxLmEc2vD6wHqMc/aI0w1u/fTh"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@lookit/templates@3.1.0"
-                integrity="sha384-ROFlcg/vVnLfIAp4GkU2e0I0dfCH8Lcc63tqd8j8M/5EszxstGFrmlL/twRT2WeY"
+        <script src="https://unpkg.com/@lookit/templates@3.2.0"
+                integrity="sha384-VOuebjugj2OrWh+NLn28VpM+bfSQNGw8HvEInoQgY9Fco2bchzUHXk9MAxCBMVW/"
                 crossorigin="anonymous"></script>
         {% comment %} End peer dependencies. {% endcomment %}
-        <script src="https://unpkg.com/@lookit/lookit-initjspsych@3.1.0"
-                integrity="sha384-+x2EOnQt8Waj7fZPvEv/xz3Qv8j/AmUra+cwRaFUPaI1RxfWCeKOdvlzJzo2EOnW"
+        <script src="https://unpkg.com/@lookit/lookit-initjspsych@3.2.0"
+                integrity="sha384-e7tzYepJWL+2m2J5oXfaCtcgEXE0FmZngMY1mCsqdi+pAN3ouqkqnrmxmFb+KE5z"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@lookit/record@6.0.0"
-                integrity="sha384-hxbJ8MHNzm1uRJazhhMl9psc4sJ0abtm8wo9dloeF3GaQyIjf426E/kMJedxQg0I"
+        <script src="https://unpkg.com/@lookit/record@7.0.0"
+                integrity="sha384-J6UlRs78jVMqxRk7qup5sX7lSaJnmmPGeiJ0Zi4KYPKlEG0Vx72iooB7N5eFbKgG"
                 crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@lookit/surveys@6.0.0"
-                integrity="sha384-Oz61+LJbdIJzy7x0ghgZZE7pc0E1ibfnwl2Iu0WjvHj2Tn0usZo4ZgfZ8UeSuV6F"
+        <script src="https://unpkg.com/@lookit/surveys@7.0.0"
+                integrity="sha384-swscT+LLjYy4Od2kzdxf1NgDEx8+fjOa0p04Vor3XNpvhn2bWUN7/zpO9qE+DCLI"
                 crossorigin="anonymous"></script>
         <!-- Once everything has loaded, run experiment and remove loader div -->
         <script type="module">
