@@ -1,0 +1,54 @@
+progress {
+    &.study-progress {
+        --study-progress-color: var(--bs-info);
+        appearance: none;
+        -webkit-appearance: none;
+        border: none;
+        border-radius: .375rem;
+        height: 20px;
+        width: 100%;
+        overflow: hidden;
+        background-color: #e9ecef;
+    }
+
+    &.study-progress::-webkit-progress-bar {
+        background-color: #e9ecef;
+        border-radius: .375rem;
+    }
+
+    &.study-progress::-webkit-progress-value {
+        background-color: var(--study-progress-color);
+        border-radius: .375rem;
+    }
+
+    &.study-progress::-moz-progress-bar {
+        background-color: var(--study-progress-color);
+        border-radius: .375rem;
+    }
+
+    &.study-progress-info {
+        --study-progress-color: var(--bs-info);
+    }
+
+    &.study-progress-warning {
+        --study-progress-color: var(--bs-warning);
+    }
+
+    &.study-progress-success {
+        --study-progress-color: var(--bs-success);
+    }
+
+    &.study-progress-danger {
+        --study-progress-color: var(--bs-danger);
+    }
+
+    &.study-progress-danger::-webkit-progress-value {
+        background-image: linear-gradient(45deg, rgba(255,255,255,.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.15) 50%, rgba(255,255,255,.15) 75%, transparent 75%, transparent);
+        background-size: 1rem 1rem;
+    }
+
+    &.study-progress-danger::-moz-progress-bar {
+        background-image: linear-gradient(45deg, rgba(255,255,255,.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.15) 50%, rgba(255,255,255,.15) 75%, transparent 75%, transparent);
+        background-size: 1rem 1rem;
+    }
+}

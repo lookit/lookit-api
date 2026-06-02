@@ -1,0 +1,20 @@
+<div class="card h-100 bg-light" id="selected-response-card">
+    <div class="card-body">
+        <div class="mb-3">
+            <div>
+                <span class="fw-bold">Selected response: </span><br>
+                <span class="response-id"></span><span class="short-child-id"></span><br>
+                <span class="response-date"></span>
+            </div>
+            <div>
+                <div class="truncate-parent-feedback">
+                    <span class="fw-bold">Parent/guardian feedback:</span> 
+                    <span class="parent-feedback"></span>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-evenly">
+            <a rel="noopener noreferrer" target="_blank" class="{{ btn_secondary_classes }} float-end contact-family" href="{% url "exp:study-participant-contact" study.id %}">Send a message to this family: <span class="parent-id"></span></a>
+        </div>
+    </div>
+</div>

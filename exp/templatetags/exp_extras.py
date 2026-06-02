@@ -1,6 +1,8 @@
 import json
 
 from django import template
+from django.utils.html import conditional_escape
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -70,6 +72,12 @@ def get_bit_label(bit_handler, bit_number):
 @register.filter
 def pretty_json(value):
     return json.dumps(value, indent=4, default=str)
+
+
+@register.filter(is_safe=True, needs_autoescape=True)
+def linebreak_on_comma(value, autoescape=True):
+    escape = conditional_escape if autoescape else lambda x: x
+    return mark_safe(escape(value).replace(", ", ",<br>"))
 
 
 @register.filter
