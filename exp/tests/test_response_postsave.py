@@ -419,6 +419,18 @@ class IsTalliedComputeTestCase(TestCase):
         )
         self.assertTrue(resp.compute_is_tallied())
 
+    def test_empty_eligibility_treated_as_eligible_internal(self):
+        """Empty eligibility list is backwards-compatible — treated as Eligible."""
+        resp = self._resp(
+            self.internal_study,
+            is_preview=False,
+            eligibility=[],
+            completed=True,
+            completed_consent_frame=True,
+        )
+        G(ConsentRuling, response=resp, action="accepted")
+        self.assertTrue(resp.compute_is_tallied())
+
     def test_internal_not_completed_not_tallied(self):
         resp = self._resp(
             self.internal_study,
