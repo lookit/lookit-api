@@ -64,7 +64,7 @@
             </div>
             <div class="mb-3">
                 <strong>Lab description</strong>
-                <p class="mb-0">{{ lab.description|linebreaks }}</p>
+                <p class="mb-0">{{ lab.description|squash_spaces|linebreaks }}</p>
             </div>
             <div class="mb-3">
                 <strong>IRB contact info</strong>
