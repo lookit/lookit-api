@@ -161,6 +161,7 @@ class Lab(models.Model):
     )
     banner = models.ImageField(null=True, blank=True, upload_to="lab_images/")
     badge = models.ImageField(null=True, blank=True, upload_to="lab_images/")
+    created_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         permissions = LabPermission
