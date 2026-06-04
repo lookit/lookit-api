@@ -28,66 +28,92 @@
     {% endif %}
     {% set_variable link_edit_lab|add:link_lab_members|add:lab_join_message as page_title_right_content %}
     {% page_title lab.name right_side_elements=page_title_right_content %}
-    <div class="row">
-        <div class="col-12">
-            <strong>Institution</strong>
-            <p>{{ lab.institution }}</p>
+    <div class="row my-4">
+        <div class="col-12 {% if in_this_lab %}col-lg-6 mb-4 mb-lg-0 gx-5{% endif %}" style="min-width: 320px;">
+            <div class="mb-3">
+                <strong>Institution</strong>
+                <p class="mb-0">{{ lab.institution }}</p>
+            </div>
+            <div class="mb-3">
+                <strong>Principal investigator</strong>
+                <p class="mb-0">{{ lab.principal_investigator_name }}</p>
+            </div>
+            <div class="mb-3">
+                <strong>Contact email</strong>
+                <p class="mb-0">{{ lab.contact_email }}</p>
+            </div>
+            <div class="mb-3">
+                <strong>Contact phone</strong>
+                <p class="mb-0">{{ lab.contact_phone }}</p>
+            </div>
+            <div class="mb-3">
+                <strong>Lab website</strong>
+                <p class="mb-0">
+                    <a href="{{ lab.lab_website }}"
+                       target="_blank"
+                       rel="noopener noreferrer">{{ lab.lab_website }}</a>
+                </p>
+            </div>
+            <div class="mb-3">
+                <strong>Custom URL</strong>
+                <p class="mb-0">
+                    <a href="{% url 'web:lab-studies-list' lab.slug %}"
+                       target="_blank"
+                       rel="noopener noreferrer">{{ custom_url }}</a>
+                </p>
+            </div>
+            <div class="mb-3">
+                <strong>Lab description</strong>
+                <p class="mb-0">{{ lab.description|linebreaks }}</p>
+            </div>
+            <div class="mb-3">
+                <strong>IRB contact info</strong>
+                <p class="mb-0">{{ lab.irb_contact_info }}</p>
+            </div>
+            <div class="mb-3">
+                <strong>Approved to test:</strong>
+                {{ lab.approved_to_test|yesno:"Yes,No" }}
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <strong>Principal investigator</strong>
-            <p>{{ lab.principal_investigator_name }}</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <strong>Contact email</strong>
-            <p>{{ lab.contact_email }}</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <strong>Contact phone</strong>
-            <p>{{ lab.contact_phone }}</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <strong>Lab website</strong>
-            <p>
-                <a href="{{ lab.lab_website }}"
-                   target="_blank"
-                   rel="noopener noreferrer">{{ lab.lab_website }}</a>
-            </p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <strong>Custom URL</strong>
-            <p>
-                <a href="{% url 'web:lab-studies-list' lab.slug %}"
-                   target="_blank"
-                   rel="noopener noreferrer">{{ custom_url }}</a>
-            </p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <strong>Lab description</strong>
-            {{ lab.description|linebreaks }}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <strong>IRB contact info</strong>
-            <p>{{ lab.irb_contact_info }}</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <strong>Approved to test:</strong>
-            {{ lab.approved_to_test|yesno:"Yes,No" }}
-        </div>
+        {% if in_this_lab %}
+            <div class="col-12 col-lg-6 gx-5" style="min-width: 320px;">
+                <div>
+                    <strong>CHS License and Usage</strong>
+                    <div class="border border-3 border-primary mt-2 mb-4 p-3">The {{ lab.name }} is using Children Helping Science under a free license (through 2026-12-31).</div>
+                    <div>Response sessions collected through the CHS platform:</div>
+                    <table class="table mb-2">
+                        <caption class="visually-hidden">Response sessions collected through the CHS platform by study type and time range.</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col" class="text-center">Internal</th>
+                                <th scope="col" class="text-center">External</th>
+                                <th scope="col" class="text-center">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Last 12 months</th>
+                                <td class="text-center">{{ lab_stats.internal_last_year }}</td>
+                                <td class="text-center">{{ lab_stats.external_last_year }}</td>
+                                <td class="text-center">{{ lab_stats.total_last_year }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {% if lab.created_at %}
+                                        Since {{ lab.created_at|date:"N j, Y" }}
+                                    {% else %}
+                                        All time
+                                    {% endif %}</th>
+                                <td class="text-center">{{ lab_stats.internal_all_time }}</td>
+                                <td class="text-center">{{ lab_stats.external_all_time }}</td>
+                                <td class="text-center">{{ lab_stats.total_all_time }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="text-muted small mb-0">Note: Session counts reflect the number of “tallied” sessions across all of your studies, including only non-preview responses from eligible children. For internal studies only, tallied sessions are also limited to those which are marked complete and have a consent status of approved or pending. See <a href="https://lookit.readthedocs.io/en/master/researchers-set-study-fields.html#set-a-response-limit" target="_blank" rel="noopener">documentation</a> for additional detail on session tallies and how to submit individual session updates.</p>
+                </div>
+            </div>
+        {% endif %}
     </div>
 {% endblock content %}
