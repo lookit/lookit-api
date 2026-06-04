@@ -1,6 +1,6 @@
 import logging
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 
 import boto3
@@ -169,6 +169,37 @@ class Lab(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.principal_investigator_name}, {self.institution})"
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and self.created_at is None:
+            self.created_at = dutimezone.now()
+        super().save(*args, **kwargs)
+
+    def get_response_stats(self) -> dict:
+        """Return tallied response counts for this lab, broken down by study type and time range.
+
+        Uses effective_is_tallied logic: researcher override takes precedence over is_tallied.
+        """
+        one_year_ago = dutimezone.now() - timedelta(days=365)
+
+        # StudyType id=2 is external (consistent with StudyType.is_external)
+        base_qs = Response.objects.filter(study__lab=self).filter(EFFECTIVELY_TALLIED_Q)
+        internal_qs = base_qs.exclude(study__study_type__id=2)
+        external_qs = base_qs.filter(study__study_type__id=2)
+
+        internal_all = internal_qs.count()
+        internal_year = internal_qs.filter(date_created__gte=one_year_ago).count()
+        external_all = external_qs.count()
+        external_year = external_qs.filter(date_created__gte=one_year_ago).count()
+
+        return {
+            "internal_all_time": internal_all,
+            "internal_last_year": internal_year,
+            "external_all_time": external_all,
+            "external_last_year": external_year,
+            "total_all_time": internal_all + external_all,
+            "total_last_year": internal_year + external_year,
+        }
 
 
 # Using Direct foreign keys for guardian, see:
