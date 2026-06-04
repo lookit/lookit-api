@@ -2994,7 +2994,7 @@ class LabGetResponseStatsTestCase(TestCase):
         self.assertEqual(stats["internal_all_time"], 0)
 
     def test_last_year_excludes_responses_older_than_365_days(self):
-        recent = self._make_response(self.internal_study, tallied=True)  # noqa: F841
+        self._make_response(self.internal_study, tallied=True)
         old = self._make_response(self.internal_study, tallied=True)
         two_years_ago = datetime.now(timezone.utc) - timedelta(days=730)
         Response.objects.filter(pk=old.pk).update(date_created=two_years_ago)
