@@ -54,6 +54,12 @@ ACCEPTED = "accepted"
 REJECTED = "rejected"
 CONSENT_RULINGS = (ACCEPTED, REJECTED, PENDING)
 
+# It would've made more sense to put this in queries.py and import it here, but queries.py imports from this file, so doing it the other way around avoids a circular import.
+EFFECTIVELY_TALLIED_Q = models.Q(
+    is_tallied_researcher_override__isnull=False,
+    is_tallied_researcher_override=True,
+) | models.Q(is_tallied_researcher_override__isnull=True, is_tallied=True)
+
 S3_RESOURCE = boto3.resource("s3")
 S3_BUCKET = S3_RESOURCE.Bucket(settings.BUCKET_NAME)
 
@@ -566,11 +572,7 @@ class Study(models.Model):
         Returns:
             int: Count of tallied responses
         """
-        is_effectively_tallied = models.Q(
-            is_tallied_researcher_override__isnull=False,
-            is_tallied_researcher_override=True,
-        ) | models.Q(is_tallied_researcher_override__isnull=True, is_tallied=True)
-        return self.responses.filter(is_effectively_tallied).count()
+        return self.responses.filter(EFFECTIVELY_TALLIED_Q).count()
 
     @property
     def has_reached_max_responses(self) -> bool:
