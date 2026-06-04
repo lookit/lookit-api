@@ -120,6 +120,15 @@ class LabForm(ModelForm):
             "badge": "This image will be shown at the top of your custom URL page when it is viewed on a mobile device/narrow browser window, and as a badge/avatar image for your lab. This image should be square. Please keep your file size less than 1 MB.",
         }
 
+    def clean_description(self):
+        """Lazy, on-demand fix for malformed lab description values in the database that contain literal \r\n strings."""
+        description = self.cleaned_data.get("description", "")
+        return (
+            description.replace("\\r\\n", "\n")
+            .replace("\\r", "\n")
+            .replace("\\n", "\n")
+        )
+
     def clean_banner(self):
         cleaned_banner = self.cleaned_data["banner"]
         ratio = 2
