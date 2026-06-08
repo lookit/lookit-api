@@ -154,3 +154,8 @@ data
 
 bootstrap-5*
 .python-version
+
+.aws/*
+.claude/
+scratch/*
+aws-lambda/*
