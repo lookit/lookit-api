@@ -37,6 +37,7 @@ from studies.models import (
 from studies.permissions import StudyPermission
 from studies.tasks import (
     MessageTarget,
+    _validated,
     acquire_potential_announcement_email_targets,
     cleanup_incomplete_video_uploads,
     complete_multipart_upload,
@@ -662,6 +663,22 @@ class TestAnnouncementEmailFunctionality(TestCase):
         # Check that the message target no longer has this child for this study
         self.assertNotIn(message_target, potential_message_targets())
 
+    def test_validated_skips_none_user(self):
+        result = list(_validated([(None, [])]))
+        self.assertEqual(result, [])
+
+    def test_validated_skips_user_with_empty_username(self):
+        mock_user = MagicMock()
+        mock_user.username = ""
+        result = list(_validated([(mock_user, [])]))
+        self.assertEqual(result, [])
+
+    def test_validated_skips_user_with_non_email_username(self):
+        mock_user = MagicMock()
+        mock_user.username = "debuguser"
+        result = list(_validated([(mock_user, [])]))
+        self.assertEqual(result, [])
+
 
 class TestSendMail(TestCase):
     def setUp(self):
@@ -816,6 +833,55 @@ class TestEmailHeaders(TestCase):
         context = {"token": self.context["token"]}
         headers = Message.email_headers(context)
         self.assertIsNone(headers)
+
+
+class TestSendAsEmail(TestCase):
+    def setUp(self):
+        self.fake_lab = G(Lab, contact_email="lab@example.com")
+        self.study = G(
+            Study,
+            lab=self.fake_lab,
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        self.message = G(
+            Message, related_study=self.study, subject="Test Subject", body="Test body"
+        )
+
+    @patch("accounts.models.send_mail")
+    def test_send_as_email_skips_recipient_with_non_email_username(
+        self, mock_send_mail
+    ):
+        invalid_user = G(User, username="notanemail")
+        self.message.recipients.add(invalid_user)
+
+        self.message.send_as_email()
+
+        mock_send_mail.delay.assert_not_called()
+
+    @patch("accounts.models.send_mail")
+    def test_send_as_email_skips_recipient_with_empty_username(self, mock_send_mail):
+        invalid_user = User(username="")
+        invalid_user.save()
+        self.message.recipients.add(invalid_user)
+
+        self.message.send_as_email()
+
+        mock_send_mail.delay.assert_not_called()
+
+    @patch("accounts.models.send_mail")
+    def test_send_as_email_sends_to_valid_recipients_only(self, mock_send_mail):
+        valid_user = G(User, username="valid@example.com")
+        invalid_user = G(User, username="notanemail")
+        self.message.recipients.add(valid_user, invalid_user)
+
+        self.message.send_as_email()
+
+        mock_send_mail.delay.assert_called_once()
+        call_args = mock_send_mail.delay.call_args
+        self.assertEqual(call_args[0][2], "valid@example.com")
 
 
 class StudyTypeModelTestCase(TestCase):

@@ -179,6 +179,14 @@ def _deserialized(user_grouped_targets, number_of_parents: int = 100):
 def _validated(deserialized_groups):
     """Yield only groups with targets that satisfy criteria for their respective studies."""
     for user, child_study_pairs in deserialized_groups:
+        if not user or not user.username or "@" not in user.username:
+            # Skip users that were deleted between the SQL query and ORM cache lookup,
+            # or who have no email address (which would break unsubscribe URL generation).
+            logger.warning(
+                "Skipping announcement email target: user %s has no valid username.",
+                getattr(user, "id", None),
+            )
+            continue
         valid_message_targets = []
         for pair in child_study_pairs:
             child, study = pair

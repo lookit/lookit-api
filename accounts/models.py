@@ -1,8 +1,11 @@
 import base64
 import hashlib
+import logging
 import uuid
 from io import BytesIO
 from typing import Union
+
+logger = logging.getLogger(__name__)
 
 import pydenticon
 import pyotp
@@ -681,6 +684,12 @@ class Message(models.Model):
         recipient_email_list = list(self.recipients.values_list("username", flat=True))
 
         for to_email in recipient_email_list:
+            if not to_email or "@" not in to_email:
+                logger.warning(
+                    "Skipping custom email recipient: username %s is not a valid email address.",
+                    to_email,
+                )
+                continue
             user = User.objects.get(username=to_email)
             context.update(token=user.generate_token(), username=to_email)
             send_mail.delay(
