@@ -73,6 +73,7 @@ class LabDetailView(
         context["custom_url"] = self.request.build_absolute_uri(
             reverse("web:lab-studies-list", args=[lab.slug])
         )
+        context["lab_stats"] = lab.get_response_stats()
         return context
 
 

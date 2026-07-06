@@ -1,3 +1,4 @@
+import re
 import textwrap
 from typing import Text
 
@@ -356,3 +357,13 @@ def response_page_transform(request, study_pk, page_number):
     else:
         updated[key] = str(page_number)
     return updated.urlencode()
+
+
+@register.filter(name="squash_spaces")
+def squash_spaces(value):
+    """Collapses runs of spaces/tabs to a single space, preserving newlines.
+    Also normalizes literal backslash-r-backslash-n escape sequences to actual newlines."""
+    if isinstance(value, str):
+        value = value.replace("\\r\\n", "\n").replace("\\r", "\n").replace("\\n", "\n")
+        return re.sub(r"[^\S\r\n]+", " ", value)
+    return value
