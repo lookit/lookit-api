@@ -12,7 +12,7 @@ from PIL import Image
 
 from accounts.queries import compile_expression
 from project import settings
-from studies.models import Lab, Response, Study
+from studies.models import JSPsychPlugin, Lab, Response, Study
 from studies.permissions import LabPermission, StudyPermission
 
 CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#criteria-expression"
@@ -623,8 +623,58 @@ class JSPsychForm(ModelForm):
             height="100%",
             showprintmargin=False,
         ),
-        help_text="Please enter jsPsych experiment code. This is the JavaScript code used to generate a jsPsych study, not the surrounding HTML.",
+        help_text='Please enter your jsPsych experiment code above. This is the JavaScript code used to generate a jsPsych study, not the surrounding HTML.<br>See the <a rel="noopener noreferrer" target="_blank" href="https://www.jspsych.org/latest/">jsPsych documentation</a> for experiment-building reference and tutorials, and the <a rel="noopener noreferrer" target="_blank" href="https://lookit.readthedocs.io/projects/chs-jspsych/en/latest/">CHS jsPsych documentation</a> for information about the jsPsych plugins/extensions that are specific to CHS, such as video consent/assent, exit survey, and webcam recording.',
     )
+    # Separate plugin list by category - for display only
+    jspsych_plugins_core = forms.ModelMultipleChoiceField(
+        queryset=JSPsychPlugin.objects.filter(category=JSPsychPlugin.Category.JSPSYCH),
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
+        required=False,
+        label="Core jsPsych",
+        help_text='Your study automatically has access to all <a rel="noopener noreferrer" target="_blank" href="https://">CHS-jsPsych plugins</a>.<br>Select any additional plugins/extensions your experiment uses from the <a href="https://github.com/jspsych/jsPsych/tree/main/packages">core jsPsych library</a> and <a href="https://github.com/jspsych/jspsych-contrib/tree/main/packages">jsPsych-contrib Github repository</a>.<br>Selecting more plugins/extensions than your study needs will cause it to load more slowly.',
+    )
+    jspsych_plugins_contrib = forms.ModelMultipleChoiceField(
+        queryset=JSPsychPlugin.objects.filter(
+            category=JSPsychPlugin.Category.JSPSYCH_CONTRIB
+        ),
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
+        required=False,
+        label="jsPsych-contrib",
+    )
+
+    def __init__(self, *args, **kwargs):
+        """Split the single jspsych_plugins field value for this study into categories, for display only."""
+        super().__init__(*args, **kwargs)
+        if self.instance.pk:
+            current = self.instance.jspsych_plugins.all()
+            self.initial["jspsych_plugins_core"] = current.filter(
+                category=JSPsychPlugin.Category.JSPSYCH
+            )
+            self.initial["jspsych_plugins_contrib"] = current.filter(
+                category=JSPsychPlugin.Category.JSPSYCH_CONTRIB
+            )
+            self.initial["jspsych_plugins_chs"] = current.filter(
+                category=JSPsychPlugin.Category.CHS_JSPSYCH
+            )
+
+    def save(self, commit=True):
+        """Combine the separate jsPsych plugin category selections from the form into a single jspsych_plugins value to be saved for this study."""
+        instance = super().save(commit=commit)
+
+        def save_plugins():
+            all_plugins = (
+                list(self.cleaned_data.get("jspsych_plugins_core") or [])
+                + list(self.cleaned_data.get("jspsych_plugins_contrib") or [])
+                + list(self.cleaned_data.get("jspsych_plugins_chs") or [])
+            )
+            instance.jspsych_plugins.set(all_plugins)
+
+        if commit:
+            save_plugins()
+        else:
+            self.save_m2m = save_plugins
+
+        return instance
 
     class Meta:
         model = Study

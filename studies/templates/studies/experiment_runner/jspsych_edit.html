@@ -18,5 +18,35 @@
     </div>
 {% endblock js_error %}
 {% block form %}
-    {% bootstrap_form form label_class="fw-bold" %}
+    {% for field in form %}
+        {% if "jspsych_plugins" in field.name %}
+            {% if field.name == "jspsych_plugins_core" %}
+                <hr/>
+                <h6 class="fw-bold mb-3">jsPsych Plugins and Extensions</h6>
+            {% endif %}
+            {% if field.help_text %}
+                <div class="form-text mb-1">{{ field.help_text|safe }}</div>
+            {% endif %}
+            <div class="my-3">
+                <label class="form-label mb-3">{{ field.label }}</label>
+                <div class="d-flex gap-2 mb-3">
+                    <button type="button" id="{{ field.html_name }}-select-all" class="btn btn-sm btn-outline-secondary plugin-select-all">Select all</button>
+                    <button type="button" id="{{ field.html_name }}-clear-all" class="btn btn-sm btn-outline-secondary plugin-clear-all">Clear all</button>
+                </div>
+                <div class="row row-cols-2 row-cols-md-3 g-1">
+                    {% for checkbox in field %}
+                    <div class="col">
+                        <div class="form-check">
+                            {{ checkbox.tag }}
+                            <label class="form-check-label" for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <hr/>
+            {% bootstrap_field field label_class="fw-bold mb-3" %}
+        {% endif %}
+    {% endfor %}
 {% endblock form %}
