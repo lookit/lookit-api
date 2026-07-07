@@ -316,6 +316,24 @@ class StudyType(models.Model):
         return cls.objects.get(id=3)
 
 
+class JSPsychPlugin(models.Model):
+    class Category(models.TextChoices):
+        JSPSYCH = "jspsych", "Core jsPsych"
+        JSPSYCH_CONTRIB = "jspsych-contrib", "jsPsych-contrib"
+        CHS_JSPSYCH = "chs-jspsych", "CHS jsPsych"
+
+    name = models.CharField(max_length=255)
+    url = models.URLField(max_length=500)
+    integrity = models.CharField(max_length=255)
+    category = models.CharField(max_length=20, choices=Category.choices)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
 def default_study_structure():
     return {"frames": {}, "sequence": []}
 
@@ -414,6 +432,11 @@ class Study(models.Model):
     )
     must_not_have_participated = models.ManyToManyField(
         "self", blank=True, symmetrical=False, related_name="expected_nonparticipation"
+    )
+    jspsych_plugins = models.ManyToManyField(
+        JSPsychPlugin,
+        blank=True,
+        related_name="studies",
     )
 
     # Groups
