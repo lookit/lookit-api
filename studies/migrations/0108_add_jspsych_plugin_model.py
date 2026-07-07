@@ -97,7 +97,7 @@ def seed_plugins_and_assign_to_existing_studies(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("studies", "0106_add_researcher_valid_response"),
+        ("studies", "0107_add_lab_created_at"),
     ]
 
     operations = [
