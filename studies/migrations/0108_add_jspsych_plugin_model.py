@@ -26,7 +26,7 @@ JSPSYCH_PLUGINS = [
         "category": "jspsych",
     },
     {
-        "name": "Image Hotspots (contrib)",
+        "name": "Image Hotspots",
         "url": "https://unpkg.com/@jspsych-contrib/plugin-image-hotspots@1.1.0",
         "integrity": "sha384-7AhLUtRbC1B+Xy/IvMrbPwOq6HljuZNa73fxtKSPix5U/fRpljnK/hkcJGtKsTRJ",
         "category": "jspsych-contrib",
@@ -62,7 +62,7 @@ JSPSYCH_PLUGINS = [
         "category": "jspsych",
     },
     {
-        "name": "Tangram Game (contrib)",
+        "name": "Tangram Game",
         "url": "https://unpkg.com/@jspsych-contrib/plugin-tangram-game",
         "integrity": "sha384-baK1nai9zI/Ela9b8M1rPHE2echlvpfCWpE8f1FALUSteEUwYRA77m3nGKaV/IyZ",
         "category": "jspsych-contrib",
@@ -74,7 +74,7 @@ JSPSYCH_PLUGINS = [
         "category": "jspsych",
     },
     {
-        "name": "Video Hotspots (contrib)",
+        "name": "Video Hotspots",
         "url": "https://unpkg.com/@jspsych-contrib/plugin-video-hotspots@1.1.0",
         "integrity": "sha384-us3mQaYVUiroiiS/C+w4pJnlRl7E65KWAPC/zqIXWJxpHQhXfn06a2C+fxhkVLbd",
         "category": "jspsych-contrib",
@@ -87,6 +87,73 @@ JSPSYCH_PLUGINS = [
     },
 ]
 
+AUTO_LOAD_PLUGINS = [
+    {
+        "name": "jsPsych CSS",
+        "url": "https://unpkg.com/jspsych@8.0.3/css/jspsych.css",
+        "integrity": "sha384-JNNpz6XWsC9uPPHlCuf9rr6LrSD2uYvbkApP5kAp6g/lFBue51K1kMzxGawS50nK",
+        "category": "jspsych-library",
+        "file_type": "css",
+        "order": 1,
+    },
+    {
+        "name": "jsPsych",
+        "url": "https://unpkg.com/jspsych@8.0.3",
+        "integrity": "sha384-YlD0H7IvUJqPzueP9WYLT0zKLtEnoNlbxZ5Kd4jg+3orRU5jXGk4ozBUMLqQ+SQ1",
+        "category": "jspsych-library",
+        "file_type": "js",
+        "order": 2,
+    },
+    {
+        "name": "CHS Style",
+        "url": "https://unpkg.com/@lookit/style@0.4.0",
+        "integrity": "sha384-e+HIPVgafegNi8YhAiKPvYDv1K+hihQ2g4qd/ZYHPtTBJyfTEDcfDLYyfDdk1lI/",
+        "category": "chs-jspsych",
+        "file_type": "css",
+        "order": 1,
+    },
+    {
+        "name": "CHS Data",
+        "url": "https://unpkg.com/@lookit/data@0.3.0",
+        "integrity": "sha384-kpjDWFQo7CQk9i6Bq58NNCC8i5mFCMAbapMhF3xxLmEc2vD6wHqMc/aI0w1u/fTh",
+        "category": "chs-jspsych",
+        "file_type": "js",
+        "order": 2,
+    },
+    {
+        "name": "CHS Templates",
+        "url": "https://unpkg.com/@lookit/templates@3.2.0",
+        "integrity": "sha384-VOuebjugj2OrWh+NLn28VpM+bfSQNGw8HvEInoQgY9Fco2bchzUHXk9MAxCBMVW/",
+        "category": "chs-jspsych",
+        "file_type": "js",
+        "order": 3,
+    },
+    {
+        "name": "CHS Init jsPsych",
+        "url": "https://unpkg.com/@lookit/lookit-initjspsych@3.2.0",
+        "integrity": "sha384-e7tzYepJWL+2m2J5oXfaCtcgEXE0FmZngMY1mCsqdi+pAN3ouqkqnrmxmFb+KE5z",
+        "category": "chs-jspsych",
+        "file_type": "js",
+        "order": 4,
+    },
+    {
+        "name": "CHS Record",
+        "url": "https://unpkg.com/@lookit/record@7.0.0",
+        "integrity": "sha384-J6UlRs78jVMqxRk7qup5sX7lSaJnmmPGeiJ0Zi4KYPKlEG0Vx72iooB7N5eFbKgG",
+        "category": "chs-jspsych",
+        "file_type": "js",
+        "order": 5,
+    },
+    {
+        "name": "CHS Surveys",
+        "url": "https://unpkg.com/@lookit/surveys@7.0.0",
+        "integrity": "sha384-swscT+LLjYy4Od2kzdxf1NgDEx8+fjOa0p04Vor3XNpvhn2bWUN7/zpO9qE+DCLI",
+        "category": "chs-jspsych",
+        "file_type": "js",
+        "order": 6,
+    },
+]
+
 
 def seed_plugins_and_assign_to_existing_studies(apps, schema_editor):
     jspsych_plugin = apps.get_model("studies", "JSPsychPlugin")
@@ -94,6 +161,8 @@ def seed_plugins_and_assign_to_existing_studies(apps, schema_editor):
     study_type = apps.get_model("studies", "StudyType")
 
     plugins = [jspsych_plugin.objects.create(**data) for data in JSPSYCH_PLUGINS]
+    for data in AUTO_LOAD_PLUGINS:
+        jspsych_plugin.objects.create(**data)
 
     jspsych_type = study_type.objects.filter(name="jsPsych").first()
     if jspsych_type:
@@ -126,6 +195,7 @@ class Migration(migrations.Migration):
                     "category",
                     models.CharField(
                         choices=[
+                            ("jspsych-library", "jsPsych Library"),
                             ("jspsych", "Core jsPsych"),
                             ("jspsych-contrib", "jsPsych-contrib"),
                             ("chs-jspsych", "CHS jsPsych"),
@@ -136,6 +206,8 @@ class Migration(migrations.Migration):
             ],
             options={
                 "ordering": ["name"],
+                "verbose_name": "jsPsych plugin",
+                "verbose_name_plural": "jsPsych plugins",
             },
         ),
         migrations.AddField(
