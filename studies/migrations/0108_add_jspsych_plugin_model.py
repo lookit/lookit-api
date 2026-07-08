@@ -44,6 +44,12 @@ JSPSYCH_PLUGINS = [
         "category": "jspsych",
     },
     {
+        "name": "Survey Likert",
+        "url": "https://unpkg.com/@jspsych/plugin-survey-likert@2.2.0",
+        "integrity": "sha384-88dibDOm9kxaXAwTWWQWZa1+0RBPA6WNU0lrWYLfeMEIQgovura7DxPG9kPXrBRc",
+        "category": "jspsych",
+    },
+    {
         "name": "Survey Multi-Choice",
         "url": "https://unpkg.com/@jspsych/plugin-survey-multi-choice@2.1.0",
         "integrity": "sha384-NDx/PP6brJOK2yI3xA9yYbsgRe6I7BUZ3jcBD9aiVRWNYiei88wLmzsMEdWGJXOr",
