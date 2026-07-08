@@ -1,5 +1,8 @@
+import re
+
 from django.db import migrations, models
 
+# Default order (0) and file_type (js)
 JSPSYCH_PLUGINS = [
     {
         "name": "Fullscreen",
@@ -155,6 +158,32 @@ AUTO_LOAD_PLUGINS = [
 ]
 
 
+def get_default_docs_url(url, category):
+    if category == "jspsych":
+        match = re.search(r"@jspsych/(plugin|extension)-([^@/]+)", url)
+        if match:
+            kind, name = match.group(1), match.group(2)
+            return f"https://www.jspsych.org/latest/{kind}s/{name}/"
+    elif category == "jspsych-contrib":
+        match = re.search(r"@jspsych-contrib/((?:plugin|extension)-[^@/]+)", url)
+        if match:
+            return f"https://github.com/jspsych/jspsych-contrib/tree/main/packages/{match.group(1)}/"
+    elif category == "chs-jspsych":
+        return "https://lookit.readthedocs.io/projects/chs-jspsych/en/latest/"
+    return ""
+
+
+def populate_docs_urls(apps, schema_editor):
+    """
+    Sets a default documentation URL for all seeded packages, based on the package name and category.
+    These can be overwritten manually, but will changes will be lost when this migration runs again unless they're added to a subsequent migration.
+    """
+    jspsych_plugin = apps.get_model("studies", "JSPsychPlugin")
+    for plugin in jspsych_plugin.objects.all():
+        plugin.docs_url = get_default_docs_url(plugin.url, plugin.category)
+        plugin.save()
+
+
 def seed_plugins_and_assign_to_existing_studies(apps, schema_editor):
     jspsych_plugin = apps.get_model("studies", "JSPsychPlugin")
     study = apps.get_model("studies", "Study")
@@ -203,6 +232,16 @@ class Migration(migrations.Migration):
                         max_length=20,
                     ),
                 ),
+                (
+                    "file_type",
+                    models.CharField(
+                        choices=[("js", "JavaScript"), ("css", "CSS")],
+                        default="js",
+                        max_length=3,
+                    ),
+                ),
+                ("order", models.PositiveSmallIntegerField(default=0)),
+                ("docs_url", models.URLField(blank=True)),
             ],
             options={
                 "ordering": ["name"],
@@ -221,6 +260,10 @@ class Migration(migrations.Migration):
         ),
         migrations.RunPython(
             seed_plugins_and_assign_to_existing_studies,
+            migrations.RunPython.noop,
+        ),
+        migrations.RunPython(
+            populate_docs_urls,
             migrations.RunPython.noop,
         ),
     ]

@@ -1,4 +1,5 @@
 import logging
+import re
 import uuid
 from datetime import datetime, timedelta, timezone
 from enum import Enum
@@ -335,6 +336,7 @@ class JSPsychPlugin(models.Model):
         max_length=3, choices=FileType.choices, default=FileType.JS
     )
     order = models.PositiveSmallIntegerField(default=0)
+    docs_url = models.URLField(blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -343,6 +345,39 @@ class JSPsychPlugin(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def version(self):
+        """
+        Gets the current package version, based on the package URL. Returns an empty string if no match is found.
+        """
+        match = re.search(r"@(\d+[\d.]+)", self.url)
+        return match.group(1) if match else ""
+
+    def _get_default_docs_url(self):
+        if self.category == self.Category.JSPSYCH:
+            match = re.search(r"@jspsych/(plugin|extension)-([^@/]+)", self.url)
+            if match:
+                kind, name = match.group(1), match.group(2)
+                return f"https://www.jspsych.org/latest/{kind}s/{name}/"
+        elif self.category == self.Category.JSPSYCH_CONTRIB:
+            match = re.search(
+                r"@jspsych-contrib/((?:plugin|extension)-[^@/]+)", self.url
+            )
+            if match:
+                return f"https://github.com/jspsych/jspsych-contrib/tree/main/packages/{match.group(1)}/"
+        elif self.category == self.Category.CHS_JSPSYCH:
+            return "https://lookit.readthedocs.io/projects/chs-jspsych/en/latest/"
+        return ""
+
+    def save(self, *args, **kwargs):
+        """
+        Sets a default documentation URL when the package is first created/saved, based on the package name and category.
+        This does not run again after the docs_url has available so that it can be manually modified without being overwritten.
+        """
+        if not self.docs_url:
+            self.docs_url = self._get_default_docs_url()
+        super().save(*args, **kwargs)
 
 
 def default_study_structure():
