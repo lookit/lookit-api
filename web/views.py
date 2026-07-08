@@ -41,7 +41,15 @@ from accounts.utils import hash_id
 from exp.mixins.paginator_mixin import PaginatorMixin
 from project import settings
 from studies.helpers import get_experiment_absolute_url
-from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum, Video
+from studies.models import (
+    JSPsychPlugin,
+    Lab,
+    Response,
+    Study,
+    StudyType,
+    StudyTypeEnum,
+    Video,
+)
 from web.mixins import AuthenticatedRedirectMixin
 from web.models import Institution, InstitutionSection
 
@@ -938,6 +946,12 @@ class JsPsychExperimentView(
         response = get_jspsych_response(context)
         context.update(response=response)
         context.update({"aws_vars": self.aws_vars})
+        context["jspsych_library"] = JSPsychPlugin.objects.filter(
+            category=JSPsychPlugin.Category.JSPSYCH_LIBRARY
+        ).order_by("order")
+        context["chs_plugins"] = JSPsychPlugin.objects.filter(
+            category=JSPsychPlugin.Category.CHS_JSPSYCH
+        ).order_by("order")
         return context
 
 

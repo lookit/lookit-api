@@ -42,7 +42,7 @@ from studies.helpers import (
     get_experiment_absolute_url,
     send_mail,
 )
-from studies.models import Study, StudyType
+from studies.models import JSPsychPlugin, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 from studies.queries import get_study_list_qs
 from studies.tasks import ember_build_and_gcp_deploy
@@ -961,6 +961,12 @@ class JsPsychPreviewView(
         response = get_jspsych_response(context, is_preview=True)
         context.update(response=response)
         context.update({"aws_vars": self.aws_vars})
+        context["jspsych_library"] = JSPsychPlugin.objects.filter(
+            category=JSPsychPlugin.Category.JSPSYCH_LIBRARY
+        ).order_by("order")
+        context["chs_plugins"] = JSPsychPlugin.objects.filter(
+            category=JSPsychPlugin.Category.CHS_JSPSYCH
+        ).order_by("order")
         return context
 
 

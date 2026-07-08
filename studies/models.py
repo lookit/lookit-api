@@ -318,14 +318,23 @@ class StudyType(models.Model):
 
 class JSPsychPlugin(models.Model):
     class Category(models.TextChoices):
+        JSPSYCH_LIBRARY = "jspsych-library", "jsPsych Library"
         JSPSYCH = "jspsych", "Core jsPsych"
         JSPSYCH_CONTRIB = "jspsych-contrib", "jsPsych-contrib"
         CHS_JSPSYCH = "chs-jspsych", "CHS jsPsych"
+
+    class FileType(models.TextChoices):
+        JS = "js", "JavaScript"
+        CSS = "css", "CSS"
 
     name = models.CharField(max_length=255)
     url = models.URLField(max_length=500)
     integrity = models.CharField(max_length=255)
     category = models.CharField(max_length=20, choices=Category.choices)
+    file_type = models.CharField(
+        max_length=3, choices=FileType.choices, default=FileType.JS
+    )
+    order = models.PositiveSmallIntegerField(default=0)
 
     class Meta:
         ordering = ["name"]
