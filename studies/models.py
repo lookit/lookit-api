@@ -18,6 +18,7 @@ from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.shortcuts import reverse
 from django.utils import timezone as dutimezone
+from django.utils.html import format_html
 from django.utils.translation import gettext as _
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from guardian.shortcuts import get_users_with_perms
@@ -345,6 +346,30 @@ class JSPsychPlugin(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def label_html(self):
+        """Custom label for plugin that appends version and/or docs link in parentheses, if they exist."""
+        version_html = format_html("v{}", self.version) if self.version else ""
+        docs_html = (
+            format_html(
+                '<a href="{}" target="_blank" rel="noopener noreferrer">docs</a>',
+                self.docs_url,
+            )
+            if self.docs_url
+            else ""
+        )
+        if version_html and docs_html:
+            suffix = format_html(
+                ' <span class="text-muted">({}, {})</span>', version_html, docs_html
+            )
+        elif version_html or docs_html:
+            suffix = format_html(
+                ' <span class="text-muted">({})</span>', version_html or docs_html
+            )
+        else:
+            suffix = ""
+        return format_html("{}{}", self.name, suffix)
 
     @property
     def version(self):

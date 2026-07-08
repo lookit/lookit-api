@@ -612,6 +612,11 @@ class ExternalForm(ModelForm):
         fields = ()
 
 
+class JSPsychPluginChoiceField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return obj.label_html
+
+
 class JSPsychForm(ModelForm):
     experiment = forms.CharField(
         label="jsPsych Experiment Code",
@@ -626,14 +631,14 @@ class JSPsychForm(ModelForm):
         help_text='Please enter your jsPsych experiment code above. This is the JavaScript code used to generate a jsPsych study, not the surrounding HTML.<br>See the <a rel="noopener noreferrer" target="_blank" href="https://www.jspsych.org/latest/">jsPsych documentation</a> for experiment-building reference and tutorials, and the <a rel="noopener noreferrer" target="_blank" href="https://lookit.readthedocs.io/projects/chs-jspsych/en/latest/">CHS jsPsych documentation</a> for information about the jsPsych plugins/extensions that are specific to CHS, such as video consent/assent, exit survey, and webcam recording.',
     )
     # Separate plugin list by category - for display only
-    jspsych_plugins_core = forms.ModelMultipleChoiceField(
+    jspsych_plugins_core = JSPsychPluginChoiceField(
         queryset=JSPsychPlugin.objects.filter(category=JSPsychPlugin.Category.JSPSYCH),
         widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
         required=False,
         label="Core jsPsych",
         help_text='Your study automatically has access to all <a rel="noopener noreferrer" target="_blank" href="https://">CHS-jsPsych plugins</a>.<br>Select any additional plugins/extensions your experiment uses from the <a href="https://github.com/jspsych/jsPsych/tree/main/packages">core jsPsych library</a> and <a href="https://github.com/jspsych/jspsych-contrib/tree/main/packages">jsPsych-contrib Github repository</a>.<br>Selecting more plugins/extensions than your study needs will cause it to load more slowly.',
     )
-    jspsych_plugins_contrib = forms.ModelMultipleChoiceField(
+    jspsych_plugins_contrib = JSPsychPluginChoiceField(
         queryset=JSPsychPlugin.objects.filter(
             category=JSPsychPlugin.Category.JSPSYCH_CONTRIB
         ),
