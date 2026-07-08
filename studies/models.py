@@ -338,6 +338,8 @@ class JSPsychPlugin(models.Model):
 
     class Meta:
         ordering = ["name"]
+        verbose_name = "jsPsych plugin"
+        verbose_name_plural = "jsPsych plugins"
 
     def __str__(self):
         return self.name
