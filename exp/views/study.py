@@ -1274,6 +1274,16 @@ class JSPsychEditView(ExperimentRunnerEditView):
     template_name = "studies/experiment_runner/jspsych_edit.html"
     form_class = JSPsychForm
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["jspsych_library_plugins"] = JSPsychPlugin.objects.filter(
+            category=JSPsychPlugin.Category.JSPSYCH_LIBRARY
+        ).order_by("order")
+        context["chs_plugins"] = JSPsychPlugin.objects.filter(
+            category=JSPsychPlugin.Category.CHS_JSPSYCH
+        ).order_by("order")
+        return context
+
     def get_initial(self) -> Dict[str, Any]:
         initial = super().get_initial()
         metadata = self.object.metadata
