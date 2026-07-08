@@ -37,6 +37,7 @@ from studies.models import (
 from studies.permissions import StudyPermission
 from studies.tasks import (
     MessageTarget,
+    _validated,
     acquire_potential_announcement_email_targets,
     cleanup_incomplete_video_uploads,
     complete_multipart_upload,
@@ -662,6 +663,22 @@ class TestAnnouncementEmailFunctionality(TestCase):
         # Check that the message target no longer has this child for this study
         self.assertNotIn(message_target, potential_message_targets())
 
+    def test_validated_skips_none_user(self):
+        result = list(_validated([(None, [])]))
+        self.assertEqual(result, [])
+
+    def test_validated_skips_user_with_empty_username(self):
+        mock_user = MagicMock()
+        mock_user.username = ""
+        result = list(_validated([(mock_user, [])]))
+        self.assertEqual(result, [])
+
+    def test_validated_skips_user_with_non_email_username(self):
+        mock_user = MagicMock()
+        mock_user.username = "debuguser"
+        result = list(_validated([(mock_user, [])]))
+        self.assertEqual(result, [])
+
 
 class TestSendMail(TestCase):
     def setUp(self):
@@ -816,6 +833,55 @@ class TestEmailHeaders(TestCase):
         context = {"token": self.context["token"]}
         headers = Message.email_headers(context)
         self.assertIsNone(headers)
+
+
+class TestSendAsEmail(TestCase):
+    def setUp(self):
+        self.fake_lab = G(Lab, contact_email="lab@example.com")
+        self.study = G(
+            Study,
+            lab=self.fake_lab,
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        self.message = G(
+            Message, related_study=self.study, subject="Test Subject", body="Test body"
+        )
+
+    @patch("accounts.models.send_mail")
+    def test_send_as_email_skips_recipient_with_non_email_username(
+        self, mock_send_mail
+    ):
+        invalid_user = G(User, username="notanemail")
+        self.message.recipients.add(invalid_user)
+
+        self.message.send_as_email()
+
+        mock_send_mail.delay.assert_not_called()
+
+    @patch("accounts.models.send_mail")
+    def test_send_as_email_skips_recipient_with_empty_username(self, mock_send_mail):
+        invalid_user = User(username="")
+        invalid_user.save()
+        self.message.recipients.add(invalid_user)
+
+        self.message.send_as_email()
+
+        mock_send_mail.delay.assert_not_called()
+
+    @patch("accounts.models.send_mail")
+    def test_send_as_email_sends_to_valid_recipients_only(self, mock_send_mail):
+        valid_user = G(User, username="valid@example.com")
+        invalid_user = G(User, username="notanemail")
+        self.message.recipients.add(valid_user, invalid_user)
+
+        self.message.send_as_email()
+
+        mock_send_mail.delay.assert_called_once()
+        call_args = mock_send_mail.delay.call_args
+        self.assertEqual(call_args[0][2], "valid@example.com")
 
 
 class StudyTypeModelTestCase(TestCase):
@@ -2846,3 +2912,177 @@ class CheckModificationOfApprovedStudyTestCase(TestCase):
         self.study.save()
         self.study.refresh_from_db()
         self.assertEqual(self.study.state, "rejected")
+
+
+class LabCreatedAtTestCase(TestCase):
+    """Tests for Lab.created_at auto-population on save."""
+
+    def _make_lab(self, name, email):
+        return Lab.objects.create(name=name, institution="Test", contact_email=email)
+
+    def test_created_at_set_on_new_lab(self):
+        lab = self._make_lab("New Lab", "new@lab.com")
+        lab.refresh_from_db()
+        self.assertIsNotNone(lab.created_at)
+
+    def test_created_at_not_overwritten_on_resave(self):
+        lab = self._make_lab("Resave Lab", "resave@lab.com")
+        original_created_at = lab.created_at
+        lab.institution = "Changed"
+        lab.save()
+        lab.refresh_from_db()
+        self.assertEqual(lab.created_at, original_created_at)
+
+    def test_null_created_at_stays_null_on_resave(self):
+        """Labs with null created_at (simulating pre-migration rows) keep null after a subsequent save."""
+        lab = self._make_lab("Null Lab", "null@lab.com")
+        Lab.objects.filter(pk=lab.pk).update(created_at=None)
+        lab.refresh_from_db()
+        self.assertIsNone(lab.created_at)
+        lab.institution = "Updated"
+        lab.save()
+        lab.refresh_from_db()
+        self.assertIsNone(lab.created_at)
+
+
+class LabGetResponseStatsTestCase(TestCase):
+    """Tests for Lab.get_response_stats() using the effective-is-tallied logic."""
+
+    def setUp(self):
+        self.lab = Lab.objects.create(
+            name="Stats Lab", institution="Test", contact_email="stats@lab.com"
+        )
+        self.other_lab = Lab.objects.create(
+            name="Other Lab", institution="Test", contact_email="other@lab.com"
+        )
+        self.internal_study = Study.objects.create(
+            name="Internal Study",
+            lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        self.external_study = Study.objects.create(
+            name="External Study",
+            lab=self.lab,
+            study_type=StudyType.get_external(),
+        )
+        self.other_study = Study.objects.create(
+            name="Other Lab Study",
+            lab=self.other_lab,
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        self.user = User.objects.create(is_active=True)
+        self.child = Child.objects.create(
+            user=self.user, birthday=date.today() - timedelta(days=365)
+        )
+
+    def _make_response(self, study, tallied=True, override=None):
+        """Create a response whose is_tallied matches `tallied`, optionally with a researcher override."""
+        eligibility = (
+            [ResponseEligibility.ELIGIBLE]
+            if tallied
+            else [ResponseEligibility.INELIGIBLE_OLD]
+        )
+        r = Response.objects.create(
+            study=study,
+            child=self.child,
+            study_type=study.study_type,
+            completed=True,
+            completed_consent_frame=True,
+            is_preview=False,
+        )
+        # Second save sets eligibility (first save auto-computed it from child/study age range)
+        r.eligibility = eligibility
+        r.save()
+        r.refresh_from_db()  # ensure is_tallied reflects the signal-computed DB value
+        if override is not None:
+            r.is_tallied_researcher_override = override
+            r.save()
+        return r
+
+    def test_empty_lab_returns_zeros(self):
+        stats = self.lab.get_response_stats()
+        for key in (
+            "internal_all_time",
+            "external_all_time",
+            "total_all_time",
+            "internal_last_year",
+            "external_last_year",
+            "total_last_year",
+        ):
+            self.assertEqual(stats[key], 0, f"Expected 0 for {key}")
+
+    def test_counts_tallied_internal_responses(self):
+        self._make_response(self.internal_study, tallied=True)
+        self._make_response(self.internal_study, tallied=True)
+        self._make_response(
+            self.internal_study, tallied=False
+        )  # untallied, should not count
+        stats = self.lab.get_response_stats()
+        self.assertEqual(stats["internal_all_time"], 2)
+        self.assertEqual(stats["external_all_time"], 0)
+        self.assertEqual(stats["total_all_time"], 2)
+
+    def test_counts_tallied_external_responses(self):
+        self._make_response(self.external_study, tallied=True)
+        self._make_response(
+            self.external_study, tallied=False
+        )  # untallied, should not count
+        stats = self.lab.get_response_stats()
+        self.assertEqual(stats["internal_all_time"], 0)
+        self.assertEqual(stats["external_all_time"], 1)
+        self.assertEqual(stats["total_all_time"], 1)
+
+    def test_mixed_study_types_breakdown(self):
+        self._make_response(self.internal_study, tallied=True)
+        self._make_response(self.internal_study, tallied=True)
+        self._make_response(self.external_study, tallied=True)
+        stats = self.lab.get_response_stats()
+        self.assertEqual(stats["internal_all_time"], 2)
+        self.assertEqual(stats["external_all_time"], 1)
+        self.assertEqual(stats["total_all_time"], 3)
+
+    def test_researcher_override_true_counts_untallied_response(self):
+        """Override=True on an untallied response makes it effectively tallied."""
+        r = self._make_response(self.internal_study, tallied=False)
+        self.assertFalse(r.is_tallied)
+        r.is_tallied_researcher_override = True
+        r.save()
+        stats = self.lab.get_response_stats()
+        self.assertEqual(stats["internal_all_time"], 1)
+
+    def test_researcher_override_false_excludes_tallied_response(self):
+        """Override=False on a tallied response makes it effectively untallied."""
+        r = self._make_response(self.internal_study, tallied=True)
+        self.assertTrue(r.is_tallied)
+        r.is_tallied_researcher_override = False
+        r.save()
+        stats = self.lab.get_response_stats()
+        self.assertEqual(stats["internal_all_time"], 0)
+
+    def test_last_year_excludes_responses_older_than_365_days(self):
+        self._make_response(self.internal_study, tallied=True)
+        old = self._make_response(self.internal_study, tallied=True)
+        two_years_ago = datetime.now(timezone.utc) - timedelta(days=730)
+        Response.objects.filter(pk=old.pk).update(date_created=two_years_ago)
+
+        stats = self.lab.get_response_stats()
+        self.assertEqual(stats["internal_all_time"], 2)
+        self.assertEqual(stats["internal_last_year"], 1)
+
+    def test_last_year_totals_sum_correctly(self):
+        self._make_response(self.internal_study, tallied=True)
+        self._make_response(self.external_study, tallied=True)
+        old_ext = self._make_response(self.external_study, tallied=True)
+        two_years_ago = datetime.now(timezone.utc) - timedelta(days=730)
+        Response.objects.filter(pk=old_ext.pk).update(date_created=two_years_ago)
+
+        stats = self.lab.get_response_stats()
+        self.assertEqual(stats["total_all_time"], 3)
+        self.assertEqual(stats["total_last_year"], 2)
+
+    def test_does_not_count_other_lab_responses(self):
+        self._make_response(self.other_study, tallied=True)
+        self._make_response(self.other_study, tallied=True)
+        stats = self.lab.get_response_stats()
+        self.assertEqual(stats["total_all_time"], 0)
+        self.assertEqual(stats["total_last_year"], 0)
