@@ -72,9 +72,9 @@ CHS_JSPSYCH_PLUGINS = [
 
 
 def seed_auto_load_plugins(apps, schema_editor):
-    JSPsychPlugin = apps.get_model("studies", "JSPsychPlugin")
+    jspsych_plugin = apps.get_model("studies", "JSPsychPlugin")
     for data in JSPSYCH_LIBRARY + CHS_JSPSYCH_PLUGINS:
-        JSPsychPlugin.objects.create(**data)
+        jspsych_plugin.objects.create(**data)
 
 
 class Migration(migrations.Migration):

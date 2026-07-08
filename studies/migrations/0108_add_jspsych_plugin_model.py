@@ -83,16 +83,16 @@ JSPSYCH_PLUGINS = [
 
 
 def seed_plugins_and_assign_to_existing_studies(apps, schema_editor):
-    JSPsychPlugin = apps.get_model("studies", "JSPsychPlugin")
-    Study = apps.get_model("studies", "Study")
-    StudyType = apps.get_model("studies", "StudyType")
+    jspsych_plugin = apps.get_model("studies", "JSPsychPlugin")
+    study = apps.get_model("studies", "Study")
+    study_type = apps.get_model("studies", "StudyType")
 
-    plugins = [JSPsychPlugin.objects.create(**data) for data in JSPSYCH_PLUGINS]
+    plugins = [jspsych_plugin.objects.create(**data) for data in JSPSYCH_PLUGINS]
 
-    jspsych_type = StudyType.objects.filter(name="jsPsych").first()
+    jspsych_type = study_type.objects.filter(name="jsPsych").first()
     if jspsych_type:
-        for study in Study.objects.filter(study_type=jspsych_type):
-            study.jspsych_plugins.set(plugins)
+        for s in study.objects.filter(study_type=jspsych_type):
+            s.jspsych_plugins.set(plugins)
 
 
 class Migration(migrations.Migration):
