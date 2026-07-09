@@ -636,7 +636,7 @@ class JSPsychForm(ModelForm):
         widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
         required=False,
         label="Core jsPsych plugins/extension",
-        help_text='Your study automatically has access to the core jsPsych library and CHS-jsPsych packages (see below).<br>Select any additional plugins/extensions your experiment uses from the <a href="https://github.com/jspsych/jsPsych/tree/main/packages">core jsPsych library</a> and <a href="https://github.com/jspsych/jspsych-contrib/tree/main/packages">jsPsych-contrib Github repository</a>.<br>Selecting more plugins/extensions than your study needs will cause it to load more slowly.',
+        help_text='Select any additional plugins/extensions your experiment uses from the <a href="https://github.com/jspsych/jsPsych/tree/main/packages">core jsPsych library</a> and <a href="https://github.com/jspsych/jspsych-contrib/tree/main/packages">jsPsych-contrib Github repository</a>.<br>Selecting more plugins/extensions than your study needs will cause it to load more slowly.',
     )
     jspsych_plugins_contrib = JSPsychPluginChoiceField(
         queryset=JSPsychPlugin.objects.filter(
