@@ -17,3 +17,12 @@ document.querySelector('form#experiment_runner_form').addEventListener('submit',
 document.querySelectorAll('.plugin-select-all, .plugin-clear-all').forEach(function (btn) {
     btn.addEventListener('click', clearOrSelectAllPlugins);
 });
+
+document.querySelectorAll('.collapse').forEach(function (collapseEl) {
+    const btn = document.querySelector(`[data-bs-target="#${collapseEl.id}"]`);
+    if (!btn) return;
+    const icon = btn.querySelector('.collapse-icon');
+    if (!icon) return;
+    collapseEl.addEventListener('show.bs.collapse', () => icon.textContent = '▴');
+    collapseEl.addEventListener('hide.bs.collapse', () => icon.textContent = '▾');
+});
