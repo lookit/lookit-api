@@ -27,8 +27,8 @@
             {% if field.help_text %}
                 <div class="form-text mb-1">{{ field.help_text|safe }}</div>
             {% endif %}
-            <div class="my-3">
-                <label class="form-label mb-3">{{ field.label }}</label>
+            <fieldset class="my-3 border-0 p-0">
+                <legend class="form-label mb-3 fw-semibold">{{ field.label }}</legend>
                 <div class="d-flex gap-2 mb-3">
                     <button type="button" id="{{ field.html_name }}-select-all" class="btn btn-sm btn-outline-secondary plugin-select-all">Select all</button>
                     <button type="button" id="{{ field.html_name }}-clear-all" class="btn btn-sm btn-outline-secondary plugin-clear-all">Clear all</button>
@@ -43,7 +43,7 @@
                     </div>
                     {% endfor %}
                 </div>
-            </div>
+            </fieldset>
         {% else %}
             <hr/>
             {% bootstrap_field field label_class="fw-bold mb-3" %}
@@ -52,7 +52,7 @@
     <hr/>
     <h6 class="fw-bold mb-3">Automatically Loaded jsPsych Files</h6>
     <div class="my-3">
-        <label class="form-label mb-3">Core jsPsych Library</label>
+        <p class="fw-semibold mb-3">Core jsPsych Library</p>
         <div class="form-text mb-1">See the <a rel="noopener noreferrer" target="_blank" href="https://www.jspsych.org/latest/">jsPsych documentation</a> for experiment-building reference and tutorials. </div>
         <ul class="my-3">
             {% for plugin in jspsych_library_plugins %}
@@ -61,7 +61,7 @@
         </ul>
     </div>
     <div class="my-3">
-        <label class="form-label mb-3">CHS jsPsych</label>
+        <p class="fw-semibold mb-3">CHS jsPsych</p>
         <div class="form-text mb-1">See the <a rel="noopener noreferrer" target="_blank" href="https://lookit.readthedocs.io/projects/chs-jspsych/en/latest/">CHS jsPsych documentation</a> for information about the jsPsych plugins/extensions that are specific to CHS, such as video consent/assent, exit survey, and webcam recording.</div>
         <ul class="my-3">
             {% for plugin in chs_plugins %}

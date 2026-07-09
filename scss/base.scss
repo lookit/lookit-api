@@ -70,3 +70,9 @@
 [type="checkbox"].dark-checkbox-border {
     border-color: black;
 }
+
+// Reset Bootstrap's legend heading styles when used as a form-label
+legend.form-label {
+    float: none;
+    font-size: inherit;
+}

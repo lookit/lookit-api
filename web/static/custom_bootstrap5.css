@@ -8599,3 +8599,7 @@ textarea.form-control-lg {
 
 [type="checkbox"].dark-checkbox-border {
   border-color: black; }
+
+legend.form-label {
+  float: none;
+  font-size: inherit; }
