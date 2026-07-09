@@ -395,7 +395,9 @@ class JSPsychPlugin(models.Model):
             if match:
                 return f"https://github.com/jspsych/jspsych-contrib/tree/main/packages/{match.group(1)}/"
         elif self.category == self.Category.CHS_JSPSYCH:
-            return "https://lookit.readthedocs.io/projects/chs-jspsych/en/latest/"
+            match = re.search(r"@lookit/([^@/]+)", self.url)
+            if match:
+                return f"https://lookit.readthedocs.io/projects/chs-jspsych/en/latest/{match.group(1)}"
         return ""
 
     def save(self, *args, **kwargs):
