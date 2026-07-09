@@ -338,6 +338,9 @@ class JSPsychPlugin(models.Model):
     )
     order = models.PositiveSmallIntegerField(default=0)
     docs_url = models.URLField(blank=True)
+    autoload = models.BooleanField(default=False)
+    show_in_ui = models.BooleanField(default=True)
+    provides = models.JSONField(default=list, blank=True)
 
     class Meta:
         ordering = ["name"]

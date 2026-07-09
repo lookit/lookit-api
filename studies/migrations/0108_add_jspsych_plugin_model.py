@@ -9,12 +9,14 @@ JSPSYCH_PLUGINS = [
         "url": "https://unpkg.com/@jspsych/plugin-fullscreen@2.1.0",
         "integrity": "sha384-JQEV9wMXFDbTpp1eYJSU9G7uQeyZcLGabno5ZHQJGytUBG19mTZ+ZBV5dsm7m6Mf",
         "category": "jspsych",
+        "autoload": True,
     },
     {
         "name": "HTML Button Response",
         "url": "https://unpkg.com/@jspsych/plugin-html-button-response@2.0.0",
         "integrity": "sha384-YkXp8JHPul+fAB8ACoBIXD4fMzweAXqwajNbmkFxKo0z4CEZJssZ5EWqMCefJs8J",
         "category": "jspsych",
+        "autoload": True,
     },
     {
         "name": "HTML Keyboard Response",
@@ -27,6 +29,7 @@ JSPSYCH_PLUGINS = [
         "url": "https://unpkg.com/@jspsych/plugin-image-button-response@2.0.0",
         "integrity": "sha384-akngF9Va8sW0TdFvi4EsfM6SGOE94o2XZ+n99/QKYbVhdUEvX1h/OJdfa8yRoEPX",
         "category": "jspsych",
+        "autoload": True,
     },
     {
         "name": "Image Hotspots",
@@ -45,6 +48,7 @@ JSPSYCH_PLUGINS = [
         "url": "https://unpkg.com/@jspsych/plugin-preload@2.0.0",
         "integrity": "sha384-veBuhHbf5WLQIFlG9N6a+5E/kRYJcBTDKkqJRTkc7wuGwptljsBa2fYuTseMkOBI",
         "category": "jspsych",
+        "autoload": True,
     },
     {
         "name": "Survey Likert",
@@ -75,6 +79,7 @@ JSPSYCH_PLUGINS = [
         "url": "https://unpkg.com/@jspsych/plugin-video-button-response@2.0.0",
         "integrity": "sha384-u1N4HtXTAx8IPaZxRLKurCoPhFnSQ+TrF+33Lr1ORBhnRogBnU8Fd7tbPkFh1uUj",
         "category": "jspsych",
+        "autoload": True,
     },
     {
         "name": "Video Hotspots",
@@ -98,6 +103,8 @@ AUTO_LOAD_PLUGINS = [
         "category": "jspsych-library",
         "file_type": "css",
         "order": 1,
+        "show_in_ui": False,
+        "autoload": True,
     },
     {
         "name": "jsPsych",
@@ -106,6 +113,7 @@ AUTO_LOAD_PLUGINS = [
         "category": "jspsych-library",
         "file_type": "js",
         "order": 2,
+        "autoload": True,
     },
     {
         "name": "CHS Style",
@@ -114,6 +122,8 @@ AUTO_LOAD_PLUGINS = [
         "category": "chs-jspsych",
         "file_type": "css",
         "order": 1,
+        "show_in_ui": False,
+        "autoload": True,
     },
     {
         "name": "CHS Data",
@@ -122,6 +132,13 @@ AUTO_LOAD_PLUGINS = [
         "category": "chs-jspsych",
         "file_type": "js",
         "order": 2,
+        "provides": [
+            "window.chs.study",
+            "window.chs.child",
+            "window.chs.pastSessions",
+            "window.chs.response",
+        ],
+        "autoload": True,
     },
     {
         "name": "CHS Templates",
@@ -130,6 +147,8 @@ AUTO_LOAD_PLUGINS = [
         "category": "chs-jspsych",
         "file_type": "js",
         "order": 3,
+        "show_in_ui": False,
+        "autoload": True,
     },
     {
         "name": "CHS Init jsPsych",
@@ -138,6 +157,8 @@ AUTO_LOAD_PLUGINS = [
         "category": "chs-jspsych",
         "file_type": "js",
         "order": 4,
+        "show_in_ui": False,
+        "autoload": True,
     },
     {
         "name": "CHS Record",
@@ -146,6 +167,15 @@ AUTO_LOAD_PLUGINS = [
         "category": "chs-jspsych",
         "file_type": "js",
         "order": 5,
+        "provides": [
+            "chsRecord.VideoConfigPlugin",
+            "chsRecord.VideoConsentPlugin",
+            "chsRecord.VideoAssentPlugin",
+            "chsRecord.TrialRecordExtension",
+            "chsRecord.StartRecordPlugin",
+            "chsRecord.StopRecordPlugin",
+        ],
+        "autoload": True,
     },
     {
         "name": "CHS Surveys",
@@ -154,6 +184,8 @@ AUTO_LOAD_PLUGINS = [
         "category": "chs-jspsych",
         "file_type": "js",
         "order": 6,
+        "provides": ["chsSurvey.ConsentSurveyPlugin", "chsSurvey.ExitSurveyPlugin"],
+        "autoload": True,
     },
 ]
 
@@ -242,6 +274,9 @@ class Migration(migrations.Migration):
                 ),
                 ("order", models.PositiveSmallIntegerField(default=0)),
                 ("docs_url", models.URLField(blank=True)),
+                ("autoload", models.BooleanField(default=False)),
+                ("show_in_ui", models.BooleanField(default=True)),
+                ("provides", models.JSONField(blank=True, default=list)),
             ],
             options={
                 "ordering": ["name"],
