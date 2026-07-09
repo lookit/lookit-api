@@ -1,0 +1,16 @@
+// Keeps the section expand/collapse labels (buttons) looking identical during hover, focus, and click states
+.btn-no-effects:hover,
+.btn-no-effects:focus,
+.btn-no-effects:active,
+.btn-no-effects.active {
+  background-color: var(--bs-btn-bg) !important;
+  border-color: var(--bs-btn-border-color) !important;
+  color: var(--bs-btn-color) !important;
+  box-shadow: none !important;
+}
+
+// Reset Bootstrap's legend heading styles when used as a form-label
+legend.form-label {
+    float: none;
+    font-size: inherit;
+}

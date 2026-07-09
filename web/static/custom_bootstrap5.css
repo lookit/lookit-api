@@ -20,6 +20,19 @@ body.superuser {
   background: url("images/su-mode.svg") repeat transparent;
   background-size: 400px 400px; }
 
+.btn-no-effects:hover,
+.btn-no-effects:focus,
+.btn-no-effects:active,
+.btn-no-effects.active {
+  background-color: var(--bs-btn-bg) !important;
+  border-color: var(--bs-btn-border-color) !important;
+  color: var(--bs-btn-color) !important;
+  box-shadow: none !important; }
+
+legend.form-label {
+  float: none;
+  font-size: inherit; }
+
 tr.preview-row {
   background: var(--bs-light) !important; }
 
@@ -8599,7 +8612,3 @@ textarea.form-control-lg {
 
 [type="checkbox"].dark-checkbox-border {
   border-color: black; }
-
-legend.form-label {
-  float: none;
-  font-size: inherit; }
