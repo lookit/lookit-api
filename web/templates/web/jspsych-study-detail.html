@@ -36,6 +36,12 @@
                 <link rel="stylesheet" href="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous">
             {% endif %}
         {% endfor %}
+        <!-- Auto-loaded plugins style sheets -->
+        {% for plugin in autoload_plugins %}
+            {% if plugin.file_type == "css" %}
+                <link rel="stylesheet" href="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous">
+            {% endif %}
+        {% endfor %}
         <!-- CHS jsPsych style sheets (load last to take precedence) -->
         {% for plugin in chs_plugins %}
             {% if plugin.file_type == "css" %}
@@ -50,6 +56,12 @@
         </div>
         <!-- External JS: core library -->
         {% for plugin in jspsych_library %}
+            {% if plugin.file_type == "js" %}
+                <script src="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous"></script>
+            {% endif %}
+        {% endfor %}
+        <!-- Auto-loaded plugins JS -->
+        {% for plugin in autoload_plugins %}
             {% if plugin.file_type == "js" %}
                 <script src="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous"></script>
             {% endif %}

@@ -947,11 +947,21 @@ class JsPsychExperimentView(
         context.update(response=response)
         context.update({"aws_vars": self.aws_vars})
         context["jspsych_library"] = JSPsychPlugin.objects.filter(
-            category=JSPsychPlugin.Category.JSPSYCH_LIBRARY
+            category=JSPsychPlugin.Category.JSPSYCH_LIBRARY, autoload=True
         ).order_by("order")
         context["chs_plugins"] = JSPsychPlugin.objects.filter(
-            category=JSPsychPlugin.Category.CHS_JSPSYCH
+            category=JSPsychPlugin.Category.CHS_JSPSYCH, autoload=True
         ).order_by("order")
+        context["autoload_plugins"] = (
+            JSPsychPlugin.objects.filter(autoload=True)
+            .exclude(
+                category__in=[
+                    JSPsychPlugin.Category.JSPSYCH_LIBRARY,
+                    JSPsychPlugin.Category.CHS_JSPSYCH,
+                ]
+            )
+            .order_by("order")
+        )
         return context
 
 
