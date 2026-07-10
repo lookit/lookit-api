@@ -1287,11 +1287,21 @@ class JSPsychEditView(ExperimentRunnerEditView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["jspsych_library_plugins"] = JSPsychPlugin.objects.filter(
-            category=JSPsychPlugin.Category.JSPSYCH_LIBRARY
+            category=JSPsychPlugin.Category.JSPSYCH_LIBRARY, show_in_ui=True
         ).order_by("order")
         context["chs_plugins"] = JSPsychPlugin.objects.filter(
-            category=JSPsychPlugin.Category.CHS_JSPSYCH
+            category=JSPsychPlugin.Category.CHS_JSPSYCH, show_in_ui=True
         ).order_by("order")
+        context["autoload_plugins"] = (
+            JSPsychPlugin.objects.filter(autoload=True, show_in_ui=True)
+            .exclude(
+                category__in=[
+                    JSPsychPlugin.Category.JSPSYCH_LIBRARY,
+                    JSPsychPlugin.Category.CHS_JSPSYCH,
+                ]
+            )
+            .order_by("order")
+        )
         return context
 
     def get_initial(self) -> Dict[str, Any]:
