@@ -632,7 +632,9 @@ class JSPsychForm(ModelForm):
     )
     # Separate plugin list by category - for display only
     jspsych_plugins_core = JSPsychPluginChoiceField(
-        queryset=JSPsychPlugin.objects.filter(category=JSPsychPlugin.Category.JSPSYCH),
+        queryset=JSPsychPlugin.objects.filter(
+            category=JSPsychPlugin.Category.JSPSYCH, autoload=False
+        ),
         widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
         required=False,
         label="Core jsPsych plugins/extension",
@@ -640,7 +642,7 @@ class JSPsychForm(ModelForm):
     )
     jspsych_plugins_contrib = JSPsychPluginChoiceField(
         queryset=JSPsychPlugin.objects.filter(
-            category=JSPsychPlugin.Category.JSPSYCH_CONTRIB
+            category=JSPsychPlugin.Category.JSPSYCH_CONTRIB, autoload=False
         ),
         widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
         required=False,
