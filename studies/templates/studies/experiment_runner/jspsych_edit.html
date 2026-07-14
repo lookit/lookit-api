@@ -40,7 +40,28 @@
                         <p class="fw-semibold mb-3">Core jsPsych Library</p>
                         <ul class="my-3">
                             {% for plugin in jspsych_library_plugins %}
-                            <li>{{ plugin.label_html }}</li>
+                            <li>
+                                {{ plugin.label_html }}
+                                {% if plugin.provides %}
+                                <ul>
+                                    {% for item in plugin.provides %}
+                                    <li>{{ item }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                            {% for plugin in autoload_plugins %}
+                            <li>
+                                {{ plugin.label_html }}
+                                {% if plugin.provides %}
+                                <ul>
+                                    {% for item in plugin.provides %}
+                                    <li>{{ item }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -48,7 +69,16 @@
                         <p class="fw-semibold mb-3">CHS jsPsych</p>
                         <ul class="my-3">
                             {% for plugin in chs_plugins %}
-                            <li>{{ plugin.label_html }}</li>
+                            <li>
+                                {{ plugin.label_html }}
+                                {% if plugin.provides %}
+                                <ul>
+                                    {% for item in plugin.provides %}
+                                    <li>{{ item }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </li>
                             {% endfor %}
                         </ul>
                     </div>
