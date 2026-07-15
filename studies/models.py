@@ -379,7 +379,7 @@ class JSPsychPlugin(models.Model):
         """
         Gets the current package version, based on the package URL. Returns an empty string if no match is found.
         """
-        match = re.search(r"@(\d+[\d.]+)", self.url)
+        match = re.search(r"@([\d.]+(?:-[\w.]+)?)", self.url)
         return match.group(1) if match else ""
 
     def _get_default_docs_url(self):
