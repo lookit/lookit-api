@@ -6,7 +6,7 @@ from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
-from accounts.models import User
+from accounts.models import Child, User
 from project import settings
 from studies.forms import ScheduledChoice
 from studies.models import Lab, Study, StudyType
@@ -187,3 +187,213 @@ class RunnerDetailsViewsTestCase(TestCase):
 
         self.assertFalse(study.built)
         self.assertFalse(study.is_building)
+
+
+class JSPsychEditViewTestCase(TestCase):
+    def setUp(self):
+        """Set up test data."""
+        from studies.models import JSPsychPlugin
+
+        self.client = Force2FAClient()
+        self.user = G(User, is_active=True, is_researcher=True)
+        self.lab = G(Lab)
+        self.study = G(
+            Study, creator=self.user, lab=self.lab, study_type=StudyType.get_jspsych()
+        )
+
+        # Create test plugins
+        self.jspsych_library_plugin = JSPsychPlugin.objects.create(
+            name="jsPsych Core",
+            url="https://unpkg.com/jspsych@8.0.3",
+            integrity="sha384-test1",
+            category="jspsych-library",
+            show_in_ui=True,
+        )
+        self.hidden_jspsych_library_plugin = JSPsychPlugin.objects.create(
+            name="jsPsych CSS",
+            url="https://unpkg.com/jspsych@8.0.3/css/jspsych.css",
+            integrity="sha384-test2",
+            category="jspsych-library",
+            file_type="css",
+            show_in_ui=False,
+        )
+        self.chs_plugin = JSPsychPlugin.objects.create(
+            name="CHS Templates",
+            url="https://unpkg.com/@lookit/templates@3.2.0",
+            integrity="sha384-test3",
+            category="chs-jspsych",
+            show_in_ui=True,
+        )
+        self.hidden_chs_plugin = JSPsychPlugin.objects.create(
+            name="CHS Init jsPsych",
+            url="https://unpkg.com/@lookit/lookit-initjspsych@3.2.0",
+            integrity="sha384-test4",
+            category="chs-jspsych",
+            show_in_ui=False,
+        )
+        self.autoload_plugin = JSPsychPlugin.objects.create(
+            name="Fullscreen",
+            url="https://unpkg.com/@jspsych/plugin-fullscreen@1.0.0",
+            integrity="sha384-test5",
+            category="jspsych",
+            autoload=True,
+        )
+
+        assign_perm(StudyPermission.WRITE_STUDY_DETAILS.codename, self.user, self.study)
+        assign_perm(StudyPermission.READ_STUDY_DETAILS.codename, self.user, self.study)
+
+    def test_jspsych_edit_view_context_contains_library_plugins(self):
+        """Test that context includes jspsych_library_plugins."""
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("exp:jspsych-study-edit-design", kwargs={"pk": self.study.id})
+        )
+
+        self.assertIn("jspsych_library_plugins", response.context)
+        library_plugins = list(response.context["jspsych_library_plugins"])
+
+        # Should include visible plugin
+        self.assertIn(self.jspsych_library_plugin, library_plugins)
+        # Should NOT include hidden plugin
+        self.assertNotIn(self.hidden_jspsych_library_plugin, library_plugins)
+
+    def test_jspsych_edit_view_context_contains_chs_plugins(self):
+        """Test that context includes chs_plugins."""
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("exp:jspsych-study-edit-design", kwargs={"pk": self.study.id})
+        )
+
+        self.assertIn("chs_plugins", response.context)
+        chs_plugins = list(response.context["chs_plugins"])
+
+        # Should include visible plugin
+        self.assertIn(self.chs_plugin, chs_plugins)
+        # Should NOT include hidden plugin
+        self.assertNotIn(self.hidden_chs_plugin, chs_plugins)
+
+    def test_jspsych_edit_view_context_contains_autoload_plugins(self):
+        """Test that context includes autoload_plugins."""
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("exp:jspsych-study-edit-design", kwargs={"pk": self.study.id})
+        )
+
+        self.assertIn("autoload_plugins", response.context)
+        autoload_plugins = list(response.context["autoload_plugins"])
+
+        # Should include the autoload plugin
+        self.assertIn(self.autoload_plugin, autoload_plugins)
+
+    def test_jspsych_edit_view_autoload_plugins_excludes_library_and_chs(self):
+        """Test that autoload_plugins excludes jspsych-library and chs-jspsych categories."""
+        from studies.models import JSPsychPlugin
+
+        # Create an autoload plugin in jspsych-library category (should be excluded)
+        autoload_library = JSPsychPlugin.objects.create(
+            name="AutoLoad Library",
+            url="https://unpkg.com/test-lib@1.0.0",
+            integrity="sha384-test6",
+            category="jspsych-library",
+            autoload=True,
+            show_in_ui=True,
+        )
+
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("exp:jspsych-study-edit-design", kwargs={"pk": self.study.id})
+        )
+
+        autoload_plugins = list(response.context["autoload_plugins"])
+
+        # Should include jspsych autoload plugin
+        self.assertIn(self.autoload_plugin, autoload_plugins)
+        # Should NOT include jspsych-library autoload plugin
+        self.assertNotIn(autoload_library, autoload_plugins)
+
+
+class JsPsychPreviewViewTestCase(TestCase):
+    def setUp(self):
+        """Set up test data for preview view."""
+        from studies.models import JSPsychPlugin
+
+        self.client = Force2FAClient()
+        self.user = G(User, is_active=True, is_researcher=True)
+        self.lab = G(Lab)
+        self.study = G(
+            Study, creator=self.user, lab=self.lab, study_type=StudyType.get_jspsych()
+        )
+        self.child = G(Child, user=self.user)
+
+        # Create test plugins
+        self.jspsych_library_plugin = JSPsychPlugin.objects.create(
+            name="jsPsych Core",
+            url="https://unpkg.com/jspsych@8.0.3",
+            integrity="sha384-test1",
+            category="jspsych-library",
+            autoload=True,
+        )
+        self.chs_plugin = JSPsychPlugin.objects.create(
+            name="CHS Templates",
+            url="https://unpkg.com/@lookit/templates@3.2.0",
+            integrity="sha384-test3",
+            category="chs-jspsych",
+            autoload=True,
+        )
+        self.autoload_plugin = JSPsychPlugin.objects.create(
+            name="Fullscreen",
+            url="https://unpkg.com/@jspsych/plugin-fullscreen@1.0.0",
+            integrity="sha384-test5",
+            category="jspsych",
+            autoload=True,
+        )
+
+        assign_perm(StudyPermission.READ_STUDY_DETAILS.codename, self.user, self.study)
+
+    def test_jspsych_preview_context_contains_library_plugins(self):
+        """Test that preview context includes jspsych_library plugins."""
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse(
+                "exp:preview-jspsych",
+                kwargs={"uuid": self.study.uuid, "child_id": self.child.uuid},
+            )
+        )
+
+        self.assertIn("jspsych_library", response.context)
+        library_plugins = list(response.context["jspsych_library"])
+
+        # Should include library plugin (no show_in_ui filter for preview view)
+        self.assertIn(self.jspsych_library_plugin, library_plugins)
+
+    def test_jspsych_preview_context_contains_chs_plugins(self):
+        """Test that preview context includes chs_plugins."""
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse(
+                "exp:preview-jspsych",
+                kwargs={"uuid": self.study.uuid, "child_id": self.child.uuid},
+            )
+        )
+
+        self.assertIn("chs_plugins", response.context)
+        chs_plugins = list(response.context["chs_plugins"])
+
+        # Should include CHS plugin (no show_in_ui filter for preview view)
+        self.assertIn(self.chs_plugin, chs_plugins)
+
+    def test_jspsych_preview_context_contains_autoload_plugins(self):
+        """Test that preview context includes autoload_plugins."""
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse(
+                "exp:preview-jspsych",
+                kwargs={"uuid": self.study.uuid, "child_id": self.child.uuid},
+            )
+        )
+
+        self.assertIn("autoload_plugins", response.context)
+        autoload_plugins = list(response.context["autoload_plugins"])
+
+        # Should include the autoload plugin
+        self.assertIn(self.autoload_plugin, autoload_plugins)
