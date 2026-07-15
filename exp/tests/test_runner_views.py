@@ -360,6 +360,7 @@ class JsPsychPreviewViewTestCase(TestCase):
             )
         )
 
+        self.assertEqual(response.status_code, 200)
         self.assertIn("jspsych_library", response.context)
         library_plugins = list(response.context["jspsych_library"])
 
@@ -376,6 +377,7 @@ class JsPsychPreviewViewTestCase(TestCase):
             )
         )
 
+        self.assertEqual(response.status_code, 200)
         self.assertIn("chs_plugins", response.context)
         chs_plugins = list(response.context["chs_plugins"])
 
@@ -392,6 +394,7 @@ class JsPsychPreviewViewTestCase(TestCase):
             )
         )
 
+        self.assertEqual(response.status_code, 200)
         self.assertIn("autoload_plugins", response.context)
         autoload_plugins = list(response.context["autoload_plugins"])
 
