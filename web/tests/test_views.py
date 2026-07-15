@@ -999,8 +999,15 @@ class JsPsychExperimentViewTestCase(TestCase):
             autoload=True,
         )
 
-    def test_jspsych_experiment_context_contains_library_plugins(self):
+    @patch("web.views.get_jspsych_aws_values")
+    def test_jspsych_experiment_context_contains_library_plugins(self, mock_aws):
         """Test that experiment context includes jspsych_library plugins."""
+        mock_aws.return_value = {
+            "accessKeyId": "test-key",
+            "secretAccessKey": "test-secret",
+            "sessionToken": "test-token",
+            "expiration": "2099-12-31T23:59:59Z",
+        }
         client = Client()
         client.force_login(self.user)
         response = client.get(
@@ -1016,8 +1023,15 @@ class JsPsychExperimentViewTestCase(TestCase):
         # Should include library plugin (no show_in_ui filter for participant view)
         self.assertIn(self.jspsych_library_plugin, library_plugins)
 
-    def test_jspsych_experiment_context_contains_chs_plugins(self):
+    @patch("web.views.get_jspsych_aws_values")
+    def test_jspsych_experiment_context_contains_chs_plugins(self, mock_aws):
         """Test that experiment context includes chs_plugins."""
+        mock_aws.return_value = {
+            "accessKeyId": "test-key",
+            "secretAccessKey": "test-secret",
+            "sessionToken": "test-token",
+            "expiration": "2099-12-31T23:59:59Z",
+        }
         client = Client()
         client.force_login(self.user)
         response = client.get(
@@ -1033,8 +1047,15 @@ class JsPsychExperimentViewTestCase(TestCase):
         # Should include CHS plugin (no show_in_ui filter for participant view)
         self.assertIn(self.chs_plugin, chs_plugins)
 
-    def test_jspsych_experiment_context_contains_autoload_plugins(self):
+    @patch("web.views.get_jspsych_aws_values")
+    def test_jspsych_experiment_context_contains_autoload_plugins(self, mock_aws):
         """Test that experiment context includes autoload_plugins."""
+        mock_aws.return_value = {
+            "accessKeyId": "test-key",
+            "secretAccessKey": "test-secret",
+            "sessionToken": "test-token",
+            "expiration": "2099-12-31T23:59:59Z",
+        }
         client = Client()
         client.force_login(self.user)
         response = client.get(

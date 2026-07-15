@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from unittest.mock import patch
 
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -350,8 +351,15 @@ class JsPsychPreviewViewTestCase(TestCase):
 
         assign_perm(StudyPermission.READ_STUDY_DETAILS.codename, self.user, self.study)
 
-    def test_jspsych_preview_context_contains_library_plugins(self):
+    @patch("exp.views.study.get_jspsych_aws_values")
+    def test_jspsych_preview_context_contains_library_plugins(self, mock_aws):
         """Test that preview context includes jspsych_library plugins."""
+        mock_aws.return_value = {
+            "accessKeyId": "test-key",
+            "secretAccessKey": "test-secret",
+            "sessionToken": "test-token",
+            "expiration": "2099-12-31T23:59:59Z",
+        }
         self.client.force_login(self.user)
         response = self.client.get(
             reverse(
@@ -360,10 +368,6 @@ class JsPsychPreviewViewTestCase(TestCase):
             )
         )
 
-        if response.status_code != 200:
-            print(f"\nDEBUG: Got {response.status_code} instead of 200")
-            if response.status_code in (301, 302, 303, 307, 308):
-                print(f"DEBUG: Redirect location: {response.get('Location', 'N/A')}")
         self.assertEqual(response.status_code, 200)
         self.assertIn("jspsych_library", response.context)
         library_plugins = list(response.context["jspsych_library"])
@@ -371,8 +375,15 @@ class JsPsychPreviewViewTestCase(TestCase):
         # Should include library plugin (no show_in_ui filter for preview view)
         self.assertIn(self.jspsych_library_plugin, library_plugins)
 
-    def test_jspsych_preview_context_contains_chs_plugins(self):
+    @patch("exp.views.study.get_jspsych_aws_values")
+    def test_jspsych_preview_context_contains_chs_plugins(self, mock_aws):
         """Test that preview context includes chs_plugins."""
+        mock_aws.return_value = {
+            "accessKeyId": "test-key",
+            "secretAccessKey": "test-secret",
+            "sessionToken": "test-token",
+            "expiration": "2099-12-31T23:59:59Z",
+        }
         self.client.force_login(self.user)
         response = self.client.get(
             reverse(
@@ -381,10 +392,6 @@ class JsPsychPreviewViewTestCase(TestCase):
             )
         )
 
-        if response.status_code != 200:
-            print(f"\nDEBUG: Got {response.status_code} instead of 200")
-            if response.status_code in (301, 302, 303, 307, 308):
-                print(f"DEBUG: Redirect location: {response.get('Location', 'N/A')}")
         self.assertEqual(response.status_code, 200)
         self.assertIn("chs_plugins", response.context)
         chs_plugins = list(response.context["chs_plugins"])
@@ -392,8 +399,15 @@ class JsPsychPreviewViewTestCase(TestCase):
         # Should include CHS plugin (no show_in_ui filter for preview view)
         self.assertIn(self.chs_plugin, chs_plugins)
 
-    def test_jspsych_preview_context_contains_autoload_plugins(self):
+    @patch("exp.views.study.get_jspsych_aws_values")
+    def test_jspsych_preview_context_contains_autoload_plugins(self, mock_aws):
         """Test that preview context includes autoload_plugins."""
+        mock_aws.return_value = {
+            "accessKeyId": "test-key",
+            "secretAccessKey": "test-secret",
+            "sessionToken": "test-token",
+            "expiration": "2099-12-31T23:59:59Z",
+        }
         self.client.force_login(self.user)
         response = self.client.get(
             reverse(
@@ -402,10 +416,6 @@ class JsPsychPreviewViewTestCase(TestCase):
             )
         )
 
-        if response.status_code != 200:
-            print(f"\nDEBUG: Got {response.status_code} instead of 200")
-            if response.status_code in (301, 302, 303, 307, 308):
-                print(f"DEBUG: Redirect location: {response.get('Location', 'N/A')}")
         self.assertEqual(response.status_code, 200)
         self.assertIn("autoload_plugins", response.context)
         autoload_plugins = list(response.context["autoload_plugins"])
