@@ -360,6 +360,10 @@ class JsPsychPreviewViewTestCase(TestCase):
             )
         )
 
+        if response.status_code != 200:
+            print(f"\nDEBUG: Got {response.status_code} instead of 200")
+            if response.status_code in (301, 302, 303, 307, 308):
+                print(f"DEBUG: Redirect location: {response.get('Location', 'N/A')}")
         self.assertEqual(response.status_code, 200)
         self.assertIn("jspsych_library", response.context)
         library_plugins = list(response.context["jspsych_library"])
@@ -377,6 +381,10 @@ class JsPsychPreviewViewTestCase(TestCase):
             )
         )
 
+        if response.status_code != 200:
+            print(f"\nDEBUG: Got {response.status_code} instead of 200")
+            if response.status_code in (301, 302, 303, 307, 308):
+                print(f"DEBUG: Redirect location: {response.get('Location', 'N/A')}")
         self.assertEqual(response.status_code, 200)
         self.assertIn("chs_plugins", response.context)
         chs_plugins = list(response.context["chs_plugins"])
@@ -394,6 +402,10 @@ class JsPsychPreviewViewTestCase(TestCase):
             )
         )
 
+        if response.status_code != 200:
+            print(f"\nDEBUG: Got {response.status_code} instead of 200")
+            if response.status_code in (301, 302, 303, 307, 308):
+                print(f"DEBUG: Redirect location: {response.get('Location', 'N/A')}")
         self.assertEqual(response.status_code, 200)
         self.assertIn("autoload_plugins", response.context)
         autoload_plugins = list(response.context["autoload_plugins"])
