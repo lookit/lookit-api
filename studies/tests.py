@@ -562,6 +562,34 @@ class TestAnnouncementEmailFunctionality(TestCase):
             study_child_mapping, {self.study_two: [self.child_two, self.child_three]}
         )
 
+    def test_study_excluded_from_targets_when_message_has_no_sent_timestamp(self):
+        # The triplet is a valid message target before any message exists for it.
+        self.assertIn(
+            (self.participant_two.id, self.child_three.id, self.study_one.id),
+            [
+                (mt.user_id, mt.child_id, mt.study_id)
+                for mt in potential_message_targets()
+            ],
+        )
+
+        # Simulate a crash between sending the announcement email and saving the
+        # sent timestamp: the message row exists but email_sent_timestamp is NULL.
+        # The triplet must still be excluded so that a family/child is never emailed
+        # twice about the same study.
+        message = Message.objects.create(
+            related_study=self.study_one, email_sent_timestamp=None
+        )
+        message.recipients.add(self.participant_two)
+        message.children_of_interest.add(self.child_three)
+
+        self.assertNotIn(
+            (self.participant_two.id, self.child_three.id, self.study_one.id),
+            [
+                (mt.user_id, mt.child_id, mt.study_id)
+                for mt in potential_message_targets()
+            ],
+        )
+
     def test_announcement_email_to_child_with_long_name(self):
         # Family with a child with a long name
         long_name_family = G(User, nickname="Mama", is_active=True)
