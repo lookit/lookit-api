@@ -590,6 +590,74 @@ class TestAnnouncementEmailFunctionality(TestCase):
             ],
         )
 
+    def test_message_excludes_only_its_own_triplet(self):
+        # A sent announcement must suppress ONLY its exact user/child/study
+        # triplet. If it suppressed a different child, study, or user, a family
+        # would silently never be told about a study they're eligible for.
+        def current_triplets():
+            return [
+                (mt.user_id, mt.child_id, mt.study_id)
+                for mt in potential_message_targets()
+            ]
+
+        target_same = (
+            self.participant_two.id,
+            self.child_three.id,
+            self.study_one.id,
+        )
+        target_other_study = (
+            self.participant_two.id,
+            self.child_three.id,
+            self.study_two.id,
+        )
+        target_other_child = (
+            self.participant_two.id,
+            self.child_two.id,
+            self.study_two.id,
+        )
+
+        # All three are valid targets before any message is sent...
+        before = current_triplets()
+        self.assertIn(target_same, before)
+        self.assertIn(target_other_study, before)
+        self.assertIn(target_other_child, before)
+        # ...as are participant_one's targets, used to check cross-user isolation.
+        participant_one_before = [t for t in before if t[0] == self.participant_one.id]
+        self.assertTrue(participant_one_before)
+
+        # Send an announcement for exactly one triplet.
+        message = Message.objects.create(
+            related_study=self.study_one,
+            email_sent_timestamp=datetime.now(timezone.utc),
+        )
+        message.recipients.add(self.participant_two)
+        message.children_of_interest.add(self.child_three)
+
+        after = current_triplets()
+        # The exact triplet is now excluded...
+        self.assertNotIn(target_same, after)
+        # ...but a different study for the same child is untouched,
+        self.assertIn(target_other_study, after)
+        # a different child of the same user/study is untouched,
+        self.assertIn(target_other_child, after)
+        # and no other user's targets changed.
+        self.assertEqual(
+            [t for t in after if t[0] == self.participant_one.id],
+            participant_one_before,
+        )
+
+    def test_potential_message_targets_inactive_user(self):
+        # An inactive user (e.g. one marked as spam) must never be a target.
+        user = G(User, is_active=True)
+        G(Child, user=user, birthday=date.today() - timedelta(days=365))
+
+        self.assertTrue(any(m.user_id == user.id for m in potential_message_targets()))
+
+        user.is_active = False
+        user.save()
+
+        self.assertFalse(any(m.user_id == user.id for m in potential_message_targets()))
+
     def test_announcement_email_to_child_with_long_name(self):
         # Family with a child with a long name
         long_name_family = G(User, nickname="Mama", is_active=True)
