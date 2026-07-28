@@ -8,20 +8,6 @@
     Home
 {% endblock title %}
 {% block content %}
-    <div class="alert alert-warning alert-dismissible fade show text-center"
-         role="alert">
-        {% if not request.user.is_authenticated %}
-            {% url "web:participant-signup" as url_participant_signup %}
-            {% trans "ChildrenHelpingScience and Lookit have merged - click" %}
-            <a href="{{ url_participant_signup }}" class="alert-link">{% trans "here" %}</a> {% trans "to make an account or explore studies below!" %}
-        {% else %}
-            {% trans "ChildrenHelpingScience and Lookit have merged!" %}
-        {% endif %}
-        <button type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-                aria-label="Close"></button>
-    </div>
     <div class="row justify-content-evenly text-center">
         <div class="col d-none d-lg-block">
             <img class="img-fluid"
@@ -74,19 +60,6 @@
         <img class="img-fluid pb-5"
              alt="University logos"
              src="{% static 'images/university_logo_grid.png' %}" />
-    </div>
-    <div class="clearfix px-md-5 pt-5 mb-5">
-        <a href="{% url 'web:garden-home' %}">
-            <img class="img-fluid mb-3 col-md-5 float-md-start me-md-3 img-hover p-2"
-                 alt="Garden project logo"
-                 src="{% static 'images/garden-logo-transparent.png' %}" />
-        </a>
-        <p>
-            {% trans "Interested in participating in a project with many studies? Learn more about " %}<a href="{% url 'web:garden-home' %}">{% trans "Project GARDEN" %}</a>.
-        </p>
-        <p>
-            {% trans "In this series of studies, your child will help an animated fox named Fen find the “GARDEN Library” while playing games to help Children Helping Science understand children's development from many different angles!" %}
-        </p>
     </div>
     <p class="mt-5 mb-1 mb-lg-3 text-center">{% trans "See our current studies for different age groups:" %}</p>
     {% include "web/_studies-by-age-group.html" %}
