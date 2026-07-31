@@ -21,17 +21,24 @@
     {% for field in form %}
         {% if "jspsych_plugins" in field.name %}
             {% if field.name == "jspsych_plugins_core" %}
+                <h5 class="fw-bold mb-3 fs-5 text-center w-100">jsPsych Options</h5>
+                <div>
+                    <p>Studies created with jsPsych rely on an underlying "core" package and plugins/extensions that must be loaded in order for your study to work properly. CHS always loads the core jsPsych package, along with the most commonly-used plugins/extensions.</p>
+                    <p>The expandable sections below show you (1) the core package and plugins/extensions that are always available, and (2) a list of plugins/extensions that you can choose to add, if you need them for your study. In general you want to minimize how many plugins/extensions you include, because they will increase your experiment's loading time.</p>
+                    <p>If you aren't sure yet which ones you'll need, leave these options alone for now.</p>
+                    <p>If you have a specific plugin/extension you want to use that you don't see listed below, please contact us on Slack or at support@childrenhelpingscience.org. We can probably add it for you!</p>
+                </div>
                 <hr/>
-                <h5 class="fw-bold mb-2 text-center">
+                <h6 class="fw-bold mb-2">
                     <button type="button"
-                            class="btn btn-no-effects text-dark fw-bold text-decoration-none fs-5 w-100"
+                            class="btn btn-no-effects text-dark fw-bold text-decoration-none ps-0"
                             data-bs-toggle="collapse"
                             data-bs-target="#auto-loaded-files"
                             aria-expanded="false"
                             aria-controls="auto-loaded-files">
-                        See Automatically-Loaded Files <span class="collapse-icon">▾</span>
+                        1. See Automatically-Loaded Plugins/Extensions <span class="collapse-icon">▾</span>
                     </button>
-                </h5>
+                </h6>
                 <div class="collapse" id="auto-loaded-files">
                     <div class="my-3 form-text">
                         Your study automatically has access to the core jsPsych library and CHS-jsPsych packages listed below.
@@ -84,16 +91,16 @@
                     </div>
                 </div>
                 <hr/>
-                <h5 class="fw-bold mb-2 text-center">
+                <h6 class="fw-bold mb-2">
                     <button type="button"
-                            class="btn btn-no-effects text-dark fw-bold text-decoration-none fs-5 w-100"
+                            class="btn btn-no-effects text-dark fw-bold text-decoration-none ps-0"
                             data-bs-toggle="collapse"
                             data-bs-target="#plugins-extensions"
                             aria-expanded="false"
                             aria-controls="plugins-extensions">
-                        Select More Plugins and Extensions <span class="collapse-icon">▾</span>
+                        2. Select Optional Plugins/Extensions <span class="collapse-icon">▾</span>
                     </button>
-                </h5>
+                </h6>
                 <div class="collapse" id="plugins-extensions">
             {% endif %}
             {% if field.help_text %}
