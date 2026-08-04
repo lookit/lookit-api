@@ -664,7 +664,7 @@ let labListItem;
 let labLink;
 
 // Add attributes to CHS link
-chsLink.href = "https://childrenhelpingscience.com/";
+chsLink.href = "https://childrenhelpingscience.org/";
 chsLink.target = "_blank";
 chsLink.innerHTML = "Children Helping Science"
 
