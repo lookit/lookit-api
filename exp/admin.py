@@ -4,6 +4,7 @@ from guardian.admin import GuardedModelAdmin
 from studies.models import (
     ConsentRuling,
     Feedback,
+    JSPsychPlugin,
     Lab,
     Response,
     Study,
@@ -100,6 +101,13 @@ class VideoAdmin(GuardedModelAdmin):
     raw_id_fields = ("response", "study")
     date_hierarchy = "created_at"
     search_fields = ["uuid", "full_name"]
+
+
+@admin.register(JSPsychPlugin)
+class JSPsychPluginAdmin(GuardedModelAdmin):
+    list_display = ("name", "category", "url", "integrity")
+    list_filter = ("category",)
+    search_fields = ["name", "url"]
 
 
 @admin.register(ConsentRuling)
