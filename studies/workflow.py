@@ -50,6 +50,7 @@ transitions = [
         "trigger": "submit",
         "source": "created",
         "dest": "submitted",
+        "before": "check_efp_runner_version",
         "after": "notify_administrators_of_submission",
     },
     {
@@ -94,13 +95,18 @@ transitions = [
         "trigger": "resubmit",
         "source": ["rejected", "retracted"],
         "dest": "submitted",
+        "before": "check_efp_runner_version",
         "after": "notify_administrators_of_submission",
     },
     {
         "trigger": "activate",
         "source": ["approved", "paused"],
         "dest": "active",
-        "before": ["check_if_built", "check_if_at_max_responses"],
+        "before": [
+            "check_if_built",
+            "check_if_at_max_responses",
+            "check_efp_runner_version",
+        ],
         "after": ["notify_administrators_of_activation"],
     },
     {

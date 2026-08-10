@@ -30,6 +30,7 @@ from studies import workflow
 from studies.helpers import (
     FrameActionDispatcher,
     ResponseEligibility,
+    efp_runner_version_error,
     get_absolute_url,
     get_eligibility_for_response,
     send_mail,
@@ -895,6 +896,42 @@ class Study(models.Model):
         if self.has_reached_max_responses:
             raise RuntimeError(
                 f'Cannot activate the study "{self.name}" ({self.id}) because it has reached its maximum number of responses. Be sure to handle all pending consents and review existing responses, as this may open up slots. Then increase the response limit in the Study Ad if necessary, and try starting the study again.'
+            )
+
+    def check_efp_runner_version(self, ev):
+        """Check that this study isn't pinned to a deprecated experiment runner version.
+
+        This is only called in by state transitions in workflow.py, so it takes an event object,
+        which is the triggering event (state change).
+
+        Only applies to Ember Frame Player studies using the default runner repo;
+        everything else transitions freely.
+
+        :param ev: The event object
+        :type ev: transitions.core.EventData
+        :raise: RuntimeError
+        """
+        if not self.study_type.is_ember_frame_player:
+            return
+
+        metadata = self.metadata or {}
+
+        # URL falls back to the default repo when player_repo_url is missing, which is probably only
+        # the case for a study that has never been saved through the EFP design form.
+        # Use "or" rather than metadata.get() with a default, since the default only applies
+        # when the key is absent. We want the default when the URL key is present but has a value of None.
+        # (Otherwise the value would stay None, and is_default_player_repo(None) is False, and the study gets
+        # silently exempted from the check as if it were on a custom fork.)
+        player_repo_url = (
+            metadata.get("player_repo_url") or settings.EMBER_EXP_PLAYER_REPO
+        )
+
+        error = efp_runner_version_error(
+            player_repo_url, metadata.get("last_known_player_sha")
+        )
+        if error:
+            raise RuntimeError(
+                f'Cannot {ev.event.name} the study "{self.name}" ({self.id}): {error}'
             )
 
     def notify_administrators_of_activation(self, ev):
