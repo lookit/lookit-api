@@ -12,6 +12,7 @@ from PIL import Image
 
 from accounts.queries import compile_expression
 from project import settings
+from studies import helpers
 from studies.models import Lab, Response, Study
 from studies.permissions import LabPermission, StudyPermission
 
@@ -493,6 +494,8 @@ class EFPForm(ModelForm):
 
     class Meta:
         model = Study
+        # player_repo_url must come before player SHA in this list because it determines
+        # the validation order (clean_<field>), and we must validate URL before SHA.
         fields = (
             "use_generator",
             "structure",
@@ -539,9 +542,9 @@ class EFPForm(ModelForm):
         )
 
         try:
-            if not requests.get(player_repo_url).ok:
+            if not requests.get(player_repo_url, timeout=helpers.GITHUB_API_TIMEOUT).ok:
                 raise validation_error
-        except requests.exceptions.ConnectionError:
+        except requests.exceptions.RequestException:
             raise validation_error
 
         return player_repo_url
@@ -550,8 +553,31 @@ class EFPForm(ModelForm):
         last_known_player_sha = self.cleaned_data.get("last_known_player_sha")
         player_repo_url = self.cleaned_data.get("player_repo_url")
 
-        if last_known_player_sha and player_repo_url:
-            if not requests.get(f"{player_repo_url}/commit/{last_known_player_sha}").ok:
+        # player_repo_url is cleaned first, so if it raises an error then it will be None here,
+        # and we should not validate the SHA (otherwise it will throw a second, misleading error)
+        if not (last_known_player_sha and player_repo_url):
+            return last_known_player_sha
+
+        if helpers.is_default_player_repo(player_repo_url):
+            # One API call covers both "does this commit exist" and "is it too old".
+            error = helpers.efp_runner_version_error(
+                player_repo_url, last_known_player_sha
+            )
+            if error:
+                raise forms.ValidationError(error)
+        else:
+            # Custom repo: check the commit exists, but don't apply the version date cutoff.
+            # These may not even be hosted on GitHub, so we can't use the API.
+            try:
+                response = requests.get(
+                    f"{player_repo_url}/commit/{last_known_player_sha}",
+                    timeout=helpers.GITHUB_API_TIMEOUT,
+                )
+            except requests.exceptions.RequestException:
+                raise forms.ValidationError(
+                    f"Could not check whether frameplayer commit {last_known_player_sha} exists."
+                )
+            if not response.ok:
                 raise forms.ValidationError(
                     f"Frameplayer commit {last_known_player_sha} does not exist."
                 )
