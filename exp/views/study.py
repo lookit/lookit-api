@@ -840,6 +840,17 @@ class StudyBuildView(
 
     def post(self, request, *args, **kwargs):
         study = self.object
+
+        # Check the EFP version here rather than in user_can_build_study
+        # (a False there will go through handle_no_permission(), which is the wrong
+        # response to "your runner version is too old"). Blocking here also keeps the
+        # deprecated version out of the build task itself, which retries on failure
+        # and would burn all 10 attempts on something no retry can fix.
+        error = study.get_efp_runner_version_error()
+        if error:
+            messages.error(request, error)
+            return HttpResponseRedirect(self.get_redirect_url())
+
         study.is_building = True
         study.save(update_fields=["is_building"])
         ember_build_and_gcp_deploy.delay(study.uuid, self.request.user.uuid)
