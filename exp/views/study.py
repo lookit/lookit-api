@@ -38,6 +38,8 @@ from studies.forms import (
     StudyEditForm,
 )
 from studies.helpers import (
+    EFP_MINIMUM_COMMIT_DATE,
+    EFP_MINIMUM_COMMIT_DATE_DISPLAY,
     get_absolute_url,
     get_experiment_absolute_url,
     send_mail,
@@ -1223,6 +1225,14 @@ class EFPEditView(ExperimentRunnerEditView):
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["branch"] = settings.EMBER_EXP_PLAYER_BRANCH
+        # Pass info into the view for EFP version date validation.
+        # The client-side version deprecation is just a warning to save the researcher a
+        # round trip to the server. EFPForm validation is what actually enforces the cutoff.
+        # The repo is passed along because the cutoff only applies to the default repo, and
+        # the researcher set the URL form field to a fork without reloading the page.
+        context["default_repo"] = settings.EMBER_EXP_PLAYER_REPO
+        context["min_commit_date"] = EFP_MINIMUM_COMMIT_DATE.isoformat()
+        context["min_commit_date_display"] = EFP_MINIMUM_COMMIT_DATE_DISPLAY
         return context
 
 

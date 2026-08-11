@@ -27,6 +27,12 @@ logger = logging.getLogger(__name__)
 # and comparing those against a naive one raises TypeError.
 EFP_MINIMUM_COMMIT_DATE = datetime(2024, 1, 30, tzinfo=timezone.utc)
 
+# Formatted here rather than at each use so that the error messages and the warning on
+# the study design page always have the same display date.
+# (Not formatted with Django's date filter because that converts to settings.TIME_ZONE,
+# which would shift a UTC midnight cutoff back a day.)
+EFP_MINIMUM_COMMIT_DATE_DISPLAY = f"{EFP_MINIMUM_COMMIT_DATE:%B %-d, %Y}"
+
 GITHUB_API_TIMEOUT = 10  # seconds
 
 EFP_VERSION_UNVERIFIABLE = (
@@ -204,7 +210,7 @@ def efp_runner_version_error(player_repo_url, last_known_player_sha):
         return (
             f"Your experiment runner version {last_known_player_sha[:7]} is from "
             f"{commit_datetime:%B %-d, %Y} and is no longer supported. Versions from "
-            f"before {EFP_MINIMUM_COMMIT_DATE:%B %-d, %Y} use a 3rd party package that "
+            f"before {EFP_MINIMUM_COMMIT_DATE_DISPLAY} use a 3rd party package that "
             f"has been deprecated. The easiest way to update is to clear the experiment "
             f"runner version field on the study design page and then save - we'll fill "
             f"in the latest version for you. You can also select a specific version "
