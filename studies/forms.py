@@ -451,8 +451,11 @@ class EFPForm(ModelForm):
     )
     last_known_player_sha = forms.CharField(
         label="Experiment runner version (commit SHA)",
+        required=False,
         help_text=(
-            "If you're using the default Ember Frame Player, you can see <a "
+            "Leave this blank to use the latest version, which will be filled in "
+            "for you when you save. If you're using the default Ember Frame Player, "
+            "you can see <a "
             f'href="{settings.EMBER_EXP_PLAYER_REPO}/commits/{settings.EMBER_EXP_PLAYER_BRANCH}" target="_blank" rel="noopener noreferrer">'
             "the commits page</a> for other commit SHA options."
         ),
@@ -555,8 +558,20 @@ class EFPForm(ModelForm):
 
         # player_repo_url is cleaned first, so if it raises an error then it will be None here,
         # and we should not validate the SHA (otherwise it will throw a second, misleading error)
-        if not (last_known_player_sha and player_repo_url):
+        if not player_repo_url:
             return last_known_player_sha
+
+        if not last_known_player_sha:
+            # Blank means "use the latest version". Resolve it now and store the
+            # most recent commit (study will be pinned to that version going forward).
+            # Whatever HEAD is will be newer than the date cutoff, so no need to
+            # run the date check via efp_runner_version_error.
+            sha, error = helpers.get_branch_head_sha(
+                player_repo_url, settings.EMBER_EXP_PLAYER_BRANCH
+            )
+            if error:
+                raise forms.ValidationError(error)
+            return sha
 
         if helpers.is_default_player_repo(player_repo_url):
             # One API call covers both "does this commit exist" and "is it too old".

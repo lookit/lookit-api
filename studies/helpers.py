@@ -35,6 +35,19 @@ EFP_VERSION_UNVERIFIABLE = (
     "this keeps happening, contact us on Slack or at support@childrenhelpingscience.org."
 )
 
+EFP_LATEST_VERSION_UNRESOLVABLE = (
+    "There was a problem looking up the latest experiment runner version on GitHub "
+    "just now. Please enter a commit SHA, or leave this blank and try again in a few "
+    "minutes. If this keeps happening, contact us on Slack or at "
+    "support@childrenhelpingscience.org."
+)
+
+# Retrying won't help here, so this deliberately doesn't suggest it.
+EFP_LATEST_VERSION_NOT_ON_GITHUB = (
+    "We can only look up the latest version automatically for experiment runner "
+    "repos hosted on GitHub. Please enter a commit SHA for this repo."
+)
+
 
 def get_absolute_url(path=""):
     return urljoin(settings.BASE_URL, path)
@@ -125,6 +138,45 @@ def get_commit_datetime(player_repo_url, sha):
     except (ValueError, KeyError, TypeError, requests.exceptions.JSONDecodeError):
         logger.warning(f"Unexpected GitHub response when checking commit {sha}.")
         return None, EFP_VERSION_UNVERIFIABLE
+
+
+def get_branch_head_sha(player_repo_url, branch):
+    """Look up the commit a branch currently points at, via the GitHub API.
+
+    Returns (sha, None) on success, or (None, error_message) on failure, matching
+    get_commit_datetime's contract.
+
+    Only works for repos hosted on GitHub. A custom repo hosted elsewhere has to
+    pin its version explicitly, since there's no portable way to ask a git host
+    what a branch points at over HTTP.
+    """
+    repo_path = get_repo_path(player_repo_url)
+    if repo_path is None:
+        return None, EFP_LATEST_VERSION_NOT_ON_GITHUB
+
+    api_url = f"https://api.github.com/repos/{repo_path}/git/refs/heads/{branch}"
+
+    try:
+        response = requests.get(
+            api_url,
+            timeout=GITHUB_API_TIMEOUT,
+            headers={"Accept": "application/vnd.github+json"},
+        )
+    except requests.exceptions.RequestException:
+        logger.warning(f"Could not reach GitHub to resolve branch {branch}.")
+        return None, EFP_LATEST_VERSION_UNRESOLVABLE
+
+    if not response.ok:
+        logger.warning(
+            f"GitHub returned {response.status_code} when resolving branch {branch}."
+        )
+        return None, EFP_LATEST_VERSION_UNRESOLVABLE
+
+    try:
+        return response.json()["object"]["sha"], None
+    except (KeyError, TypeError, requests.exceptions.JSONDecodeError):
+        logger.warning(f"Unexpected GitHub response when resolving branch {branch}.")
+        return None, EFP_LATEST_VERSION_UNRESOLVABLE
 
 
 def efp_runner_version_error(player_repo_url, last_known_player_sha):
