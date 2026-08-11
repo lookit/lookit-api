@@ -898,21 +898,20 @@ class Study(models.Model):
                 f'Cannot activate the study "{self.name}" ({self.id}) because it has reached its maximum number of responses. Be sure to handle all pending consents and review existing responses, as this may open up slots. Then increase the response limit in the Study Ad if necessary, and try starting the study again.'
             )
 
-    def check_efp_runner_version(self, ev):
-        """Check that this study isn't pinned to a deprecated experiment runner version.
+    def get_efp_runner_version_error(self):
+        """Check whether this study's pinned experiment runner version is still usable.
 
-        This is only called in by state transitions in workflow.py, so it takes an event object,
-        which is the triggering event (state change).
+        Returns the researcher-facing EFP version message if it's a old Pipe version,
+        or None if the version is recent enough (newer than the cutoff date).
+        This only applies to Ember Frame Player studies using the default runner
+        repo; everything else is exempt and always returns None.
 
-        Only applies to Ember Frame Player studies using the default runner repo;
-        everything else transitions freely.
-
-        :param ev: The event object
-        :type ev: transitions.core.EventData
-        :raise: RuntimeError
+        Callers decide how to surface the message (a RuntimeError that aborts a state
+        transition, a messages.error that blocks a build), which is why this returns a
+        string rather than raising.
         """
         if not self.study_type.is_ember_frame_player:
-            return
+            return None
 
         metadata = self.metadata or {}
 
@@ -926,9 +925,23 @@ class Study(models.Model):
             metadata.get("player_repo_url") or settings.EMBER_EXP_PLAYER_REPO
         )
 
-        error = efp_runner_version_error(
+        return efp_runner_version_error(
             player_repo_url, metadata.get("last_known_player_sha")
         )
+
+    def check_efp_runner_version(self, ev):
+        """Refuse to change state if the experiment runner version is deprecated.
+
+        This is a wrapper for get_efp_runner_version_error. It is only called by
+        state transitions in workflow.py, so it takes an event object, which is
+        the triggering event (state change). If the version is too old, it raises
+        an error, which stops the state change, and provides the user-facing message.
+
+        :param ev: The event object
+        :type ev: transitions.core.EventData
+        :raise: RuntimeError
+        """
+        error = self.get_efp_runner_version_error()
         if error:
             raise RuntimeError(
                 f'Cannot {ev.event.name} the study "{self.name}" ({self.id}): {error}'
