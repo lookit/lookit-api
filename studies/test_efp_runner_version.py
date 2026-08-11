@@ -411,7 +411,11 @@ class StudyEFPRunnerVersionTestCase(TestCase):
         with self.assertRaises(RuntimeError) as ctx:
             getattr(study, trigger)()
 
-        self.assertIn("version too old", str(ctx.exception))
+        # Indirect test for check_efp_runner_version workflow callback
+        self.assertEqual(
+            str(ctx.exception),
+            f'Cannot {trigger} the study "{study.name}" ({study.id}): version too old',
+        )
         study.refresh_from_db()
         self.assertEqual(study.state, state, "State changed despite the check failing")
 
