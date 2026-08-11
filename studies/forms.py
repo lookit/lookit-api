@@ -452,6 +452,9 @@ class EFPForm(ModelForm):
     last_known_player_sha = forms.CharField(
         label="Experiment runner version (commit SHA)",
         required=False,
+        widget=forms.TextInput(
+            attrs={"placeholder": "Leave blank to use the latest version"}
+        ),
         help_text=(
             "Leave this blank to use the latest version, which will be filled in "
             "for you when you save. If you're using the default Ember Frame Player, "
