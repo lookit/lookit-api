@@ -152,10 +152,12 @@ def efp_runner_version_error(player_repo_url, last_known_player_sha):
         return (
             f"Experiment runner version {last_known_player_sha[:7]} is from "
             f"{commit_datetime:%B %-d, %Y} and is no longer supported. Versions from "
-            f"before {EFP_MINIMUM_COMMIT_DATE:%B %-d, %Y} can't be used. Please update "
-            f"to a newer commit from {settings.EMBER_EXP_PLAYER_REPO}/commits/"
-            f"{settings.EMBER_EXP_PLAYER_BRANCH} (ideally the most recent one!), "
-            f"then save and rebuild your experiment runner."
+            f"before {EFP_MINIMUM_COMMIT_DATE:%B %-d, %Y} can't be used. The easiest "
+            "way to update is to clear the experiment runner version field on the "
+            "study design page and save - we'll fill in the latest version for you. "
+            "You can also pick a specific commit from "
+            f"{settings.EMBER_EXP_PLAYER_REPO}/commits/{settings.EMBER_EXP_PLAYER_BRANCH}). "
+            "Either way, rebuild your experiment runner afterwards."
         )
 
     return None
