@@ -202,14 +202,15 @@ def efp_runner_version_error(player_repo_url, last_known_player_sha):
 
     if commit_datetime < EFP_MINIMUM_COMMIT_DATE:
         return (
-            f"Experiment runner version {last_known_player_sha[:7]} is from "
+            f"Your experiment runner version {last_known_player_sha[:7]} is from "
             f"{commit_datetime:%B %-d, %Y} and is no longer supported. Versions from "
-            f"before {EFP_MINIMUM_COMMIT_DATE:%B %-d, %Y} can't be used. The easiest "
-            "way to update is to clear the experiment runner version field on the "
-            "study design page and save - we'll fill in the latest version for you. "
-            "You can also pick a specific commit from "
-            f"{settings.EMBER_EXP_PLAYER_REPO}/commits/{settings.EMBER_EXP_PLAYER_BRANCH}). "
-            "Either way, rebuild your experiment runner afterwards."
+            f"before {EFP_MINIMUM_COMMIT_DATE:%B %-d, %Y} use a 3rd party package that "
+            f"has been deprecated. The easiest way to update is to clear the experiment "
+            f"runner version field on the study design page and then save - we'll fill "
+            f"in the latest version for you. You can also select a specific version "
+            f"by clicking the 'Check for updates' button or from "
+            f"{settings.EMBER_EXP_PLAYER_REPO}/commits/{settings.EMBER_EXP_PLAYER_BRANCH}. "
+            "You will need to rebuild the experiment runner after updating and saving."
         )
 
     return None
