@@ -121,6 +121,42 @@ class RunnerDetailsViewsTestCase(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(Study.objects.get(id=study.id).metadata, metadata)
 
+    def test_efp_design_page_hands_the_cutoff_to_the_javascript(self):
+        """efp-runner.js warns about old versions, but only the server knows the cutoff.
+
+        The attribute names are the contract between the template and the script, so
+        renaming one without the other silently drops the warning.
+        """
+        user = G(User, is_active=True, is_researcher=True)
+        study = G(
+            Study,
+            creator=user,
+            lab=G(Lab),
+            study_type=StudyType.get_ember_frame_player(),
+        )
+
+        assign_perm(StudyPermission.WRITE_STUDY_DETAILS.codename, user, study)
+        assign_perm(StudyPermission.READ_STUDY_DETAILS.codename, user, study)
+
+        self.client.force_login(user)
+        response = self.client.get(
+            reverse(self.efp_study_details, kwargs={"pk": study.id})
+        )
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertContains(
+            response, f'data-min-commit-date="{EFP_MINIMUM_COMMIT_DATE.isoformat()}"'
+        )
+        self.assertContains(
+            response, f'data-default-repo="{settings.EMBER_EXP_PLAYER_REPO}"'
+        )
+        # Hidden on load: the script only unhides it once GitHub says the pinned
+        # commit really is too old.
+        self.assertContains(
+            response,
+            '<div id="version-deprecated-warning" class="alert alert-warning d-none"',
+        )
+
     def test_study_details_redirect_efp(self):
         user = G(User, is_active=True, is_researcher=True)
         lab = G(Lab)
