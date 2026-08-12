@@ -31,83 +31,51 @@
             }
         </style>
         <!-- External style sheets -->
-        <link rel="stylesheet"
-            href="https://unpkg.com/jspsych@8.0.3/css/jspsych.css"
-            integrity="sha384-JNNpz6XWsC9uPPHlCuf9rr6LrSD2uYvbkApP5kAp6g/lFBue51K1kMzxGawS50nK"
-            crossorigin="anonymous">
-        <link rel="stylesheet"
-            href="https://unpkg.com/@lookit/style@0.4.0"
-            integrity="sha384-e+HIPVgafegNi8YhAiKPvYDv1K+hihQ2g4qd/ZYHPtTBJyfTEDcfDLYyfDdk1lI/"
-            crossorigin="anonymous">
+        {% for plugin in jspsych_library %}
+            {% if plugin.file_type == "css" %}
+                <link rel="stylesheet" href="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous">
+            {% endif %}
+        {% endfor %}
+        <!-- Auto-loaded plugins style sheets -->
+        {% for plugin in autoload_plugins %}
+            {% if plugin.file_type == "css" %}
+                <link rel="stylesheet" href="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous">
+            {% endif %}
+        {% endfor %}
+        <!-- CHS jsPsych style sheets (load last to take precedence) -->
+        {% for plugin in chs_plugins %}
+            {% if plugin.file_type == "css" %}
+                <link rel="stylesheet" href="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous">
+            {% endif %}
+        {% endfor %}
     </head>
     <body>
         <!-- Loader: visible immediately -->
         <div id="chs-loader-container">
             <div class="loader"></div>
         </div>
-        <!-- External JS -->
-        <script src="https://unpkg.com/jspsych@8.0.3"
-                integrity="sha384-YlD0H7IvUJqPzueP9WYLT0zKLtEnoNlbxZ5Kd4jg+3orRU5jXGk4ozBUMLqQ+SQ1"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@2.0.0"
-                integrity="sha384-3rxt+0Ug6ruPv/HON9dlEFlhrBHhqZeHQizgSO59PsPIu0OGscC8sMgifOe7/uJG"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@2.0.0"
-                integrity="sha384-BqelFj5L0Q3ifJf9rlngrTf8zZgfZhmaGwODK7vjHchtxS/Um3LVYj58qymHDn1i"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-video-keyboard-response@2.1.0"
-                integrity="sha384-a/hZpVf76Sh4k+Do3dVTBltuX/XuRfZnokDUg7Qsw5J+pMy00lzyMX5EovruBI3M"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-html-button-response@2.0.0"
-                integrity="sha384-YkXp8JHPul+fAB8ACoBIXD4fMzweAXqwajNbmkFxKo0z4CEZJssZ5EWqMCefJs8J"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-image-button-response@2.0.0"
-                integrity="sha384-akngF9Va8sW0TdFvi4EsfM6SGOE94o2XZ+n99/QKYbVhdUEvX1h/OJdfa8yRoEPX"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-video-button-response@2.0.0"
-                integrity="sha384-u1N4HtXTAx8IPaZxRLKurCoPhFnSQ+TrF+33Lr1ORBhnRogBnU8Fd7tbPkFh1uUj"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych-contrib/plugin-image-hotspots@1.1.0"
-                integrity="sha384-7AhLUtRbC1B+Xy/IvMrbPwOq6HljuZNa73fxtKSPix5U/fRpljnK/hkcJGtKsTRJ"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych-contrib/plugin-video-hotspots@1.1.0"
-                integrity="sha384-us3mQaYVUiroiiS/C+w4pJnlRl7E65KWAPC/zqIXWJxpHQhXfn06a2C+fxhkVLbd"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-preload@2.0.0"
-                integrity="sha384-veBuhHbf5WLQIFlG9N6a+5E/kRYJcBTDKkqJRTkc7wuGwptljsBa2fYuTseMkOBI"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-survey-text@2.1.0"
-                integrity="sha384-wSdh5i8tkmhhMiddYPH0Sc0HNw6wDfVWT80sTyRdjs62ctEKZHPLDdF2WXj2sPa/"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-survey-multi-choice@2.1.0"
-                integrity="sha384-NDx/PP6brJOK2yI3xA9yYbsgRe6I7BUZ3jcBD9aiVRWNYiei88wLmzsMEdWGJXOr"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-survey-likert@2.2.0"
-                integrity="sha384-88dibDOm9kxaXAwTWWQWZa1+0RBPA6WNU0lrWYLfeMEIQgovura7DxPG9kPXrBRc"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych/plugin-fullscreen@2.1.0" 
-                integrity="sha384-JQEV9wMXFDbTpp1eYJSU9G7uQeyZcLGabno5ZHQJGytUBG19mTZ+ZBV5dsm7m6Mf"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@jspsych-contrib/plugin-tangram-game"
-                integrity="sha384-baK1nai9zI/Ela9b8M1rPHE2echlvpfCWpE8f1FALUSteEUwYRA77m3nGKaV/IyZ"
-                crossorigin="anonymous"></script>
-        {% comment %} Data and templates packages are peer dependencies and should be listed first. {% endcomment %}
-        <script src="https://unpkg.com/@lookit/data@0.3.0"
-                integrity="sha384-kpjDWFQo7CQk9i6Bq58NNCC8i5mFCMAbapMhF3xxLmEc2vD6wHqMc/aI0w1u/fTh"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@lookit/templates@3.2.0"
-                integrity="sha384-VOuebjugj2OrWh+NLn28VpM+bfSQNGw8HvEInoQgY9Fco2bchzUHXk9MAxCBMVW/"
-                crossorigin="anonymous"></script>
-        {% comment %} End peer dependencies. {% endcomment %}
-        <script src="https://unpkg.com/@lookit/lookit-initjspsych@3.2.0"
-                integrity="sha384-e7tzYepJWL+2m2J5oXfaCtcgEXE0FmZngMY1mCsqdi+pAN3ouqkqnrmxmFb+KE5z"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@lookit/record@7.0.0"
-                integrity="sha384-J6UlRs78jVMqxRk7qup5sX7lSaJnmmPGeiJ0Zi4KYPKlEG0Vx72iooB7N5eFbKgG"
-                crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/@lookit/surveys@7.0.0"
-                integrity="sha384-swscT+LLjYy4Od2kzdxf1NgDEx8+fjOa0p04Vor3XNpvhn2bWUN7/zpO9qE+DCLI"
-                crossorigin="anonymous"></script>
+        <!-- External JS: core library -->
+        {% for plugin in jspsych_library %}
+            {% if plugin.file_type == "js" %}
+                <script src="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous"></script>
+            {% endif %}
+        {% endfor %}
+        <!-- Auto-loaded plugins JS -->
+        {% for plugin in autoload_plugins %}
+            {% if plugin.file_type == "js" %}
+                <script src="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous"></script>
+            {% endif %}
+        {% endfor %}
+        <!-- External JS: study-specific plugins/extensions -->
+        {% for plugin in study.jspsych_plugins.all %}
+            <script src="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous"></script>
+        {% endfor %}
+        <!-- CHS jsPsych JS: CHS-specific plugins/extensions, load order set by JSPsychPlugin order field -->
+        {% for plugin in chs_plugins %}
+            {% if plugin.file_type == "js" %}
+                <script src="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous"></script>
+            {% endif %}
+        {% endfor %}
         <!-- Once everything has loaded, run experiment and remove loader div -->
         <script type="module">
             try {

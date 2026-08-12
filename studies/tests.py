@@ -25,6 +25,7 @@ from studies.helpers import (
 from studies.models import (
     REJECTED,
     ConsentRuling,
+    JSPsychPlugin,
     Lab,
     Response,
     Study,
@@ -3086,3 +3087,395 @@ class LabGetResponseStatsTestCase(TestCase):
         stats = self.lab.get_response_stats()
         self.assertEqual(stats["total_all_time"], 0)
         self.assertEqual(stats["total_last_year"], 0)
+
+
+class JSPsychPluginModelTestCase(TestCase):
+    def test_version_extraction_from_url(self):
+        """Test that version property correctly extracts version from package URL."""
+        plugin = G(
+            JSPsychPlugin,
+            name="Test Plugin",
+            url="https://unpkg.com/@jspsych/plugin-test@2.1.0",
+            category="jspsych",
+        )
+        self.assertEqual(plugin.version, "2.1.0")
+
+    def test_version_extraction_with_patch_and_prerelease(self):
+        """Test version extraction with complex version strings."""
+        plugin = G(
+            JSPsychPlugin,
+            name="Test Plugin",
+            url="https://unpkg.com/@jspsych-contrib/plugin-test@1.2.3-beta.1",
+            category="jspsych-contrib",
+        )
+        self.assertEqual(plugin.version, "1.2.3-beta.1")
+
+    def test_version_empty_when_not_in_url(self):
+        """Test that version returns empty string if not found in URL."""
+        plugin = G(
+            JSPsychPlugin,
+            name="Test Plugin",
+            url="https://unpkg.com/@jspsych/plugin-test",
+            category="jspsych",
+        )
+        self.assertEqual(plugin.version, "")
+
+    def test_label_html_with_version_only(self):
+        """Test label_html includes version when present but no docs_url."""
+        plugin = G(
+            JSPsychPlugin,
+            name="Test Plugin",
+            url="https://unpkg.com/@jspsych/plugin-test@1.0.0",
+            category="jspsych",
+            docs_url="",
+        )
+        label = plugin.label_html
+        self.assertIn("Test Plugin", str(label))
+        self.assertIn("v1.0.0", str(label))
+        self.assertIn("text-muted", str(label))
+
+    def test_label_html_with_docs_url_only(self):
+        """Test label_html includes docs link when present but no version."""
+        plugin = G(
+            JSPsychPlugin,
+            name="Test Plugin",
+            url="https://unpkg.com/@jspsych/plugin-test",
+            category="jspsych",
+            docs_url="https://example.com/docs",
+        )
+        label = plugin.label_html
+        self.assertIn("Test Plugin", str(label))
+        self.assertIn("https://example.com/docs", str(label))
+        self.assertIn("docs", str(label))
+        self.assertIn("text-muted", str(label))
+
+    def test_label_html_with_version_and_docs(self):
+        """Test label_html includes both version and docs link."""
+        plugin = G(
+            JSPsychPlugin,
+            name="Test Plugin",
+            url="https://unpkg.com/@jspsych/plugin-test@2.0.0",
+            category="jspsych",
+            docs_url="https://example.com/docs",
+        )
+        label = plugin.label_html
+        self.assertIn("Test Plugin", str(label))
+        self.assertIn("v2.0.0", str(label))
+        self.assertIn("https://example.com/docs", str(label))
+        self.assertIn("docs", str(label))
+
+    def test_label_html_without_version_or_docs(self):
+        """Test label_html is just the name when no version or pre-existing docs."""
+        # Create a plugin with a URL that doesn't match any docs URL patterns
+        # and explicitly set docs_url to empty after save
+        plugin = JSPsychPlugin(
+            name="Test Plugin",
+            url="https://unpkg.com/test-package",
+            integrity="sha384-test",
+            category="jspsych-library",  # jspsych-library category returns empty docs_url
+        )
+        plugin.save()
+        # jspsych-library returns empty from _get_default_docs_url()
+        plugin.docs_url = ""
+        plugin.save()
+
+        label = str(plugin.label_html)
+        self.assertEqual(label, "Test Plugin")
+
+    def test_get_default_docs_url_jspsych_plugin(self):
+        """Test docs URL generation for jspsych category."""
+        plugin = G(
+            JSPsychPlugin,
+            name="Fullscreen",
+            url="https://unpkg.com/@jspsych/plugin-fullscreen@1.0.0",
+            category="jspsych",
+        )
+        docs_url = plugin._get_default_docs_url()
+        self.assertEqual(docs_url, "https://www.jspsych.org/latest/plugins/fullscreen/")
+
+    def test_get_default_docs_url_jspsych_extension(self):
+        """Test docs URL generation for jspsych extension."""
+        plugin = G(
+            JSPsychPlugin,
+            name="TestExt",
+            url="https://unpkg.com/@jspsych/extension-test@1.0.0",
+            category="jspsych",
+        )
+        docs_url = plugin._get_default_docs_url()
+        self.assertEqual(docs_url, "https://www.jspsych.org/latest/extensions/test/")
+
+    def test_get_default_docs_url_jspsych_contrib(self):
+        """Test docs URL generation for jspsych-contrib category."""
+        plugin = G(
+            JSPsychPlugin,
+            name="ImageHotspots",
+            url="https://unpkg.com/@jspsych-contrib/plugin-image-hotspots@1.1.0",
+            category="jspsych-contrib",
+        )
+        docs_url = plugin._get_default_docs_url()
+        self.assertEqual(
+            docs_url,
+            "https://github.com/jspsych/jspsych-contrib/tree/main/packages/plugin-image-hotspots/",
+        )
+
+    def test_get_default_docs_url_jspsych_contrib_extension(self):
+        """Test docs URL generation for jspsych-contrib extension."""
+        plugin = G(
+            JSPsychPlugin,
+            name="TestExt",
+            url="https://unpkg.com/@jspsych-contrib/extension-test@1.0.0",
+            category="jspsych-contrib",
+        )
+        docs_url = plugin._get_default_docs_url()
+        self.assertEqual(
+            docs_url,
+            "https://github.com/jspsych/jspsych-contrib/tree/main/packages/extension-test/",
+        )
+
+    def test_get_default_docs_url_chs_jspsych(self):
+        """Test docs URL generation for chs-jspsych category."""
+        plugin = G(
+            JSPsychPlugin,
+            name="CHS Templates",
+            url="https://unpkg.com/@lookit/templates@3.2.0",
+            category="chs-jspsych",
+        )
+        docs_url = plugin._get_default_docs_url()
+        self.assertEqual(
+            docs_url,
+            "https://lookit.readthedocs.io/projects/chs-jspsych/en/latest/templates/",
+        )
+
+    def test_get_default_docs_url_jspsych_library(self):
+        """Test docs URL for jspsych-library category returns empty."""
+        plugin = G(
+            JSPsychPlugin,
+            name="jsPsych CSS",
+            url="https://unpkg.com/jspsych@8.0.3/css/jspsych.css",
+            category="jspsych-library",
+        )
+        docs_url = plugin._get_default_docs_url()
+        self.assertEqual(docs_url, "")
+
+    def test_save_auto_populates_docs_url_on_creation(self):
+        """Test that save() auto-populates docs_url on first save."""
+        plugin = JSPsychPlugin(
+            name="Fullscreen",
+            url="https://unpkg.com/@jspsych/plugin-fullscreen@1.0.0",
+            integrity="sha384-test",
+            category="jspsych",
+        )
+        self.assertEqual(plugin.docs_url, "")
+        plugin.save()
+        self.assertEqual(
+            plugin.docs_url, "https://www.jspsych.org/latest/plugins/fullscreen/"
+        )
+
+    def test_save_does_not_overwrite_existing_docs_url(self):
+        """Test that save() doesn't overwrite docs_url if already set."""
+        custom_url = "https://custom-docs.com"
+        plugin = G(
+            JSPsychPlugin,
+            name="Fullscreen",
+            url="https://unpkg.com/@jspsych/plugin-fullscreen@1.0.0",
+            category="jspsych",
+            docs_url=custom_url,
+        )
+        plugin.name = "Fullscreen Updated"
+        plugin.save()
+        self.assertEqual(plugin.docs_url, custom_url)
+
+    def test_provides_field_stores_list(self):
+        """Test that provides field can store a list of sub-plugin names."""
+        plugin = G(
+            JSPsychPlugin,
+            name="Templates Package",
+            url="https://unpkg.com/@lookit/record@1.2.3",
+            category="chs-jspsych",
+            provides=["Consent", "Config", "Exit"],
+        )
+        plugin.refresh_from_db()
+        self.assertEqual(plugin.provides, ["Consent", "Config", "Exit"])
+
+    def test_provides_field_defaults_to_empty_list(self):
+        """Test that provides field defaults to empty list."""
+        plugin = G(
+            JSPsychPlugin,
+            name="Test Plugin",
+            url="https://unpkg.com/test@1.0.0",
+            category="jspsych",
+        )
+        self.assertEqual(plugin.provides, [])
+
+    def test_autoload_field_defaults_to_false(self):
+        """Test that autoload field defaults to False."""
+        plugin = G(
+            JSPsychPlugin,
+            name="Test Plugin",
+            url="https://unpkg.com/test@1.0.0",
+            category="jspsych",
+        )
+        self.assertFalse(plugin.autoload)
+
+    def test_show_in_ui_field_defaults_to_true(self):
+        """Test that show_in_ui field defaults to True."""
+        plugin = G(
+            JSPsychPlugin,
+            name="Test Plugin",
+            url="https://unpkg.com/test@1.0.0",
+            category="jspsych",
+        )
+        self.assertTrue(plugin.show_in_ui)
+
+    def test_str_representation(self):
+        """Test that __str__ returns the plugin name."""
+        plugin = G(
+            JSPsychPlugin,
+            name="Test Plugin",
+            url="https://unpkg.com/test@1.0.0",
+            category="jspsych",
+        )
+        self.assertEqual(str(plugin), "Test Plugin")
+
+
+class StudyJSPsychPluginRelationshipTestCase(TestCase):
+    def setUp(self):
+        """Set up test data."""
+        self.study = Study.objects.create(
+            name="Test jsPsych Study",
+            study_type=StudyType.get_jspsych(),
+        )
+        self.plugin1 = JSPsychPlugin.objects.create(
+            name="Plugin 1",
+            url="https://unpkg.com/@jspsych/plugin-1@1.0.0",
+            integrity="sha384-test1",
+            category="jspsych",
+        )
+        self.plugin2 = JSPsychPlugin.objects.create(
+            name="Plugin 2",
+            url="https://unpkg.com/@jspsych/plugin-2@1.0.0",
+            integrity="sha384-test2",
+            category="jspsych",
+        )
+        self.plugin3 = JSPsychPlugin.objects.create(
+            name="Plugin 3",
+            url="https://unpkg.com/@jspsych-contrib/plugin-3@1.0.0",
+            integrity="sha384-test3",
+            category="jspsych-contrib",
+        )
+
+    def test_study_can_save_single_plugin(self):
+        """Test that study can save a single plugin."""
+        self.study.jspsych_plugins.add(self.plugin1)
+        self.study.save()
+
+        self.study.refresh_from_db()
+        plugins = list(self.study.jspsych_plugins.all())
+
+        self.assertEqual(len(plugins), 1)
+        self.assertIn(self.plugin1, plugins)
+
+    def test_study_can_save_multiple_plugins(self):
+        """Test that study can save multiple plugins."""
+        self.study.jspsych_plugins.add(self.plugin1, self.plugin2, self.plugin3)
+        self.study.save()
+
+        self.study.refresh_from_db()
+        plugins = list(self.study.jspsych_plugins.all())
+
+        self.assertEqual(len(plugins), 3)
+        self.assertIn(self.plugin1, plugins)
+        self.assertIn(self.plugin2, plugins)
+        self.assertIn(self.plugin3, plugins)
+
+    def test_study_can_remove_plugin(self):
+        """Test that study can remove a plugin."""
+        # Add all plugins
+        self.study.jspsych_plugins.set([self.plugin1, self.plugin2, self.plugin3])
+        self.study.save()
+
+        # Remove one plugin
+        self.study.jspsych_plugins.remove(self.plugin2)
+        self.study.save()
+
+        self.study.refresh_from_db()
+        plugins = list(self.study.jspsych_plugins.all())
+
+        self.assertEqual(len(plugins), 2)
+        self.assertIn(self.plugin1, plugins)
+        self.assertNotIn(self.plugin2, plugins)
+        self.assertIn(self.plugin3, plugins)
+
+    def test_study_can_update_plugins(self):
+        """Test that study can update plugins using set()."""
+        # Initial plugins
+        self.study.jspsych_plugins.set([self.plugin1, self.plugin2])
+        self.study.save()
+
+        # Update to different plugins
+        self.study.jspsych_plugins.set([self.plugin2, self.plugin3])
+        self.study.save()
+
+        self.study.refresh_from_db()
+        plugins = list(self.study.jspsych_plugins.all())
+
+        self.assertEqual(len(plugins), 2)
+        self.assertNotIn(self.plugin1, plugins)
+        self.assertIn(self.plugin2, plugins)
+        self.assertIn(self.plugin3, plugins)
+
+    def test_study_can_clear_all_plugins(self):
+        """Test that study can clear all plugins."""
+        self.study.jspsych_plugins.add(self.plugin1, self.plugin2, self.plugin3)
+        self.study.save()
+
+        # Clear all plugins
+        self.study.jspsych_plugins.clear()
+        self.study.save()
+
+        self.study.refresh_from_db()
+        self.assertEqual(self.study.jspsych_plugins.count(), 0)
+
+    def test_multiple_studies_can_share_plugins(self):
+        """Test that multiple studies can reference the same plugin."""
+        study2 = Study.objects.create(
+            name="Test jsPsych Study 2",
+            study_type=StudyType.get_jspsych(),
+        )
+
+        self.study.jspsych_plugins.add(self.plugin1, self.plugin2)
+        study2.jspsych_plugins.add(self.plugin2, self.plugin3)
+
+        self.study.save()
+        study2.save()
+
+        self.study.refresh_from_db()
+        study2.refresh_from_db()
+
+        # Both studies have plugin2
+        self.assertIn(self.plugin2, self.study.jspsych_plugins.all())
+        self.assertIn(self.plugin2, study2.jspsych_plugins.all())
+
+        # Study 1 has plugin1, study 2 doesn't
+        self.assertIn(self.plugin1, self.study.jspsych_plugins.all())
+        self.assertNotIn(self.plugin1, study2.jspsych_plugins.all())
+
+        # Study 2 has plugin3, study 1 doesn't
+        self.assertIn(self.plugin3, study2.jspsych_plugins.all())
+        self.assertNotIn(self.plugin3, self.study.jspsych_plugins.all())
+
+    def test_study_plugins_queryset_ordering(self):
+        """Test that retrieved plugins maintain order."""
+        # Set plugins in specific order
+        self.study.jspsych_plugins.set([self.plugin3, self.plugin1, self.plugin2])
+        self.study.save()
+
+        self.study.refresh_from_db()
+        plugins = list(self.study.jspsych_plugins.all())
+
+        # Should have all plugins
+        self.assertEqual(len(plugins), 3)
+        # Verify all are present (order may vary by database)
+        self.assertIn(self.plugin1, plugins)
+        self.assertIn(self.plugin2, plugins)
+        self.assertIn(self.plugin3, plugins)
