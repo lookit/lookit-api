@@ -33,7 +33,7 @@ jobs:
       - run:
           name: Run linters
           command: uv run pre-commit run --all-files
-  css: 
+  css:
     docker:
       - image: cimg/python:3.13
     steps:
@@ -44,9 +44,16 @@ jobs:
       - run:
           name: Install dependencies with uv
           command: uv sync --frozen
+      - restore_cache:
+          keys:
+            - bootstrap-src-v1-5.2.0
       - run:
           name: Compile css
           command: uv run ./manage.py custom_bootstrap5
+      - save_cache:
+          key: bootstrap-src-v1-5.2.0
+          paths:
+            - bootstrap-5.2.0
 
 workflows:
   ci: 
