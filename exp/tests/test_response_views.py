@@ -19,6 +19,7 @@ from exp.views.responses import (
     StudyResponseSetResearcherFields,
     get_frame_data,
 )
+from exp.views.responses_data import RESPONSE_COLUMNS
 from studies.models import ConsentRuling, Lab, Response, Study, StudyType, Video
 from studies.queries import (
     get_response_type_counts_external,
@@ -1162,6 +1163,89 @@ class ResponseDataDownloadTestCase(TestCase):
                     self.fields_default_values[field],
                 )
 
+    def _set_conditions_on_first_response(self):
+        """Give one response a mix of well-formed and malformed condition values."""
+        # This modifies the setup data in place, but Django's TestCase wraps each test in a transaction and rolls
+        # it back, so this mutation doesn't leak into other tests.
+        resp = self.responses[0]
+        resp.conditions = {
+            "1-my-randomizer-frame": {"conditionNum": 0, "parameterSet": {"NAME": "A"}},
+            "condition": "NA",
+        }
+        resp.save()
+        return resp
+
+    def test_malformed_conditions_in_csv_download(self):
+        """A non-dict top-level conditions value shouldn't 500 the whole download."""
+        resp = self._set_conditions_on_first_response()
+        self.client.force_login(self.study_reader)
+        query_string = urlencode({"data_options": self.optionset_1}, doseq=True)
+        response = self.client.get(f"{self.response_summary_url}?{query_string}")
+        self.assertEqual(response.status_code, 200)
+        content = self._decode_response(response)
+        csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
+        csv_body = list(csv_reader)
+        csv_headers = csv_body.pop(0)
+        # Check that all responses are still present
+        self.assertEqual(len(csv_body), self.n_responses + self.n_previews)
+        field_to_col = {h: i for i, h in enumerate(csv_headers)}
+        # Locate the poisoned response row (order is not guaranteed)
+        row = next(
+            row
+            for row in csv_body
+            if row[field_to_col["response__uuid"]] == str(resp.uuid)
+        )
+        # Collect the response__conditions.N.(...) fields for this response back into
+        # one dict per condition entry. Ordering of the entries isn't guaranteed (JSON
+        # field keys come back from the DB in arbitrary order), so compare unordered.
+        condition_entries = {}
+        for header, col in field_to_col.items():
+            match = re.match(r"^response__conditions\.(\d+)\.(.+)$", header)
+            if match and row[col] != "":
+                index, field = match.groups()
+                condition_entries.setdefault(index, {})[field] = row[col]
+        self.assertCountEqual(
+            condition_entries.values(),
+            [
+                {
+                    "frameName": "1-my-randomizer-frame",
+                    "conditionNum": "0",
+                    "parameterSet.NAME": "A",
+                },
+                # The malformed value is kept under a "value" field
+                {"frameName": "condition", "value": "NA"},
+            ],
+        )
+
+    def test_malformed_conditions_in_json_download(self):
+        """A non-dict top-level conditions value shouldn't 500 the whole download."""
+        resp = self._set_conditions_on_first_response()
+        self.client.force_login(self.study_reader)
+        query_string = urlencode({"data_options": self.optionset_1}, doseq=True)
+        response = self.client.get(f"{self.response_summary_json_url}?{query_string}")
+        self.assertEqual(response.status_code, 200)
+        content = b"".join(response.streaming_content).decode("utf-8")
+        data = json.loads(content)
+        # Check that all responses are still present
+        self.assertEqual(len(data), self.n_responses + self.n_previews)
+        # Locate the poisoned response row (order is not guaranteed)
+        this_response = next(
+            row for row in data if row["response"]["uuid"] == str(resp.uuid)
+        )
+        # Entry order isn't guaranteed (JSON field keys come back from the DB in
+        # arbitrary order), so compare unordered.
+        self.assertCountEqual(
+            this_response["response"]["conditions"],
+            [
+                {
+                    "frameName": "1-my-randomizer-frame",
+                    "conditionNum": 0,
+                    "parameterSet": {"NAME": "A"},
+                },
+                {"frameName": "condition", "value": "NA"},
+            ],
+        )
+
     def test_get_appropriate_children_in_child_csv_as_previewer(self):
         self.client.force_login(self.study_previewer)
         csv_response = self.client.get(
@@ -2073,17 +2157,86 @@ class GetFrameDataTestCase(TestCase):
         )
         self.assertEqual(key_row.value, "someValue")
 
-    # TODO: test individual file downloads from response-list
-    #       * cannot get response from another study,
-    #       * cannot get real data if only preview perms
-    #       * cannot get unconsented data
-    #       check correct fields included, as for all-response downloads
-    # TODO: test can submit feedback only w correct perms and only for responses to this study
-    #       (path: "study-response-submit-feedback" (pk))
-    # TODO: test appropriate list of videos shows up in videos views (video from this study, no
-    #       video from another study, no non-preview video wo perms).
-    # TODO: Check can download/view video pk from appropriate set only.
-    #       (path: "study-response-video-download" (pk, video))
+
+class ResponseConditionsColumnTestCase(TestCase):
+    """Unit tests for the response__conditions column extractor."""
+
+    def setUp(self):
+        self.extract = next(
+            col.extractor
+            for col in RESPONSE_COLUMNS
+            if col.id == "response__conditions"
+        )
+
+    def _extract(self, conditions):
+        # Unsaved instance; the extractor only reads the conditions field.
+        return self.extract(Response(conditions=conditions))
+
+    def test_dict_conditions_are_merged_with_frame_name(self):
+        self.assertEqual(
+            self._extract(
+                {
+                    "1-my-randomizer-frame": {
+                        "conditionNum": 0,
+                        "parameterSet": {"NAME": "A"},
+                    }
+                }
+            ),
+            [
+                {
+                    "frameName": "1-my-randomizer-frame",
+                    "conditionNum": 0,
+                    "parameterSet": {"NAME": "A"},
+                }
+            ],
+        )
+
+    def test_non_dict_conditions_fall_back_to_value_field(self):
+        """Malformed top-level values (string, number, list, None) should be stored
+        under a "value" field rather than raising."""
+        for conditions_value in ["NA", 42, ["a", "b"], None, True]:
+            with self.subTest(conditions_value=conditions_value):
+                self.assertEqual(
+                    self._extract({"condition": conditions_value}),
+                    [{"frameName": "condition", "value": conditions_value}],
+                )
+
+    def test_mix_of_dict_and_non_dict_conditions(self):
+        self.assertEqual(
+            self._extract(
+                {
+                    "1-my-randomizer-frame": {"conditionNum": 1},
+                    "condition": "NA",
+                }
+            ),
+            [
+                {"frameName": "1-my-randomizer-frame", "conditionNum": 1},
+                {"frameName": "condition", "value": "NA"},
+            ],
+        )
+
+    def test_empty_conditions(self):
+        self.assertEqual(self._extract({}), [])
+
+    def test_dict_conditions_with_frame_name_key_are_not_overwritten(self):
+        """An explicit frameName within the condition data wins, as before the fix."""
+        self.assertEqual(
+            self._extract({"1-my-randomizer-frame": {"frameName": "something-else"}}),
+            [{"frameName": "something-else"}],
+        )
+
+
+# TODO: test individual file downloads from response-list
+#       * cannot get response from another study,
+#       * cannot get real data if only preview perms
+#       * cannot get unconsented data
+#       check correct fields included, as for all-response downloads
+# TODO: test can submit feedback only w correct perms and only for responses to this study
+#       (path: "study-response-submit-feedback" (pk))
+# TODO: test appropriate list of videos shows up in videos views (video from this study, no
+#       video from another study, no non-preview video wo perms).
+# TODO: Check can download/view video pk from appropriate set only.
+#       (path: "study-response-video-download" (pk, video))
 
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)

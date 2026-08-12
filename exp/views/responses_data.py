@@ -355,8 +355,14 @@ RESPONSE_COLUMNS = [
             "response_sequence) where the randomization occurred. Additional fields such as "
             "response_conditions.0.conditionNum depend on the specific randomizer frames used in this study."
         ),
+        # Condition values are normally a mapping of condition fields per frame, but
+        # malformed data (e.g. a stray "condition": "NA" entry from manual edits or a
+        # non-standard frame) can store a non-dict value. Fall back to a "value" field
+        # for those so one bad response doesn't 500 the entire study's download.
         extractor=lambda resp: [
-            {**{"frameName": cond_frame}, **conds}
+            {"frameName": cond_frame, **conds}
+            if isinstance(conds, dict)
+            else {"frameName": cond_frame, "value": conds}
             for (cond_frame, conds) in resp.conditions.items()
         ],
     ),
