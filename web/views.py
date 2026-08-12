@@ -429,6 +429,11 @@ class StudiesListView(generic.ListView, FormView):
     model = Study
 
     def post(self, request, *args, **kwargs):
+        # ListView.get() normally sets object_list, rather than POST.
+        # But since this is also a form, this view can be reached first via POST,
+        # which calls form_invalid(), then get_context_data(),
+        # which requires the object_list. So we need to set it here.
+        self.object_list = self.get_queryset()
         form = self.get_form()
 
         if form.is_valid():
@@ -676,6 +681,11 @@ class StudiesHistoryView(
     responses_per_study = 10
 
     def post(self, request, *args, **kwargs):
+        # ListView.get() normally sets object_list, rather than POST.
+        # But since this is also a form, this view can be reached first via POST,
+        # which calls form_invalid(), then get_context_data(),
+        # which requires the object_list. So we need to set it here.
+        self.object_list = self.get_queryset()
         form = self.get_form()
 
         if form.is_valid():
