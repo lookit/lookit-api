@@ -1078,10 +1078,14 @@ class StudyResponseVideoAttachment(
             return redirect(view_url)
 
 
-class StudyResponseSubmitFeedback(StudyLookupMixin, UserPassesTestMixin, View):
+class StudyResponseSubmitFeedback(
+    ResearcherLoginRequiredMixin, UserPassesTestMixin, StudyLookupMixin, View
+):
     """
     View to create or edit response feedback.
     """
+
+    raise_exception = True
 
     def user_can_edit_feedback(self):
         user = self.request.user
