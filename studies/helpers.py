@@ -2,9 +2,11 @@ import base64
 import copy
 import logging
 import re
+from datetime import datetime, timezone
 from email.mime.image import MIMEImage
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
+import requests
 from django.conf import settings
 from django.core.mail.message import EmailMultiAlternatives
 from django.db import models
@@ -19,6 +21,39 @@ from project.celery import app
 
 logger = logging.getLogger(__name__)
 
+# Experiment runner commits older than this date can no longer be used, but only
+# for the default repo (settings.EMBER_EXP_PLAYER_REPO). Custom forks are exempt.
+# Must stay timezone-aware: commit dates come back from GitHub as aware datetimes,
+# and comparing those against a naive one raises TypeError.
+EFP_MINIMUM_COMMIT_DATE = datetime(2024, 1, 30, tzinfo=timezone.utc)
+
+# Formatted here rather than at each use so that the error messages and the warning on
+# the study design page always have the same display date.
+# (Not formatted with Django's date filter because that converts to settings.TIME_ZONE,
+# which would shift a UTC midnight cutoff back a day.)
+EFP_MINIMUM_COMMIT_DATE_DISPLAY = f"{EFP_MINIMUM_COMMIT_DATE:%B %-d, %Y}"
+
+GITHUB_API_TIMEOUT = 10  # seconds
+
+EFP_VERSION_UNVERIFIABLE = (
+    "There was a problem checking your experiment runner version on GitHub just now, so we "
+    "can't confirm that it is still supported. Please try again in a few minutes. If "
+    "this keeps happening, contact us on Slack or at support@childrenhelpingscience.org."
+)
+
+EFP_LATEST_VERSION_UNRESOLVABLE = (
+    "There was a problem looking up the latest experiment runner version on GitHub "
+    "just now. Please enter a commit SHA, or leave this blank and try again in a few "
+    "minutes. If this keeps happening, contact us on Slack or at "
+    "support@childrenhelpingscience.org."
+)
+
+# Retrying won't help here, so this deliberately doesn't suggest it.
+EFP_LATEST_VERSION_NOT_ON_GITHUB = (
+    "We can only look up the latest version automatically for experiment runner "
+    "repos hosted on GitHub. Please enter a commit SHA for this repo."
+)
+
 
 def get_absolute_url(path=""):
     return urljoin(settings.BASE_URL, path)
@@ -26,6 +61,165 @@ def get_absolute_url(path=""):
 
 def get_experiment_absolute_url(path):
     return urljoin(settings.EXPERIMENT_BASE_URL, path)
+
+
+def get_repo_path(full_repo_path):
+    """Pull the "owner/repo" portion out of a GitHub repo URL.
+
+    Tolerates the same variations as normalize_repo_url (scheme, case, "www.",
+    trailing slash, ".git"). Returns None if this isn't a GitHub URL at all, so
+    callers can fall back rather than breaking on a repo hosted elsewhere.
+    """
+    parsed = urlparse((full_repo_path or "").strip())
+    if parsed.netloc.lower().removeprefix("www.") != "github.com":
+        return None
+    return parsed.path.strip("/").removesuffix(".git") or None
+
+
+def normalize_repo_url(url):
+    """Canonical form of a repo URL, for comparing the study's repo to the EFP default.
+
+    Insensitive to scheme, case, "www.", trailing slashes and a ".git" suffix, so
+    that e.g. "HTTP://www.GitHub.com/lookit/ember-lookit-frameplayer.git/" and
+    "https://github.com/lookit/ember-lookit-frameplayer" compare equal.
+    """
+    parsed = urlparse((url or "").strip())
+    netloc = parsed.netloc.lower().removeprefix("www.")
+    path = parsed.path.rstrip("/").lower().removesuffix(".git")
+    return f"{netloc}{path}"
+
+
+def is_default_player_repo(url):
+    """True if this URL points at the default experiment runner repo.
+
+    Reads the setting at call time so that it stays correct under override_settings
+    and when EMBER_EXP_PLAYER_REPO is set from the environment.
+    """
+    return bool(url) and normalize_repo_url(url) == normalize_repo_url(
+        settings.EMBER_EXP_PLAYER_REPO
+    )
+
+
+def get_commit_datetime(player_repo_url, sha):
+    """Look up when a commit landed, via the GitHub API.
+
+    Returns (datetime, None) on success, or (None, error_message) when the commit
+    doesn't exist or GitHub can't be reached. Exactly one of the two is ever set.
+
+    Uses the committer date rather than the author date: the author date is when the
+    patch was first written and survives rebases and cherry-picks, so a recently
+    merged commit can carry a years-old author date. The committer date is when the
+    code actually landed on the branch, which is what "how old is this version"
+    means here.
+    """
+    api_url = (
+        f"https://api.github.com/repos/{get_repo_path(player_repo_url)}/commits/{sha}"
+    )
+
+    try:
+        response = requests.get(
+            api_url,
+            timeout=GITHUB_API_TIMEOUT,
+            headers={"Accept": "application/vnd.github+json"},
+        )
+    except requests.exceptions.RequestException:
+        logger.warning(f"Could not reach GitHub to check commit {sha}.")
+        return None, EFP_VERSION_UNVERIFIABLE
+
+    # 404 is an unknown SHA, 422 a malformed one. Both mean "no such commit", which
+    # is the researcher's to fix. Everything else is our problem, not theirs.
+    if response.status_code in (404, 422):
+        return None, f"Frameplayer commit {sha} does not exist."
+
+    if not response.ok:
+        logger.warning(
+            f"GitHub returned {response.status_code} when checking commit {sha}."
+        )
+        return None, EFP_VERSION_UNVERIFIABLE
+
+    try:
+        return datetime.fromisoformat(
+            response.json()["commit"]["committer"]["date"]
+        ), None
+    except (ValueError, KeyError, TypeError, requests.exceptions.JSONDecodeError):
+        logger.warning(f"Unexpected GitHub response when checking commit {sha}.")
+        return None, EFP_VERSION_UNVERIFIABLE
+
+
+def get_branch_head_sha(player_repo_url, branch):
+    """Look up the commit a branch currently points at, via the GitHub API.
+
+    Returns (sha, None) on success, or (None, error_message) on failure, matching
+    get_commit_datetime's contract.
+
+    Only works for repos hosted on GitHub. A custom repo hosted elsewhere has to
+    pin its version explicitly, since there's no portable way to ask a git host
+    what a branch points at over HTTP.
+    """
+    repo_path = get_repo_path(player_repo_url)
+    if repo_path is None:
+        return None, EFP_LATEST_VERSION_NOT_ON_GITHUB
+
+    api_url = f"https://api.github.com/repos/{repo_path}/git/refs/heads/{branch}"
+
+    try:
+        response = requests.get(
+            api_url,
+            timeout=GITHUB_API_TIMEOUT,
+            headers={"Accept": "application/vnd.github+json"},
+        )
+    except requests.exceptions.RequestException:
+        logger.warning(f"Could not reach GitHub to resolve branch {branch}.")
+        return None, EFP_LATEST_VERSION_UNRESOLVABLE
+
+    if not response.ok:
+        logger.warning(
+            f"GitHub returned {response.status_code} when resolving branch {branch}."
+        )
+        return None, EFP_LATEST_VERSION_UNRESOLVABLE
+
+    try:
+        return response.json()["object"]["sha"], None
+    except (KeyError, TypeError, requests.exceptions.JSONDecodeError):
+        logger.warning(f"Unexpected GitHub response when resolving branch {branch}.")
+        return None, EFP_LATEST_VERSION_UNRESOLVABLE
+
+
+def efp_runner_version_error(player_repo_url, last_known_player_sha):
+    """Check whether a study may use this experiment runner version.
+
+    Returns a message ready to show the researcher, or None if the version is fine.
+    Callers wrap the message in whatever their context needs (a ValidationError, a
+    messages.error, a RuntimeError), which is why this returns a string rather than
+    raising.
+    """
+    if not last_known_player_sha:
+        # Nothing pinned, so the build resolves the branch HEAD, which can't be
+        # out of date by definition.
+        return None
+
+    if not is_default_player_repo(player_repo_url):
+        # Custom forks are exempt - we only deprecate versions of our own repo.
+        return None
+
+    commit_datetime, error = get_commit_datetime(player_repo_url, last_known_player_sha)
+    if error:
+        return error
+
+    if commit_datetime < EFP_MINIMUM_COMMIT_DATE:
+        return (
+            f"Your experiment runner version {last_known_player_sha[:7]} is from "
+            f"{commit_datetime:%B %-d, %Y} and is no longer supported. Versions from "
+            f"before {EFP_MINIMUM_COMMIT_DATE_DISPLAY} use a 3rd party package that "
+            f"has been deprecated. The easiest way to update is to clear the experiment "
+            f"runner version field on the study design page and then save - we'll fill "
+            f"in the latest version for you. You can also select a specific version "
+            f"by clicking the 'Check for updates' button or from "
+            f"{settings.EMBER_EXP_PLAYER_REPO}/commits/{settings.EMBER_EXP_PLAYER_BRANCH}. "
+            "You will need to rebuild the experiment runner after updating and saving."
+        )
+
+    return None
 
 
 @app.task

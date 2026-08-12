@@ -1,6 +1,8 @@
+from datetime import timedelta
 from http import HTTPStatus
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
+import requests
 from django.test import Client, TestCase
 from django.urls import reverse
 from django_dynamic_fixture import G
@@ -10,8 +12,40 @@ from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, User
 from project import settings
 from studies.forms import ScheduledChoice
+from studies.helpers import EFP_MINIMUM_COMMIT_DATE
 from studies.models import Lab, Study, StudyType
 from studies.permissions import StudyPermission
+
+# Derived from the cutoff so these stay valid whatever date the cutoff is set to.
+SUPPORTED_COMMIT_DATE = (EFP_MINIMUM_COMMIT_DATE + timedelta(days=1)).isoformat()
+
+# Captured before any patching, so the passthrough below can't recurse into a mock.
+REAL_REQUESTS_GET = requests.get
+
+
+def mock_github_get(commit_date=SUPPORTED_COMMIT_DATE):
+    """URL-keyed stand-in for requests.get, so EFP form validation stays offline.
+
+    Covers the repo existence check and the commits API that dates the pinned
+    version. Anything else - notably the SVG icons django_bootstrap_icons fetches
+    while rendering - is delegated to the real requests.get, since patching
+    studies.forms.requests.get patches the shared requests module for everyone.
+    """
+
+    def side_effect(url, *args, **kwargs):
+        if url == settings.EMBER_EXP_PLAYER_REPO:
+            return Mock(ok=True, status_code=HTTPStatus.OK)
+        if url.startswith("https://api.github.com/"):
+            return Mock(
+                ok=True,
+                status_code=HTTPStatus.OK,
+                json=Mock(
+                    return_value={"commit": {"committer": {"date": commit_date}}}
+                ),
+            )
+        return REAL_REQUESTS_GET(url, *args, **kwargs)
+
+    return side_effect
 
 
 class Force2FAClient(Client):
@@ -56,7 +90,10 @@ class RunnerDetailsViewsTestCase(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(Study.objects.get(id=study.id).metadata, metadata)
 
-    def test_efp_details_view(self):
+    @patch("studies.forms.requests.get")
+    def test_efp_details_view(self, mock_get):
+        mock_get.side_effect = mock_github_get()
+
         user = G(User, is_active=True, is_researcher=True)
         lab = G(Lab)
         study = G(Study, creator=user, lab=lab, study_type=1)
@@ -83,6 +120,42 @@ class RunnerDetailsViewsTestCase(TestCase):
             self.assertEqual(response.context_data["form"].errors, {})
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(Study.objects.get(id=study.id).metadata, metadata)
+
+    def test_efp_design_page_hands_the_cutoff_to_the_javascript(self):
+        """efp-runner.js warns about old versions, but only the server knows the cutoff.
+
+        The attribute names are the contract between the template and the script, so
+        renaming one without the other silently drops the warning.
+        """
+        user = G(User, is_active=True, is_researcher=True)
+        study = G(
+            Study,
+            creator=user,
+            lab=G(Lab),
+            study_type=StudyType.get_ember_frame_player(),
+        )
+
+        assign_perm(StudyPermission.WRITE_STUDY_DETAILS.codename, user, study)
+        assign_perm(StudyPermission.READ_STUDY_DETAILS.codename, user, study)
+
+        self.client.force_login(user)
+        response = self.client.get(
+            reverse(self.efp_study_details, kwargs={"pk": study.id})
+        )
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertContains(
+            response, f'data-min-commit-date="{EFP_MINIMUM_COMMIT_DATE.isoformat()}"'
+        )
+        self.assertContains(
+            response, f'data-default-repo="{settings.EMBER_EXP_PLAYER_REPO}"'
+        )
+        # Hidden on load: the script only unhides it once GitHub says the pinned
+        # commit really is too old.
+        self.assertContains(
+            response,
+            '<div id="version-deprecated-warning" class="alert alert-warning d-none"',
+        )
 
     def test_study_details_redirect_efp(self):
         user = G(User, is_active=True, is_researcher=True)
@@ -156,7 +229,10 @@ class RunnerDetailsViewsTestCase(TestCase):
             ],
         )
 
-    def test_efp_study_set_not_built(self):
+    @patch("studies.forms.requests.get")
+    def test_efp_study_set_not_built(self, mock_get):
+        mock_get.side_effect = mock_github_get()
+
         user = G(User, is_active=True, is_researcher=True)
         lab = G(Lab)
         study = G(

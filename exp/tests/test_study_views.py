@@ -14,6 +14,7 @@ from zoneinfo import ZoneInfo
 
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.messages import get_messages
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
 from django.test import Client, TestCase, override_settings
@@ -277,6 +278,82 @@ class StudyViewsTestCase(TestCase):
             403,
             "Study build allowed from lab researcher without specific perms",
         )
+
+    def _prepare_buildable_study(self):
+        """Put self.study in a state where the researcher is allowed to build it.
+
+        The researcher needs write access to build the study.
+        Read access is also needed because the build button lives
+        on the study detail page, which is also where the view redirects afterwards.
+        In practice, a researcher who can build a study can also see it.
+        """
+        self.client.force_login(self.lab_researcher)
+        for permission in (
+            StudyPermission.READ_STUDY_DETAILS,
+            StudyPermission.WRITE_STUDY_DETAILS,
+        ):
+            assign_perm(permission.prefixed_codename, self.lab_researcher, self.study)
+        self.study.built = False
+        self.study.is_building = False
+        self.study.save()
+
+    @patch("exp.views.study.ember_build_and_gcp_deploy")
+    @patch("studies.models.efp_runner_version_error")
+    def test_build_study_blocked_by_deprecated_runner_version(
+        self, mock_error, mock_build_task
+    ):
+        mock_error.return_value = "version too old"
+        self._prepare_buildable_study()
+
+        page = self.client.post(self.study_build_url, {})
+
+        # Read the messages before assertRedirects follows the redirect and renders them.
+        self.assertIn(
+            "version too old", [str(m) for m in get_messages(page.wsgi_request)]
+        )
+        self.assertRedirects(page, reverse("exp:study", kwargs={"pk": self.study.pk}))
+        mock_build_task.delay.assert_not_called()
+        self.study.refresh_from_db()
+        self.assertFalse(
+            self.study.is_building, "Study marked as building despite the blocked build"
+        )
+
+    @patch("exp.views.study.ember_build_and_gcp_deploy")
+    @patch("studies.models.efp_runner_version_error")
+    def test_build_study_allowed_with_supported_runner_version(
+        self, mock_error, mock_build_task
+    ):
+        mock_error.return_value = None
+        self._prepare_buildable_study()
+
+        page = self.client.post(self.study_build_url, {})
+
+        self.assertRedirects(page, reverse("exp:study", kwargs={"pk": self.study.pk}))
+        mock_build_task.delay.assert_called_once_with(
+            self.study.uuid, self.lab_researcher.uuid
+        )
+        self.study.refresh_from_db()
+        self.assertTrue(self.study.is_building)
+
+    @patch("exp.views.study.ember_build_and_gcp_deploy")
+    @patch("studies.models.efp_runner_version_error")
+    def test_build_study_permission_check_runs_before_version_check(
+        self, mock_error, mock_build_task
+    ):
+        """A researcher without build perms gets a 403, not a version error.
+
+        The version check is deliberately in post() rather than the test predicate, so
+        it must not run for requests that were going to be rejected anyway due to
+        permissions.
+        """
+        mock_error.return_value = "version too old"
+        self.client.force_login(self.other_researcher)
+
+        page = self.client.post(self.study_build_url, {})
+
+        self.assertEqual(page.status_code, 403)
+        mock_error.assert_not_called()
+        mock_build_task.delay.assert_not_called()
 
     @skip
     def test_build_study_with_correct_perms_and_current_exp_runner(self):

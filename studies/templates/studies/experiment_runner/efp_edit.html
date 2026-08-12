@@ -7,7 +7,15 @@
     {% comment %} ace editor fix cannot be defered {% endcomment %}
     <script src="{% static 'js/ace-editor.js' %}"></script>
     <script src="{% static 'js/js-validation.js'%}" defer></script>
-    <script src="{% static 'js/efp-runner.js' %}" defer data-branch={{branch}}></script>
+    {% comment %}
+        The data attributes need to be quoted because min_commit_date is an ISO timestamp,
+        and an unquoted value would end at its first colon.
+    {% endcomment %}
+    <script src="{% static 'js/efp-runner.js' %}"
+            defer
+            data-branch="{{ branch }}"
+            data-default-repo="{{ default_repo }}"
+            data-min-commit-date="{{ min_commit_date }}"></script>
     {{ form.media }}
 {% endblock head %}
 {% block header %}
@@ -25,36 +33,71 @@
 {% endblock js_error %}
 {% block form %}
     {% bootstrap_form form label_class="fw-bold" %}
+    {% comment %}
+        Version deprecation warning shown by efp-runner.js when the version in the 
+        field is too old. This is just a pre-save warning - the form validation is what
+        enforces the cutoff, so a researcher with JS disabled still can't
+        get an unsupported version past the form.
+        Deliberately alert-warning (not danger), and worded as something
+        about to happen. The form's own validation errors on the submit action 
+        are red/danger, and this needs to read as advice about an unsaved value 
+        rather than a duplicate or additional error.
+    {% endcomment %}
+    <div id="version-deprecated-warning" class="alert alert-warning d-none" role="alert">
+        <strong>Before you save:</strong> This experiment runner version is no longer
+        supported. Versions from before {{ min_commit_date_display }} use a 3rd
+        party package that has been deprecated. You won't be able to save changes, build, or
+        start your study while it is set to this version. The easiest way to update the
+        experiment runner version is to clear the field above and then save this form, 
+        which will update your study to the latest version.
+    </div>
     <div id="commit-description" class="card bg-light my-4">
         <div class="card-header">
             <h3 class="card-subtitle my-1">
                 About this version
                 <div class="float-end me-4">
                     {% button_secondary_classes as btn_secondary_classes %}
+                    {% comment %}
+                        Hidden by efp-runner.js when no version is selected: there's no
+                        commit to compare the branch against, so the button has nothing
+                        to look for.
+                    {% endcomment %}
                     {% bootstrap_button "Check for updates" button_class=btn_secondary_classes id="update-button" %}
                 </div>
             </h3>
         </div>
         <div class="card-body">
-            <p>
-                Your study will use commit <a class="sha" href></a>:
+            {% comment %}
+                No version selection content shown by efp-runner.js when the version field is blank.
+                Stands in for the commit details when the version field is empty, so that
+                clearing the field (which sets the SHA to the latest version) doesn't just
+                leave a blank space where the version details were.
+            {% endcomment %}
+            <p id="no-version-selected" class="d-none mb-0">
+                No specific version selected: when you save this form, your study will be
+                set to use the latest experiment runner version.
             </p>
-            <div class="container">
-                <div class="row border-bottom py-2">
-                    <div class="col-2 fw-bold">Date</div>
-                    <div class="col date"></div>
-                </div>
-                <div class="row border-bottom py-2">
-                    <div class="col-2 fw-bold">Author</div>
-                    <div class="col name"></div>
-                </div>
-                <div class="row border-bottom pt-2">
-                    <div class="col-2 fw-bold">Message</div>
-                    <div class="col message"></div>
-                </div>
-                <div class="row py-2">
-                    <div class="col-2 fw-bold">Files changed</div>
-                    <div class="col files"></div>
+            <div id="commit-details">
+                <p>
+                    Your study will use commit <a class="sha" href></a>:
+                </p>
+                <div class="container">
+                    <div class="row border-bottom py-2">
+                        <div class="col-2 fw-bold">Date</div>
+                        <div class="col date"></div>
+                    </div>
+                    <div class="row border-bottom py-2">
+                        <div class="col-2 fw-bold">Author</div>
+                        <div class="col name"></div>
+                    </div>
+                    <div class="row border-bottom pt-2">
+                        <div class="col-2 fw-bold">Message</div>
+                        <div class="col message"></div>
+                    </div>
+                    <div class="row py-2">
+                        <div class="col-2 fw-bold">Files changed</div>
+                        <div class="col files"></div>
+                    </div>
                 </div>
             </div>
         </div>
