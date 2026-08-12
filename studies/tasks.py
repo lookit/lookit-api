@@ -688,16 +688,24 @@ def complete_multipart_upload(bucket_name, filename, id, parts):
         else:
             logger.debug(f"Error completing file {filename}. S3 response: {resp}")
     except ClientError as error:
-        # If the file cannot be completed because of a problem with size/parts, log it for our info but
-        # ignore it and move on. It will be deleted via the S3 bucket's lifecycle rule.
-        logger.error(f"Error completing file {filename}: {error}")
+        # Some completion failures are expected for incomplete uploads (too few/small
+        # parts, or an upload that no longer exists). Log those at warning level for
+        # visibility but ignore them and move on - the file will be deleted via the S3
+        # bucket's lifecycle rule. Any other ClientError is unexpected: log it as an
+        # error and re-raise.
         ignore_errors = [
             "EntityTooSmall",
             "InvalidPart",
             "InvalidPartOrder",
             "NoSuchUpload",
         ]
-        if error.response["Error"]["Code"] not in ignore_errors:
+        error_code = error.response["Error"]["Code"]
+        if error_code in ignore_errors:
+            logger.warning(
+                f"Skipping incomplete file {filename} ({error_code}): {error}"
+            )
+        else:
+            logger.error(f"Error completing file {filename}: {error}")
             raise error
     except ParamValidationError as error:
         raise ValueError(f"The parameters you provided are incorrect: {error}")
