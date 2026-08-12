@@ -39,7 +39,7 @@ function clearStaleServerError() {
     }
 
     const fieldMessages = [...SHA_FIELD.parentNode.querySelectorAll('.invalid-feedback')];
-    const staleText = fieldMessages.map(message => message.textContent.trim());
+    const staleText = new Set(fieldMessages.map(message => message.textContent.trim()));
 
     SHA_FIELD.classList.remove('is-invalid');
     fieldMessages.forEach(message => message.remove());
@@ -48,7 +48,7 @@ function clearStaleServerError() {
     // matching this SHA field - errors on the structure or generator fields still stand.
     document.querySelectorAll('ul.list-unstyled.text-danger').forEach(summary => {
         summary.querySelectorAll('li').forEach(line => {
-            if (staleText.includes(line.textContent.trim())) {
+            if (staleText.has(line.textContent.trim())) {
                 line.remove();
             }
         });
@@ -62,10 +62,16 @@ function clearStaleServerError() {
 // exempt a study from the warning. This is just meant to be a flag/warning 
 // (studies/helpers.py is_default_player_repo is what actually decides).
 function isDefaultRepo(repoUrl) {
-    const normalize = url => url.trim().toLowerCase()
-        .replace(/^http:/, 'https:')
-        .replace('://www.', '://')
-        .replace(/(\.git)?\/*$/, '');
+    // Dropp the scheme rather than rewriting http to https, and split on "/"
+    // rather than matching a trailing-slash pattern, which keeps every step here linear
+    // (an anchored quantifier like /(\.git)?\/*$/ backtracks over a run of slashes).
+    const normalize = url => {
+        const withoutScheme = url.trim().toLowerCase()
+            .replace(/^https?:\/\//, '')
+            .replace(/^www\./, '');
+        const path = withoutScheme.split('/').filter(Boolean).join('/');
+        return path.endsWith('.git') ? path.slice(0, -'.git'.length) : path;
+    };
     return Boolean(DATA.defaultRepo) && normalize(repoUrl) === normalize(DATA.defaultRepo);
 }
 
