@@ -2485,9 +2485,9 @@ class TestCompleteMultipartUpload(TestCase):
             [{"PartNumber": 1, "ETag": "etag1"}],
         )
 
-        # complete_multipart_upload should log this error but not raise it
-        mock_logger.error.assert_called_with(
-            "Error completing file example_video.webm: An error occurred (EntityTooSmall) when calling the CompleteMultipartUpload operation: Your proposed upload is smaller than the minimum allowed size"
+        # complete_multipart_upload should log this warning but not raise it
+        mock_logger.warning.assert_called_with(
+            "Skipping incomplete file example_video.webm (EntityTooSmall): An error occurred (EntityTooSmall) when calling the CompleteMultipartUpload operation: Your proposed upload is smaller than the minimum allowed size"
         )
 
 
