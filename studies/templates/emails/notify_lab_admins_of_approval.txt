@@ -5,5 +5,7 @@ Your lab, {{ lab_name }}, has been approved to begin using Lookit for data colle
 
 You can view your lab here: {% absolute_url 'exp:lab-detail' pk=lab_id %}
 
+Now that your lab is approved, its details can no longer be edited. If you need to change any of your lab's information, please contact us at support@childrenhelpingscience.org.
+
 Best,
 Lookit Admin
