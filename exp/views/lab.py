@@ -347,19 +347,57 @@ class LabUpdateView(
 ):
     """
     LabUpdateView allows updating lab metadata.
+
+    Once a lab has been approved to test, its metadata is locked: the form is shown
+    read-only and changes are rejected on submission. Admins who can edit lab approval
+    are exempt so that they can make edits and change approval status.
     """
 
     template_name = "studies/lab_update.html"
     model = Lab
     raise_exception = True
 
-    def get_form_class(self):
-        if self.request.user.has_perm(
+    def user_can_edit_approval(self):
+        return self.request.user.has_perm(
             LabPermission.EDIT_LAB_APPROVAL.prefixed_codename
-        ):
+        )
+
+    def lab_is_locked(self):
+        return self.get_object().approved_to_test and not self.user_can_edit_approval()
+
+    def get_form_class(self):
+        if self.user_can_edit_approval():
             return LabApprovalForm
         else:
             return LabForm
+
+    def get_form(self, form_class=None):
+        """
+        Render every field read-only when the lab is locked
+        (approved to test is True and user is not an admin).
+        """
+        form = super().get_form(form_class)
+        if self.lab_is_locked():
+            for field in form.fields.values():
+                field.disabled = True
+        return form
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["lab_is_locked"] = self.lab_is_locked()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        """Reject edits to an approved lab, even if the disabled form is bypassed."""
+        if self.lab_is_locked():
+            messages.error(
+                request,
+                "This lab has been approved to run studies on CHS, so its details "
+                "can no longer be edited. Please contact CHS staff at "
+                "support@childrenhelpingscience.org if you need to make changes.",
+            )
+            return HttpResponseRedirect(self.get_success_url())
+        return super().post(request, *args, **kwargs)
 
     def user_can_edit_lab(self):
         lab = self.get_object()
