@@ -19,15 +19,35 @@
 {% endblock breadcrumb %}
 {% block content %}
     {% url 'exp:lab-edit' pk=lab.id as url_lab_edit %}
+    {% url 'exp:lab-detail' pk=lab.id as url_lab_detail %}
     {% button_primary_classes as btn_primary_classes %}
     {% button_secondary_classes as btn_secondary_classes %}
     {% page_title "Update Lab" %}
+    {% comment %}
+        Shown when the lab has been approved to test, which locks its metadata for
+        everyone except admins who can edit lab approval. The fields are also disabled
+        and the form rejects any changes on submission, so this is informational rather
+        than an error: deliberately alert-info, not warning/danger.
+    {% endcomment %}
+    {% if lab_is_locked %}
+        <div class="alert alert-info" role="alert">
+            <strong>This lab is approved to run studies on CHS!</strong> Approved labs
+            can no longer be edited, so the details below are read-only. Please contact
+            CHS staff at <a href="mailto:support@childrenhelpingscience.org">support@childrenhelpingscience.org</a>
+            if you need to make changes.
+        </div>
+    {% endif %}
     <form action="" enctype="multipart/form-data" method="post">
         {% csrf_token %}
         {% bootstrap_form form %}
         {% form_buttons %}
-        {% bootstrap_button "Discard Changes" href=url_lab_edit button_class=btn_secondary_classes %}
-        {% bootstrap_button "Save" type="submit" button_class=btn_primary_classes %}
+        {% if lab_is_locked %}
+            {% bootstrap_button "Back to Lab" href=url_lab_detail button_class=btn_secondary_classes %}
+            {% bootstrap_button "Save" type="submit" button_class=btn_primary_classes disabled="disabled" %}
+        {% else %}
+            {% bootstrap_button "Discard Changes" href=url_lab_edit button_class=btn_secondary_classes %}
+            {% bootstrap_button "Save" type="submit" button_class=btn_primary_classes %}
+        {% endif %}
     {% endform_buttons %}
 </form>
 {% endblock content %}

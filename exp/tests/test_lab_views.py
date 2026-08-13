@@ -113,6 +113,39 @@ class LabViewsTestCase(TestCase):
             "Incorrect template used for displaying lab detail page",
         )
 
+    # Lab detail view: only links to pages the researcher can actually open
+    def testLabDetailViewLinksWithoutPerms(self):
+        # In the lab, but no lab admin permissions
+        self.client.force_login(self.researcher)
+        page = self.client.get(self.lab_detail_url)
+        self.assertNotContains(
+            page,
+            f'href="{self.lab_update_url}"',
+            msg_prefix="Edit lab link shown to researcher without edit permissions",
+        )
+        self.assertContains(page, f'href="{self.lab_members_url}"')
+
+    def testLabDetailViewLinksOutsideLab(self):
+        self.client.force_login(self.researcher_outside_lab)
+        page = self.client.get(self.lab_detail_url)
+        self.assertNotContains(page, f'href="{self.lab_update_url}"')
+        self.assertNotContains(
+            page,
+            f'href="{self.lab_members_url}"',
+            msg_prefix="Lab members link shown to researcher outside the lab",
+        )
+
+    def testLabDetailViewLinksWithPerms(self):
+        assign_perm(LabPermission.EDIT_LAB_METADATA.codename, self.researcher, self.lab)
+        self.client.force_login(self.researcher)
+        page = self.client.get(self.lab_detail_url)
+        self.assertContains(
+            page,
+            f'href="{self.lab_update_url}"',
+            msg_prefix="Edit lab link hidden from researcher with edit permissions",
+        )
+        self.assertContains(page, f'href="{self.lab_members_url}"')
+
     # Lab detail view: cannot see as participant
     def testCanGetLabDetailViewAsParticipant(self):
         self.client.force_login(self.participant)
@@ -257,6 +290,15 @@ class LabViewsTestCase(TestCase):
             200,
             "Researcher not able to access lab update view despite permissions",
         )
+        self.assertFalse(
+            page.context["lab_is_locked"],
+            "Lab that is not approved to test is locked for editing",
+        )
+        self.assertFalse(
+            any(field.disabled for field in page.context["form"].fields.values()),
+            "Fields disabled for a lab that is not approved to test",
+        )
+        self.assertNotContains(page, "This lab is approved to run studies on CHS")
 
     # Lab update view: cannot post as researcher w/o edit perms
     def testPostLabUpdateViewIncorrectPerms(self):
@@ -352,6 +394,133 @@ class LabViewsTestCase(TestCase):
         self.assertTrue(
             updated_lab.approved_to_test,
             "Researcher could not approve lab to test despite permission",
+        )
+
+    # Lab update view: form is locked/read-only once lab is approved to test
+    def testGetLabUpdateViewApprovedLab(self):
+        Lab.objects.filter(pk=self.lab.pk).update(approved_to_test=True)
+        assign_perm(LabPermission.EDIT_LAB_METADATA.codename, self.researcher, self.lab)
+        self.client.force_login(self.researcher)
+        page = self.client.get(self.lab_update_url)
+        self.assertEqual(page.status_code, 200)
+        self.assertTrue(
+            page.context["lab_is_locked"],
+            "Approved lab not marked as locked for researcher",
+        )
+        self.assertTrue(
+            all(field.disabled for field in page.context["form"].fields.values()),
+            "Fields are still editable for a lab that is approved to test",
+        )
+        self.assertContains(page, "This lab is approved to run studies on CHS")
+        self.assertContains(page, 'disabled="disabled"')
+
+    # Lab update view: admins can still edit an approved lab
+    def testGetLabUpdateViewApprovedLabAsAdmin(self):
+        Lab.objects.filter(pk=self.lab.pk).update(approved_to_test=True)
+        assign_perm(LabPermission.EDIT_LAB_APPROVAL.prefixed_codename, self.researcher)
+        assign_perm(LabPermission.EDIT_LAB_METADATA.prefixed_codename, self.researcher)
+        self.client.force_login(self.researcher)
+        page = self.client.get(self.lab_update_url)
+        self.assertEqual(page.status_code, 200)
+        self.assertFalse(
+            page.context["lab_is_locked"],
+            "Approved lab locked for admin who can edit lab approval",
+        )
+        self.assertFalse(
+            any(field.disabled for field in page.context["form"].fields.values()),
+            "Fields disabled for admin who can edit lab approval",
+        )
+
+    # Lab update view: cannot post changes to a lab that is approved to test
+    def testPostLabUpdateViewApprovedLab(self):
+        Lab.objects.filter(pk=self.lab.pk).update(approved_to_test=True)
+        assign_perm(LabPermission.EDIT_LAB_METADATA.codename, self.researcher, self.lab)
+        self.client.force_login(self.researcher)
+        post_data = {
+            "name": "New lab",
+            "principal_investigator_name": "Jane Smith",
+            "institution": "New institution",
+            "contact_email": "abc@def.org",
+            "contact_phone": "(123) 456-7890",
+            "lab_website": "https://mit.edu",
+            "description": "ABCDEFG",
+            "irb_contact_info": "how to reach the IRB",
+            "slug": "new-lab",
+        }
+        page = self.client.post(self.lab_update_url, post_data)
+        self.assertEqual(page.status_code, 302)
+        updated_lab = Lab.objects.get(pk=self.lab.pk)
+        self.assertEqual(
+            updated_lab.institution,
+            "MIT",
+            "Researcher able to edit lab metadata after lab was approved to test",
+        )
+
+    # Lab update view: admins can post changes to a lab that is approved to test
+    def testPostLabUpdateViewApprovedLabAsAdmin(self):
+        Lab.objects.filter(pk=self.lab.pk).update(approved_to_test=True)
+        assign_perm(LabPermission.EDIT_LAB_APPROVAL.prefixed_codename, self.researcher)
+        assign_perm(LabPermission.EDIT_LAB_METADATA.prefixed_codename, self.researcher)
+        self.client.force_login(self.researcher)
+        post_data = {
+            "name": "New lab",
+            "principal_investigator_name": "Jane Smith",
+            "institution": "New institution",
+            "contact_email": "abc@def.org",
+            "contact_phone": "(123) 456-7890",
+            "lab_website": "https://mit.edu",
+            "description": "ABCDEFG",
+            "irb_contact_info": "how to reach the IRB",
+            "approved_to_test": True,
+            "slug": "new-lab",
+        }
+        page = self.client.post(self.lab_update_url, post_data)
+        self.assertEqual(page.status_code, 302)
+        updated_lab = Lab.objects.get(pk=self.lab.pk)
+        self.assertEqual(
+            updated_lab.institution,
+            "New institution",
+            "Admin unable to edit lab metadata for a lab approved to test",
+        )
+
+    # Lab update view: form unlocks again if approval is removed
+    def testLabUpdateViewUnlockedWhenApprovalRemoved(self):
+        assign_perm(LabPermission.EDIT_LAB_METADATA.codename, self.researcher, self.lab)
+        self.client.force_login(self.researcher)
+
+        Lab.objects.filter(pk=self.lab.pk).update(approved_to_test=True)
+        page = self.client.get(self.lab_update_url)
+        self.assertTrue(page.context["lab_is_locked"])
+
+        Lab.objects.filter(pk=self.lab.pk).update(approved_to_test=False)
+        page = self.client.get(self.lab_update_url)
+        self.assertFalse(
+            page.context["lab_is_locked"],
+            "Lab still locked after approval to test was removed",
+        )
+        self.assertFalse(
+            any(field.disabled for field in page.context["form"].fields.values()),
+            "Fields still disabled after approval to test was removed",
+        )
+
+        post_data = {
+            "name": "New lab",
+            "principal_investigator_name": "Jane Smith",
+            "institution": "New institution",
+            "contact_email": "abc@def.org",
+            "contact_phone": "(123) 456-7890",
+            "lab_website": "https://mit.edu",
+            "description": "ABCDEFG",
+            "irb_contact_info": "how to reach the IRB",
+            "slug": "new-lab",
+        }
+        page = self.client.post(self.lab_update_url, post_data)
+        self.assertEqual(page.status_code, 302)
+        updated_lab = Lab.objects.get(pk=self.lab.pk)
+        self.assertEqual(
+            updated_lab.institution,
+            "New institution",
+            "Researcher unable to edit lab after approval to test was removed",
         )
 
     # Lab membership request: can make as researcher
