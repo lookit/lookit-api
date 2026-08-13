@@ -264,8 +264,12 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         if "List" in self.get_view_name():
             qs = qs.filter(public=True)
 
-        # Researchers
-        if self.request.user.is_researcher:
+        # Researchers can also see studies they may preview.
+        # Need to handle Anonymous requests here, because the browsable API renderer
+        # calls get_queryset() even when rendering a permission-denied response, and AnonymousUser
+        # has no is_researcher attribute, which will cause this line to throw.
+        # So we need to short-circuit with is_authenticated first.
+        if self.request.user.is_authenticated and self.request.user.is_researcher:
             preview_studies = Study.objects.filter(
                 shared_preview=True
             ) | studies_for_which_user_has_perm(

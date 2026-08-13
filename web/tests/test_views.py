@@ -428,12 +428,18 @@ class StudiesListViewTestCase(TestCase):
     @parameterized.expand([(True, 302), (False, 200)])
     @patch("web.views.StudiesListView.get_form")
     @patch.object(StudiesListView, "request", create=True)
-    def test_post(self, is_valid, status_code, mock_request, mock_get_form):
-        with patch.object(StudiesListView, "object_list", create=True):
-            mock_get_form().is_valid.return_value = is_valid
-            view = StudiesListView()
-            response = view.post(mock_request)
-            self.assertEqual(response.status_code, status_code)
+    @patch.object(StudiesListView, "get_queryset", return_value=[])
+    def test_post(
+        self, is_valid, status_code, mock_get_queryset, mock_request, mock_get_form
+    ):
+        mock_get_form().is_valid.return_value = is_valid
+        view = StudiesListView()
+        response = view.post(mock_request)
+        self.assertEqual(response.status_code, status_code)
+        # post() must set object_list, since get_context_data() requires it when
+        # this view is reached via POST and the form is invalid.
+        mock_get_queryset.assert_called_once_with()
+        self.assertEqual(view.object_list, [])
 
     def test_search_options_auth_user(self):
         mock_request = MagicMock(method="GET")

@@ -57,8 +57,13 @@ class TwoFactorAuthLoginView(UserPassesTestMixin, LoginView):
     form_class = TOTPCheckForm
 
     def user_is_researcher_or_staff(self):
-        return getattr(self.request.user, "is_researcher") or getattr(
-            self.request.user, "is_staff"
+        # We need a default value (False) when trying to retrieve the is_researcher
+        # attribute from the requesting user to handle AnonymousUser cases,
+        # otherwise this throws 'AnonymousUser' object has no attribute 'is_researcher'
+        # (normally a view that needs user attributes sits behind LoginRequiredMixin
+        # or ResearcherLoginRequiredMixin, but login pages are deliberately public).
+        return getattr(self.request.user, "is_researcher", False) or getattr(
+            self.request.user, "is_staff", False
         )
 
     test_func = user_is_researcher_or_staff
