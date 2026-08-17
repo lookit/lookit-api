@@ -66,8 +66,8 @@
                 <script src="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous"></script>
             {% endif %}
         {% endfor %}
-        <!-- External JS: study-specific plugins/extensions -->
-        {% for plugin in study.jspsych_plugins.all %}
+        <!-- External JS: study-specific plugins/extensions (any autoload plugins are excluded, as they load above) -->
+        {% for plugin in study_plugins %}
             <script src="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous"></script>
         {% endfor %}
         <!-- CHS jsPsych JS: CHS-specific plugins/extensions, load order set by JSPsychPlugin order field -->
