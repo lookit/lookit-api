@@ -17,8 +17,21 @@
 {% block content %}
     {% url 'exp:lab-edit' pk=lab.id as url_lab_edit %}
     {% url 'exp:lab-members' pk=lab.id as url_lab_members %}
-    {% set_variable '<div><a href="'|add:url_lab_edit|add:'">Edit lab</a></div>' as link_edit_lab %}
-    {% set_variable '<div><a href="'|add:url_lab_members|add:'">View/manage lab members</a></div>' as link_lab_members %}
+    {% comment %}
+        Only link to pages this researcher can actually open: both views raise a 403
+        for researchers without the relevant permissions, so an ungated link is a
+        dead end.
+    {% endcomment %}
+    {% if can_edit_lab %}
+        {% set_variable '<div><a href="'|add:url_lab_edit|add:'">Edit lab</a></div>' as link_edit_lab %}
+    {% else %}
+        {% set_variable "" as link_edit_lab %}
+    {% endif %}
+    {% if can_see_lab_researchers %}
+        {% set_variable '<div><a href="'|add:url_lab_members|add:'">View/manage lab members</a></div>' as link_lab_members %}
+    {% else %}
+        {% set_variable "" as link_lab_members %}
+    {% endif %}
     {% if in_this_lab %}
         {% set_variable "<div>You have joined this lab.</div>" as lab_join_message %}
     {% elif requested_this_lab %}

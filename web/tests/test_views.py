@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, PropertyMock, patch, sentinel
 
 from django.contrib.sites.models import Site
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.urls import reverse
 from django.views.generic.list import MultipleObjectMixin
 from django_dynamic_fixture import G
@@ -428,12 +428,18 @@ class StudiesListViewTestCase(TestCase):
     @parameterized.expand([(True, 302), (False, 200)])
     @patch("web.views.StudiesListView.get_form")
     @patch.object(StudiesListView, "request", create=True)
-    def test_post(self, is_valid, status_code, mock_request, mock_get_form):
-        with patch.object(StudiesListView, "object_list", create=True):
-            mock_get_form().is_valid.return_value = is_valid
-            view = StudiesListView()
-            response = view.post(mock_request)
-            self.assertEqual(response.status_code, status_code)
+    @patch.object(StudiesListView, "get_queryset", return_value=[])
+    def test_post(
+        self, is_valid, status_code, mock_get_queryset, mock_request, mock_get_form
+    ):
+        mock_get_form().is_valid.return_value = is_valid
+        view = StudiesListView()
+        response = view.post(mock_request)
+        self.assertEqual(response.status_code, status_code)
+        # post() must set object_list, since get_context_data() requires it when
+        # this view is reached via POST and the form is invalid.
+        mock_get_queryset.assert_called_once_with()
+        self.assertEqual(view.object_list, [])
 
     def test_search_options_auth_user(self):
         mock_request = MagicMock(method="GET")
@@ -957,3 +963,116 @@ class StudiesHistoryViewTestCase(TestCase):
 # - external studies
 # TODO: ExperimentAssetsProxyView
 # - check have to be authenticated, maybe that's it for now?
+
+
+class JsPsychExperimentViewTestCase(TestCase):
+    def setUp(self):
+        """Set up test data for participant jsPsych view."""
+        from studies.models import JSPsychPlugin, StudyType
+
+        self.user = G(User, is_active=True)
+        self.child = G(Child, user=self.user)
+        self.lab = G(Lab)
+        self.study = G(
+            Study,
+            lab=self.lab,
+            study_type=StudyType.get_jspsych(),
+            public=True,
+        )
+        self.study.state = "active"
+        self.study.save()
+
+        # Create test plugins
+        self.jspsych_library_plugin = JSPsychPlugin.objects.create(
+            name="jsPsych Core",
+            url="https://unpkg.com/jspsych@8.0.3",
+            integrity="sha384-test1",
+            category="jspsych-library",
+            autoload=True,
+        )
+        self.chs_plugin = JSPsychPlugin.objects.create(
+            name="CHS Templates",
+            url="https://unpkg.com/@lookit/templates@3.2.0",
+            integrity="sha384-test3",
+            category="chs-jspsych",
+            autoload=True,
+        )
+        self.autoload_plugin = JSPsychPlugin.objects.create(
+            name="Fullscreen",
+            url="https://unpkg.com/@jspsych/plugin-fullscreen@1.0.0",
+            integrity="sha384-test5",
+            category="jspsych",
+            autoload=True,
+        )
+
+    @patch("web.views.get_jspsych_aws_values")
+    def test_jspsych_experiment_context_contains_library_plugins(self, mock_aws):
+        """Test that experiment context includes jspsych_library plugins."""
+        mock_aws.return_value = {
+            "accessKeyId": "test-key",
+            "secretAccessKey": "test-secret",
+            "sessionToken": "test-token",
+            "expiration": "2099-12-31T23:59:59Z",
+        }
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(
+            reverse(
+                "web:jspsych-experiment",
+                kwargs={"uuid": self.study.uuid, "child_id": self.child.uuid},
+            )
+        )
+
+        self.assertIn("jspsych_library", response.context)
+        library_plugins = list(response.context["jspsych_library"])
+
+        # Should include library plugin (no show_in_ui filter for participant view)
+        self.assertIn(self.jspsych_library_plugin, library_plugins)
+
+    @patch("web.views.get_jspsych_aws_values")
+    def test_jspsych_experiment_context_contains_chs_plugins(self, mock_aws):
+        """Test that experiment context includes chs_plugins."""
+        mock_aws.return_value = {
+            "accessKeyId": "test-key",
+            "secretAccessKey": "test-secret",
+            "sessionToken": "test-token",
+            "expiration": "2099-12-31T23:59:59Z",
+        }
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(
+            reverse(
+                "web:jspsych-experiment",
+                kwargs={"uuid": self.study.uuid, "child_id": self.child.uuid},
+            )
+        )
+
+        self.assertIn("chs_plugins", response.context)
+        chs_plugins = list(response.context["chs_plugins"])
+
+        # Should include CHS plugin (no show_in_ui filter for participant view)
+        self.assertIn(self.chs_plugin, chs_plugins)
+
+    @patch("web.views.get_jspsych_aws_values")
+    def test_jspsych_experiment_context_contains_autoload_plugins(self, mock_aws):
+        """Test that experiment context includes autoload_plugins."""
+        mock_aws.return_value = {
+            "accessKeyId": "test-key",
+            "secretAccessKey": "test-secret",
+            "sessionToken": "test-token",
+            "expiration": "2099-12-31T23:59:59Z",
+        }
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(
+            reverse(
+                "web:jspsych-experiment",
+                kwargs={"uuid": self.study.uuid, "child_id": self.child.uuid},
+            )
+        )
+
+        self.assertIn("autoload_plugins", response.context)
+        autoload_plugins = list(response.context["autoload_plugins"])
+
+        # Should include the autoload plugin
+        self.assertIn(self.autoload_plugin, autoload_plugins)

@@ -30,7 +30,7 @@ class Command(BaseCommand):
         bs5_filename = bs5_url.split("/")[-1]
 
         # the known root directory of the BS5 archive zip file
-        zip_root_dir = Path("bootstrap-5.2.0")
+        zip_root_dir = Path(f"bootstrap-{bs5_version}")
 
         # get the hash of the exisiting compiled css file
         css_hash = self.get_css_hash()

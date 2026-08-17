@@ -1,4 +1,5 @@
 import logging
+import re
 import uuid
 from datetime import datetime, timedelta, timezone
 from enum import Enum
@@ -17,6 +18,7 @@ from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.shortcuts import reverse
 from django.utils import timezone as dutimezone
+from django.utils.html import format_html
 from django.utils.translation import gettext as _
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from guardian.shortcuts import get_users_with_perms
@@ -30,6 +32,7 @@ from studies import workflow
 from studies.helpers import (
     FrameActionDispatcher,
     ResponseEligibility,
+    efp_runner_version_error,
     get_absolute_url,
     get_eligibility_for_response,
     send_mail,
@@ -316,6 +319,98 @@ class StudyType(models.Model):
         return cls.objects.get(id=3)
 
 
+class JSPsychPlugin(models.Model):
+    class Category(models.TextChoices):
+        JSPSYCH_LIBRARY = "jspsych-library", "jsPsych Library"
+        JSPSYCH = "jspsych", "Core jsPsych"
+        JSPSYCH_CONTRIB = "jspsych-contrib", "jsPsych-contrib"
+        CHS_JSPSYCH = "chs-jspsych", "CHS jsPsych"
+
+    class FileType(models.TextChoices):
+        JS = "js", "JavaScript"
+        CSS = "css", "CSS"
+
+    name = models.CharField(max_length=255)
+    url = models.URLField(max_length=500)
+    integrity = models.CharField(max_length=255)
+    category = models.CharField(max_length=20, choices=Category.choices)
+    file_type = models.CharField(
+        max_length=3, choices=FileType.choices, default=FileType.JS
+    )
+    order = models.PositiveSmallIntegerField(default=0)
+    docs_url = models.URLField(blank=True)
+    autoload = models.BooleanField(default=False)
+    show_in_ui = models.BooleanField(default=True)
+    provides = models.JSONField(default=list, blank=True)
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = "jsPsych plugin"
+        verbose_name_plural = "jsPsych plugins"
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def label_html(self):
+        """Custom label for plugin that appends version and/or docs link in parentheses, if they exist."""
+        version_html = format_html("v{}", self.version) if self.version else ""
+        docs_html = (
+            format_html(
+                '<a href="{}" target="_blank" rel="noopener noreferrer">docs</a>',
+                self.docs_url,
+            )
+            if self.docs_url
+            else ""
+        )
+        if version_html and docs_html:
+            suffix = format_html(
+                ' <span class="text-muted">({}, {})</span>', version_html, docs_html
+            )
+        elif version_html or docs_html:
+            suffix = format_html(
+                ' <span class="text-muted">({})</span>', version_html or docs_html
+            )
+        else:
+            suffix = ""
+        return format_html("{}{}", self.name, suffix)
+
+    @property
+    def version(self):
+        """
+        Gets the current package version, based on the package URL. Returns an empty string if no match is found.
+        """
+        match = re.search(r"@([\d.]+(?:-[\w.]+)?)", self.url)
+        return match.group(1) if match else ""
+
+    def _get_default_docs_url(self):
+        if self.category == self.Category.JSPSYCH:
+            match = re.search(r"@jspsych/(plugin|extension)-([^@/]+)", self.url)
+            if match:
+                kind, name = match.group(1), match.group(2)
+                return f"https://www.jspsych.org/latest/{kind}s/{name}/"
+        elif self.category == self.Category.JSPSYCH_CONTRIB:
+            match = re.search(
+                r"@jspsych-contrib/((?:plugin|extension)-[^@/]+)", self.url
+            )
+            if match:
+                return f"https://github.com/jspsych/jspsych-contrib/tree/main/packages/{match.group(1)}/"
+        elif self.category == self.Category.CHS_JSPSYCH:
+            match = re.search(r"@lookit/([^@/]+)", self.url)
+            if match:
+                return f"https://lookit.readthedocs.io/projects/chs-jspsych/en/latest/{match.group(1)}/"
+        return ""
+
+    def save(self, *args, **kwargs):
+        """
+        Sets a default documentation URL when the package is first created/saved, based on the package name and category.
+        This does not run again after the docs_url has available so that it can be manually modified without being overwritten.
+        """
+        if not self.docs_url:
+            self.docs_url = self._get_default_docs_url()
+        super().save(*args, **kwargs)
+
+
 def default_study_structure():
     return {"frames": {}, "sequence": []}
 
@@ -414,6 +509,11 @@ class Study(models.Model):
     )
     must_not_have_participated = models.ManyToManyField(
         "self", blank=True, symmetrical=False, related_name="expected_nonparticipation"
+    )
+    jspsych_plugins = models.ManyToManyField(
+        JSPsychPlugin,
+        blank=True,
+        related_name="studies",
     )
 
     # Groups
@@ -895,6 +995,55 @@ class Study(models.Model):
         if self.has_reached_max_responses:
             raise RuntimeError(
                 f'Cannot activate the study "{self.name}" ({self.id}) because it has reached its maximum number of responses. Be sure to handle all pending consents and review existing responses, as this may open up slots. Then increase the response limit in the Study Ad if necessary, and try starting the study again.'
+            )
+
+    def get_efp_runner_version_error(self):
+        """Check whether this study's pinned experiment runner version is still usable.
+
+        Returns the researcher-facing EFP version message if it's a old Pipe version,
+        or None if the version is recent enough (newer than the cutoff date).
+        This only applies to Ember Frame Player studies using the default runner
+        repo; everything else is exempt and always returns None.
+
+        Callers decide how to surface the message (a RuntimeError that aborts a state
+        transition, a messages.error that blocks a build), which is why this returns a
+        string rather than raising.
+        """
+        if not self.study_type.is_ember_frame_player:
+            return None
+
+        metadata = self.metadata or {}
+
+        # URL falls back to the default repo when player_repo_url is missing, which is probably only
+        # the case for a study that has never been saved through the EFP design form.
+        # Use "or" rather than metadata.get() with a default, since the default only applies
+        # when the key is absent. We want the default when the URL key is present but has a value of None.
+        # (Otherwise the value would stay None, and is_default_player_repo(None) is False, and the study gets
+        # silently exempted from the check as if it were on a custom fork.)
+        player_repo_url = (
+            metadata.get("player_repo_url") or settings.EMBER_EXP_PLAYER_REPO
+        )
+
+        return efp_runner_version_error(
+            player_repo_url, metadata.get("last_known_player_sha")
+        )
+
+    def check_efp_runner_version(self, ev):
+        """Refuse to change state if the experiment runner version is deprecated.
+
+        This is a wrapper for get_efp_runner_version_error. It is only called by
+        state transitions in workflow.py, so it takes an event object, which is
+        the triggering event (state change). If the version is too old, it raises
+        an error, which stops the state change, and provides the user-facing message.
+
+        :param ev: The event object
+        :type ev: transitions.core.EventData
+        :raise: RuntimeError
+        """
+        error = self.get_efp_runner_version_error()
+        if error:
+            raise RuntimeError(
+                f'Cannot {ev.event.name} the study "{self.name}" ({self.id}): {error}'
             )
 
     def notify_administrators_of_activation(self, ev):

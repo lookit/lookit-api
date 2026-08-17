@@ -14,7 +14,7 @@ from django.conf import settings
 from django.core.files import File
 
 from project import storages
-from studies.helpers import send_mail
+from studies.helpers import get_repo_path, send_mail
 
 logger = logging.getLogger(__name__)
 
@@ -279,10 +279,6 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
         )
 
         StudyLog.objects.create(study=study, action=action, user=researcher, extra=logs)
-
-
-def get_repo_path(full_repo_path):
-    return re.search("https://github.com/(.*)", full_repo_path).group(1).rstrip("/")
 
 
 def get_branch_sha(repo_url, branch):

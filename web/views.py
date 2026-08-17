@@ -41,7 +41,15 @@ from accounts.utils import hash_id
 from exp.mixins.paginator_mixin import PaginatorMixin
 from project import settings
 from studies.helpers import get_experiment_absolute_url
-from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum, Video
+from studies.models import (
+    JSPsychPlugin,
+    Lab,
+    Response,
+    Study,
+    StudyType,
+    StudyTypeEnum,
+    Video,
+)
 from web.mixins import AuthenticatedRedirectMixin
 from web.models import Institution, InstitutionSection
 
@@ -421,6 +429,11 @@ class StudiesListView(generic.ListView, FormView):
     model = Study
 
     def post(self, request, *args, **kwargs):
+        # ListView.get() normally sets object_list, rather than POST.
+        # But since this is also a form, this view can be reached first via POST,
+        # which calls form_invalid(), then get_context_data(),
+        # which requires the object_list. So we need to set it here.
+        self.object_list = self.get_queryset()
         form = self.get_form()
 
         if form.is_valid():
@@ -668,6 +681,11 @@ class StudiesHistoryView(
     responses_per_study = 10
 
     def post(self, request, *args, **kwargs):
+        # ListView.get() normally sets object_list, rather than POST.
+        # But since this is also a form, this view can be reached first via POST,
+        # which calls form_invalid(), then get_context_data(),
+        # which requires the object_list. So we need to set it here.
+        self.object_list = self.get_queryset()
         form = self.get_form()
 
         if form.is_valid():
@@ -938,6 +956,27 @@ class JsPsychExperimentView(
         response = get_jspsych_response(context)
         context.update(response=response)
         context.update({"aws_vars": self.aws_vars})
+        context["jspsych_library"] = JSPsychPlugin.objects.filter(
+            category=JSPsychPlugin.Category.JSPSYCH_LIBRARY, autoload=True
+        ).order_by("order")
+        context["chs_plugins"] = JSPsychPlugin.objects.filter(
+            category=JSPsychPlugin.Category.CHS_JSPSYCH, autoload=True
+        ).order_by("order")
+        context["autoload_plugins"] = (
+            JSPsychPlugin.objects.filter(autoload=True)
+            .exclude(
+                category__in=[
+                    JSPsychPlugin.Category.JSPSYCH_LIBRARY,
+                    JSPsychPlugin.Category.CHS_JSPSYCH,
+                ]
+            )
+            .order_by("order")
+        )
+        # Study-specific plugins only: autoload plugins are loaded globally above
+        # (autoload_plugins / jspsych_library / chs_plugins), so excluding them here
+        # keeps a stray autoload plugin in the m2m from being loaded twice. No explicit
+        # order_by, to preserve the model's default "name" ordering used before.
+        context["study_plugins"] = self.object.jspsych_plugins.exclude(autoload=True)
         return context
 
 

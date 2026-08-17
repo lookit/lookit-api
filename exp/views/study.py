@@ -38,11 +38,13 @@ from studies.forms import (
     StudyEditForm,
 )
 from studies.helpers import (
+    EFP_MINIMUM_COMMIT_DATE,
+    EFP_MINIMUM_COMMIT_DATE_DISPLAY,
     get_absolute_url,
     get_experiment_absolute_url,
     send_mail,
 )
-from studies.models import Study, StudyType
+from studies.models import JSPsychPlugin, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 from studies.queries import get_study_list_qs
 from studies.tasks import ember_build_and_gcp_deploy
@@ -840,6 +842,17 @@ class StudyBuildView(
 
     def post(self, request, *args, **kwargs):
         study = self.object
+
+        # Check the EFP version here rather than in user_can_build_study
+        # (a False there will go through handle_no_permission(), which is the wrong
+        # response to "your runner version is too old"). Blocking here also keeps the
+        # deprecated version out of the build task itself, which retries on failure
+        # and would burn all 10 attempts on something no retry can fix.
+        error = study.get_efp_runner_version_error()
+        if error:
+            messages.error(request, error)
+            return HttpResponseRedirect(self.get_redirect_url())
+
         study.is_building = True
         study.save(update_fields=["is_building"])
         ember_build_and_gcp_deploy.delay(study.uuid, self.request.user.uuid)
@@ -961,6 +974,23 @@ class JsPsychPreviewView(
         response = get_jspsych_response(context, is_preview=True)
         context.update(response=response)
         context.update({"aws_vars": self.aws_vars})
+        context["jspsych_library"] = JSPsychPlugin.objects.filter(
+            category=JSPsychPlugin.Category.JSPSYCH_LIBRARY, autoload=True
+        ).order_by("order")
+        context["chs_plugins"] = JSPsychPlugin.objects.filter(
+            category=JSPsychPlugin.Category.CHS_JSPSYCH, autoload=True
+        ).order_by("order")
+        context["autoload_plugins"] = (
+            JSPsychPlugin.objects.filter(autoload=True)
+            .exclude(
+                category__in=[
+                    JSPsychPlugin.Category.JSPSYCH_LIBRARY,
+                    JSPsychPlugin.Category.CHS_JSPSYCH,
+                ]
+            )
+            .order_by("order")
+        )
+        context["study_plugins"] = self.object.jspsych_plugins.exclude(autoload=True)
         return context
 
 
@@ -1212,6 +1242,14 @@ class EFPEditView(ExperimentRunnerEditView):
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["branch"] = settings.EMBER_EXP_PLAYER_BRANCH
+        # Pass info into the view for EFP version date validation.
+        # The client-side version deprecation is just a warning to save the researcher a
+        # round trip to the server. EFPForm validation is what actually enforces the cutoff.
+        # The repo is passed along because the cutoff only applies to the default repo, and
+        # the researcher set the URL form field to a fork without reloading the page.
+        context["default_repo"] = settings.EMBER_EXP_PLAYER_REPO
+        context["min_commit_date"] = EFP_MINIMUM_COMMIT_DATE.isoformat()
+        context["min_commit_date_display"] = EFP_MINIMUM_COMMIT_DATE_DISPLAY
         return context
 
 
@@ -1267,6 +1305,26 @@ class ExternalEditView(ExperimentRunnerEditView):
 class JSPsychEditView(ExperimentRunnerEditView):
     template_name = "studies/experiment_runner/jspsych_edit.html"
     form_class = JSPsychForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["jspsych_library_plugins"] = JSPsychPlugin.objects.filter(
+            category=JSPsychPlugin.Category.JSPSYCH_LIBRARY, show_in_ui=True
+        ).order_by("order")
+        context["chs_plugins"] = JSPsychPlugin.objects.filter(
+            category=JSPsychPlugin.Category.CHS_JSPSYCH, show_in_ui=True
+        ).order_by("order")
+        context["autoload_plugins"] = (
+            JSPsychPlugin.objects.filter(autoload=True, show_in_ui=True)
+            .exclude(
+                category__in=[
+                    JSPsychPlugin.Category.JSPSYCH_LIBRARY,
+                    JSPsychPlugin.Category.CHS_JSPSYCH,
+                ]
+            )
+            .order_by("order")
+        )
+        return context
 
     def get_initial(self) -> Dict[str, Any]:
         initial = super().get_initial()

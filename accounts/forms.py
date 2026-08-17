@@ -265,7 +265,7 @@ class PasswordChangeForm(DjangoPasswordChangeForm):
             password = self.cleaned_data.get("new_password2")
             if len(password) < 16:
                 raise ValidationError("Password must be at least 16 characters.")
-        return super().clean_new_password2()
+        return self.cleaned_data.get("new_password2")
 
     class Meta:
         model = User

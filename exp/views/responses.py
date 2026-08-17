@@ -43,6 +43,7 @@ from exp.views.mixins import (
     StudyLookupMixin,
 )
 from exp.views.responses_data import DEMOGRAPHIC_COLUMNS, RESPONSE_COLUMNS
+from studies.helpers import get_absolute_url
 from studies.models import Feedback, Response, Study, Video
 from studies.permissions import StudyPermission
 from studies.queries import (
@@ -543,7 +544,7 @@ def build_zip_for_psychds(
             "README.md",
             PSYCHDS_README_STR.format(
                 study_title=study.name,
-                study_url=f'"https://childrenhelpingscience.com/exp/studies/{study.id}/responses/all/"',
+                study_url=f'"{get_absolute_url(reverse("exp:study-responses-all", kwargs={"pk": study.id}))}"',
                 download_date=str(
                     datetime.datetime.now().strftime("%A, %B %d, %Y at %I:%M %p")
                 ),
@@ -1077,10 +1078,14 @@ class StudyResponseVideoAttachment(
             return redirect(view_url)
 
 
-class StudyResponseSubmitFeedback(StudyLookupMixin, UserPassesTestMixin, View):
+class StudyResponseSubmitFeedback(
+    ResearcherLoginRequiredMixin, UserPassesTestMixin, StudyLookupMixin, View
+):
     """
     View to create or edit response feedback.
     """
+
+    raise_exception = True
 
     def user_can_edit_feedback(self):
         user = self.request.user

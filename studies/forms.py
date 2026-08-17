@@ -12,7 +12,8 @@ from PIL import Image
 
 from accounts.queries import compile_expression
 from project import settings
-from studies.models import Lab, Response, Study
+from studies import helpers
+from studies.models import JSPsychPlugin, Lab, Response, Study
 from studies.permissions import LabPermission, StudyPermission
 
 CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#criteria-expression"
@@ -450,8 +451,14 @@ class EFPForm(ModelForm):
     )
     last_known_player_sha = forms.CharField(
         label="Experiment runner version (commit SHA)",
+        required=False,
+        widget=forms.TextInput(
+            attrs={"placeholder": "Leave blank to use the latest version"}
+        ),
         help_text=(
-            "If you're using the default Ember Frame Player, you can see <a "
+            "Leave this blank to use the latest version, which will be filled in "
+            "for you when you save. If you're using the default Ember Frame Player, "
+            "you can see <a "
             f'href="{settings.EMBER_EXP_PLAYER_REPO}/commits/{settings.EMBER_EXP_PLAYER_BRANCH}" target="_blank" rel="noopener noreferrer">'
             "the commits page</a> for other commit SHA options."
         ),
@@ -493,6 +500,8 @@ class EFPForm(ModelForm):
 
     class Meta:
         model = Study
+        # player_repo_url must come before player SHA in this list because it determines
+        # the validation order (clean_<field>), and we must validate URL before SHA.
         fields = (
             "use_generator",
             "structure",
@@ -539,9 +548,9 @@ class EFPForm(ModelForm):
         )
 
         try:
-            if not requests.get(player_repo_url).ok:
+            if not requests.get(player_repo_url, timeout=helpers.GITHUB_API_TIMEOUT).ok:
                 raise validation_error
-        except requests.exceptions.ConnectionError:
+        except requests.exceptions.RequestException:
             raise validation_error
 
         return player_repo_url
@@ -550,8 +559,43 @@ class EFPForm(ModelForm):
         last_known_player_sha = self.cleaned_data.get("last_known_player_sha")
         player_repo_url = self.cleaned_data.get("player_repo_url")
 
-        if last_known_player_sha and player_repo_url:
-            if not requests.get(f"{player_repo_url}/commit/{last_known_player_sha}").ok:
+        # player_repo_url is cleaned first, so if it raises an error then it will be None here,
+        # and we should not validate the SHA (otherwise it will throw a second, misleading error)
+        if not player_repo_url:
+            return last_known_player_sha
+
+        if not last_known_player_sha:
+            # Blank means "use the latest version". Resolve it now and store the
+            # most recent commit (study will be pinned to that version going forward).
+            # Whatever HEAD is will be newer than the date cutoff, so no need to
+            # run the date check via efp_runner_version_error.
+            sha, error = helpers.get_branch_head_sha(
+                player_repo_url, settings.EMBER_EXP_PLAYER_BRANCH
+            )
+            if error:
+                raise forms.ValidationError(error)
+            return sha
+
+        if helpers.is_default_player_repo(player_repo_url):
+            # One API call covers both "does this commit exist" and "is it too old".
+            error = helpers.efp_runner_version_error(
+                player_repo_url, last_known_player_sha
+            )
+            if error:
+                raise forms.ValidationError(error)
+        else:
+            # Custom repo: check the commit exists, but don't apply the version date cutoff.
+            # These may not even be hosted on GitHub, so we can't use the API.
+            try:
+                response = requests.get(
+                    f"{player_repo_url}/commit/{last_known_player_sha}",
+                    timeout=helpers.GITHUB_API_TIMEOUT,
+                )
+            except requests.exceptions.RequestException:
+                raise forms.ValidationError(
+                    f"Could not check whether frameplayer commit {last_known_player_sha} exists."
+                )
+            if not response.ok:
                 raise forms.ValidationError(
                     f"Frameplayer commit {last_known_player_sha} does not exist."
                 )
@@ -612,6 +656,11 @@ class ExternalForm(ModelForm):
         fields = ()
 
 
+class JSPsychPluginChoiceField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return obj.label_html
+
+
 class JSPsychForm(ModelForm):
     experiment = forms.CharField(
         label="jsPsych Experiment Code",
@@ -623,8 +672,60 @@ class JSPsychForm(ModelForm):
             height="100%",
             showprintmargin=False,
         ),
-        help_text="Please enter jsPsych experiment code. This is the JavaScript code used to generate a jsPsych study, not the surrounding HTML.",
+        help_text="Please enter your jsPsych experiment code above. This is the JavaScript code used to generate a jsPsych study, not the surrounding HTML.",
     )
+    # Separate plugin list by category - for display only
+    jspsych_plugins_core = JSPsychPluginChoiceField(
+        queryset=JSPsychPlugin.objects.filter(
+            category=JSPsychPlugin.Category.JSPSYCH, autoload=False
+        ),
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
+        required=False,
+        label="Core jsPsych",
+        help_text='Select any additional plugins/extensions your experiment uses from the <a href="https://github.com/jspsych/jsPsych/tree/main/packages">core jsPsych library</a> and <a href="https://github.com/jspsych/jspsych-contrib/tree/main/packages">jsPsych-contrib Github repository</a>.<br>Selecting more plugins/extensions than your study needs will cause it to load more slowly.',
+    )
+    jspsych_plugins_contrib = JSPsychPluginChoiceField(
+        queryset=JSPsychPlugin.objects.filter(
+            category=JSPsychPlugin.Category.JSPSYCH_CONTRIB, autoload=False
+        ),
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
+        required=False,
+        label="jsPsych-contrib",
+    )
+
+    def __init__(self, *args, **kwargs):
+        """Split the single jspsych_plugins field value for this study into categories, for display only."""
+        super().__init__(*args, **kwargs)
+        if self.instance.pk:
+            current = self.instance.jspsych_plugins.all()
+            self.initial["jspsych_plugins_core"] = current.filter(
+                category=JSPsychPlugin.Category.JSPSYCH
+            )
+            self.initial["jspsych_plugins_contrib"] = current.filter(
+                category=JSPsychPlugin.Category.JSPSYCH_CONTRIB
+            )
+            self.initial["jspsych_plugins_chs"] = current.filter(
+                category=JSPsychPlugin.Category.CHS_JSPSYCH
+            )
+
+    def save(self, commit=True):
+        """Combine the separate jsPsych plugin category selections from the form into a single jspsych_plugins value to be saved for this study."""
+        instance = super().save(commit=commit)
+
+        def save_plugins():
+            all_plugins = (
+                list(self.cleaned_data.get("jspsych_plugins_core") or [])
+                + list(self.cleaned_data.get("jspsych_plugins_contrib") or [])
+                + list(self.cleaned_data.get("jspsych_plugins_chs") or [])
+            )
+            instance.jspsych_plugins.set(all_plugins)
+
+        if commit:
+            save_plugins()
+        else:
+            self.save_m2m = save_plugins
+
+        return instance
 
     class Meta:
         model = Study
