@@ -990,10 +990,6 @@ class JsPsychPreviewView(
             )
             .order_by("order")
         )
-        # Study-specific plugins only: autoload plugins are loaded globally above
-        # (autoload_plugins / jspsych_library / chs_plugins), so excluding them here
-        # keeps a stray autoload plugin in the m2m from being loaded twice. No explicit
-        # order_by, to preserve the model's default "name" ordering used before.
         context["study_plugins"] = self.object.jspsych_plugins.exclude(autoload=True)
         return context
 
