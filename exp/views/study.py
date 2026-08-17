@@ -990,6 +990,7 @@ class JsPsychPreviewView(
             )
             .order_by("order")
         )
+        context["study_plugins"] = self.object.jspsych_plugins.exclude(autoload=True)
         return context
 
 
