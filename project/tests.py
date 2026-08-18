@@ -46,12 +46,11 @@ class CeleryBrokerPoolLimitTests(SimpleTestCase):
             (0, None),
             "CELERY_BROKER_POOL_LIMIT must not be 0 or None -- both take kombu's "
             "crashing pool-shrink path. Leave the setting unset so Celery's "
-            "default applies. See CELERY_KOMBU_POOL_BUG.md.",
+            "default applies.",
         )
         self.assertGreaterEqual(
             limit,
             KOMBU_DEFAULT_POOL_LIMIT,
             "CELERY_BROKER_POOL_LIMIT must not be smaller than kombu's default "
-            "pool size, or the first pool build takes the crashing shrink path. "
-            "See CELERY_KOMBU_POOL_BUG.md.",
+            "pool size, or the first pool build takes the crashing shrink path. ",
         )
