@@ -129,6 +129,37 @@ else:
         integrations=[DjangoIntegration(), CeleryIntegration()],
     )
 
+# Without logging config, unhandled 500s are captured by Sentry but
+# never written to stdout, so tracebacks don't appear in the
+# GKE pod logs - only uwsgi's HTTP 500 request line does. Add an
+# explicit stdout StreamHandler for non-DEBUG so request-exception tracebacks
+# are also visible in cloud logs.
+# `disable_existing_loggers=False` keeps Django's other default loggers intact.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "%(asctime)s %(levelname)s %(name)s %(process)d %(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        # Unhandled request exceptions (HTTP 500s) log an ERROR here, with the
+        # traceback attached via exc_info.
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
+}
+
 
 INTERNAL_IPS = ["127.0.0.1"]
 
