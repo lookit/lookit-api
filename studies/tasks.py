@@ -74,7 +74,9 @@ WITH message_targets AS ( -- all valid user-child-study triplets
         FROM studies_response sr
                  INNER JOIN accounts_child ac on sr.child_id = ac.id
                  INNER JOIN studies_studytype sst on sr.study_type_id = sst.id
-        WHERE (sr.completed_consent_frame = true AND sst.id = 1)
+        -- Internal studies (EFP id 1, jsPsych id 3) count as participation once the
+        -- child has completed the consent frame; external studies (id 2) always count.
+        WHERE (sr.completed_consent_frame = true AND sst.id IN (1, 3))
 	            OR (sst.id = 2)
     )
 ),

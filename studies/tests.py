@@ -664,6 +664,72 @@ class TestAnnouncementEmailFunctionality(TestCase):
         # Check that the message target no longer has this child for this study
         self.assertNotIn(message_target, potential_message_targets())
 
+    def _active_jspsych_study_target(self):
+        """Set up an active, public jsPsych study with an eligible user/child."""
+        user = G(User, is_active=True)
+        child = G(
+            Child,
+            user=user,
+            birthday=date.today() - timedelta(days=365),
+        )
+        study = G(
+            Study,
+            name="jsPsych Study",
+            study_type=StudyType.get_jspsych(),
+            image=SimpleUploadedFile("fake_image.png", b"", content_type="image/png"),
+            public=True,
+            max_age_years=2,
+            criteria_expression="",
+        )
+        study.state = "active"
+        study.save()
+
+        # Double check this is a jsPsych study
+        self.assertTrue(study.study_type.is_jspsych)
+
+        return (
+            child,
+            study,
+            MessageTarget(
+                user_id=user.pk,
+                child_id=child.pk,
+                study_id=study.pk,
+            ),
+        )
+
+    def test_potential_message_targets_jspsych(self):
+        child, study, message_target = self._active_jspsych_study_target()
+
+        # Check that user/child are potential message targets in new jsPsych study
+        self.assertIn(message_target, potential_message_targets())
+
+        # Add response from this child for this study, past the consent trial
+        G(
+            Response,
+            study=study,
+            study_type=study.study_type,
+            child=child,
+            completed_consent_frame=True,
+        )
+
+        # Check that the message target no longer has this child for this study
+        self.assertNotIn(message_target, potential_message_targets())
+
+    def test_potential_message_targets_jspsych_without_consent(self):
+        child, study, message_target = self._active_jspsych_study_target()
+
+        # A response that never got past the consent trial does not count as
+        # participation, so the child should still be a potential message target.
+        G(
+            Response,
+            study=study,
+            study_type=study.study_type,
+            child=child,
+            completed_consent_frame=False,
+        )
+
+        self.assertIn(message_target, potential_message_targets())
+
     def test_validated_skips_none_user(self):
         result = list(_validated([(None, [])]))
         self.assertEqual(result, [])
