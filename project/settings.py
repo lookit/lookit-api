@@ -382,7 +382,15 @@ CELERY_TASK_ROUTES = {
     "studies.tasks.send_announcement_emails": {"queue": "email"},
 }
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-CELERY_BROKER_POOL_LIMIT = 0
+# Do not set CELERY_BROKER_POOL_LIMIT to 0 / None - leave it unset (default 10).
+# Either value (None is coerced to 0 by kombu.pools.set_limit) is below kombu's
+# default pool size of 10, so the first `.delay()` in a process takes kombu's
+# pool-*shrink* path (Resource.resize -> _shrink_down -> resource.queue.popleft()).
+# Under our gevent web/worker processes (manage.py / uwsgi run gevent
+# monkey.patch_all) that path crashes with `AttributeError: 'list' object has no
+# attribute 'popleft'` and rolls back any enclosing transaction.
+# It was only set to 0 to silence a benign RabbitMQ "client
+# unexpectedly closed TCP connection" warning (#1432).
 
 LOCALE_PATHS = (os.path.join(BASE_DIR, "../locale"),)
 
