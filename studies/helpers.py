@@ -54,6 +54,10 @@ EFP_LATEST_VERSION_NOT_ON_GITHUB = (
     "repos hosted on GitHub. Please enter a commit SHA for this repo."
 )
 
+# List of templates that extend emails/base. These templates include a footer that
+# needs the recipient's username and a signed token to build the unsubscribe link.
+PARTICIPANT_EMAIL_TEMPLATES = ("custom_email", "study_announcement")
+
 
 def get_absolute_url(path=""):
     return urljoin(settings.BASE_URL, path)
@@ -247,6 +251,18 @@ def send_mail(
     :param str custom_message Custom email message - for use instead of a template
     :kwargs: Context vars for the email template
     """
+    # For ppt email templates, log emails that are missing a username and/or token.
+    # These will still be sent, but will not include an unsubscribe link in the footer.
+    if template_name in PARTICIPANT_EMAIL_TEMPLATES and not (
+        context.get("username") and context.get("token")
+    ):
+        logger.warning(
+            "Sending %s to %s without an unsubscribe link: username and/or token "
+            "missing from the email context.",
+            template_name,
+            to_addresses,
+        )
+
     # For text version: replace images with [IMAGE] so they're not removed entirely
     context_plain_text = copy.deepcopy(context)
     # TODO: use a custom filter rather than striptags to preserve image placeholders in the

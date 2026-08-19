@@ -81,6 +81,46 @@ class EmailTemplatesTestCase(TestCase):
             txt,
         )
 
+    @parameterized.expand(
+        [
+            ({},),
+            ({"username": "fake@email.com", "token": ""},),
+            ({"username": "", "token": "1abc:signature"},),
+        ]
+    )
+    def test_base_html_omits_unsubscribe_link_without_username_and_token(self, context):
+        """A missing unsubscribe context should drop the link, not break the send.
+
+        Reversing the unsubscribe URL with an empty username or token raises
+        NoReverseMatch, which would otherwise fail the whole email.
+        """
+        html = render_to_string("emails/base.html", context)
+        bs = BeautifulSoup(html, "html.parser")
+        links = list(bs.findAll("a"))
+
+        self.assertEqual(len(links), 2)
+        self.assertEqual(links[0]["href"], f"{fake_website}account/email/")
+        self.assertEqual(
+            links[1]["href"],
+            "mailto:childrenhelpingscience@gmail.com?subject=CHS Family Feedback or Question",
+        )
+
+    @parameterized.expand(
+        [
+            ({},),
+            ({"username": "fake@email.com", "token": ""},),
+            ({"username": "", "token": "1abc:signature"},),
+        ]
+    )
+    def test_base_txt_omits_unsubscribe_link_without_username_and_token(self, context):
+        txt = render_to_string("emails/base.txt", context)
+
+        self.assertNotIn("Unsubscribe from all CHS emails", txt)
+        self.assertIn(
+            f"Update your CHS email preferences here: {fake_website}account/email/\n",
+            txt,
+        )
+
     def test_notify_admins_of_lab_creation_html_url(self):
         context = {"lab_id": 4321}
         html = render_to_string("emails/notify_admins_of_lab_creation.html", context)

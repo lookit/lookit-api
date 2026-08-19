@@ -738,6 +738,26 @@ class TestSendMail(TestCase):
             "Email image attachment does not have expected headers",
         )
 
+    def test_send_email_without_username_and_token(self):
+        """A participant email sent without unsubscribe context still goes out.
+
+        This happens when send_mail is called directly (e.g. testing the email queue)
+        rather than through Message.send_as_email, and used to raise NoReverseMatch
+        while rendering the footer.
+        """
+        with self.assertLogs("studies.helpers", level="WARNING") as logs:
+            email = send_mail(
+                "custom_email",
+                "Test email",
+                ["lookit-test-email@mit.edu"],
+                custom_message=mark_safe("<p>no unsubscribe context here</p>"),
+            )
+
+        self.assertIn("without an unsubscribe link", logs.output[0])
+        self.assertNotIn("Unsubscribe from all CHS emails", email.body)
+        self.assertNotIn("Unsubscribe from all CHS emails", email.alternatives[0][0])
+        self.assertIn("Update your CHS email preferences", email.body)
+
     def test_empty_reply_to(self):
         reply_to = []
         email = send_mail(
