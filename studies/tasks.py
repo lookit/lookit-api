@@ -469,7 +469,7 @@ def build_framedata_dict(filename, study_uuid, requesting_user_uuid):
         # if it doesn't exist build the file
         with tempfile.TemporaryDirectory() as temp_directory:
             file_path = os.path.join(temp_directory, csv_filename)
-            with open(file_path, "w") as csv_file:
+            with open(file_path, "w", encoding="utf-8") as csv_file:
                 writer = csv.DictWriter(
                     csv_file,
                     quoting=csv.QUOTE_NONNUMERIC,
