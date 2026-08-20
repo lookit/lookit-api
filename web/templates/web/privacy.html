@@ -6,6 +6,7 @@
     Privacy
 {% endblock title %}
 {% block content %}
+{% url "web:termsofuse" as termsofuse %}
     {% trans "Privacy statement" as trans_priv_statement %}
     {% page_title trans_priv_statement %}
     <h3 class="subheading">{% trans "Introduction" %}</h3>
@@ -217,6 +218,21 @@
         administrative tasks and legal obligations.{% endblocktranslate %}
         </p>
     </div>
+    <h3 class="m-4">{% trans "Compliance with institutional data governance requirements" %}</h3>
+    <div class="m-4">
+        <p>
+            {% blocktranslate %}Children Helping Science is designed specifically for the secure collection and storage of human subject research data. To help you assess whether the Platform meets your institutional requirements, we provide:{% endblocktranslate %}
+        </p>
+        <ul>
+            <li><a href="{{ termsofuse }}" target="_blank" rel="noopener">{% trans "CHS Website Terms of Use" %}</a></li>
+            <li>{% trans "This Privacy Policy" %}</li>
+            <li><a href="https://lookit.readthedocs.io/" target="_blank" rel="noopener">{% trans "Technical documentation" %}</a> {% trans "about Platform security and data storage practices" %}</li>
+            <li>{% trans "The ability to contact us with specific questions about data security, retention, storage location, access controls, and other technical specifications." %}</li>
+        </ul>
+        <p>
+            {% blocktranslate %}If your Institution has imposed specific data governance requirements on you as a condition of funding or participation (such as a Certificate of Confidentiality, a Data Use Agreement, or other data protection policies), you are solely responsible for ensuring that your use of the Children Helping Science Platform complies with those requirements.{% endblocktranslate %}
+        </p>
+    </div>
     <h3 class="subheading">{% trans "For everyone" %}</h3>
     <h3 class="m-4">{% trans "Rights for individuals in the European Economic Area" %}</h3>
     <div class="m-4">
@@ -245,7 +261,13 @@
         </p>
         <p>{% trans "You are under no statutory or contractual obligation to provide any personal data to us." %}</p>
     </div>
-    <h3 class="m-4">{% trans "Additional Information" %}</h3>
+    <h3 class="m-4">{% trans "Funder- and institution-specific confidentiality requirements" %}</h3>
+    <div class="m-4">
+        <p>
+            {% blocktranslate %}Children Helping Science recognizes and respects legal protections such as Certificates of Confidentiality and other data governance requirements imposed by funding agencies or institutions. Consistent with applicable law, Children Helping Science will refuse to disclose identifiable research data that is subject to such protections, except as permitted by the terms of those protections themselves. We will not voluntarily disclose such protected data in response to requests from third parties, including but not limited to subpoenas, court orders, or other demands, except as required by law or as expressly permitted under the applicable data protection agreement.{% endblocktranslate %}
+        </p>
+    </div>
+    <h3 class="m-4">{% trans "Additional information" %}</h3>
     <div class="m-4">
         <p>
             {% blocktranslate %}We may change this Privacy Statement from time to time. If we make any significant changes in the way we
@@ -254,6 +276,6 @@
         <p>
             {% trans "The controller for your personal information is MIT. We can be contacted at dataprotection@mit.edu." %}
         </p>
-        <p class="text-center fst-italic">{% trans "This policy was last updated in June 2018." %}</p>
+        <p class="text-center fst-italic">{% trans "This policy was last updated in August 2026." %}</p>
     </div>
 {% endblock content %}
