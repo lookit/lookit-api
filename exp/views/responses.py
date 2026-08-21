@@ -399,7 +399,9 @@ def make_chunk(paginator, page_num, header_options):
 
 
 def write_overview_to_temp_file(session_list, header_list):
-    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".csv", mode="w")
+    tmp = tempfile.NamedTemporaryFile(
+        delete=False, suffix=".csv", mode="w", encoding="utf-8"
+    )
     tmp.write(",".join(header_list))
     for session_row in session_list:
         tmp.write(
@@ -1762,7 +1764,7 @@ class StudyResponsesFrameDataPsychDS(ResponseDownloadMixin, generic.list.ListVie
         tmp_all_response = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
 
         try:
-            with open(tmp_all_response.name, "w") as f:
+            with open(tmp_all_response.name, "w", encoding="utf-8") as f:
                 for page_num in paginator.page_range:
                     f.write(make_chunk(paginator, page_num, header_options))
 

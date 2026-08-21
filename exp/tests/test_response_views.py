@@ -2,10 +2,12 @@ import csv
 import datetime
 import io
 import json
+import os
 import re
+import tempfile
 import uuid
 import zipfile
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
@@ -18,6 +20,7 @@ from accounts.utils import hash_id
 from exp.views.responses import (
     StudyResponseSetResearcherFields,
     get_frame_data,
+    write_overview_to_temp_file,
 )
 from exp.views.responses_data import RESPONSE_COLUMNS
 from studies.models import ConsentRuling, Lab, Response, Study, StudyType, Video
@@ -1577,6 +1580,151 @@ class ResponseDataDownloadTestCase(TestCase):
                     content,
                     f"Data from unconsented response found in {name}",
                 )
+
+    def test_write_overview_to_temp_file_handles_non_ascii(self):
+        """Regression test for sentry error LOOKIT-BACKEND-GN.
+
+        The overview temp file must be written as UTF-8 so non-ASCII data
+        (e.g. the acute accent '\xb4') does not raise UnicodeEncodeError under
+        an ASCII default locale. The production uWSGI container defaults to an
+        ASCII locale, so we force that here to reproduce the crash regardless
+        of the host's locale (which is often UTF-8 in development).
+        """
+        header_list = ["response__id", "child__name"]
+        session_list = [{"response__id": "1", "child__name": "Rene\xb4 O’Brien"}]
+
+        # CPython resolves a text-mode file's default encoding from the C
+        # locale, which can't be patched in-process. Instead, simulate the
+        # production container (whose default text encoding is ASCII) by
+        # supplying an ASCII default only when the code under test opens a
+        # text-mode temp file without an explicit encoding. The fix passes
+        # encoding="utf-8", so it is unaffected; the unfixed code is not.
+        real_ntf = tempfile.NamedTemporaryFile
+
+        def ascii_default_ntf(*args, **kwargs):
+            if "b" not in kwargs.get("mode", "r"):
+                kwargs.setdefault("encoding", "ascii")
+            return real_ntf(*args, **kwargs)
+
+        with patch(
+            "exp.views.responses.tempfile.NamedTemporaryFile",
+            side_effect=ascii_default_ntf,
+        ):
+            path = write_overview_to_temp_file(session_list, header_list)
+        try:
+            with open(path, encoding="utf-8") as f:
+                contents = f.read()
+        finally:
+            os.unlink(path)
+        self.assertIn("Rene\xb4 O’Brien", contents)
+
+    def test_psychds_download_with_non_ascii_response_data(self):
+        """The psychds download must not crash on non-ASCII response data."""
+        non_ascii_name = "Rene\xb4"
+        child = G(
+            Child,
+            user=self.non_preview_participant,
+            given_name=non_ascii_name,
+            birthday=datetime.date.today() - datetime.timedelta(366),
+        )
+        response = G(
+            Response,
+            child=child,
+            study=self.study,
+            study_type=self.study.study_type,
+            completed=True,
+            completed_consent_frame=True,
+            sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
+            exp_data={
+                "0-video-config": {"frameType": "DEFAULT"},
+                "2-my-consent-frame": {"frameType": "CONSENT"},
+                "3-my-exit-frame": {"frameType": "EXIT", "feedback": non_ascii_name},
+            },
+            demographic_snapshot=self.non_preview_demo,
+        )
+        G(
+            ConsentRuling,
+            response=response,
+            action="accepted",
+            arbiter=self.study_reader,
+        )
+
+        self.client.force_login(self.study_reader)
+        http_response, zip_bytes = self._get_psychds_zip()
+        self.assertEqual(http_response.status_code, 200)
+        # zip is valid and the non-ASCII value round-trips as UTF-8
+        with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+            contents = b"".join(zf.read(name) for name in zf.namelist())
+        self.assertIn(non_ascii_name.encode("utf-8"), contents)
+
+    def test_framedata_dict_csv_task_handles_non_ascii(self):
+        """Regression test for the frame data dictionary download.
+
+        studies.tasks.build_framedata_dict writes a CSV whose frame IDs and
+        keys come from researcher-authored protocol data, which can be
+        non-ASCII. The temp file must be written as UTF-8 so it does not raise
+        UnicodeEncodeError under the production container's ASCII locale.
+        """
+        from studies.tasks import build_framedata_dict
+
+        # exp_data yields a non-ASCII frame id ("café-frame") and key ("réponse")
+        response = G(
+            Response,
+            child=self.non_preview_child,
+            study=self.study,
+            study_type=self.study.study_type,
+            completed=True,
+            completed_consent_frame=True,
+            sequence=["0-video-config", "1-café-frame"],
+            exp_data={
+                "0-video-config": {"frameType": "DEFAULT"},
+                "1-café-frame": {"frameType": "DEFAULT", "réponse": "oui"},
+            },
+            demographic_snapshot=self.non_preview_demo,
+        )
+        G(
+            ConsentRuling,
+            response=response,
+            action="accepted",
+            arbiter=self.study_reader,
+        )
+
+        # Simulate the container's ASCII default encoding: apply it only when
+        # a text-mode file is opened without an explicit encoding. The fix
+        # passes encoding="utf-8", so it is unaffected; the unfixed code is not.
+        real_open = open
+
+        def ascii_default_open(*args, **kwargs):
+            mode = kwargs.get("mode") or (args[1] if len(args) > 1 else "r")
+            if "b" not in mode:
+                kwargs.setdefault("encoding", "ascii")
+            return real_open(*args, **kwargs)
+
+        uploaded = {}
+
+        def capture_upload(path):
+            with real_open(path, encoding="utf-8") as f:
+                uploaded["contents"] = f.read()
+
+        mock_blob = MagicMock()
+        mock_blob.exists.return_value = False
+        mock_blob.upload_from_filename.side_effect = capture_upload
+        mock_blob.generate_signed_url.return_value = "https://example.com/signed"
+
+        with (
+            override_settings(
+                GS_PROJECT_ID="test-project", GS_PRIVATE_BUCKET_NAME="test-bucket"
+            ),
+            patch("studies.tasks.gc_storage") as mock_gc,
+            patch("studies.tasks.send_mail"),
+            patch("builtins.open", side_effect=ascii_default_open),
+        ):
+            mock_gc.blob.Blob.return_value = mock_blob
+            build_framedata_dict("frames_dict", self.study.uuid, self.study_reader.uuid)
+
+        mock_blob.upload_from_filename.assert_called_once()
+        self.assertIn("café-frame", uploaded["contents"])
+        self.assertIn("réponse", uploaded["contents"])
 
 
 class ResponseViewResearcherUpdateFieldsTestCase(TestCase):

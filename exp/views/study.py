@@ -4,6 +4,7 @@ import re
 from functools import reduce
 from typing import Any, Dict, NamedTuple, Text
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Q
@@ -27,7 +28,6 @@ from exp.views.mixins import (
     ResearcherLoginRequiredMixin,
     SingleObjectFetchProtocol,
 )
-from project import settings
 from studies.forms import (
     DEFAULT_GENERATOR,
     EFPForm,
@@ -57,6 +57,7 @@ from studies.workflow import (
     TRANSITION_LABELS,
 )
 from web.views import (
+    _apply_local_plugin_overlay,
     create_external_response,
     get_external_url,
     get_jspsych_aws_values,
@@ -977,9 +978,14 @@ class JsPsychPreviewView(
         context["jspsych_library"] = JSPsychPlugin.objects.filter(
             category=JSPsychPlugin.Category.JSPSYCH_LIBRARY, autoload=True
         ).order_by("order")
-        context["chs_plugins"] = JSPsychPlugin.objects.filter(
+        chs_plugins = JSPsychPlugin.objects.filter(
             category=JSPsychPlugin.Category.CHS_JSPSYCH, autoload=True
         ).order_by("order")
+        # In local development, serve the CHS (@lookit/*) packages from local dev builds
+        # instead of the published URLs stored in the database. No-op in staging/prod.
+        if settings.JSPSYCH_LOCAL_PLUGINS:
+            chs_plugins = _apply_local_plugin_overlay(chs_plugins)
+        context["chs_plugins"] = chs_plugins
         context["autoload_plugins"] = (
             JSPsychPlugin.objects.filter(autoload=True)
             .exclude(
