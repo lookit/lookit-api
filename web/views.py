@@ -7,6 +7,7 @@ from uuid import UUID
 
 import boto3
 from botocore.exceptions import ClientError
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -39,7 +40,6 @@ from accounts.queries import (
 )
 from accounts.utils import hash_id
 from exp.mixins.paginator_mixin import PaginatorMixin
-from project import settings
 from studies.helpers import get_experiment_absolute_url
 from studies.models import (
     JSPsychPlugin,
@@ -107,6 +107,26 @@ def get_external_url(study: Study, response: Response) -> Text:
 
     url = url._replace(query=urlencode(qs, doseq=True))
     return url.geturl()
+
+
+def _apply_local_plugin_overlay(plugins):
+    """Point CHS plugins at locally served dev builds for local development.
+
+    Any plugin whose name appears in settings.JSPSYCH_LOCAL_PLUGIN_URLS has its ``url``
+    pointed at the local dev server and its ``integrity`` cleared (local bundles change
+    on every rebuild, so a fixed SRI hash would fail; a blank integrity also drops the
+    crossorigin attr in the template). Objects are mutated in memory only -- nothing is
+    written to the DB.
+
+    Callers should gate this on settings.JSPSYCH_LOCAL_PLUGINS.
+    """
+    local_urls = settings.JSPSYCH_LOCAL_PLUGIN_URLS
+    overlaid = list(plugins)
+    for plugin in overlaid:
+        if plugin.name in local_urls:
+            plugin.url = local_urls[plugin.name]
+            plugin.integrity = ""
+    return overlaid
 
 
 def get_jspsych_response(context, is_preview=False):
@@ -959,9 +979,14 @@ class JsPsychExperimentView(
         context["jspsych_library"] = JSPsychPlugin.objects.filter(
             category=JSPsychPlugin.Category.JSPSYCH_LIBRARY, autoload=True
         ).order_by("order")
-        context["chs_plugins"] = JSPsychPlugin.objects.filter(
+        chs_plugins = JSPsychPlugin.objects.filter(
             category=JSPsychPlugin.Category.CHS_JSPSYCH, autoload=True
         ).order_by("order")
+        # In local development, serve the CHS (@lookit/*) packages from local dev builds
+        # instead of the published URLs stored in the database. No-op in staging/prod.
+        if settings.JSPSYCH_LOCAL_PLUGINS:
+            chs_plugins = _apply_local_plugin_overlay(chs_plugins)
+        context["chs_plugins"] = chs_plugins
         context["autoload_plugins"] = (
             JSPsychPlugin.objects.filter(autoload=True)
             .exclude(
