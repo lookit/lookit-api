@@ -52,6 +52,32 @@ JSPSYCH_S3_ACCESS_KEY_ID=
 JSPSYCH_S3_SECRET_ACCESS_KEY=
 JSPSYCH_S3_BUCKET=
 
+# Serve the CHS jsPsych (@lookit/*) packages from locally running dev builds instead of
+# the published unpkg URLs stored in the database. When enabled, the jsPsych study runner
+# swaps in local dev-server URLs (built in project/settings.py) and drops SRI integrity
+# for them. Requires serving each package locally (npm run dev -w @lookit/* in each 
+# lookit-jspsych package, or honcho start if used to serve multiple packages; 
+# see https://github.com/lookit/lookit-jspsych#serve-multiple-packages).
+# Uncomment to enable, then recreate the web container so the new .env value is
+# picked up (`docker compose up -d web` -- a plain `restart` does NOT re-read this file).
+# To use the published/unpkg URLs from the DB, either comment this out or set it to a
+# falsy value (False/false/0/no/off/empty all disable it).
+# JSPSYCH_LOCAL_PLUGINS=True
+#
+# The dev-server ports below match the defaults set in settings.py and rollup.config.dev.mjs
+# files for lookit-jspsych packages, so normally you should only need to set
+# JSPSYCH_LOCAL_PLUGINS=True above. The variables below can be uncommented and changed to
+# override the host and/or individual ports - only needed if the local lookit-jspsych packages are
+# hosted elsewhere or are served on different ports (e.g. because of a conflict).
+# These should match whatever you're using to serve each package.
+# JSPSYCH_LOCAL_PLUGIN_HOST=http://localhost
+# JSPSYCH_LOCAL_PORT_INITJSPSYCH=10001
+# JSPSYCH_LOCAL_PORT_DATA=10002
+# JSPSYCH_LOCAL_PORT_SURVEYS=10003
+# JSPSYCH_LOCAL_PORT_RECORD=10004
+# JSPSYCH_LOCAL_PORT_STYLE=10005
+# JSPSYCH_LOCAL_PORT_TEMPLATES=10006
+
 # Default repo and branch to use for experiment runner
 EMBER_EXP_PLAYER_BRANCH=master
 EMBER_EXP_PLAYER_REPO=https://github.com/lookit/ember-lookit-frameplayer
