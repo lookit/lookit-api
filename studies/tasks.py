@@ -78,26 +78,27 @@ WITH message_targets AS ( -- all valid user-child-study triplets
 	            OR (sst.id = 2)
     )
 ),
-     latest_study_notifications_for_children AS (
-         SELECT amr.user_id,
-                amcoi.child_id,
-                am.related_study_id,
-                MAX(am.email_sent_timestamp) as latest_sent_time
+     prior_study_notifications_for_children AS (
+         -- Any announcement message row for this triplet counts as "already targeted",
+         -- even if email_sent_timestamp is NULL (e.g., a crash between sending the
+         -- email and saving the timestamp), so we never re-send for the same triplet.
+         SELECT DISTINCT amr.user_id,
+                         amcoi.child_id,
+                         am.related_study_id
          FROM accounts_message am
                   INNER JOIN accounts_message_children_of_interest amcoi on am.id = amcoi.message_id
                   INNER JOIN accounts_message_recipients amr on am.id = amr.message_id
          WHERE (amr.user_id, amcoi.child_id, am.related_study_id) IN (SELECT * FROM message_targets)
-         GROUP BY amr.user_id, amcoi.child_id, am.related_study_id
      )
 SELECT mt.user_id,
        mt.child_id,
        mt.study_id
 FROM message_targets mt
-         LEFT OUTER JOIN latest_study_notifications_for_children lsnfc
-                         ON lsnfc.user_id = mt.user_id
-                             AND lsnfc.child_id = mt.child_id
-                             AND lsnfc.related_study_id = mt.study_id
-WHERE lsnfc.latest_sent_time IS NULL
+         LEFT OUTER JOIN prior_study_notifications_for_children psnfc
+                         ON psnfc.user_id = mt.user_id
+                             AND psnfc.child_id = mt.child_id
+                             AND psnfc.related_study_id = mt.study_id
+WHERE psnfc.user_id IS NULL
 ORDER BY mt.user_id, mt.child_id, mt.study_id;
 """
 MAX_EMAILS_PER_STUDY = 50
