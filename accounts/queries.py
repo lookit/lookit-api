@@ -97,9 +97,14 @@ def age_range_eligibility_for_study(child_age_range, study) -> bool:
 
 
 def get_child_eligibility_for_study(child_obj, study_obj):
+    # Order matters for performance: this runs once per child-study pair across the
+    # full announcement-email scan. The age-range check is pure Python (no DB), so it
+    # goes first to short-circuit the majority of ineligible pairs before we incur the
+    # DB queries in get_child_participation_eligibility or the expression evaluation in
+    # get_child_eligibility.
     return (
-        get_child_participation_eligibility(child_obj, study_obj)
-        and _child_in_age_range_for_study(child_obj, study_obj)
+        _child_in_age_range_for_study(child_obj, study_obj)
+        and get_child_participation_eligibility(child_obj, study_obj)
         and get_child_eligibility(child_obj, study_obj.criteria_expression)
     )
 
