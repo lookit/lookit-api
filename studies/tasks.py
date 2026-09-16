@@ -59,7 +59,9 @@ WITH message_targets AS ( -- all valid user-child-study triplets
     FROM accounts_child ac
              INNER JOIN accounts_user au on au.id = ac.user_id
              CROSS JOIN (
-        SELECT id AS study_id
+        SELECT id AS study_id,
+               min_age_years, min_age_months, min_age_days,
+               max_age_years, max_age_months, max_age_days
         FROM studies_study
         WHERE state = 'active'
           AND public = true
@@ -67,6 +69,16 @@ WITH message_targets AS ( -- all valid user-child-study triplets
     WHERE au.is_active = true
       AND ac.deleted = false
       AND au.email_new_studies = true
+      AND ac.birthday IS NOT NULL
+      -- Age-range eligibility, pushed down from Python so we never materialize the
+      -- (children x studies) pairs where the child is out of the study's age range --
+      -- which is the vast majority of them. Mirrors accounts.queries.study_age_range /
+      -- child_in_age_range_for_study_days_difference exactly: year = 365 days,
+      -- month = 30 days, and both bounds inclusive.
+      AND (CURRENT_DATE - ac.birthday)
+              >= (ss.min_age_years * 365 + ss.min_age_months * 30 + ss.min_age_days)
+      AND (CURRENT_DATE - ac.birthday)
+              <= (ss.max_age_years * 365 + ss.max_age_months * 30 + ss.max_age_days)
         EXCEPT (
         SELECT DISTINCT ac.user_id,
                         sr.child_id,
