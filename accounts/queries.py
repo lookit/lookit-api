@@ -3,7 +3,7 @@
 import ast
 import operator
 from datetime import date
-from functools import reduce
+from functools import lru_cache, reduce
 from itertools import chain
 
 from django.db import models
@@ -220,8 +220,17 @@ def get_child_eligibility(child_obj, criteria_expr):
         return True
 
 
+@lru_cache(maxsize=1024)
 def compile_expression(boolean_algebra_expression: str):
     """Compiles a boolean algebra expression into a python function.
+
+    The result is cached (keyed on the expression string) because a criteria
+    expression only depends on the study, not the child. Without this, the
+    announcement-email scan re-parses and re-compiles the same expression once
+    per child-study pair. The number of distinct expressions is bounded by the
+    number of distinct study criteria (i.e. number of studies), and in reality
+    there is substantial overlap in expressions across studies, so the cache
+    stays small.
 
     Args:
         boolean_algebra_expression: a string boolean algebra expression.
