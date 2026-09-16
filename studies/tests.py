@@ -293,11 +293,28 @@ class TestAnnouncementEmailFunctionality(TestCase):
 
     def test_potential_message_targets(self):
         targets = list(potential_message_targets())
-        # Two targets for participant 1: three children for both studies. These
-        # will be weeded out downstream, as they all fail to meet criteria in one way
-        # or another.
+        # Participant 1: only the disabled child (age-eligible for both studies) shows
+        # up here, giving 2 targets. They're weeded out downstream on criteria. The
+        # older and younger children are now excluded up front by the age-range filter
+        # in the SQL query, rather than downstream in _validated.
         self.assertEqual(
-            quantify(mt.user_id == self.participant_one.id for mt in targets), 6
+            quantify(mt.user_id == self.participant_one.id for mt in targets), 2
+        )
+        self.assertEqual(
+            {
+                mt.study_id
+                for mt in targets
+                if mt.user_id == self.participant_one.id
+                and mt.child_id == self.disabled_child.id
+            },
+            {self.study_one.id, self.study_two.id},
+        )
+        # Out-of-age-range children are filtered out by the SQL query.
+        self.assertFalse(
+            any(
+                mt.child_id in (self.older_child.id, self.younger_child.id)
+                for mt in targets
+            )
         )
 
         # Participant #2
