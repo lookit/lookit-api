@@ -66,6 +66,44 @@ JSPSYCH_S3_SECRET_ACCESS_KEY = os.environ.get(
 )
 JSPSYCH_S3_BUCKET = os.environ.get("JSPSYCH_S3_BUCKET", "fakeBucketName")
 
+# Local development overlay for CHS jsPsych (@lookit/*) packages. When enabled, the
+# jsPsych study runner views swap the DB URLs for the CHS plugins below to locally
+# served dev builds and drop their SRI integrity/crossorigin (local bundles change on
+# every rebuild, so a fixed hash would fail). Leave JSPSYCH_LOCAL_PLUGINS unset (or set
+# to a falsy value) in staging/production so plugins load from the database URLs.
+# NB: parse the string explicitly because bool("False") is True, so a plain
+# bool(os.environ.get(...)) would treat JSPSYCH_LOCAL_PLUGINS=False as enabled.
+JSPSYCH_LOCAL_PLUGINS = os.environ.get("JSPSYCH_LOCAL_PLUGINS", "").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+# Host serving the local lookit-jspsych dev builds. Override in .env only if you serve
+# them somewhere other than plain-http localhost.
+JSPSYCH_LOCAL_PLUGIN_HOST = os.environ.get(
+    "JSPSYCH_LOCAL_PLUGIN_HOST", "http://localhost"
+)
+# Per-CHS-plugin dev-server definition: (JSPsychPlugin.name, port env var, default
+# port, served file). Default ports match the lookit-jspsych `npm run serve` ports;
+# override an individual port in .env (e.g. JSPSYCH_LOCAL_PORT_DATA=20002) if you have a
+# local conflict. The plugin names must match JSPsychPlugin.name records and the file
+# names are fixed by each package's build, so both stay in code rather than .env.
+_JSPSYCH_LOCAL_PLUGIN_DEFS = [
+    ("CHS Init jsPsych", "JSPSYCH_LOCAL_PORT_INITJSPSYCH", "10001", "index.browser.js"),
+    ("CHS Data", "JSPSYCH_LOCAL_PORT_DATA", "10002", "index.browser.js"),
+    ("CHS Surveys", "JSPSYCH_LOCAL_PORT_SURVEYS", "10003", "index.browser.js"),
+    ("CHS Record", "JSPSYCH_LOCAL_PORT_RECORD", "10004", "index.browser.js"),
+    ("CHS Style", "JSPSYCH_LOCAL_PORT_STYLE", "10005", "index.css"),
+    ("CHS Templates", "JSPSYCH_LOCAL_PORT_TEMPLATES", "10006", "index.browser.js"),
+]
+# Built map of JSPsychPlugin.name -> locally served URL, consumed by the view when
+# JSPSYCH_LOCAL_PLUGINS is on.
+JSPSYCH_LOCAL_PLUGIN_URLS = {
+    name: f"{JSPSYCH_LOCAL_PLUGIN_HOST}:{os.environ.get(port_var, default_port)}/{filename}"
+    for name, port_var, default_port, filename in _JSPSYCH_LOCAL_PLUGIN_DEFS
+}
+
 # Application definition
 
 INSTALLED_APPS = [

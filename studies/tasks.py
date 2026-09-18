@@ -59,7 +59,9 @@ WITH message_targets AS ( -- all valid user-child-study triplets
     FROM accounts_child ac
              INNER JOIN accounts_user au on au.id = ac.user_id
              CROSS JOIN (
-        SELECT id AS study_id
+        SELECT id AS study_id,
+               min_age_years, min_age_months, min_age_days,
+               max_age_years, max_age_months, max_age_days
         FROM studies_study
         WHERE state = 'active'
           AND public = true
@@ -67,6 +69,16 @@ WITH message_targets AS ( -- all valid user-child-study triplets
     WHERE au.is_active = true
       AND ac.deleted = false
       AND au.email_new_studies = true
+      AND ac.birthday IS NOT NULL
+      -- Age-range eligibility, pushed down from Python so we never materialize the
+      -- (children x studies) pairs where the child is out of the study's age range --
+      -- which is the vast majority of them. Mirrors accounts.queries.study_age_range /
+      -- child_in_age_range_for_study_days_difference exactly: year = 365 days,
+      -- month = 30 days, and both bounds inclusive.
+      AND (CURRENT_DATE - ac.birthday)
+              >= (ss.min_age_years * 365 + ss.min_age_months * 30 + ss.min_age_days)
+      AND (CURRENT_DATE - ac.birthday)
+              <= (ss.max_age_years * 365 + ss.max_age_months * 30 + ss.max_age_days)
         EXCEPT (
         SELECT DISTINCT ac.user_id,
                         sr.child_id,
@@ -74,30 +86,33 @@ WITH message_targets AS ( -- all valid user-child-study triplets
         FROM studies_response sr
                  INNER JOIN accounts_child ac on sr.child_id = ac.id
                  INNER JOIN studies_studytype sst on sr.study_type_id = sst.id
-        WHERE (sr.completed_consent_frame = true AND sst.id = 1)
+        -- Internal studies (EFP id 1, jsPsych id 3) count as participation once the
+        -- child has completed the consent frame; external studies (id 2) always count.
+        WHERE (sr.completed_consent_frame = true AND sst.id IN (1, 3))
 	            OR (sst.id = 2)
     )
 ),
-     latest_study_notifications_for_children AS (
-         SELECT amr.user_id,
-                amcoi.child_id,
-                am.related_study_id,
-                MAX(am.email_sent_timestamp) as latest_sent_time
+     prior_study_notifications_for_children AS (
+         -- Any announcement message row for this triplet counts as "already targeted",
+         -- even if email_sent_timestamp is NULL (e.g., a crash between sending the
+         -- email and saving the timestamp), so we never re-send for the same triplet.
+         SELECT DISTINCT amr.user_id,
+                         amcoi.child_id,
+                         am.related_study_id
          FROM accounts_message am
                   INNER JOIN accounts_message_children_of_interest amcoi on am.id = amcoi.message_id
                   INNER JOIN accounts_message_recipients amr on am.id = amr.message_id
          WHERE (amr.user_id, amcoi.child_id, am.related_study_id) IN (SELECT * FROM message_targets)
-         GROUP BY amr.user_id, amcoi.child_id, am.related_study_id
      )
 SELECT mt.user_id,
        mt.child_id,
        mt.study_id
 FROM message_targets mt
-         LEFT OUTER JOIN latest_study_notifications_for_children lsnfc
-                         ON lsnfc.user_id = mt.user_id
-                             AND lsnfc.child_id = mt.child_id
-                             AND lsnfc.related_study_id = mt.study_id
-WHERE lsnfc.latest_sent_time IS NULL
+         LEFT OUTER JOIN prior_study_notifications_for_children psnfc
+                         ON psnfc.user_id = mt.user_id
+                             AND psnfc.child_id = mt.child_id
+                             AND psnfc.related_study_id = mt.study_id
+WHERE psnfc.user_id IS NULL
 ORDER BY mt.user_id, mt.child_id, mt.study_id;
 """
 MAX_EMAILS_PER_STUDY = 50
@@ -469,7 +484,7 @@ def build_framedata_dict(filename, study_uuid, requesting_user_uuid):
         # if it doesn't exist build the file
         with tempfile.TemporaryDirectory() as temp_directory:
             file_path = os.path.join(temp_directory, csv_filename)
-            with open(file_path, "w") as csv_file:
+            with open(file_path, "w", encoding="utf-8") as csv_file:
                 writer = csv.DictWriter(
                     csv_file,
                     quoting=csv.QUOTE_NONNUMERIC,

@@ -293,11 +293,28 @@ class TestAnnouncementEmailFunctionality(TestCase):
 
     def test_potential_message_targets(self):
         targets = list(potential_message_targets())
-        # Two targets for participant 1: three children for both studies. These
-        # will be weeded out downstream, as they all fail to meet criteria in one way
-        # or another.
+        # Participant 1: only the disabled child (age-eligible for both studies) shows
+        # up here, giving 2 targets. They're weeded out downstream on criteria. The
+        # older and younger children are now excluded up front by the age-range filter
+        # in the SQL query, rather than downstream in _validated.
         self.assertEqual(
-            quantify(mt.user_id == self.participant_one.id for mt in targets), 6
+            quantify(mt.user_id == self.participant_one.id for mt in targets), 2
+        )
+        self.assertEqual(
+            {
+                mt.study_id
+                for mt in targets
+                if mt.user_id == self.participant_one.id
+                and mt.child_id == self.disabled_child.id
+            },
+            {self.study_one.id, self.study_two.id},
+        )
+        # Out-of-age-range children are filtered out by the SQL query.
+        self.assertFalse(
+            any(
+                mt.child_id in (self.older_child.id, self.younger_child.id)
+                for mt in targets
+            )
         )
 
         # Participant #2
@@ -563,6 +580,102 @@ class TestAnnouncementEmailFunctionality(TestCase):
             study_child_mapping, {self.study_two: [self.child_two, self.child_three]}
         )
 
+    def test_study_excluded_from_targets_when_message_has_no_sent_timestamp(self):
+        # The triplet is a valid message target before any message exists for it.
+        self.assertIn(
+            (self.participant_two.id, self.child_three.id, self.study_one.id),
+            [
+                (mt.user_id, mt.child_id, mt.study_id)
+                for mt in potential_message_targets()
+            ],
+        )
+
+        # Simulate a crash between sending the announcement email and saving the
+        # sent timestamp: the message row exists but email_sent_timestamp is NULL.
+        # The triplet must still be excluded so that a family/child is never emailed
+        # twice about the same study.
+        message = Message.objects.create(
+            related_study=self.study_one, email_sent_timestamp=None
+        )
+        message.recipients.add(self.participant_two)
+        message.children_of_interest.add(self.child_three)
+
+        self.assertNotIn(
+            (self.participant_two.id, self.child_three.id, self.study_one.id),
+            [
+                (mt.user_id, mt.child_id, mt.study_id)
+                for mt in potential_message_targets()
+            ],
+        )
+
+    def test_message_excludes_only_its_own_triplet(self):
+        # A sent announcement must suppress ONLY its exact user/child/study
+        # triplet. If it suppressed a different child, study, or user, a family
+        # would silently never be told about a study they're eligible for.
+        def current_triplets():
+            return [
+                (mt.user_id, mt.child_id, mt.study_id)
+                for mt in potential_message_targets()
+            ]
+
+        target_same = (
+            self.participant_two.id,
+            self.child_three.id,
+            self.study_one.id,
+        )
+        target_other_study = (
+            self.participant_two.id,
+            self.child_three.id,
+            self.study_two.id,
+        )
+        target_other_child = (
+            self.participant_two.id,
+            self.child_two.id,
+            self.study_two.id,
+        )
+
+        # All three are valid targets before any message is sent...
+        before = current_triplets()
+        self.assertIn(target_same, before)
+        self.assertIn(target_other_study, before)
+        self.assertIn(target_other_child, before)
+        # ...as are participant_one's targets, used to check cross-user isolation.
+        participant_one_before = [t for t in before if t[0] == self.participant_one.id]
+        self.assertTrue(participant_one_before)
+
+        # Send an announcement for exactly one triplet.
+        message = Message.objects.create(
+            related_study=self.study_one,
+            email_sent_timestamp=datetime.now(timezone.utc),
+        )
+        message.recipients.add(self.participant_two)
+        message.children_of_interest.add(self.child_three)
+
+        after = current_triplets()
+        # The exact triplet is now excluded...
+        self.assertNotIn(target_same, after)
+        # ...but a different study for the same child is untouched,
+        self.assertIn(target_other_study, after)
+        # a different child of the same user/study is untouched,
+        self.assertIn(target_other_child, after)
+        # and no other user's targets changed.
+        self.assertEqual(
+            [t for t in after if t[0] == self.participant_one.id],
+            participant_one_before,
+        )
+
+    def test_potential_message_targets_inactive_user(self):
+        # An inactive user (e.g. one marked as spam) must never be a target.
+        user = G(User, is_active=True)
+        G(Child, user=user, birthday=date.today() - timedelta(days=365))
+
+        self.assertTrue(any(m.user_id == user.id for m in potential_message_targets()))
+
+        user.is_active = False
+        user.save()
+
+        self.assertFalse(any(m.user_id == user.id for m in potential_message_targets()))
+
     def test_announcement_email_to_child_with_long_name(self):
         # Family with a child with a long name
         long_name_family = G(User, nickname="Mama", is_active=True)
@@ -663,6 +776,76 @@ class TestAnnouncementEmailFunctionality(TestCase):
 
         # Check that the message target no longer has this child for this study
         self.assertNotIn(message_target, potential_message_targets())
+
+    def _active_jspsych_study_target(self):
+        """Set up an active, public jsPsych study with an age-eligible user/child."""
+        user = G(User, is_active=True)
+        child = G(
+            Child,
+            user=user,
+            # 1 year old, inside the study's age range so the SQL age filter keeps it.
+            birthday=date.today() - timedelta(days=365),
+        )
+        study = G(
+            Study,
+            name="jsPsych Study",
+            study_type=StudyType.get_jspsych(),
+            image=SimpleUploadedFile("fake_image.png", b"", content_type="image/png"),
+            public=True,
+            max_age_years=2,
+            criteria_expression="",
+        )
+        study.state = "active"
+        study.save()
+
+        # Double check this is a jsPsych study
+        self.assertTrue(study.study_type.is_jspsych)
+
+        return (
+            child,
+            study,
+            MessageTarget(
+                user_id=user.pk,
+                child_id=child.pk,
+                study_id=study.pk,
+            ),
+        )
+
+    def test_potential_message_targets_jspsych(self):
+        # jsPsych (internal study type 3) participation must exclude the child from
+        # that study's announcement targets, exactly like Ember Frame Player (type 1).
+        child, study, message_target = self._active_jspsych_study_target()
+
+        # Check that user/child are potential message targets in new jsPsych study
+        self.assertIn(message_target, potential_message_targets())
+
+        # Add response from this child for this study, past the consent trial
+        G(
+            Response,
+            study=study,
+            study_type=study.study_type,
+            child=child,
+            completed_consent_frame=True,
+        )
+
+        # Check that the message target no longer has this child for this study
+        self.assertNotIn(message_target, potential_message_targets())
+
+    def test_potential_message_targets_jspsych_without_consent(self):
+        # Control for the opposite direction: a jsPsych response that never reached
+        # the consent trial does not count as participation, so the family must stay
+        # in the target set (guards against over-excluding).
+        child, study, message_target = self._active_jspsych_study_target()
+
+        G(
+            Response,
+            study=study,
+            study_type=study.study_type,
+            child=child,
+            completed_consent_frame=False,
+        )
+
+        self.assertIn(message_target, potential_message_targets())
 
     def test_validated_skips_none_user(self):
         result = list(_validated([(None, [])]))

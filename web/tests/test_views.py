@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, PropertyMock, patch, sentinel
 
 from django.contrib.sites.models import Site
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.views.generic.list import MultipleObjectMixin
 from django_dynamic_fixture import G
@@ -1052,6 +1052,67 @@ class JsPsychExperimentViewTestCase(TestCase):
 
         # Should include CHS plugin (no show_in_ui filter for participant view)
         self.assertIn(self.chs_plugin, chs_plugins)
+
+    @override_settings(JSPSYCH_LOCAL_PLUGINS=False)
+    @patch("web.views.get_jspsych_aws_values")
+    def test_chs_plugins_keep_db_urls_without_local_overlay(self, mock_aws):
+        """With JSPSYCH_LOCAL_PLUGINS off, CHS plugins use their DB URLs."""
+        mock_aws.return_value = {
+            "accessKeyId": "test-key",
+            "secretAccessKey": "test-secret",
+            "sessionToken": "test-token",
+            "expiration": "2099-12-31T23:59:59Z",
+        }
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(
+            reverse(
+                "web:jspsych-experiment",
+                kwargs={"uuid": self.study.uuid, "child_id": self.child.uuid},
+            )
+        )
+
+        chs_plugin = next(
+            p for p in response.context["chs_plugins"] if p.name == "CHS Templates"
+        )
+        self.assertEqual(chs_plugin.url, "https://unpkg.com/@lookit/templates@3.2.0")
+        self.assertEqual(chs_plugin.integrity, "sha384-test3")
+
+    @override_settings(
+        JSPSYCH_LOCAL_PLUGINS=True,
+        JSPSYCH_LOCAL_PLUGIN_URLS={
+            "CHS Templates": "http://localhost:10006/index.browser.js"
+        },
+    )
+    @patch("web.views.get_jspsych_aws_values")
+    def test_chs_plugins_use_local_urls_with_overlay(self, mock_aws):
+        """With JSPSYCH_LOCAL_PLUGINS on, mapped CHS plugins point at the local dev
+        server and have their SRI integrity cleared."""
+        mock_aws.return_value = {
+            "accessKeyId": "test-key",
+            "secretAccessKey": "test-secret",
+            "sessionToken": "test-token",
+            "expiration": "2099-12-31T23:59:59Z",
+        }
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(
+            reverse(
+                "web:jspsych-experiment",
+                kwargs={"uuid": self.study.uuid, "child_id": self.child.uuid},
+            )
+        )
+
+        chs_plugin = next(
+            p for p in response.context["chs_plugins"] if p.name == "CHS Templates"
+        )
+        self.assertEqual(chs_plugin.url, "http://localhost:10006/index.browser.js")
+        self.assertEqual(chs_plugin.integrity, "")
+        # The overlay only mutates in-memory objects, not the database.
+        self.chs_plugin.refresh_from_db()
+        self.assertEqual(
+            self.chs_plugin.url, "https://unpkg.com/@lookit/templates@3.2.0"
+        )
 
     @patch("web.views.get_jspsych_aws_values")
     def test_jspsych_experiment_context_contains_autoload_plugins(self, mock_aws):

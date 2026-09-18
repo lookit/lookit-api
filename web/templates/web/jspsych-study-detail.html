@@ -33,19 +33,19 @@
         <!-- External style sheets -->
         {% for plugin in jspsych_library %}
             {% if plugin.file_type == "css" %}
-                <link rel="stylesheet" href="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous">
+                <link rel="stylesheet" href="{{ plugin.url }}"{% if plugin.integrity %} integrity="{{ plugin.integrity }}" crossorigin="anonymous"{% endif %}>
             {% endif %}
         {% endfor %}
         <!-- Auto-loaded plugins style sheets -->
         {% for plugin in autoload_plugins %}
             {% if plugin.file_type == "css" %}
-                <link rel="stylesheet" href="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous">
+                <link rel="stylesheet" href="{{ plugin.url }}"{% if plugin.integrity %} integrity="{{ plugin.integrity }}" crossorigin="anonymous"{% endif %}>
             {% endif %}
         {% endfor %}
         <!-- CHS jsPsych style sheets (load last to take precedence) -->
         {% for plugin in chs_plugins %}
             {% if plugin.file_type == "css" %}
-                <link rel="stylesheet" href="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous">
+                <link rel="stylesheet" href="{{ plugin.url }}"{% if plugin.integrity %} integrity="{{ plugin.integrity }}" crossorigin="anonymous"{% endif %}>
             {% endif %}
         {% endfor %}
     </head>
@@ -57,23 +57,23 @@
         <!-- External JS: core library -->
         {% for plugin in jspsych_library %}
             {% if plugin.file_type == "js" %}
-                <script src="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous"></script>
+                <script src="{{ plugin.url }}"{% if plugin.integrity %} integrity="{{ plugin.integrity }}" crossorigin="anonymous"{% endif %}></script>
             {% endif %}
         {% endfor %}
         <!-- Auto-loaded plugins JS -->
         {% for plugin in autoload_plugins %}
             {% if plugin.file_type == "js" %}
-                <script src="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous"></script>
+                <script src="{{ plugin.url }}"{% if plugin.integrity %} integrity="{{ plugin.integrity }}" crossorigin="anonymous"{% endif %}></script>
             {% endif %}
         {% endfor %}
         <!-- External JS: study-specific plugins/extensions (any autoload plugins are excluded, as they load above) -->
         {% for plugin in study_plugins %}
-            <script src="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous"></script>
+            <script src="{{ plugin.url }}"{% if plugin.integrity %} integrity="{{ plugin.integrity }}" crossorigin="anonymous"{% endif %}></script>
         {% endfor %}
         <!-- CHS jsPsych JS: CHS-specific plugins/extensions, load order set by JSPsychPlugin order field -->
         {% for plugin in chs_plugins %}
             {% if plugin.file_type == "js" %}
-                <script src="{{ plugin.url }}" integrity="{{ plugin.integrity }}" crossorigin="anonymous"></script>
+                <script src="{{ plugin.url }}"{% if plugin.integrity %} integrity="{{ plugin.integrity }}" crossorigin="anonymous"{% endif %}></script>
             {% endif %}
         {% endfor %}
         <!-- Once everything has loaded, run experiment and remove loader div -->
