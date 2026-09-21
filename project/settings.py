@@ -412,27 +412,18 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 BS_ICONS_CACHE = os.environ.get(
     "BS_ICONS_CACHE_DIR", os.path.join(tempfile.gettempdir(), "bs_icons_cache")
 )
-# Create the cache directory eagerly at startup. (The alternative is to let the
-# library create it lazily on the first render, which it does with a bare
-# os.makedirs(cache_path) (no exist_ok) outside its own try/except. Under gevent
-# the first burst of concurrent requests on a fresh pod would then race: one
-# greenlet creates the dir and the others raise FileExistsError. Creating it
-# once here, before any request is served, avoids that race.)
+# The directory itself is created lazily by the library on the first render
+# (os.makedirs in get_icon), not here. We cannot pre-create it at
+# import time because settings is imported as root at image build (manage.py
+# compilemessages), so it would be created as a root-owned directory and requests
+# are served by an unprivileged user (the container drops privileges via gosu)
+# that then can't write to it (would cause 500 errors on attempts to write cache).
+# Creating it lazily means the worker creates and owns it. The library's makedirs
+# is not exist_ok-guarded, but it can't race (filesystem syscalls don't yield to
+# the gevent hub, so greenlets can't interleave between its exists-check and
+# makedirs), and we run a single worker process (workers = 1) so there's no
+# cross-process race either.
 #
-# Doing it here does mean this runs under different users: as root at image
-# build time (manage.py compilemessages imports settings) and again by the
-# uwsgi master, but requests are served by an unprivileged user (the container
-# drops privileges via gosu). root owns the directory because it's baked into the
-# image, so it's not writable by the worker and throws 500 errors on the cache write.
-try:
-    # When this directory is created during image build, chmod it to world-writable.
-    os.makedirs(BS_ICONS_CACHE, exist_ok=True)
-    os.chmod(BS_ICONS_CACHE, 0o1777)
-except OSError:
-    # At runtime the worker is not the owner, so its chmod fails with
-    # PermissionError, which is fine (the build already set the mode).
-    # This is expected and must not crash settings import.
-    pass
 # Without this not found = blank setting, a failed fetch the library renders
 # its error string into the page body.
 BS_ICONS_NOT_FOUND = ""
