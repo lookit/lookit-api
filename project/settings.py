@@ -412,12 +412,18 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 BS_ICONS_CACHE = os.environ.get(
     "BS_ICONS_CACHE_DIR", os.path.join(tempfile.gettempdir(), "bs_icons_cache")
 )
-# Create the cache directory eagerly at startup, otherwise the library runs
-# os.makedirs(BS_ICONS_CACHE) without exist_ok on the first render, outside
-# its own try/except (under gevent, the first burst of concurrent requests on
-# a fresh pod would race and raise FileExistsError). This only happens once
-# per process, before any request is served.
-os.makedirs(BS_ICONS_CACHE, exist_ok=True)
+# The directory itself is created lazily by the library on the first render
+# (os.makedirs in get_icon), not here. We cannot pre-create it at
+# import time because settings is imported as root at image build (manage.py
+# compilemessages), so it would be created as a root-owned directory and requests
+# are served by an unprivileged user (the container drops privileges via gosu)
+# that then can't write to it (would cause 500 errors on attempts to write cache).
+# Creating it lazily means the worker creates and owns it. The library's makedirs
+# is not exist_ok-guarded, but it can't race (filesystem syscalls don't yield to
+# the gevent hub, so greenlets can't interleave between its exists-check and
+# makedirs), and we run a single worker process (workers = 1) so there's no
+# cross-process race either.
+#
 # Without this not found = blank setting, a failed fetch the library renders
 # its error string into the page body.
 BS_ICONS_NOT_FOUND = ""
