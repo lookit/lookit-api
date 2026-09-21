@@ -412,12 +412,27 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 BS_ICONS_CACHE = os.environ.get(
     "BS_ICONS_CACHE_DIR", os.path.join(tempfile.gettempdir(), "bs_icons_cache")
 )
-# Create the cache directory eagerly at startup, otherwise the library runs
-# os.makedirs(BS_ICONS_CACHE) without exist_ok on the first render, outside
-# its own try/except (under gevent, the first burst of concurrent requests on
-# a fresh pod would race and raise FileExistsError). This only happens once
-# per process, before any request is served.
-os.makedirs(BS_ICONS_CACHE, exist_ok=True)
+# Create the cache directory eagerly at startup. (The alternative is to let the
+# library create it lazily on the first render, which it does with a bare
+# os.makedirs(cache_path) (no exist_ok) outside its own try/except. Under gevent
+# the first burst of concurrent requests on a fresh pod would then race: one
+# greenlet creates the dir and the others raise FileExistsError. Creating it
+# once here, before any request is served, avoids that race.)
+#
+# Doing it here does mean this runs under different users: as root at image
+# build time (manage.py compilemessages imports settings) and again by the
+# uwsgi master, but requests are served by an unprivileged user (the container
+# drops privileges via gosu). root owns the directory because it's baked into the
+# image, so it's not writable by the worker and throws 500 errors on the cache write.
+try:
+    # When this directory is created during image build, chmod it to world-writable.
+    os.makedirs(BS_ICONS_CACHE, exist_ok=True)
+    os.chmod(BS_ICONS_CACHE, 0o1777)
+except OSError:
+    # At runtime the worker is not the owner, so its chmod fails with
+    # PermissionError, which is fine (the build already set the mode).
+    # This is expected and must not crash settings import.
+    pass
 # Without this not found = blank setting, a failed fetch the library renders
 # its error string into the page body.
 BS_ICONS_NOT_FOUND = ""
