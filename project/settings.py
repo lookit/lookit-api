@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import tempfile
 from pathlib import Path
 
 from django.contrib.messages import constants as messages
@@ -399,6 +400,27 @@ else:
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+# django-bootstrap-icons downloads each icon's SVG from a CDN at render time.
+# Its only cache is BS_ICONS_CACHE (a directory on disk) - not
+# Django's cache framework. So without this, every single {% bs_icon %}
+# tag makes a blocking HTTPS request on every render (20-second timeout).
+# With this caching, each distinct (icon, size, color, classes) combination is
+# fetched once and then read from disk. The default location is per-pod and
+# ephemeral, so it re-warms after a deploy (could point BS_ICONS_CACHE_DIR at a
+# persistent, writable path to avoid that).
+BS_ICONS_CACHE = os.environ.get(
+    "BS_ICONS_CACHE_DIR", os.path.join(tempfile.gettempdir(), "bs_icons_cache")
+)
+# Create the cache directory eagerly at startup, otherwise the library runs
+# os.makedirs(BS_ICONS_CACHE) without exist_ok on the first render, outside
+# its own try/except (under gevent, the first burst of concurrent requests on
+# a fresh pod would race and raise FileExistsError). This only happens once
+# per process, before any request is served.
+os.makedirs(BS_ICONS_CACHE, exist_ok=True)
+# Without this not found = blank setting, a failed fetch the library renders
+# its error string into the page body.
+BS_ICONS_NOT_FOUND = ""
 
 EMAIL_FROM_ADDRESS = os.environ.get("EMAIL_FROM_ADDRESS", "lookit.robot@some.domain")
 DEFAULT_FROM_EMAIL = EMAIL_FROM_ADDRESS  # for Django-generated password reset emails
