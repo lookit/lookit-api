@@ -260,6 +260,24 @@ class ChildrenListViewTestCase(TestCase):
                 deleted=False, user=mock_request.user
             )
 
+    def test_demographics_warning_shown_without_demographics(self):
+        user = G(User, is_active=True, is_researcher=False)
+        self.client.force_login(user)
+        response = self.client.get(reverse("web:children-list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            f'<a href="{reverse("web:demographic-data-update")}" class="alert-link">',
+        )
+
+    def test_demographics_warning_not_shown_with_demographics(self):
+        user = G(User, is_active=True, is_researcher=False)
+        G(DemographicData, user=user)
+        self.client.force_login(user)
+        response = self.client.get(reverse("web:children-list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'class="alert-link"')
+
 
 # TODO: ParticipantUpdateView
 # - check can update password (participant, researcher)
