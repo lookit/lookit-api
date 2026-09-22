@@ -1,0 +1,39 @@
+{% load i18n %}
+{% comment %}
+    Explains why the "Continue to Study" / "Find a Study" buttons are disabled.
+    Expects current_page ("demographic-update" or "children-list") and has_study_child in context.
+{% endcomment %}
+{% trans "Demographic Survey" as trans_demographic_survey %}
+{% trans "add a child" as trans_add_a_child %}
+{% url 'web:child-add' as url_child_add %}
+{% if current_page != "demographic-update" %}
+    {% url 'web:demographic-data-update' as url_demographic_data_update %}
+{% endif %}
+{% if not user.has_demographics or not user.has_any_child %}
+    <div class="alert alert-warning" role="alert">
+        {% if not user.has_demographics %}
+            {% trans "Please complete the" %}
+            {# No link when already on the survey page #}
+            {% if url_demographic_data_update %}
+                <a href="{{ url_demographic_data_update }}" class="alert-link">{{ trans_demographic_survey }}</a>
+            {% else %}
+                {{ trans_demographic_survey }}
+            {% endif %}
+            {% if user.has_any_child %}
+                {% trans "to view available studies for your children!" %}
+            {% else %}
+                {% trans "and" %}
+                <a href="{{ url_child_add }}" class="alert-link">{{ trans_add_a_child }}</a>
+                {% trans "to your account to view available studies!" %}
+            {% endif %}
+        {% else %}
+            {% trans "Please" %}
+            <a href="{{ url_child_add }}" class="alert-link">{{ trans_add_a_child }}</a>
+            {% trans "to your account to view available studies!" %}
+        {% endif %}
+    </div>
+{% elif request.session.study_name and not has_study_child %}
+    <div class="alert alert-warning" role="alert">
+        {% trans "If the 'Continue to Study' button still isn't lighting up, the study may have become full or be recruiting a slightly different set of kids right now. You might also be missing a piece of information about your family, such as the languages you speak at home." %}
+    </div>
+{% endif %}

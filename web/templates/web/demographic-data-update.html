@@ -16,10 +16,8 @@
         <div class="col-8">
             <div class="card mb-4">
                 <div class="card-body">
-                    {% if request.session.study_name and user.has_demographics and not has_study_child %}
-                        <p>
-                            {% trans "If the \"Continue to Study\" button still isn't lighting up, make sure you have completed the form below and added the participating child to your account. The study may also have become full or be recruiting a slightly different set of kids right now." %}
-                        </p>
+                    {% include "web/_participation-alert.html" with current_page="demographic-update" %}
+                    {% if request.session.study_name and user.has_demographics and user.has_any_child and not has_study_child %}
                         <p>
                             {% trans "You can click the \"Children Information\" button to add another child, \"Find Another Study\" to explore more studies for your family, or" %}
                             <a href="{% url 'web:study-detail' uuid=request.session.study_uuid %}">{% trans "click here" %}</a>
