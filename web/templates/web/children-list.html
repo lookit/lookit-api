@@ -15,13 +15,13 @@
         <div class="col-8">
             <div class="card">
                 <div class="card-body">
-                     {% if not user.has_demographics %}
+                    {% if not user.has_demographics %}
                         <div class="alert alert-warning" role="alert">
-                            {% trans "Please complete the " %}
+                            {% trans "Please complete the" %}
                             <a href="{% url 'web:demographic-data-update' %}" class="alert-link">{% trans "Demographic Survey" %}</a>
-                            {% trans " to view available studies for your children!" %}
+                            {% trans "to view available studies for your children!" %}
                         </div>
-                     {% endif %}
+                    {% endif %}
                     {% if not user.has_any_child %}
                         <p>{% trans "Click the 'Add Child' button to add a child to your account." %}</p>
                     {% elif not request.session.study_name and user.has_any_child %}
