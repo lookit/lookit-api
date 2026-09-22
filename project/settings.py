@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import tempfile
 from pathlib import Path
 
 from django.contrib.messages import constants as messages
@@ -399,6 +400,33 @@ else:
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+# django-bootstrap-icons downloads each icon's SVG from a CDN at render time.
+# Its only cache is BS_ICONS_CACHE (a directory on disk) - not
+# Django's cache framework. So without this, every single {% bs_icon %}
+# tag makes a blocking HTTPS request on every render (20-second timeout).
+# With this caching, each distinct (icon, size, color, classes) combination is
+# fetched once and then read from disk. The default location is per-pod and
+# ephemeral, so it re-warms after a deploy (could point BS_ICONS_CACHE_DIR at a
+# persistent, writable path to avoid that).
+BS_ICONS_CACHE = os.environ.get(
+    "BS_ICONS_CACHE_DIR", os.path.join(tempfile.gettempdir(), "bs_icons_cache")
+)
+# The directory itself is created lazily by the library on the first render
+# (os.makedirs in get_icon), not here. We cannot pre-create it at
+# import time because settings is imported as root at image build (manage.py
+# compilemessages), so it would be created as a root-owned directory and requests
+# are served by an unprivileged user (the container drops privileges via gosu)
+# that then can't write to it (would cause 500 errors on attempts to write cache).
+# Creating it lazily means the worker creates and owns it. The library's makedirs
+# is not exist_ok-guarded, but it can't race (filesystem syscalls don't yield to
+# the gevent hub, so greenlets can't interleave between its exists-check and
+# makedirs), and we run a single worker process (workers = 1) so there's no
+# cross-process race either.
+#
+# Without this not found = blank setting, a failed fetch the library renders
+# its error string into the page body.
+BS_ICONS_NOT_FOUND = ""
 
 EMAIL_FROM_ADDRESS = os.environ.get("EMAIL_FROM_ADDRESS", "lookit.robot@some.domain")
 DEFAULT_FROM_EMAIL = EMAIL_FROM_ADDRESS  # for Django-generated password reset emails
