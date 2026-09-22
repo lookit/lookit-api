@@ -23,8 +23,7 @@
                         <p>
                             {% trans "You can click the \"Children Information\" button to add another child, \"Find Another Study\" to explore more studies for your family, or" %}
                             <a href="{% url 'web:study-detail' uuid=request.session.study_uuid %}">{% trans "click here" %}</a>
-                            {% trans "to review the requirements for" %}
-                            "{{ request.session.study_name }}".
+                            {% blocktranslate with study_name=request.session.study_name %}to review the requirements for '{{ study_name }}'.{% endblocktranslate %}
                         </p>
                     {% else %}
                         {% if not request.session.study_name and not user.has_demographics %}
@@ -33,7 +32,7 @@
                             </p>
                         {% elif request.session.study_name and not user.has_demographics %}
                             <p>
-                                {% trans "Welcome to Children Helping Science! Before you continue to the main study" %} ("{{ request.session.study_name }}"), {% trans "we are asking you to share some information about your family." %}
+                                {% blocktranslate with study_name=request.session.study_name %}Welcome to Children Helping Science! Before you continue to the main study ('{{ study_name }}'), we are asking you to share some information about your family.{% endblocktranslate %}
                             </p>
                         {% elif request.session.study_name and user.has_demographics and has_study_child %}
                             <p>
