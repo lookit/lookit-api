@@ -1,39 +1,69 @@
 {% load i18n %}
-{% comment %}
-    Explains why the "Continue to Study" / "Find a Study" buttons are disabled.
-    Expects current_page ("demographic-update" or "children-list") and has_study_child in context.
-{% endcomment %}
-{% trans "Demographic Survey" as trans_demographic_survey %}
+{% load web_extras %}
 {% trans "add a child" as trans_add_a_child %}
 {% url 'web:child-add' as url_child_add %}
-{% if current_page != "demographic-update" %}
-    {% url 'web:demographic-data-update' as url_demographic_data_update %}
-{% endif %}
+{% alert_link url_child_add trans_add_a_child as add_child_link %}
 {% if not user.has_demographics or not user.has_any_child %}
     <div class="alert alert-warning" role="alert">
-        {% if not user.has_demographics %}
-            {% trans "Please complete the" %}
-            {# No link when already on the survey page #}
-            {% if url_demographic_data_update %}
-                <a href="{{ url_demographic_data_update }}" class="alert-link">{{ trans_demographic_survey }}</a>
+        {% if user.has_demographics %}
+            {% if request.session.study_name %}
+                {% blocktranslate with add_child=add_child_link %}Please {{ add_child }} to your account to continue to your study or view other available studies!{% endblocktranslate %}
             {% else %}
-                {{ trans_demographic_survey }}
+                {% blocktranslate with add_child=add_child_link %}Please {{ add_child }} to your account to view available studies!{% endblocktranslate %}
             {% endif %}
+        {% elif current_page == "demographic-update" %}
             {% if user.has_any_child %}
-                {% trans "to view available studies for your children!" %}
+                {% if request.session.study_name %}
+                    {% trans "Please complete this Demographic Survey to continue to your study or view other available studies!" %}
+                {% else %}
+                    {% trans "Please complete this Demographic Survey to view available studies for your children!" %}
+                {% endif %}
+            {% elif request.session.study_name %}
+                {% blocktranslate with add_child=add_child_link %}Please complete this Demographic Survey and {{ add_child }} to your account to continue to your study or view other available studies!{% endblocktranslate %}
             {% else %}
-                {% trans "and" %}
-                <a href="{{ url_child_add }}" class="alert-link">{{ trans_add_a_child }}</a>
-                {% trans "to your account to view available studies!" %}
+                {% blocktranslate with add_child=add_child_link %}Please complete this Demographic Survey and {{ add_child }} to your account to view available studies!{% endblocktranslate %}
             {% endif %}
         {% else %}
-            {% trans "Please" %}
-            <a href="{{ url_child_add }}" class="alert-link">{{ trans_add_a_child }}</a>
-            {% trans "to your account to view available studies!" %}
+            {% trans "Demographic Survey" as trans_demographic_survey %}
+            {% url 'web:demographic-data-update' as url_demographic_data_update %}
+            {% alert_link url_demographic_data_update trans_demographic_survey as survey_link %}
+            {% if user.has_any_child %}
+                {% if request.session.study_name %}
+                    {% blocktranslate with survey=survey_link %}Please complete the {{ survey }} to continue to your study or view other available studies!{% endblocktranslate %}
+                {% else %}
+                    {% blocktranslate with survey=survey_link %}Please complete the {{ survey }} to view available studies for your children!{% endblocktranslate %}
+                {% endif %}
+            {% elif request.session.study_name %}
+                {% blocktranslate with survey=survey_link add_child=add_child_link %}Please complete the {{ survey }} and {{ add_child }} to your account to continue to your study or view other available studies!{% endblocktranslate %}
+            {% else %}
+                {% blocktranslate with survey=survey_link add_child=add_child_link %}Please complete the {{ survey }} and {{ add_child }} to your account to view available studies!{% endblocktranslate %}
+            {% endif %}
         {% endif %}
     </div>
-{% elif request.session.study_name and not has_study_child %}
-    <div class="alert alert-warning" role="alert">
-        {% trans "If the 'Continue to Study' button still isn't lighting up, the study may have become full or be recruiting a slightly different set of kids right now. You might also be missing a piece of information about your family, such as the languages you speak at home." %}
-    </div>
+{% elif request.session.study_name %}
+    {% trans "Continue to Study" as trans_continue_to_study %}
+    {% if has_study_child %}
+        <div class="alert alert-success" role="alert">
+            {% blocktranslate with button=trans_continue_to_study|bold study_name=request.session.study_name|bold %}When you are ready, click the {{ button }} button on the left to go on to your study, {{ study_name }}.{% endblocktranslate %}
+        </div>
+    {% else %}
+        {% trans "Find Another Study" as trans_find_another_study %}
+        {% trans "click here" as trans_click_here %}
+        {% url 'web:study-detail' uuid=request.session.study_uuid as url_study_detail %}
+        {% alert_link url_study_detail trans_click_here as study_link %}
+        <div class="alert alert-warning" role="alert">
+            <p>
+                {% blocktranslate with button=trans_continue_to_study|bold %}If the {{ button }} button still isn't lighting up, the study may have become full or be recruiting a slightly different set of kids right now. You might also be missing a piece of information about your family, such as the languages you speak at home.{% endblocktranslate %}
+            </p>
+            <p class="mb-0">
+                {% if current_page == "demographic-update" %}
+                    {% trans "Children Information" as trans_children_information %}
+                    {% blocktranslate with children_button=trans_children_information|bold find_button=trans_find_another_study|bold click_here=study_link study_name=request.session.study_name|bold %}You can click the {{ children_button }} button to add another child, {{ find_button }} to explore more studies for your family, or {{ click_here }} to review the requirements for {{ study_name }}.{% endblocktranslate %}
+                {% else %}
+                    {% trans "Demographic Survey" as trans_demographic_survey %}
+                    {% blocktranslate with survey_button=trans_demographic_survey|bold find_button=trans_find_another_study|bold click_here=study_link study_name=request.session.study_name|bold %}You can click the {{ survey_button }} button to add more information about your family, {{ find_button }} to explore more studies for your family, or {{ click_here }} to review the requirements for {{ study_name }}.{% endblocktranslate %}
+                {% endif %}
+            </p>
+        </div>
+    {% endif %}
 {% endif %}
