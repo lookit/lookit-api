@@ -39,6 +39,7 @@ from accounts.queries import (
     get_child_eligibility_for_study,
 )
 from accounts.utils import hash_id
+from accounts.views import DuplicateUsernameSignupMixin
 from exp.mixins.paginator_mixin import PaginatorMixin
 from studies.helpers import get_experiment_absolute_url
 from studies.models import (
@@ -186,7 +187,7 @@ def get_jspsych_aws_values():
         return None
 
 
-class ParticipantSignupView(generic.CreateView):
+class ParticipantSignupView(DuplicateUsernameSignupMixin, generic.CreateView):
     """
     Allows a participant to sign up. Redirects them to a page to add their demographic data.
     """

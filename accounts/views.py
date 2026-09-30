@@ -6,9 +6,11 @@ from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import LoginView
 from django.core.handlers.wsgi import WSGIRequest
+from django.db import IntegrityError, transaction
 from django.http import HttpResponseRedirect
 from django.http.request import QueryDict
 from django.urls.base import reverse
+from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
 from guardian.mixins import LoginRequiredMixin
@@ -82,7 +84,38 @@ class TwoFactorAuthLoginView(UserPassesTestMixin, LoginView):
         return super().get_redirect_url() or reverse("exp:study-list")
 
 
-class ResearcherRegistrationView(generic.CreateView):
+class DuplicateUsernameSignupMixin:
+    """Show a form error instead of a 500 when a signup hits the username unique constraint.
+
+    Form validation already rejects existing usernames, but two concurrent submissions
+    with the same email (e.g. a double-clicked submit button) can both pass validation,
+    and then the second one fails on insert.
+
+    This wraps the view's whole `form_valid` (rather than overriding it) so that
+    the view's own post-save steps, like logging the new user in, are skipped too.
+    """
+
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        form = self.get_form()
+        if not form.is_valid():
+            return self.form_invalid(form)
+        try:
+            with transaction.atomic():
+                return self.form_valid(form)
+        except IntegrityError:
+            username = form.cleaned_data.get("username")
+            if not User.objects.filter(username__iexact=username).exists():
+                # re-raise the error if it's not the duplicate username issue
+                raise
+            form.add_error(
+                "username",
+                _("An account with this email already exists. Please try logging in."),
+            )
+            return self.form_invalid(form)
+
+
+class ResearcherRegistrationView(DuplicateUsernameSignupMixin, generic.CreateView):
     template_name = "accounts/researcher-registration.html"
     model = User
     form_class = forms.ResearcherRegistrationForm
