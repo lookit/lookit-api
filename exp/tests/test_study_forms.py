@@ -2,12 +2,17 @@ from unittest.case import skip
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
 
 from accounts.models import User
-from studies.forms import StudyCreateForm, StudyEditForm
+from studies.forms import (
+    StudyCreateForm,
+    StudyEditForm,
+    format_contact_info,
+    parse_contact_info,
+)
 from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 
@@ -119,7 +124,8 @@ class StudyFormTestCase(TestCase):
             "purpose": "",
             "criteria": "",
             "duration": "",
-            "contact_info": "",
+            "contact_name": "",
+            "contact_email": "",
         }
         for field_name, empty_value in empty_field_values.items():
             data = model_to_dict(self.study)
@@ -382,3 +388,81 @@ class StudyFormTestCase(TestCase):
         self.assertIn(self.second_lab, edit_form.fields["lab"].queryset)
         self.assertNotIn(self.other_lab, edit_form.fields["lab"].queryset)
         self.assertNotIn("lab", edit_form.errors)
+
+
+class ContactInfoParsingTestCase(SimpleTestCase):
+    def test_parse_contact_info(self):
+        expected = ("Anna Banana", "abanana@place.com")
+        self.assertEqual(
+            parse_contact_info("Anna Banana (contact: abanana@place.com)"), expected
+        )
+        self.assertEqual(
+            parse_contact_info("Anna Banana (abanana@place.com)"), expected
+        )
+        for value in [
+            "",
+            "n/a",
+            "Anna Banana",
+            "abanana@place.com",
+            "Anna (not-an-email)",
+        ]:
+            self.assertIsNone(parse_contact_info(value), value)
+
+    def test_format_contact_info(self):
+        self.assertEqual(
+            format_contact_info("Anna Banana", "abanana@place.com"),
+            "Anna Banana (contact: abanana@place.com)",
+        )
+
+
+class StudyFormContactFieldsTestCase(TestCase):
+    setUp = StudyFormTestCase.setUp
+
+    def _form(self, contact_info, **data):
+        self.study.contact_info = contact_info
+        self.study.save()
+        form_data = model_to_dict(self.study)
+        form_data.update(data)
+        return StudyEditForm(
+            data=form_data if data else None,
+            instance=self.study,
+            user=self.study_designer,
+        )
+
+    def test_fields_prefilled_from_contact_info(self):
+        form = self._form("Anna Banana (contact: abanana@place.com)")
+        self.assertEqual(form.initial["contact_name"], "Anna Banana")
+        self.assertEqual(form.initial["contact_email"], "abanana@place.com")
+
+    def test_unparseable_contact_info_left_blank(self):
+        form = self._form("email the lab")
+        self.assertNotIn("contact_name", form.initial)
+        self.assertIn("email the lab", form.fields["contact_name"].help_text)
+
+    def test_invalid_email_rejected(self):
+        form = self._form(
+            "n/a", contact_name="Anna Banana", contact_email="not-an-email"
+        )
+        self.assertIn("contact_email", form.errors)
+        # No type="email" on the input, so the server-side error is what users see.
+        self.assertNotIn('type="email"', str(form["contact_email"]))
+
+    def test_unchanged_contact_keeps_stored_string(self):
+        form = self._form(
+            "Anna Banana (abanana@place.com)",
+            contact_name="Anna Banana",
+            contact_email="abanana@place.com",
+        )
+        form.is_valid()
+        self.assertEqual(form.build_contact_info(), "Anna Banana (abanana@place.com)")
+
+    def test_changed_contact_uses_standard_format(self):
+        form = self._form(
+            "Anna Banana (abanana@place.com)",
+            contact_name="Anna Banana",
+            contact_email="anna@newlab.edu",
+        )
+        form.is_valid()
+        self.assertEqual(
+            form.build_contact_info(), "Anna Banana (contact: anna@newlab.edu)"
+        )
