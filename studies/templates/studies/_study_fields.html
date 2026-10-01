@@ -24,6 +24,14 @@
 {% bootstrap_field form.duration label_class="form-label fw-bold" wrapper_class="mb-4" %}
 {% bootstrap_field form.contact_name label_class="form-label fw-bold" wrapper_class="mb-4" %}
 {% bootstrap_field form.contact_email label_class="form-label fw-bold" wrapper_class="mb-4" %}
+{% if form.legacy_contact_info %}
+    <div class="alert alert-warning mb-4" role="note">
+        <p class="mb-1">
+            Your study's contact information was saved in an older format. Please re-enter it in the name and email fields above. For reference, it was:
+        </p>
+        <p class="mb-0 font-monospace">{{ form.legacy_contact_info }}</p>
+    </div>
+{% endif %}
 <hr />
 <div class="row">
     <div class="col-xs-12">

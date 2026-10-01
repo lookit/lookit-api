@@ -2,6 +2,7 @@ from unittest.case import skip
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
+from django.template.loader import render_to_string
 from django.test import SimpleTestCase, TestCase
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
@@ -437,7 +438,19 @@ class StudyFormContactFieldsTestCase(TestCase):
     def test_unparseable_contact_info_left_blank(self):
         form = self._form("email the lab")
         self.assertNotIn("contact_name", form.initial)
-        self.assertIn("email the lab", form.fields["contact_name"].help_text)
+        self.assertEqual(form.legacy_contact_info, "email the lab")
+        html = render_to_string("studies/_study_fields.html", {"form": form})
+        self.assertIn("email the lab", html)
+
+    def test_legacy_contact_info_is_escaped(self):
+        form = self._form("<b>Jane</b> no email")
+        html = render_to_string("studies/_study_fields.html", {"form": form})
+        self.assertIn("&lt;b&gt;Jane&lt;/b&gt; no email", html)
+
+    def test_no_legacy_box_for_valid_contact_info(self):
+        form = self._form("Anna Banana (contact: abanana@place.com)")
+        html = render_to_string("studies/_study_fields.html", {"form": form})
+        self.assertNotIn("older format", html)
 
     def test_invalid_email_rejected(self):
         form = self._form(

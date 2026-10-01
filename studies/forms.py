@@ -10,7 +10,6 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.db.models import Q
 from django.forms import ModelForm, Textarea
-from django.utils.html import escape
 from guardian.shortcuts import get_objects_for_user
 from PIL import Image
 
@@ -235,11 +234,8 @@ class StudyForm(ModelForm):
             self.initial.setdefault("contact_name", parsed[0])
             self.initial.setdefault("contact_email", parsed[1])
         elif stored:
+            # Shown under the contact fields so it can be re-entered.
             self.legacy_contact_info = stored
-            self.fields["contact_name"].help_text += (
-                f' Your study\'s current contact information is "{escape(stored)}". '
-                "Please re-enter it using the name and email fields."
-            )
 
     def build_contact_info(self):
         name = self.cleaned_data.get("contact_name")
