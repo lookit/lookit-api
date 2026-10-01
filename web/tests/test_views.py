@@ -260,23 +260,271 @@ class ChildrenListViewTestCase(TestCase):
                 deleted=False, user=mock_request.user
             )
 
-    def test_demographics_warning_shown_without_demographics(self):
-        user = G(User, is_active=True, is_researcher=False)
-        self.client.force_login(user)
-        response = self.client.get(reverse("web:children-list"))
+
+def get_page_with_participation_state(
+    client,
+    url_name,
+    has_demographics=True,
+    has_child=True,
+    study=False,
+    has_study_child=False,
+):
+    """Log in a new participant in the given state and GET the page."""
+    user = G(User, is_active=True, is_researcher=False)
+    if has_demographics:
+        G(DemographicData, user=user)
+    if has_child:
+        G(
+            Child,
+            user=user,
+            deleted=False,
+            birthday=datetime.date.today() - datetime.timedelta(days=365),
+        )
+    client.force_login(user)
+    if study:
+        session = client.session
+        session["study_name"] = "Test Study Name"
+        session["study_uuid"] = str(uuid.uuid4())
+        session.save()
+    with patch.object(User, "has_study_child", return_value=has_study_child):
+        return client.get(reverse(url_name))
+
+
+BOTH_PAGES = [("web:children-list",), ("web:demographic-data-update",)]
+BOLD_STUDY_NAME = "<strong>Test Study Name</strong>"
+REVIEW_REQUIREMENTS = f"to review the requirements for {BOLD_STUDY_NAME}."
+
+
+class ParticipationAlertTestCase(TestCase):
+    """The alert on the demographics and children pages explaining why studies are unavailable."""
+
+    MISSING_DEMOGRAPHICS = "to view available studies for your children!"
+    MISSING_CHILD = "to your account to view available studies!"
+    MISSING_FROM_STUDY = "to continue to your study or view other available studies!"
+    NOT_ELIGIBLE = "still isn't lighting up"
+    ALL_MESSAGES = [
+        MISSING_DEMOGRAPHICS,
+        MISSING_CHILD,
+        MISSING_FROM_STUDY,
+        NOT_ELIGIBLE,
+    ]
+
+    def assert_alert(self, response, expected):
         self.assertEqual(response.status_code, 200)
+        for message in self.ALL_MESSAGES:
+            if message in expected:
+                self.assertContains(response, message)
+            else:
+                self.assertNotContains(response, message)
+        if not expected:
+            self.assertNotContains(response, "alert-warning")
+        self.assertNotContains(response, "alert-success")
+
+    @parameterized.expand(BOTH_PAGES)
+    def test_no_demographics_no_child(self, url_name):
+        response = get_page_with_participation_state(
+            self.client, url_name, has_demographics=False, has_child=False
+        )
+        self.assert_alert(response, [self.MISSING_CHILD])
+        self.assertContains(response, "Please complete ")
+        self.assertContains(response, f'<a href="{reverse("web:child-add")}"')
+
+    @parameterized.expand(
+        [
+            (url_name, has_demographics, has_child, has_study_child)
+            for (url_name,) in BOTH_PAGES
+            for has_demographics, has_child, has_study_child in [
+                (False, False, False),  # state 2
+                (False, True, True),  # state 4
+                (False, True, False),  # state 5
+                (True, False, False),  # state 7
+            ]
+        ]
+    )
+    def test_missing_info_from_study(
+        self, url_name, has_demographics, has_child, has_study_child
+    ):
+        response = get_page_with_participation_state(
+            self.client,
+            url_name,
+            has_demographics=has_demographics,
+            has_child=has_child,
+            study=True,
+            has_study_child=has_study_child,
+        )
+        self.assert_alert(response, [self.MISSING_FROM_STUDY])
+        self.assertNotContains(response, REVIEW_REQUIREMENTS)
+        if has_demographics:
+            self.assertNotContains(response, "Please complete ")
+        else:
+            self.assertContains(response, "Please complete ")
+        if has_child:
+            self.assertNotContains(
+                response, f'<a href="{reverse("web:child-add")}" class="alert-link">'
+            )
+        else:
+            self.assertContains(
+                response, f'<a href="{reverse("web:child-add")}" class="alert-link">'
+            )
+
+    @parameterized.expand(BOTH_PAGES)
+    def test_no_demographics_with_child(self, url_name):
+        response = get_page_with_participation_state(
+            self.client, url_name, has_demographics=False
+        )
+        self.assert_alert(response, [self.MISSING_DEMOGRAPHICS])
+
+    @parameterized.expand(BOTH_PAGES)
+    def test_demographics_no_child(self, url_name):
+        response = get_page_with_participation_state(
+            self.client, url_name, has_child=False
+        )
+        self.assert_alert(response, [self.MISSING_CHILD])
+        self.assertNotContains(response, "Please complete ")
+
+    @parameterized.expand(BOTH_PAGES)
+    def test_study_with_no_eligible_child(self, url_name):
+        response = get_page_with_participation_state(
+            self.client, url_name, study=True, has_study_child=False
+        )
+        self.assert_alert(response, [self.NOT_ELIGIBLE])
+        self.assertContains(response, "If the <strong>Continue to Study</strong>")
+        # The requirements link is inside the alert, after the ineligibility text
+        content = response.content.decode()
+        alert = content[content.index("alert-warning") :]
+        alert = alert[: alert.index("</div>")]
+        self.assertIn(REVIEW_REQUIREMENTS, alert)
+
+    @parameterized.expand(BOTH_PAGES)
+    def test_no_alert_when_ready_not_from_study(self, url_name):
+        response = get_page_with_participation_state(self.client, url_name)
+        self.assert_alert(response, [])
+
+    @parameterized.expand(BOTH_PAGES)
+    def test_success_alert_when_ready_for_study(self, url_name):
+        response = get_page_with_participation_state(
+            self.client, url_name, study=True, has_study_child=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "alert-warning")
+        content = response.content.decode()
+        alert = content[content.index("alert-success") :]
+        alert = alert[: alert.index("</div>")]
+        self.assertIn(
+            "When you are ready, click the <strong>Continue to Study</strong> "
+            f"button on the left to go on to your study, {BOLD_STUDY_NAME}.",
+            alert,
+        )
+        self.assertNotIn("study_name }}", content)
+
+    def test_survey_is_linked_on_children_list(self):
+        response = get_page_with_participation_state(
+            self.client, "web:children-list", has_demographics=False
+        )
+        self.assertContains(response, "Please complete the ")
         self.assertContains(
             response,
             f'<a href="{reverse("web:demographic-data-update")}" class="alert-link">',
         )
 
-    def test_demographics_warning_not_shown_with_demographics(self):
-        user = G(User, is_active=True, is_researcher=False)
-        G(DemographicData, user=user)
-        self.client.force_login(user)
-        response = self.client.get(reverse("web:children-list"))
+    def test_survey_is_not_linked_on_demographics_page(self):
+        response = get_page_with_participation_state(
+            self.client, "web:demographic-data-update", has_demographics=False
+        )
+        self.assertContains(response, "Please complete this Demographic Survey")
+        self.assertNotContains(
+            response,
+            f'<a href="{reverse("web:demographic-data-update")}" class="alert-link">',
+        )
+
+
+class ChildrenListPageTextTestCase(TestCase):
+    EDIT_CHILDREN = "You can edit information about the children"
+    FIND_A_STUDY = "to view the studies available for your children."
+    CONTINUE = "When you are ready, click the <strong>Continue to Study</strong> button on the left"
+
+    def get(self, **kwargs):
+        response = get_page_with_participation_state(
+            self.client, "web:children-list", **kwargs
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, 'class="alert-link"')
+        return response
+
+    def test_no_child(self):
+        # The alert already asks them to add a child, so there's no page text about it
+        response = self.get(has_child=False)
+        self.assertContains(response, "alert-warning")
+        self.assertNotContains(response, "Click the <strong>Add Child</strong> button")
+        self.assertNotContains(response, self.EDIT_CHILDREN)
+
+    def test_find_a_study_shown_with_demographics(self):
+        response = self.get()
+        self.assertContains(response, self.EDIT_CHILDREN)
+        self.assertContains(response, "<strong>Find a Study Now</strong>")
+        self.assertContains(response, self.FIND_A_STUDY)
+
+    def test_find_a_study_hidden_without_demographics(self):
+        response = self.get(has_demographics=False)
+        self.assertContains(response, self.EDIT_CHILDREN)
+        self.assertNotContains(response, self.FIND_A_STUDY)
+
+    def test_eligible_child_with_demographics(self):
+        response = self.get(study=True, has_study_child=True)
+        self.assertContains(response, self.EDIT_CHILDREN)
+        self.assertContains(response, self.CONTINUE, count=1)
+        self.assertNotContains(response, self.FIND_A_STUDY)
+
+    def test_eligible_child_without_demographics(self):
+        response = self.get(has_demographics=False, study=True, has_study_child=True)
+        self.assertContains(response, self.EDIT_CHILDREN)
+        self.assertNotContains(response, self.CONTINUE)
+
+    def test_no_eligible_child(self):
+        response = self.get(study=True, has_study_child=False)
+        self.assertContains(response, self.EDIT_CHILDREN)
+        self.assertNotContains(response, self.CONTINUE)
+        self.assertNotContains(response, self.FIND_A_STUDY)
+
+
+class DemographicsPageTextTestCase(TestCase):
+    def test_welcome_from_study_shows_bold_study_name(self):
+        response = get_page_with_participation_state(
+            self.client,
+            "web:demographic-data-update",
+            has_demographics=False,
+            has_child=False,
+            study=True,
+        )
+        self.assertContains(
+            response, f"Before you continue to the main study ({BOLD_STUDY_NAME})"
+        )
+        self.assertNotContains(response, "study_name }}")
+
+    def test_eligible_child_shows_continue_button_once(self):
+        response = get_page_with_participation_state(
+            self.client,
+            "web:demographic-data-update",
+            study=True,
+            has_study_child=True,
+        )
+        self.assertContains(
+            response,
+            "click the <strong>Continue to Study</strong> button",
+            count=1,
+        )
+
+
+class ChildAddPageTestCase(TestCase):
+    def test_back_to_children_list_button(self):
+        user = G(User, is_active=True, is_researcher=False)
+        self.client.force_login(user)
+        response = self.client.get(reverse("web:child-add"))
+        self.assertEqual(response.status_code, 200)
+        # The sidebar also links to the children list, so check the button's own link
+        content = response.content.decode()
+        button = content[: content.index("Back to Children List")]
+        button = button[button.rindex("<a ") :]
+        self.assertIn(f'href="{reverse("web:children-list")}"', button)
 
 
 # TODO: ParticipantUpdateView
