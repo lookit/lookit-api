@@ -37,6 +37,7 @@
     <div class="row">
         <div class="col-12">
             <span class="text-end">
+                {# Don't add data-submit-once: the view reads the submit button's name ("all-attachments"/"all-consent-videos") to decide which archive to build, which is left out of the form data when the button is disabled. See submit-once.js. #}
                 <form method="post">
                     {% csrf_token %}
                     {% bootstrap_button "Download all videos" button_class=btn_primary_classes button_type="submit" name="all-attachments" value="all" %}

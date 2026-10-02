@@ -78,6 +78,7 @@
             </div>
             {% if active == 'all' %}
             <div class="row">
+                {# Don't add data-submit-once: these buttons download files, so the page doesn't reload and the buttons would stay disabled. See submit-once.js. #}
                 <form id="data-options" method="get">
                     <p>
                         The following options allow you to download files with the minimal identifying information needed for your analysis. Names and birthdates are available for download as needed, but must be redacted prior to publication. Files with names, global IDs, birthdates, exact ages at participation, or "additional info" fields are marked as identifiable in the filename.
@@ -267,6 +268,7 @@
             {% endif %}
             {% if active == 'demographics' %}
             <div class="row">
+                {# Don't add data-submit-once: these buttons download files, so the page doesn't reload and the buttons would stay disabled. See submit-once.js. #}
                 <form id="data-options-demo" method="get">
                     <p>Data download options:</p>
                     <div>
