@@ -21,7 +21,7 @@
                     {% trans "instead." %}
                 </p>
             </div>
-            <form method="post" action="">
+            <form method="post" action="" data-submit-once>
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 <p>

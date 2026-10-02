@@ -105,7 +105,7 @@
                 {% bootstrap_button complete_demo href=complete_demo_url button_class=btn_secondary_classes %}
             {% else %}
                 <div class="form-group">
-                    <form method="post">
+                    <form method="post" data-submit-once>
                         {% csrf_token %}
                         <label for="child-dropdown" class="form-label">{% trans "Select a child:" %}</label>
                         <select id="child-dropdown"

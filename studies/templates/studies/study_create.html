@@ -33,7 +33,7 @@
                     <h3 class="card-subtitle my-1">Create Study</h3>
                 </div>
                 <div class="card-body">
-                    <form id="study-details-form" enctype="multipart/form-data" method="post">
+                    <form id="study-details-form" enctype="multipart/form-data" method="post" data-submit-once>
                         {% csrf_token %}
                         {% include "studies/_study_fields.html" with form=form %}
                         {% form_buttons %}

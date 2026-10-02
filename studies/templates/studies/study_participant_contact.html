@@ -146,7 +146,7 @@
                     </div>
                 </div>
             </div>
-            <form method="post">
+            <form method="post" data-submit-once>
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 {% form_buttons %}

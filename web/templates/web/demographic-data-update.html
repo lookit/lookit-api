@@ -47,7 +47,7 @@
                             {% trans "Even if you allow your study videos to be published for scientific or publicity purposes, your demographic information is never published in conjunction with your video." %}
                         </p>
                     {% endif %}
-                    <form method="post" action="">
+                    <form method="post" action="" data-submit-once>
                         {% csrf_token %}
                         {% bootstrap_form form %}
                         {% form_buttons %}
