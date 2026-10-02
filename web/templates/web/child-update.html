@@ -26,6 +26,7 @@
             <div class="card my-4">
                 <div class="card-body">
                     <h1 class="card-title">{% trans "Update" %} {{ child.given_name }}</h1>
+                    {# Don't add data-submit-once: the view checks for the Delete button's name ("deleteChild"), which is left out of the form data when the button is disabled, so Delete would act as Save. See submit-once.js. #}
                     <form method="post" action="">
                         {% csrf_token %}
                         {% bootstrap_form form %}

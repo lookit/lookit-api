@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, PropertyMock, patch, sentinel
 
 from django.contrib.sites.models import Site
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import IntegrityError
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.views.generic.list import MultipleObjectMixin
@@ -171,6 +172,50 @@ class ParticipantAccountViewsTestCase(TestCase):
         # And user isn't logged in
         self.assertTrue(response.wsgi_request.user.is_anonymous)
         self.assertFalse(response.wsgi_request.user.is_authenticated)
+
+    @patch(
+        "accounts.forms.ParticipantSignupForm.clean_username",
+        autospec=True,
+        side_effect=lambda form: form.cleaned_data["username"],
+    )
+    @patch("accounts.forms.ParticipantSignupForm.validate_unique")
+    @patch.object(User.objects, "get_by_natural_key", side_effect=User.DoesNotExist)
+    def test_participant_signup_concurrent_duplicate_user(
+        self, mock_get_by_natural_key, mock_validate_unique, mock_clean_username
+    ):
+        # Simulate a concurrent duplicate submission: form validation doesn't see the
+        # existing user, so the DB unique constraint is what rejects it.
+        response = self.client.post(
+            reverse("web:participant-signup"),
+            {
+                "username": "participant@mit.edu",
+                "password1": self.valid_password,
+                "password2": self.valid_password,
+                "nickname": "Testfamily",
+            },
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain, [])
+        self.assertIn(
+            "An account with this email already exists. Please try logging in.",
+            response.context["form"].errors["username"],
+        )
+        self.assertTrue(response.wsgi_request.user.is_anonymous)
+        self.assertEqual(User.objects.filter(username="participant@mit.edu").count(), 1)
+
+    @patch("accounts.forms.ParticipantSignupForm.save", side_effect=IntegrityError)
+    def test_participant_signup_unrelated_integrity_error_raises(self, mock_save):
+        with self.assertRaises(IntegrityError):
+            self.client.post(
+                reverse("web:participant-signup"),
+                {
+                    "username": "newparticipant@mit.edu",
+                    "password1": self.valid_password,
+                    "password2": self.valid_password,
+                    "nickname": "Testfamily",
+                },
+            )
 
     def test_participant_signup_invalid_email(self):
         response = self.client.post(

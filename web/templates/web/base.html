@@ -106,6 +106,8 @@
         {# bootstrap 5 #}
         {% bootstrap_javascript %}
         <link rel="stylesheet" href="{% static 'custom_bootstrap5.css' %}"/>
+        {# Opt-in per form with the data-submit-once attribute #}
+        <script src="{% static 'js/submit-once.js' %}" defer></script>
         {# others... #}
         {% block head %}
         {% endblock head %}

@@ -473,6 +473,39 @@ class UserModelTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.redirect_chain, [(reverse("web:home"), 302)])
 
+    @patch(
+        "accounts.forms.ResearcherRegistrationForm.clean_username",
+        autospec=True,
+        side_effect=lambda form: form.cleaned_data["username"],
+    )
+    @patch("accounts.forms.ResearcherRegistrationForm.validate_unique")
+    @patch.object(User.objects, "get_by_natural_key", side_effect=User.DoesNotExist)
+    def test_concurrent_duplicate_registration(
+        self, mock_get_by_natural_key, mock_validate_unique, mock_clean_username
+    ):
+        # Simulate a concurrent duplicate submission: form validation doesn't see the
+        # existing user, so the DB unique constraint is what rejects it.
+        G(User, username="existing@gmail.com")
+        response = self.client.post(
+            reverse("accounts:researcher-registration"),
+            {
+                "username": "existing@gmail.com",
+                "password1": self.test_password,
+                "password2": self.test_password,
+                "given_name": "Should",
+                "family_name": "Not",
+                "nickname": "Be Allowed",
+            },
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain, [])
+        self.assertIn(
+            "An account with this email already exists. Please try logging in.",
+            response.context["form"].errors["username"],
+        )
+        self.assertTrue(response.context["user"].is_anonymous)
+
     def test_no_duplicate_registrations_case_insensitive(self):
         response = self.client.post(
             reverse("accounts:researcher-registration"),
