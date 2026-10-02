@@ -4,6 +4,7 @@ from typing import Text
 
 from django import template
 from django.urls.base import reverse
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
@@ -367,3 +368,17 @@ def squash_spaces(value):
         value = value.replace("\\r\\n", "\n").replace("\\r", "\n").replace("\\n", "\n")
         return re.sub(r"[^\S\r\n]+", " ", value)
     return value
+
+
+@register.filter(name="bold")
+def bold(value):
+    """Wraps the (escaped) value in <strong>, so it can be passed into
+    blocktranslate as a variable and keep HTML out of the translated string."""
+    return format_html("<strong>{}</strong>", value)
+
+
+@register.simple_tag
+def alert_link(url, text):
+    """Builds a Bootstrap alert link, so it can be passed into blocktranslate as
+    a variable and keep HTML out of the translated string."""
+    return format_html('<a href="{}" class="alert-link">{}</a>', url, text)

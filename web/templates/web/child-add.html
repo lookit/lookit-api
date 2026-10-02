@@ -14,17 +14,20 @@
 {% block content %}
     {% trans "Cancel" as trans_cancel %}
     {% trans "Add Child" as trans_add_child %}
+    {% trans "Back to Children List" as trans_back %}
     {% url 'web:children-list' as url_children_list %}
     {% bs_icon "plus" as bs_icon_plus %}
+    {% bs_icon "caret-left-fill" as bs_icon_caret %}
     {% button_primary_classes as btn_primary_classes %}
     {% button_secondary_classes as btn_secondary_classes %}
     <div class="row">
         <div class="col-4">{% include "accounts/_account-navigation.html" with current_page="children-list" %}</div>
         <div class="col-8">
-            <div class="card mb-4">
+            {% bootstrap_button bs_icon_caret|add:trans_back href=url_children_list %}
+            <div class="card my-4">
                 <div class="card-body">
                     <h1 class="card-title">{% trans "Add Child" %}</h1>
-                    <form method="post" action="">
+                    <form method="post" action="" data-submit-once>
                         {% csrf_token %}
                         {% bootstrap_form form %}
                         {% form_buttons %}

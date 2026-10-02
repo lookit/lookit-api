@@ -16,38 +16,23 @@
         <div class="col-8">
             <div class="card mb-4">
                 <div class="card-body">
-                    {% if request.session.study_name and user.has_demographics and not has_study_child %}
+                    {% include "web/_participation-alert.html" with current_page="demographic-update" %}
+                    {% if not user.has_demographics %}
                         <p>
-                            {% trans "If the \"Continue to Study\" button still isn't lighting up, make sure you have completed the form below and added the participating child to your account. The study may also have become full or be recruiting a slightly different set of kids right now." %}
-                        </p>
-                        <p>
-                            {% trans "You can click the \"Children Information\" button to add another child, \"Find Another Study\" to explore more studies for your family, or" %}
-                            <a href="{% url 'web:study-detail' uuid=request.session.study_uuid %}">{% trans "click here" %}</a>
-                            {% trans "to review the requirements for" %}
-                            "{{ request.session.study_name }}".
-                        </p>
-                    {% else %}
-                        {% if not request.session.study_name and not user.has_demographics %}
-                            <p>
+                            {% if request.session.study_name %}
+                                {% blocktranslate with study_name=request.session.study_name|bold %}Welcome to Children Helping Science! Before you continue to the main study ({{ study_name }}), we are asking you to share some information about your family.{% endblocktranslate %}
+                            {% else %}
                                 {% trans "Welcome to Children Helping Science! Before you take your first study, we are asking you to share some information about your family." %}
-                            </p>
-                        {% elif request.session.study_name and not user.has_demographics %}
-                            <p>
-                                {% trans "Welcome to Children Helping Science! Before you continue to the main study" %} ("{{ request.session.study_name }}"), {% trans "we are asking you to share some information about your family." %}
-                            </p>
-                        {% elif request.session.study_name and user.has_demographics and has_study_child %}
-                            <p>
-                                {% trans "Use this form to share more information about your family. When you are ready to move on, you can click the \"Continue to Study\" button on the left!" %}
-                            </p>
-                        {% endif %}
-                        <p>
-                            {% trans "One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research. Your answers to these questions will help us understand what audience we reach, as well as how factors like speaking multiple languages or having older siblings affect children's learning." %}
-                        </p>
-                        <p>
-                            {% trans "Even if you allow your study videos to be published for scientific or publicity purposes, your demographic information is never published in conjunction with your video." %}
+                            {% endif %}
                         </p>
                     {% endif %}
-                    <form method="post" action="">
+                    <p>
+                        {% trans "One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research. Your answers to these questions will help us understand what audience we reach, as well as how factors like speaking multiple languages or having older siblings affect children's learning." %}
+                    </p>
+                    <p>
+                        {% trans "Even if you allow your study videos to be published for scientific or publicity purposes, your demographic information is never published in conjunction with your video." %}
+                    </p>
+                    <form method="post" action="" data-submit-once>
                         {% csrf_token %}
                         {% bootstrap_form form %}
                         {% form_buttons %}

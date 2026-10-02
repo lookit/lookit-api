@@ -377,6 +377,7 @@
                         </div>
                     </div>
                 {% endif %}
+                {# Don't add data-submit-once: this downloads a file, so the page doesn't reload and the button would stay disabled for the next download. See submit-once.js. #}
                 <form class="download"
                       method="get"
                       action="{% url 'exp:study-responses-single-download' pk=study.pk %}">
