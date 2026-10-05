@@ -167,7 +167,7 @@ class LabApprovalForm(LabForm):
 
 
 CONTACT_INFO_RE = re.compile(
-    r"^\s*(?P<name>[^\n]+?)\s*\(\s*(?:contact:\s*)?(?P<email>[^\s()]+)\s*\)\s*$",
+    r"^\s*(?P<name>[^@]*[^\s@])\s*\(\s*(?:contact:\s*)?(?P<email>[^\s()]+)\s*\)\s*$",
     re.IGNORECASE,
 )
 
