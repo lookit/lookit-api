@@ -402,10 +402,25 @@ class ContactInfoParsingTestCase(SimpleTestCase):
         )
         for value in [
             "",
+            " ",
             "n/a",
             "Anna Banana",
             "abanana@place.com",
             "Anna (not-an-email)",
+            " (abanana@place.com)",
+            "Anna (abanana@place.com, other@place.com)",
+            "Anna (contact:)",
+            "Anna (abanana@place.com) extra",
+            "Anna (anna@place.com) & Banana (banana@place.com)",
+            "Anna B. (contact: 123 456-7890)",
+            "<Your name> (contact: <your email and/or phone number>)",
+            "Anna Banana (email: abanana@place.com)",
+            "Anna Banana (contact abanana@place.com)",
+            "Anna Banana (contact: abanana@place)",
+            "Anna Banana - abanana@place.com",
+            "Anna Banana <abanana@place.com>",
+            "Anna Banana (contact: abanana@place.com))",
+            "Anna Banana ((abanana@place.com))",
         ]:
             self.assertIsNone(parse_contact_info(value), value)
 
