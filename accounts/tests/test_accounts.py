@@ -1135,6 +1135,45 @@ class EligibilityTestCase(TestCase):
         self.assertTrue(get_child_participation_eligibility(child_2, study))
         self.assertTrue(get_child_eligibility_for_study(child_2, study))
 
+    def test_get_child_eligibilty_must_have_participated_jspsych(self):
+        jspsych_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_jspsych(),
+        )
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_have_participated=[jspsych_study],
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # Check without response
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+        # Add invalid (empty) response - doesn't count for internal (jsPsych) study participation
+        G(Response, child=child, study=jspsych_study, sequence=[])
+
+        # Check with invalid response
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+        # Add valid response
+        G(
+            Response,
+            child=child,
+            study=jspsych_study,
+            sequence=["0-html-button-response"],
+        )
+
+        # Check with response
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
     def test_get_child_eligibilty_prior_studies_must_not_have_participated(self):
         other_study = G(
             Study,
@@ -1184,6 +1223,45 @@ class EligibilityTestCase(TestCase):
 
         # Add response (empty sequence still counts for external study participation)
         G(Response, child=child, study=other_study, sequence=[])
+
+        # Check again with response
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+    def test_get_child_eligibilty_must_not_have_participated_jspsych(self):
+        jspsych_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_jspsych(),
+        )
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_not_have_participated=[jspsych_study],
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # Check without response
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+        # Add invalid (empty) response - doesn't count for internal (jsPsych) study participation
+        G(Response, child=child, study=jspsych_study, sequence=[])
+
+        # Check with invalid response
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+        # Add valid response
+        G(
+            Response,
+            child=child,
+            study=jspsych_study,
+            sequence=["0-html-button-response"],
+        )
 
         # Check again with response
         self.assertFalse(get_child_participation_eligibility(child, study))
