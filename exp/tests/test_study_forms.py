@@ -534,7 +534,7 @@ class StudyFormContactFieldsTestCase(TestCase):
             contact_name="Anna Banana",
             contact_email="abanana@place.com",
         )
-        form.is_valid()
+        self.assertTrue(form.is_valid(), form.errors)
         self.assertEqual(form.build_contact_info(), "Anna Banana (abanana@place.com)")
 
     def test_changed_contact_uses_standard_format(self):
@@ -543,7 +543,7 @@ class StudyFormContactFieldsTestCase(TestCase):
             contact_name="Anna Banana",
             contact_email="anna@newlab.edu",
         )
-        form.is_valid()
+        self.assertTrue(form.is_valid(), form.errors)
         self.assertEqual(
             form.build_contact_info(), "Anna Banana (contact: anna@newlab.edu)"
         )
