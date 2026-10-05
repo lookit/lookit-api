@@ -484,6 +484,8 @@ class StudyFormContactFieldsTestCase(TestCase):
 
     def _form(self, contact_info, **data):
         self.study.contact_info = contact_info
+        self.study.preview_summary = "Summary"
+        self.study.exit_url = "https://mit.edu"
         self.study.save()
         form_data = model_to_dict(self.study)
         form_data.update(data)
