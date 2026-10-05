@@ -233,7 +233,7 @@ class StudyForm(ModelForm):
         if parsed:
             self.initial.setdefault("contact_name", parsed[0])
             self.initial.setdefault("contact_email", parsed[1])
-        elif stored:
+        elif stored.strip():
             # Shown under the contact fields so it can be re-entered.
             self.legacy_contact_info = stored
 
