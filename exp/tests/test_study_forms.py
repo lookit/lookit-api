@@ -435,6 +435,9 @@ class StudyFormContactFieldsTestCase(TestCase):
         self.assertEqual(form.initial["contact_name"], "Anna Banana")
         self.assertEqual(form.initial["contact_email"], "abanana@place.com")
 
+    def test_whitespace_contact_info_not_shown_as_legacy(self):
+        self.assertIsNone(self._form("   ").legacy_contact_info)
+
     def test_unparseable_contact_info_left_blank(self):
         form = self._form("email the lab")
         self.assertNotIn("contact_name", form.initial)
