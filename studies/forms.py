@@ -181,7 +181,8 @@ def parse_contact_info(contact_info: str):
     match = CONTACT_INFO_RE.match(contact_info or "")
     if not match:
         return None
-    name, email = match.group("name").strip(), match.group("email").strip()
+    # Collapse whitespace (including newlines) inside the name group
+    name, email = " ".join(match.group("name").split()), match.group("email")
     try:
         validate_email(email)
     except ValidationError:
@@ -236,6 +237,10 @@ class StudyForm(ModelForm):
         elif stored.strip():
             # Shown under the contact fields so it can be re-entered.
             self.legacy_contact_info = stored
+
+    def clean_contact_name(self):
+        # Remove newlines and repeated spaces, matching how stored names are parsed.
+        return " ".join(self.cleaned_data["contact_name"].split())
 
     def build_contact_info(self):
         name = self.cleaned_data.get("contact_name")
