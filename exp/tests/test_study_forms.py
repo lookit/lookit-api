@@ -559,6 +559,17 @@ class StudyFormContactFieldsTestCase(TestCase):
             form.build_contact_info(), "Anna Banana (contact: abanana@place.com)"
         )
 
+    def test_blank_contact_info_required_without_legacy_box(self):
+        # No reference box for empty/whitespace values, but the fields are still required.
+        for stored in ["", " ", "\n\t "]:
+            form = self._form(stored, criteria="new criteria")
+            self.assertIsNone(form.legacy_contact_info, repr(stored))
+            html = render_to_string("studies/_study_fields.html", {"form": form})
+            self.assertNotIn("older format", html, repr(stored))
+            self.assertFalse(form.is_valid(), repr(stored))
+            self.assertIn("contact_name", form.errors, repr(stored))
+            self.assertIn("contact_email", form.errors, repr(stored))
+
     def test_legacy_contact_info_required(self):
         form = self._form("email the lab", criteria="new criteria")
         self.assertFalse(form.is_valid())
