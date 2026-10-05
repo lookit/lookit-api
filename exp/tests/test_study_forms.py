@@ -424,6 +424,54 @@ class ContactInfoParsingTestCase(SimpleTestCase):
         ]:
             self.assertIsNone(parse_contact_info(value), value)
 
+    def test_parse_contact_info_variants(self):
+        for value, expected in [
+            ("Anna (PI) (contact: a@b.com)", ("Anna (PI)", "a@b.com")),
+            ("Anna (CONTACT: a@b.com)", ("Anna", "a@b.com")),
+            ("Anna(contact:a@b.com)", ("Anna", "a@b.com")),
+            ("  Anna  (  a@b.com  )  \n", ("Anna", "a@b.com")),
+            (
+                "Dr. Anna K. Banana (email@email.com)",
+                ("Dr. Anna K. Banana", "email@email.com"),
+            ),
+            (
+                "Anna Banana (Contact: abanana@place.com)",
+                ("Anna Banana", "abanana@place.com"),
+            ),
+            # Email case is kept as entered.
+            (
+                "Anna Banana (contact: ABanana@Place.COM)",
+                ("Anna Banana", "ABanana@Place.COM"),
+            ),
+            (
+                "Anna Banana (contact: a.banana+lab@sub.place.edu)",
+                ("Anna Banana", "a.banana+lab@sub.place.edu"),
+            ),
+            ("Anna & Bob (contact: lab@place.edu)", ("Anna & Bob", "lab@place.edu")),
+            ("José Núñez (contact: jn@place.com)", ("José Núñez", "jn@place.com")),
+            # Newlines are treated as whitespace, and the name is put on one line.
+            ("Anna\nBanana (abanana@place.com)", ("Anna Banana", "abanana@place.com")),
+            ("Anna (contact:\nabanana@place.com)", ("Anna", "abanana@place.com")),
+            (
+                "Anna Banana\r\n(abanana@place.com)",
+                ("Anna Banana", "abanana@place.com"),
+            ),
+            (
+                "Anna  Banana\n(\ncontact:\nabanana@place.com\n)",
+                ("Anna Banana", "abanana@place.com"),
+            ),
+            # Placeholder names aren't detected; researchers can fix them in the form.
+            ("<Your name> (contact: a@b.com)", ("<Your name>", "a@b.com")),
+        ]:
+            self.assertEqual(parse_contact_info(value), expected, value)
+
+    def test_format_parse_round_trip(self):
+        for name in ["Anna", "Anna Banana", "Anna (PI)", "Dr. A. Banana, Jr."]:
+            email = "abanana@place.com"
+            self.assertEqual(
+                parse_contact_info(format_contact_info(name, email)), (name, email)
+            )
+
     def test_format_contact_info(self):
         self.assertEqual(
             format_contact_info("Anna Banana", "abanana@place.com"),
