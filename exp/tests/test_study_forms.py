@@ -547,3 +547,103 @@ class StudyFormContactFieldsTestCase(TestCase):
         self.assertEqual(
             form.build_contact_info(), "Anna Banana (contact: anna@newlab.edu)"
         )
+
+    def test_newlines_stripped_from_submitted_name(self):
+        form = self._form(
+            "email the lab",
+            contact_name="Anna\r\nBanana",
+            contact_email="abanana@place.com",
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(
+            form.build_contact_info(), "Anna Banana (contact: abanana@place.com)"
+        )
+
+    def test_legacy_contact_info_required(self):
+        form = self._form("email the lab", criteria="new criteria")
+        self.assertFalse(form.is_valid())
+        self.assertIn("contact_name", form.errors)
+        self.assertIn("contact_email", form.errors)
+
+    def test_create_form_saves_standard_format(self):
+        data = model_to_dict(self.study)
+        data.update(
+            lab=self.main_lab.id,
+            preview_summary="Summary",
+            exit_url="https://mit.edu",
+            contact_name=" Anna Banana ",
+            contact_email="abanana@place.com",
+        )
+        with open("exp/tests/static/study_image.png", "rb") as f:
+            files = {"image": SimpleUploadedFile("study_image.png", f.read())}
+        form = StudyCreateForm(data=data, files=files, user=self.study_admin)
+        self.assertTrue(form.is_valid(), form.errors)
+        study = form.save(commit=False)
+        self.assertEqual(study.contact_info, "Anna Banana (contact: abanana@place.com)")
+
+    def _approved_study_form(self, contact_info, **data):
+        # Update directly so the monitoring signal doesn't reject the study.
+        Study.objects.filter(pk=self.study.pk).update(
+            contact_info=contact_info,
+            state="approved",
+            preview_summary="Summary",
+            exit_url="https://mit.edu",
+        )
+        self.study.refresh_from_db()
+        form_data = model_to_dict(self.study)
+        form_data.update(data)
+        return StudyEditForm(
+            data=form_data, instance=self.study, user=self.study_designer
+        )
+
+    def test_approved_study_unchanged_contact_stays_approved(self):
+        # Stored in the older "Name (email)" format, which shouldn't be rewritten.
+        form = self._approved_study_form(
+            "Anna Banana (abanana@place.com)",
+            contact_name="Anna Banana",
+            contact_email="abanana@place.com",
+            criteria="new criteria",
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        self.study.refresh_from_db()
+        self.assertEqual(self.study.contact_info, "Anna Banana (abanana@place.com)")
+        self.assertEqual(self.study.criteria, "new criteria")
+        self.assertEqual(self.study.state, "approved")
+
+    def test_approved_study_unchanged_multiline_contact_stays_approved(self):
+        stored = "Anna\nBanana\n(contact: abanana@place.com)"
+        form = self._approved_study_form(
+            stored,
+            contact_name="Anna Banana",
+            contact_email="abanana@place.com",
+            criteria="new criteria",
+        )
+        self.assertEqual(form.initial["contact_name"], "Anna Banana")
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        self.study.refresh_from_db()
+        self.assertEqual(self.study.contact_info, stored)
+        self.assertEqual(self.study.state, "approved")
+
+    def test_approved_study_changed_contact_is_rejected(self):
+        form = self._approved_study_form(
+            "Anna Banana (abanana@place.com)",
+            contact_name="Anna Banana",
+            contact_email="anna@newlab.edu",
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        self.study.refresh_from_db()
+        self.assertEqual(
+            self.study.contact_info, "Anna Banana (contact: anna@newlab.edu)"
+        )
+        self.assertEqual(self.study.state, "rejected")
+
+    def test_approved_legacy_contact_info_still_required(self):
+        # Even when no other monitored field changes, so re-entering it will send
+        # the study back for review.
+        form = self._approved_study_form("email the lab", criteria="new criteria")
+        self.assertFalse(form.is_valid())
+        self.assertIn("contact_name", form.errors)
+        self.assertIn("contact_email", form.errors)
