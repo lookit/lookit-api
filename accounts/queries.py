@@ -120,7 +120,8 @@ def get_child_participation_eligibility(child, study) -> bool:
         bool: Return true if child is eligible based on their prior study participation
     """
 
-    ember_frame_player_id = 1
+    # internal study types: Ember Frame Player (id 1) and jsPsych (id 3)
+    internal_study_type_ids = [1, 3]
     must_have = True
     must_not = True
 
@@ -129,7 +130,7 @@ def get_child_participation_eligibility(child, study) -> bool:
     if study.must_have_participated.exists():
         must_have_count = (
             child.responses.filter(study__in=study.must_have_participated.all())
-            .exclude(study__study_type_id=ember_frame_player_id, sequence=[])
+            .exclude(study__study_type_id__in=internal_study_type_ids, sequence=[])
             .distinct()
             .values_list("study")
             .count()
@@ -142,7 +143,7 @@ def get_child_participation_eligibility(child, study) -> bool:
     if study.must_not_have_participated.exists():
         must_not_have_count = (
             child.responses.filter(study__in=study.must_not_have_participated.all())
-            .exclude(study__study_type_id=ember_frame_player_id, sequence=[])
+            .exclude(study__study_type_id__in=internal_study_type_ids, sequence=[])
             .distinct()
             .values_list("study")
             .count()
