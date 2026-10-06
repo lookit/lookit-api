@@ -2062,7 +2062,8 @@ class ResponseEligibilityTestCase(TestCase):
             Response,
             child=self.child_in_age_range,
             study=self.other_study_1,
-            sequence=["0-video-config"],
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
         )
         response_participation_2 = G(
             Response,
@@ -2169,7 +2170,8 @@ class ResponseEligibilityTestCase(TestCase):
             Response,
             child=self.child_in_age_range,
             study=self.other_study_3,
-            sequence=["0-video-config"],
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
         )
         response_multiple_participation_ineligibility = G(
             Response,
@@ -2201,7 +2203,8 @@ class ResponseEligibilityTestCase(TestCase):
             Response,
             child=self.child_in_age_range,
             study=self.other_study_1,
-            sequence=["0-video-config"],
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
         )
         # update the original response object - the eligibility field should not change
         response_eligible.sequence = ["0-video-config", "1-instructions"]
@@ -2250,7 +2253,8 @@ class ResponseEligibilityTestCase(TestCase):
             Response,
             child=self.child_in_age_range,
             study=study_blacklists_itself,
-            sequence=["0-video-config"],
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
         )
         self.assertEqual(
             response_eligible.eligibility,
