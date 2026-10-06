@@ -1088,15 +1088,27 @@ class EligibilityTestCase(TestCase):
         self.assertFalse(get_child_participation_eligibility(child, study))
         self.assertFalse(get_child_eligibility_for_study(child, study))
 
-        # Add invalid (empty) response
-        G(Response, child=child, study=other_study, sequence=[])
+        # Add response without completed consent frame - invalid, doesn't count as participation in an internal (EFP) study
+        G(
+            Response,
+            child=child,
+            study=other_study,
+            sequence=[],
+            completed_consent_frame=False,
+        )
 
-        # Check with invalid response
+        # Check with response without completed consent frame
         self.assertFalse(get_child_participation_eligibility(child, study))
         self.assertFalse(get_child_eligibility_for_study(child, study))
 
-        # Add valid response
-        G(Response, child=child, study=other_study, sequence=["0-video-config"])
+        # Add response with completed consent frame (valid)
+        G(
+            Response,
+            child=child,
+            study=other_study,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
 
         # Check with response
         self.assertTrue(get_child_participation_eligibility(child, study))
@@ -1126,9 +1138,22 @@ class EligibilityTestCase(TestCase):
         self.assertFalse(get_child_participation_eligibility(child_2, study))
         self.assertFalse(get_child_eligibility_for_study(child_2, study))
 
-        # For external studies, an empty response still counts as 'participated'
-        G(Response, child=child_1, study=external_study)
-        G(Response, child=child_2, study=external_study, sequence=[])
+        # For external studies, any response counts as 'participated', regardless of consent frame/sequence.
+        # (Add defaults for sequence and completed_consent_frame - needed for participation query.)
+        G(
+            Response,
+            child=child_1,
+            study=external_study,
+            sequence=[],
+            completed_consent_frame=False,
+        )
+        G(
+            Response,
+            child=child_2,
+            study=external_study,
+            sequence=[],
+            completed_consent_frame=False,
+        )
 
         self.assertTrue(get_child_participation_eligibility(child_1, study))
         self.assertTrue(get_child_eligibility_for_study(child_1, study))
@@ -1155,19 +1180,26 @@ class EligibilityTestCase(TestCase):
         self.assertFalse(get_child_participation_eligibility(child, study))
         self.assertFalse(get_child_eligibility_for_study(child, study))
 
-        # Add invalid (empty) response - doesn't count for internal (jsPsych) study participation
-        G(Response, child=child, study=jspsych_study, sequence=[])
-
-        # Check with invalid response
-        self.assertFalse(get_child_participation_eligibility(child, study))
-        self.assertFalse(get_child_eligibility_for_study(child, study))
-
-        # Add valid response
+        # Add response without completed consent frame - doesn't count as participation in an internal (jsPsych) study
         G(
             Response,
             child=child,
             study=jspsych_study,
-            sequence=["0-html-button-response"],
+            sequence=["0-video-config"],
+            completed_consent_frame=False,
+        )
+
+        # Check with response without completed consent frame
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+        # Add response with completed consent frame
+        G(
+            Response,
+            child=child,
+            study=jspsych_study,
+            sequence=["0-video-config", "1-video-consent"],
+            completed_consent_frame=True,
         )
 
         # Check with response
@@ -1195,7 +1227,13 @@ class EligibilityTestCase(TestCase):
         self.assertTrue(get_child_eligibility_for_study(child, study))
 
         # Add response
-        G(Response, child=child, study=other_study, sequence=["0-video-config"])
+        G(
+            Response,
+            child=child,
+            study=other_study,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
 
         # Check again with response
         self.assertFalse(get_child_participation_eligibility(child, study))
@@ -1221,8 +1259,14 @@ class EligibilityTestCase(TestCase):
         self.assertTrue(get_child_participation_eligibility(child, study))
         self.assertTrue(get_child_eligibility_for_study(child, study))
 
-        # Add response (empty sequence still counts for external study participation)
-        G(Response, child=child, study=other_study, sequence=[])
+        # Add response (counts as external study participation regardless of consent frame/sequence)
+        G(
+            Response,
+            child=child,
+            study=other_study,
+            sequence=[],
+            completed_consent_frame=False,
+        )
 
         # Check again with response
         self.assertFalse(get_child_participation_eligibility(child, study))
@@ -1248,19 +1292,26 @@ class EligibilityTestCase(TestCase):
         self.assertTrue(get_child_participation_eligibility(child, study))
         self.assertTrue(get_child_eligibility_for_study(child, study))
 
-        # Add invalid (empty) response - doesn't count for internal (jsPsych) study participation
-        G(Response, child=child, study=jspsych_study, sequence=[])
-
-        # Check with invalid response
-        self.assertTrue(get_child_participation_eligibility(child, study))
-        self.assertTrue(get_child_eligibility_for_study(child, study))
-
-        # Add valid response
+        # Add response without completed consent frame - doesn't count as participation in an internal (jsPsych) study
         G(
             Response,
             child=child,
             study=jspsych_study,
-            sequence=["0-html-button-response"],
+            sequence=["0-video-config"],
+            completed_consent_frame=False,
+        )
+
+        # Check with response without completed consent frame
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+        # Add response with completed consent frame
+        G(
+            Response,
+            child=child,
+            study=jspsych_study,
+            sequence=["0-video-config", "1-video-consent"],
+            completed_consent_frame=True,
         )
 
         # Check again with response
@@ -1284,14 +1335,26 @@ class EligibilityTestCase(TestCase):
         child = G(Child, birthday=datetime.date.today())
 
         # Add response to one of the required studies
-        G(Response, child=child, study=required_study_1, sequence=["0-video-config"])
+        G(
+            Response,
+            child=child,
+            study=required_study_1,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
 
         # Should not be eligible with a valid response to only one of the two required studies
         self.assertFalse(get_child_participation_eligibility(child, study))
         self.assertFalse(get_child_eligibility_for_study(child, study))
 
         # Should be eligible with valid responses to all of the required studies
-        G(Response, child=child, study=required_study_2, sequence=["0-video-config"])
+        G(
+            Response,
+            child=child,
+            study=required_study_2,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
         self.assertTrue(get_child_participation_eligibility(child, study))
         self.assertTrue(get_child_eligibility_for_study(child, study))
 
@@ -1322,12 +1385,24 @@ class EligibilityTestCase(TestCase):
         self.assertTrue(get_child_eligibility_for_study(child, study))
 
         # Add response to one of the disallowed studies
-        G(Response, child=child, study=disallowed_study_1, sequence=["0-video-config"])
+        G(
+            Response,
+            child=child,
+            study=disallowed_study_1,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
 
         # Should not be eligible with a response to one or both of the two disallowed studies
         self.assertFalse(get_child_participation_eligibility(child, study))
         self.assertFalse(get_child_eligibility_for_study(child, study))
-        G(Response, child=child, study=disallowed_study_2, sequence=["0-video-config"])
+        G(
+            Response,
+            child=child,
+            study=disallowed_study_2,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
         self.assertFalse(get_child_participation_eligibility(child, study))
         self.assertFalse(get_child_eligibility_for_study(child, study))
 
@@ -1355,8 +1430,20 @@ class EligibilityTestCase(TestCase):
 
         # Child is not eligible if they meet the required study criteria but not the disallowed study criteria
         child_1 = G(Child, birthday=datetime.date.today())
-        G(Response, child=child_1, study=required_study, sequence=["0-video-config"])
-        G(Response, child=child_1, study=disallowed_study, sequence=["0-video-config"])
+        G(
+            Response,
+            child=child_1,
+            study=required_study,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
+        G(
+            Response,
+            child=child_1,
+            study=disallowed_study,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
         self.assertFalse(get_child_participation_eligibility(child_1, study))
         self.assertFalse(get_child_eligibility_for_study(child_1, study))
 
@@ -1366,7 +1453,13 @@ class EligibilityTestCase(TestCase):
         self.assertFalse(get_child_eligibility_for_study(child_2, study))
 
         # Child is eligible if they meet both the required and disallowed study criteria
-        G(Response, child=child_2, study=required_study, sequence=["0-video-config"])
+        G(
+            Response,
+            child=child_2,
+            study=required_study,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
         self.assertTrue(get_child_participation_eligibility(child_2, study))
         self.assertTrue(get_child_eligibility_for_study(child_2, study))
 
