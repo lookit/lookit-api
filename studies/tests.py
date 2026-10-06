@@ -2273,6 +2273,43 @@ class ResponseEligibilityTestCase(TestCase):
             "If the child makes additional responses to a study that blacklists itself, those responses are ineligible due to participation criteria.",
         )
 
+    def test_response_eligibility_study_blacklists_itself_without_consent(self):
+        study_blacklists_itself = G(
+            Study,
+            name="Prior participation in this study is not allowed",
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            lab=self.fake_lab,
+            min_age_years=2,
+            min_age_months=0,
+            min_age_days=0,
+            max_age_years=4,
+            max_age_months=0,
+            max_age_days=0,
+        )
+        study_blacklists_itself.must_not_have_participated.add(study_blacklists_itself)
+        study_blacklists_itself.save()
+        G(
+            Response,
+            child=self.child_in_age_range,
+            study=study_blacklists_itself,
+            sequence=["config"],
+            completed_consent_frame=False,
+        )
+        response_eligible = G(
+            Response,
+            child=self.child_in_age_range,
+            study=study_blacklists_itself,
+            sequence=["config"],
+        )
+        self.assertEqual(
+            response_eligible.eligibility,
+            [ResponseEligibility.ELIGIBLE.value],
+            "If the child's previous response to a study that blacklists itself did not complete the consent frame, it does not count as participation, so the next response is eligible.",
+        )
+
 
 test_bucket_var_name = "FAKE_BUCKET_VAR"
 test_bucket_name = "fake-bucket-for-tests"
