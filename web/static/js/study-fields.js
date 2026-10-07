@@ -147,4 +147,11 @@ $(document).ready(function () {
             maxResponses.value = value;
         });
     }
+
+    // After a failed save, move to the first field with an error rather than leaving the page at the top.
+    const firstInvalid = document.querySelector('#study-details-form .is-invalid');
+    if (firstInvalid) {
+        firstInvalid.scrollIntoView({ block: 'center' });
+        firstInvalid.focus({ preventScroll: true });
+    }
 });

@@ -1,10 +1,13 @@
 import json
+import re
 from collections import OrderedDict
 from enum import Enum
 
 import requests
 from ace_overlay.widgets import AceOverlayWidget
 from django import forms
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.db.models import Q
 from django.forms import ModelForm, Textarea
 from guardian.shortcuts import get_objects_for_user
@@ -163,6 +166,30 @@ class LabApprovalForm(LabForm):
         fields = LabForm.Meta.fields + ("approved_to_test",)
 
 
+CONTACT_INFO_RE = re.compile(
+    r"^\s*(?P<name>[^@]*[^\s@])\s*\(\s*(?:contact:\s*)?(?P<email>[^\s()]+)\s*\)\s*$",
+    re.IGNORECASE,
+)
+
+
+def format_contact_info(name: str, email: str) -> str:
+    return f"{name.strip()} (contact: {email.strip()})"
+
+
+def parse_contact_info(contact_info: str):
+    """Return (name, email) from "Name (contact: email)" or "Name (email)", else None."""
+    match = CONTACT_INFO_RE.match(contact_info or "")
+    if not match:
+        return None
+    # Collapse whitespace (including newlines) inside the name group
+    name, email = " ".join(match.group("name").split()), match.group("email")
+    try:
+        validate_email(email)
+    except ValidationError:
+        return None
+    return name, email
+
+
 class StudyForm(ModelForm):
     """Base form for creating or editing a study"""
 
@@ -183,6 +210,48 @@ class StudyForm(ModelForm):
         label="Set a Response Limit",
         help_text="Check this box to set a target number of valid responses for this study.",
     )
+    contact_name = forms.CharField(
+        max_length=255,
+        label="Researcher Contact Name",
+        help_text="The name of the PI for your study.",
+        widget=forms.TextInput(attrs={"placeholder": "Jane Smith"}),
+    )
+    contact_email = forms.EmailField(
+        label="Researcher Contact Email",
+        help_text="An email address where the PI or study staff can be reached with questions.",
+        # Plain text input: the browser's own email check can't show its message on the
+        # edit page (the submit button is in a modal), so let the server report it.
+        widget=forms.TextInput(
+            attrs={"placeholder": "jsmith@science.edu", "inputmode": "email"}
+        ),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.legacy_contact_info = None
+        stored = self.instance.contact_info if self.instance.pk else ""
+        parsed = parse_contact_info(stored)
+        if parsed:
+            self.initial.setdefault("contact_name", parsed[0])
+            self.initial.setdefault("contact_email", parsed[1])
+        elif stored.strip():
+            # Shown under the contact fields so it can be re-entered.
+            self.legacy_contact_info = stored
+
+    def clean_contact_name(self):
+        # Remove newlines and repeated spaces, matching how stored names are parsed.
+        return " ".join(self.cleaned_data["contact_name"].split())
+
+    def build_contact_info(self):
+        name = self.cleaned_data.get("contact_name")
+        email = self.cleaned_data.get("contact_email")
+        if not (name and email):
+            return None
+        # Keep the stored string if unchanged, so approved studies aren't sent back for review.
+        stored = self.instance.contact_info if self.instance.pk else ""
+        if parse_contact_info(stored) == (name.strip(), email.strip()):
+            return stored
+        return format_contact_info(name, email)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -223,6 +292,9 @@ class StudyForm(ModelForm):
 
     def save(self, commit=True):
         instance = super().save(commit=False)
+        contact_info = self.build_contact_info()
+        if contact_info is not None:
+            instance.contact_info = contact_info
         # Explicitly set max_responses to None if set_response_limit is unchecked
         if not self.cleaned_data.get("set_response_limit"):
             instance.max_responses = None
@@ -252,7 +324,6 @@ class StudyForm(ModelForm):
             "max_age_months",
             "max_age_years",
             "duration",
-            "contact_info",
             "public",
             "shared_preview",
             "criteria_expression",
@@ -268,7 +339,6 @@ class StudyForm(ModelForm):
             "purpose": "Purpose",
             "exit_url": "Exit URL",
             "criteria": "Participant Eligibility Description",
-            "contact_info": "Researcher Contact Information",
             "public": "Discoverable",
             "shared_preview": "Share Preview",
             "study_type": "Experiment Type",
@@ -286,12 +356,6 @@ class StudyForm(ModelForm):
                 attrs={"rows": 1, "placeholder": "For 4- to 6-year-olds"}
             ),
             "duration": Textarea(attrs={"rows": 1, "placeholder": "15 minutes"}),
-            "contact_info": Textarea(
-                attrs={
-                    "rows": 1,
-                    "placeholder": "Jane Smith (contact: jsmith@science.edu)",
-                }
-            ),
             "criteria_expression": Textarea(
                 attrs={
                     "rows": 3,
@@ -319,7 +383,6 @@ class StudyForm(ModelForm):
             <p>"Help us learn about [topic] (...in a live video call with a researcher)/(...in a four-session study)"</p>""",
             "short_description": "Describe what happens during your study here. This should give families a concrete idea of what they will be doing - e.g., reading a story together and answering questions, watching a short video, playing a game about numbers. If you are running a scheduled study, make sure to include a description of how they will sign up and access the study session.",
             "purpose": "Explain the purpose of your study here. This should address what question this study answers AND why that is an interesting or important question, in layperson-friendly terms.",
-            "contact_info": "This should give the name of the PI for your study, and an email address where the PI or study staff can be reached with questions. Format: PIs Name (contact: youremail@lab.edu)",
             "criteria": "This is the description shown to families - it is not used to actually verify eligibility. You will set study eligibility in the next section.",
             "compensation_description": "Provide a description of any compensation for participation, including when and how participants will receive it and any limitations or eligibility criteria (e.g., only one gift card per participant, being in age range for study, child being visible in consent video). Please see the Terms of Use for details on allowable compensation and restrictions. If this field is left blank it will not be displayed to participants.",
             "criteria_expression": (

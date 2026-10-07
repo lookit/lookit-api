@@ -2,12 +2,18 @@ from unittest.case import skip
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
-from django.test import TestCase
+from django.template.loader import render_to_string
+from django.test import SimpleTestCase, TestCase
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
 
 from accounts.models import User
-from studies.forms import StudyCreateForm, StudyEditForm
+from studies.forms import (
+    StudyCreateForm,
+    StudyEditForm,
+    format_contact_info,
+    parse_contact_info,
+)
 from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 
@@ -119,7 +125,8 @@ class StudyFormTestCase(TestCase):
             "purpose": "",
             "criteria": "",
             "duration": "",
-            "contact_info": "",
+            "contact_name": "",
+            "contact_email": "",
         }
         for field_name, empty_value in empty_field_values.items():
             data = model_to_dict(self.study)
@@ -382,3 +389,272 @@ class StudyFormTestCase(TestCase):
         self.assertIn(self.second_lab, edit_form.fields["lab"].queryset)
         self.assertNotIn(self.other_lab, edit_form.fields["lab"].queryset)
         self.assertNotIn("lab", edit_form.errors)
+
+
+class ContactInfoParsingTestCase(SimpleTestCase):
+    def test_parse_contact_info(self):
+        expected = ("Anna Banana", "abanana@place.com")
+        self.assertEqual(
+            parse_contact_info("Anna Banana (contact: abanana@place.com)"), expected
+        )
+        self.assertEqual(
+            parse_contact_info("Anna Banana (abanana@place.com)"), expected
+        )
+        for value in [
+            "",
+            " ",
+            "n/a",
+            "Anna Banana",
+            "abanana@place.com",
+            "Anna (not-an-email)",
+            " (abanana@place.com)",
+            "Anna (abanana@place.com, other@place.com)",
+            "Anna (contact:)",
+            "Anna (abanana@place.com) extra",
+            "Anna (anna@place.com) & Banana (banana@place.com)",
+            "Anna B. (contact: 123 456-7890)",
+            "<Your name> (contact: <your email and/or phone number>)",
+            "Anna Banana (email: abanana@place.com)",
+            "Anna Banana (contact abanana@place.com)",
+            "Anna Banana (contact: abanana@place)",
+            "Anna Banana - abanana@place.com",
+            "Anna Banana <abanana@place.com>",
+            "Anna Banana (contact: abanana@place.com))",
+            "Anna Banana ((abanana@place.com))",
+        ]:
+            self.assertIsNone(parse_contact_info(value), value)
+
+    def test_parse_contact_info_variants(self):
+        for value, expected in [
+            ("Anna (PI) (contact: a@b.com)", ("Anna (PI)", "a@b.com")),
+            ("Anna (CONTACT: a@b.com)", ("Anna", "a@b.com")),
+            ("Anna(contact:a@b.com)", ("Anna", "a@b.com")),
+            ("  Anna  (  a@b.com  )  \n", ("Anna", "a@b.com")),
+            (
+                "Dr. Anna K. Banana (email@email.com)",
+                ("Dr. Anna K. Banana", "email@email.com"),
+            ),
+            (
+                "Anna Banana (Contact: abanana@place.com)",
+                ("Anna Banana", "abanana@place.com"),
+            ),
+            # Email case is kept as entered.
+            (
+                "Anna Banana (contact: ABanana@Place.COM)",
+                ("Anna Banana", "ABanana@Place.COM"),
+            ),
+            (
+                "Anna Banana (contact: a.banana+lab@sub.place.edu)",
+                ("Anna Banana", "a.banana+lab@sub.place.edu"),
+            ),
+            ("Anna & Bob (contact: lab@place.edu)", ("Anna & Bob", "lab@place.edu")),
+            ("José Núñez (contact: jn@place.com)", ("José Núñez", "jn@place.com")),
+            # Newlines are treated as whitespace, and the name is put on one line.
+            ("Anna\nBanana (abanana@place.com)", ("Anna Banana", "abanana@place.com")),
+            ("Anna (contact:\nabanana@place.com)", ("Anna", "abanana@place.com")),
+            (
+                "Anna Banana\r\n(abanana@place.com)",
+                ("Anna Banana", "abanana@place.com"),
+            ),
+            (
+                "Anna  Banana\n(\ncontact:\nabanana@place.com\n)",
+                ("Anna Banana", "abanana@place.com"),
+            ),
+            # Placeholder names aren't detected; researchers can fix them in the form.
+            ("<Your name> (contact: a@b.com)", ("<Your name>", "a@b.com")),
+        ]:
+            self.assertEqual(parse_contact_info(value), expected, value)
+
+    def test_format_parse_round_trip(self):
+        for name in ["Anna", "Anna Banana", "Anna (PI)", "Dr. A. Banana, Jr."]:
+            email = "abanana@place.com"
+            self.assertEqual(
+                parse_contact_info(format_contact_info(name, email)), (name, email)
+            )
+
+    def test_format_contact_info(self):
+        self.assertEqual(
+            format_contact_info("Anna Banana", "abanana@place.com"),
+            "Anna Banana (contact: abanana@place.com)",
+        )
+
+
+class StudyFormContactFieldsTestCase(TestCase):
+    setUp = StudyFormTestCase.setUp
+
+    def _form(self, contact_info, **data):
+        self.study.contact_info = contact_info
+        self.study.preview_summary = "Summary"
+        self.study.exit_url = "https://mit.edu"
+        self.study.save()
+        form_data = model_to_dict(self.study)
+        form_data.update(data)
+        return StudyEditForm(
+            data=form_data if data else None,
+            instance=self.study,
+            user=self.study_designer,
+        )
+
+    def test_fields_prefilled_from_contact_info(self):
+        form = self._form("Anna Banana (contact: abanana@place.com)")
+        self.assertEqual(form.initial["contact_name"], "Anna Banana")
+        self.assertEqual(form.initial["contact_email"], "abanana@place.com")
+
+    def test_whitespace_contact_info_not_shown_as_legacy(self):
+        self.assertIsNone(self._form("   ").legacy_contact_info)
+
+    def test_unparseable_contact_info_left_blank(self):
+        form = self._form("email the lab")
+        self.assertNotIn("contact_name", form.initial)
+        self.assertEqual(form.legacy_contact_info, "email the lab")
+        html = render_to_string("studies/_study_fields.html", {"form": form})
+        self.assertIn("email the lab", html)
+
+    def test_legacy_contact_info_is_escaped(self):
+        form = self._form("<b>Jane</b> no email")
+        html = render_to_string("studies/_study_fields.html", {"form": form})
+        self.assertIn("&lt;b&gt;Jane&lt;/b&gt; no email", html)
+
+    def test_no_legacy_box_for_valid_contact_info(self):
+        form = self._form("Anna Banana (contact: abanana@place.com)")
+        html = render_to_string("studies/_study_fields.html", {"form": form})
+        self.assertNotIn("older format", html)
+
+    def test_invalid_email_rejected(self):
+        form = self._form(
+            "n/a", contact_name="Anna Banana", contact_email="not-an-email"
+        )
+        self.assertIn("contact_email", form.errors)
+        # No type="email" on the input, so the server-side error is what users see.
+        self.assertNotIn('type="email"', str(form["contact_email"]))
+
+    def test_unchanged_contact_keeps_stored_string(self):
+        form = self._form(
+            "Anna Banana (abanana@place.com)",
+            contact_name="Anna Banana",
+            contact_email="abanana@place.com",
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.build_contact_info(), "Anna Banana (abanana@place.com)")
+
+    def test_changed_contact_uses_standard_format(self):
+        form = self._form(
+            "Anna Banana (abanana@place.com)",
+            contact_name="Anna Banana",
+            contact_email="anna@newlab.edu",
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(
+            form.build_contact_info(), "Anna Banana (contact: anna@newlab.edu)"
+        )
+
+    def test_newlines_stripped_from_submitted_name(self):
+        form = self._form(
+            "email the lab",
+            contact_name="Anna\r\nBanana",
+            contact_email="abanana@place.com",
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(
+            form.build_contact_info(), "Anna Banana (contact: abanana@place.com)"
+        )
+
+    def test_blank_contact_info_required_without_legacy_box(self):
+        # No reference box for empty/whitespace values, but the fields are still required.
+        for stored in ["", " ", "\n\t "]:
+            form = self._form(stored, criteria="new criteria")
+            self.assertIsNone(form.legacy_contact_info, repr(stored))
+            html = render_to_string("studies/_study_fields.html", {"form": form})
+            self.assertNotIn("older format", html, repr(stored))
+            self.assertFalse(form.is_valid(), repr(stored))
+            self.assertIn("contact_name", form.errors, repr(stored))
+            self.assertIn("contact_email", form.errors, repr(stored))
+
+    def test_legacy_contact_info_required(self):
+        form = self._form("email the lab", criteria="new criteria")
+        self.assertFalse(form.is_valid())
+        self.assertIn("contact_name", form.errors)
+        self.assertIn("contact_email", form.errors)
+
+    def test_create_form_saves_standard_format(self):
+        data = model_to_dict(self.study)
+        data.update(
+            lab=self.main_lab.id,
+            preview_summary="Summary",
+            exit_url="https://mit.edu",
+            contact_name=" Anna Banana ",
+            contact_email="abanana@place.com",
+        )
+        with open("exp/tests/static/study_image.png", "rb") as f:
+            files = {"image": SimpleUploadedFile("study_image.png", f.read())}
+        form = StudyCreateForm(data=data, files=files, user=self.study_admin)
+        self.assertTrue(form.is_valid(), form.errors)
+        study = form.save(commit=False)
+        self.assertEqual(study.contact_info, "Anna Banana (contact: abanana@place.com)")
+
+    def _approved_study_form(self, contact_info, **data):
+        # Update directly so the monitoring signal doesn't reject the study.
+        Study.objects.filter(pk=self.study.pk).update(
+            contact_info=contact_info,
+            state="approved",
+            preview_summary="Summary",
+            exit_url="https://mit.edu",
+        )
+        self.study.refresh_from_db()
+        form_data = model_to_dict(self.study)
+        form_data.update(data)
+        return StudyEditForm(
+            data=form_data, instance=self.study, user=self.study_designer
+        )
+
+    def test_approved_study_unchanged_contact_stays_approved(self):
+        # Stored in the older "Name (email)" format, which shouldn't be rewritten.
+        form = self._approved_study_form(
+            "Anna Banana (abanana@place.com)",
+            contact_name="Anna Banana",
+            contact_email="abanana@place.com",
+            criteria="new criteria",
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        self.study.refresh_from_db()
+        self.assertEqual(self.study.contact_info, "Anna Banana (abanana@place.com)")
+        self.assertEqual(self.study.criteria, "new criteria")
+        self.assertEqual(self.study.state, "approved")
+
+    def test_approved_study_unchanged_multiline_contact_stays_approved(self):
+        stored = "Anna\nBanana\n(contact: abanana@place.com)"
+        form = self._approved_study_form(
+            stored,
+            contact_name="Anna Banana",
+            contact_email="abanana@place.com",
+            criteria="new criteria",
+        )
+        self.assertEqual(form.initial["contact_name"], "Anna Banana")
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        self.study.refresh_from_db()
+        self.assertEqual(self.study.contact_info, stored)
+        self.assertEqual(self.study.state, "approved")
+
+    def test_approved_study_changed_contact_is_rejected(self):
+        form = self._approved_study_form(
+            "Anna Banana (abanana@place.com)",
+            contact_name="Anna Banana",
+            contact_email="anna@newlab.edu",
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        self.study.refresh_from_db()
+        self.assertEqual(
+            self.study.contact_info, "Anna Banana (contact: anna@newlab.edu)"
+        )
+        self.assertEqual(self.study.state, "rejected")
+
+    def test_approved_legacy_contact_info_still_required(self):
+        # Even when no other monitored field changes, so re-entering it will send
+        # the study back for review.
+        form = self._approved_study_form("email the lab", criteria="new criteria")
+        self.assertFalse(form.is_valid())
+        self.assertIn("contact_name", form.errors)
+        self.assertIn("contact_email", form.errors)
