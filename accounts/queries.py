@@ -120,16 +120,19 @@ def get_child_participation_eligibility(child, study) -> bool:
         bool: Return true if child is eligible based on their prior study participation
     """
 
-    ember_frame_player_id = 1
     must_have = True
     must_not = True
 
-    # for both must have and must not have participated, ignore responses from internal studies that are empty
+    # For both must have and must not have participated, a response counts as participation if it's from an
+    # external study (StudyType id 2), or from an internal study (EFP or jsPsych) where the consent frame was completed.
+    # This matches the "already participated" check in studies.tasks.MESSAGE_TARGET_QUERY.
+    participated = Q(study__study_type_id=2) | Q(completed_consent_frame=True)
 
     if study.must_have_participated.exists():
         must_have_count = (
-            child.responses.filter(study__in=study.must_have_participated.all())
-            .exclude(study__study_type_id=ember_frame_player_id, sequence=[])
+            child.responses.filter(
+                participated, study__in=study.must_have_participated.all()
+            )
             .distinct()
             .values_list("study")
             .count()
@@ -141,8 +144,9 @@ def get_child_participation_eligibility(child, study) -> bool:
 
     if study.must_not_have_participated.exists():
         must_not_have_count = (
-            child.responses.filter(study__in=study.must_not_have_participated.all())
-            .exclude(study__study_type_id=ember_frame_player_id, sequence=[])
+            child.responses.filter(
+                participated, study__in=study.must_not_have_participated.all()
+            )
             .distinct()
             .values_list("study")
             .count()

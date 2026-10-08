@@ -473,6 +473,39 @@ class UserModelTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.redirect_chain, [(reverse("web:home"), 302)])
 
+    @patch(
+        "accounts.forms.ResearcherRegistrationForm.clean_username",
+        autospec=True,
+        side_effect=lambda form: form.cleaned_data["username"],
+    )
+    @patch("accounts.forms.ResearcherRegistrationForm.validate_unique")
+    @patch.object(User.objects, "get_by_natural_key", side_effect=User.DoesNotExist)
+    def test_concurrent_duplicate_registration(
+        self, mock_get_by_natural_key, mock_validate_unique, mock_clean_username
+    ):
+        # Simulate a concurrent duplicate submission: form validation doesn't see the
+        # existing user, so the DB unique constraint is what rejects it.
+        G(User, username="existing@gmail.com")
+        response = self.client.post(
+            reverse("accounts:researcher-registration"),
+            {
+                "username": "existing@gmail.com",
+                "password1": self.test_password,
+                "password2": self.test_password,
+                "given_name": "Should",
+                "family_name": "Not",
+                "nickname": "Be Allowed",
+            },
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain, [])
+        self.assertIn(
+            "An account with this email already exists. Please try logging in.",
+            response.context["form"].errors["username"],
+        )
+        self.assertTrue(response.context["user"].is_anonymous)
+
     def test_no_duplicate_registrations_case_insensitive(self):
         response = self.client.post(
             reverse("accounts:researcher-registration"),
@@ -683,6 +716,36 @@ class CriteriaExpressionTestCase(TestCase):
                 self.gestational_age_range_condition,
             )
         )
+
+
+# Prior responses for the participation check tests:
+# (study type, sequence, completed_consent_frame, counts as participation)
+# Responses to internal studies (EFP and jsPsych) only count as participation if the consent frame was completed,
+# regardless of the sequence. Responses to external studies always count.
+PRIOR_PARTICIPATION_RESPONSES = [
+    ("ember_frame_player", ["config", "consent"], True, True),
+    # Unrealistic: a response with a completed consent frame should always have at least the consent frame in its
+    # sequence, so this shouldn't happen. But completed_consent_frame and sequence are set separately by the client
+    # via the API (nothing on the server keeps them consistent), so this case is worth testing to confirm
+    # that participation depends only on completed_consent_frame and not the sequence.
+    ("ember_frame_player", [], True, True),
+    ("ember_frame_player", ["config"], False, False),
+    ("ember_frame_player", [], False, False),
+    ("jspsych", ["0-video-config", "1-video-consent"], True, True),
+    # Unrealistic: see the EFP case above.
+    ("jspsych", [], True, True),
+    ("jspsych", ["0-video-config"], False, False),
+    ("jspsych", [], False, False),
+    ("external", [], True, True),
+    ("external", [], False, True),
+]
+
+
+def prior_participation_test_name(testcase_func, param_num, param):
+    criterion, study_type_name, sequence, completed_consent_frame, _ = param.args
+    consent = "consent" if completed_consent_frame else "no_consent"
+    seq = "sequence" if sequence else "empty_sequence"
+    return f"{testcase_func.__name__}_{param_num}_{criterion}_{study_type_name}_{consent}_{seq}"
 
 
 class EligibilityTestCase(TestCase):
@@ -1055,15 +1118,27 @@ class EligibilityTestCase(TestCase):
         self.assertFalse(get_child_participation_eligibility(child, study))
         self.assertFalse(get_child_eligibility_for_study(child, study))
 
-        # Add invalid (empty) response
-        G(Response, child=child, study=other_study, sequence=[])
+        # Add response without completed consent frame - invalid, doesn't count as participation in an internal (EFP) study
+        G(
+            Response,
+            child=child,
+            study=other_study,
+            sequence=[],
+            completed_consent_frame=False,
+        )
 
-        # Check with invalid response
+        # Check with response without completed consent frame
         self.assertFalse(get_child_participation_eligibility(child, study))
         self.assertFalse(get_child_eligibility_for_study(child, study))
 
-        # Add valid response
-        G(Response, child=child, study=other_study, sequence=["0-video-config"])
+        # Add response with completed consent frame (valid)
+        G(
+            Response,
+            child=child,
+            study=other_study,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
 
         # Check with response
         self.assertTrue(get_child_participation_eligibility(child, study))
@@ -1093,14 +1168,73 @@ class EligibilityTestCase(TestCase):
         self.assertFalse(get_child_participation_eligibility(child_2, study))
         self.assertFalse(get_child_eligibility_for_study(child_2, study))
 
-        # For external studies, an empty response still counts as 'participated'
-        G(Response, child=child_1, study=external_study)
-        G(Response, child=child_2, study=external_study, sequence=[])
+        # For external studies, any response counts as 'participated', regardless of consent frame/sequence.
+        # (Add defaults for sequence and completed_consent_frame - needed for participation query.)
+        G(
+            Response,
+            child=child_1,
+            study=external_study,
+            sequence=[],
+            completed_consent_frame=False,
+        )
+        G(
+            Response,
+            child=child_2,
+            study=external_study,
+            sequence=[],
+            completed_consent_frame=False,
+        )
 
         self.assertTrue(get_child_participation_eligibility(child_1, study))
         self.assertTrue(get_child_eligibility_for_study(child_1, study))
         self.assertTrue(get_child_participation_eligibility(child_2, study))
         self.assertTrue(get_child_eligibility_for_study(child_2, study))
+
+    def test_get_child_eligibilty_must_have_participated_jspsych(self):
+        jspsych_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_jspsych(),
+        )
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_have_participated=[jspsych_study],
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # Check without response
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+        # Add response without completed consent frame - doesn't count as participation in an internal (jsPsych) study
+        G(
+            Response,
+            child=child,
+            study=jspsych_study,
+            sequence=["0-video-config"],
+            completed_consent_frame=False,
+        )
+
+        # Check with response without completed consent frame
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+        # Add response with completed consent frame
+        G(
+            Response,
+            child=child,
+            study=jspsych_study,
+            sequence=["0-video-config", "1-video-consent"],
+            completed_consent_frame=True,
+        )
+
+        # Check with response
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
 
     def test_get_child_eligibilty_prior_studies_must_not_have_participated(self):
         other_study = G(
@@ -1123,7 +1257,13 @@ class EligibilityTestCase(TestCase):
         self.assertTrue(get_child_eligibility_for_study(child, study))
 
         # Add response
-        G(Response, child=child, study=other_study, sequence=["0-video-config"])
+        G(
+            Response,
+            child=child,
+            study=other_study,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
 
         # Check again with response
         self.assertFalse(get_child_participation_eligibility(child, study))
@@ -1149,8 +1289,60 @@ class EligibilityTestCase(TestCase):
         self.assertTrue(get_child_participation_eligibility(child, study))
         self.assertTrue(get_child_eligibility_for_study(child, study))
 
-        # Add response (empty sequence still counts for external study participation)
-        G(Response, child=child, study=other_study, sequence=[])
+        # Add response (counts as external study participation regardless of consent frame/sequence)
+        G(
+            Response,
+            child=child,
+            study=other_study,
+            sequence=[],
+            completed_consent_frame=False,
+        )
+
+        # Check again with response
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+    def test_get_child_eligibilty_must_not_have_participated_jspsych(self):
+        jspsych_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_jspsych(),
+        )
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_not_have_participated=[jspsych_study],
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # Check without response
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+        # Add response without completed consent frame - doesn't count as participation in an internal (jsPsych) study
+        G(
+            Response,
+            child=child,
+            study=jspsych_study,
+            sequence=["0-video-config"],
+            completed_consent_frame=False,
+        )
+
+        # Check with response without completed consent frame
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+        # Add response with completed consent frame
+        G(
+            Response,
+            child=child,
+            study=jspsych_study,
+            sequence=["0-video-config", "1-video-consent"],
+            completed_consent_frame=True,
+        )
 
         # Check again with response
         self.assertFalse(get_child_participation_eligibility(child, study))
@@ -1173,14 +1365,26 @@ class EligibilityTestCase(TestCase):
         child = G(Child, birthday=datetime.date.today())
 
         # Add response to one of the required studies
-        G(Response, child=child, study=required_study_1, sequence=["0-video-config"])
+        G(
+            Response,
+            child=child,
+            study=required_study_1,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
 
         # Should not be eligible with a valid response to only one of the two required studies
         self.assertFalse(get_child_participation_eligibility(child, study))
         self.assertFalse(get_child_eligibility_for_study(child, study))
 
         # Should be eligible with valid responses to all of the required studies
-        G(Response, child=child, study=required_study_2, sequence=["0-video-config"])
+        G(
+            Response,
+            child=child,
+            study=required_study_2,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
         self.assertTrue(get_child_participation_eligibility(child, study))
         self.assertTrue(get_child_eligibility_for_study(child, study))
 
@@ -1211,12 +1415,24 @@ class EligibilityTestCase(TestCase):
         self.assertTrue(get_child_eligibility_for_study(child, study))
 
         # Add response to one of the disallowed studies
-        G(Response, child=child, study=disallowed_study_1, sequence=["0-video-config"])
+        G(
+            Response,
+            child=child,
+            study=disallowed_study_1,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
 
         # Should not be eligible with a response to one or both of the two disallowed studies
         self.assertFalse(get_child_participation_eligibility(child, study))
         self.assertFalse(get_child_eligibility_for_study(child, study))
-        G(Response, child=child, study=disallowed_study_2, sequence=["0-video-config"])
+        G(
+            Response,
+            child=child,
+            study=disallowed_study_2,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
         self.assertFalse(get_child_participation_eligibility(child, study))
         self.assertFalse(get_child_eligibility_for_study(child, study))
 
@@ -1244,8 +1460,20 @@ class EligibilityTestCase(TestCase):
 
         # Child is not eligible if they meet the required study criteria but not the disallowed study criteria
         child_1 = G(Child, birthday=datetime.date.today())
-        G(Response, child=child_1, study=required_study, sequence=["0-video-config"])
-        G(Response, child=child_1, study=disallowed_study, sequence=["0-video-config"])
+        G(
+            Response,
+            child=child_1,
+            study=required_study,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
+        G(
+            Response,
+            child=child_1,
+            study=disallowed_study,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
         self.assertFalse(get_child_participation_eligibility(child_1, study))
         self.assertFalse(get_child_eligibility_for_study(child_1, study))
 
@@ -1255,9 +1483,272 @@ class EligibilityTestCase(TestCase):
         self.assertFalse(get_child_eligibility_for_study(child_2, study))
 
         # Child is eligible if they meet both the required and disallowed study criteria
-        G(Response, child=child_2, study=required_study, sequence=["0-video-config"])
+        G(
+            Response,
+            child=child_2,
+            study=required_study,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
         self.assertTrue(get_child_participation_eligibility(child_2, study))
         self.assertTrue(get_child_eligibility_for_study(child_2, study))
+
+    @parameterized.expand(
+        [
+            (criterion, *response)
+            for criterion in ("must_have", "must_not_have")
+            for response in PRIOR_PARTICIPATION_RESPONSES
+        ],
+        name_func=prior_participation_test_name,
+    )
+    def test_get_child_eligibility_prior_participation_response(
+        self,
+        criterion,
+        study_type_name,
+        sequence,
+        completed_consent_frame,
+        counts_as_participation,
+    ):
+        prior_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=getattr(StudyType, f"get_{study_type_name}")(),
+        )
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_ember_frame_player(),
+            **{f"{criterion}_participated": [prior_study]},
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        G(
+            Response,
+            child=child,
+            study=prior_study,
+            study_type=prior_study.study_type,
+            sequence=sequence,
+            completed_consent_frame=completed_consent_frame,
+        )
+
+        # "Must have" participation: eligible only if the response counts as participation.
+        # "Must not have" participation: eligible only if the response doesn't count as participation.
+        expected_eligibility = (
+            counts_as_participation
+            if criterion == "must_have"
+            else not counts_as_participation
+        )
+        self.assertEqual(
+            get_child_participation_eligibility(child, study), expected_eligibility
+        )
+        self.assertEqual(
+            get_child_eligibility_for_study(child, study), expected_eligibility
+        )
+
+    @parameterized.expand(
+        [
+            ("ember_frame_player", ["config"], ["config", "consent"]),
+            ("jspsych", ["0-video-config"], ["0-video-config", "1-video-consent"]),
+        ]
+    )
+    def test_get_child_eligibility_multiple_responses_to_internal_study(
+        self, study_type_name, no_consent_sequence, consent_sequence
+    ):
+        prior_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=getattr(StudyType, f"get_{study_type_name}")(),
+        )
+        must_have_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_have_participated=[prior_study],
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        must_not_have_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_not_have_participated=[prior_study],
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # Response without completed consent frame doesn't count as participation
+        G(
+            Response,
+            child=child,
+            study=prior_study,
+            study_type=prior_study.study_type,
+            sequence=no_consent_sequence,
+            completed_consent_frame=False,
+        )
+        self.assertFalse(get_child_participation_eligibility(child, must_have_study))
+        self.assertTrue(get_child_participation_eligibility(child, must_not_have_study))
+
+        # Adding a response with completed consent frame counts as participation,
+        # even though the child also has a response that doesn't count
+        G(
+            Response,
+            child=child,
+            study=prior_study,
+            study_type=prior_study.study_type,
+            sequence=consent_sequence,
+            completed_consent_frame=True,
+        )
+        self.assertTrue(get_child_participation_eligibility(child, must_have_study))
+        self.assertFalse(
+            get_child_participation_eligibility(child, must_not_have_study)
+        )
+
+    def test_get_child_eligibility_must_have_participated_counts_studies_not_responses(
+        self,
+    ):
+        required_study_1 = G(
+            Study, max_age_years=2, study_type=StudyType.get_ember_frame_player()
+        )
+        required_study_2 = G(
+            Study, max_age_years=2, study_type=StudyType.get_ember_frame_player()
+        )
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_have_participated=[required_study_1, required_study_2],
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # Two valid responses to the first required study, none to the second
+        for _ in range(2):
+            G(
+                Response,
+                child=child,
+                study=required_study_1,
+                study_type=required_study_1.study_type,
+                sequence=["config", "consent"],
+                completed_consent_frame=True,
+            )
+
+        # Not eligible: the number of required studies participated in is compared to the number of
+        # required studies, so multiple responses to one study must not be counted more than once
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+        G(
+            Response,
+            child=child,
+            study=required_study_2,
+            study_type=required_study_2.study_type,
+            sequence=["config", "consent"],
+            completed_consent_frame=True,
+        )
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+    def test_get_child_eligibility_must_have_participated_mixed_study_types(self):
+        external_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_external(),
+        )
+        jspsych_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_jspsych(),
+        )
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_have_participated=[external_study, jspsych_study],
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # External response counts without a completed consent frame, but jsPsych response doesn't
+        G(
+            Response,
+            child=child,
+            study=external_study,
+            study_type=external_study.study_type,
+            sequence=[],
+            completed_consent_frame=False,
+        )
+        G(
+            Response,
+            child=child,
+            study=jspsych_study,
+            study_type=jspsych_study.study_type,
+            sequence=["0-video-config"],
+            completed_consent_frame=False,
+        )
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+        # Eligible once the jsPsych response has a completed consent frame
+        G(
+            Response,
+            child=child,
+            study=jspsych_study,
+            study_type=jspsych_study.study_type,
+            sequence=["0-video-config", "1-video-consent"],
+            completed_consent_frame=True,
+        )
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+    def test_get_child_eligibility_must_not_have_participated_mixed_study_types(self):
+        external_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_external(),
+        )
+        jspsych_study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            study_type=StudyType.get_jspsych(),
+        )
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_not_have_participated=[external_study, jspsych_study],
+            study_type=StudyType.get_ember_frame_player(),
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # jsPsych response without a completed consent frame doesn't count, so still eligible
+        G(
+            Response,
+            child=child,
+            study=jspsych_study,
+            study_type=jspsych_study.study_type,
+            sequence=["0-video-config"],
+            completed_consent_frame=False,
+        )
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+        # External response counts without a completed consent frame, so not eligible
+        G(
+            Response,
+            child=child,
+            study=external_study,
+            study_type=external_study.study_type,
+            sequence=[],
+            completed_consent_frame=False,
+        )
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
 
 
 class Force2FAClient(Client):
