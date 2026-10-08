@@ -226,6 +226,8 @@ class AuthenticationTestCase(TestCase):
             response.redirect_chain, [(reverse("accounts:2fa-setup"), 302)]
         )
         self.assertEqual(response.status_code, 200)
+        # The success message should only be rendered once on the 2FA setup page
+        self.assertContains(response, "Researcher account created.", count=1)
 
         # Mock correctly entered OTP
         otp = response.context["user"].otp
