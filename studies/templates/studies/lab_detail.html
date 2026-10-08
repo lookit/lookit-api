@@ -75,6 +75,11 @@
                        rel="noopener noreferrer">{{ custom_url }}</a>
                 </p>
             </div>
+            {% if lab.slug %}
+                <div class="mb-3">
+                    {% include "studies/_referral_link.html" with input_id="lab-referral-link" %}
+                </div>
+            {% endif %}
             <div class="mb-3">
                 <strong>Lab description</strong>
                 <p class="mb-0">{{ lab.description|squash_spaces|linebreaks }}</p>

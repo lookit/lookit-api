@@ -51,6 +51,7 @@ from studies.models import (
     StudyTypeEnum,
     Video,
 )
+from studies.referrals import delete_referral_cookie, get_referral
 from web.mixins import AuthenticatedRedirectMixin
 from web.models import Institution, InstitutionSection
 
@@ -197,6 +198,9 @@ class ParticipantSignupView(DuplicateUsernameSignupMixin, generic.CreateView):
     form_class = forms.ParticipantSignupForm
 
     def form_valid(self, form):
+        referral = get_referral(self.request)
+        if referral:
+            form.instance.referred_by_lab, form.instance.referral_url = referral
         resp = super().form_valid(form)
         new_user = authenticate(
             self.request,
@@ -207,6 +211,8 @@ class ParticipantSignupView(DuplicateUsernameSignupMixin, generic.CreateView):
             self.request, new_user, backend="django.contrib.auth.backends.ModelBackend"
         )
         messages.success(self.request, _("Participant created."))
+        if referral:
+            delete_referral_cookie(resp)
         return resp
 
     def store_study_in_session(self) -> None:
