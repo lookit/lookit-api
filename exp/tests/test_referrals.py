@@ -151,3 +151,36 @@ class ReferralLinkViewsTestCase(TestCase):
         )
         self.assertIsNone(response.context["referral_links"])
         self.assertNotContains(response, 'id="lab-referral-link"')
+
+
+class LabStudiesPageReferralTestCase(TestCase):
+    def setUp(self):
+        self.lab = G(Lab, name="Page lab", slug="page-lab")
+        self.other_lab = G(Lab, name="Another lab", slug=None)
+        self.page = reverse("web:lab-studies-list", args=["page-lab"])
+
+    def test_researcher_sees_referral_links(self):
+        researcher = G(User, is_active=True, is_researcher=True)
+        self.lab.researchers.add(researcher)
+        self.other_lab.researchers.add(researcher)
+        Lab.objects.get(name="Sandbox lab").researchers.add(researcher)
+        client = Client()
+        client.force_login(researcher)
+        response = client.get(self.page)
+        links = response.context["referral_links"]
+        # The page's own lab comes first; Sandbox is excluded.
+        self.assertEqual([link["lab"] for link in links], [self.lab, self.other_lab])
+        self.assertEqual(links[0]["url"], f"http://testserver{self.page}?ref=page-lab")
+        self.assertEqual(
+            links[1]["url"], f"http://testserver{self.page}?ref={self.other_lab.uuid}"
+        )
+        self.assertContains(response, 'id="lab-page-referral-link"')
+
+    def test_participants_and_visitors_do_not_see_it(self):
+        participant = G(User, is_active=True, is_researcher=False)
+        logged_in = Client()
+        logged_in.force_login(participant)
+        for client in [Client(), logged_in]:
+            response = client.get(self.page)
+            self.assertNotIn("referral_links", response.context)
+            self.assertNotContains(response, "lab-page-referral-link")

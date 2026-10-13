@@ -16,5 +16,13 @@
         {% page_title lab.name %}
     {% endif %}
     {{ lab.description|linebreaks }}
+    {% if request.user.is_researcher %}
+        <div class="card bg-light mb-4">
+            <div class="card-body">
+                <p class="small text-muted mb-1">Only researchers can see this.</p>
+                {% include "studies/_referral_link.html" with input_id="lab-page-referral-link" %}
+            </div>
+        </div>
+    {% endif %}
     {{ block.super }}
 {% endblock content %}

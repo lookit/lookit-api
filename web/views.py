@@ -51,7 +51,7 @@ from studies.models import (
     StudyTypeEnum,
     Video,
 )
-from studies.referrals import delete_referral_cookie, get_referral
+from studies.referrals import delete_referral_cookie, get_referral, referral_links
 from web.mixins import AuthenticatedRedirectMixin
 from web.models import Institution, InstitutionSection
 
@@ -674,6 +674,10 @@ class LabStudiesListView(StudiesListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["lab"] = Lab.objects.filter(slug=self.kwargs.get("lab_slug")).first()
+        if self.request.user.is_authenticated and self.request.user.is_researcher:
+            context["referral_links"] = referral_links(
+                self.request, self.request.path, preferred_lab=context["lab"]
+            )
         return context
 
     def sort_fn(self):
