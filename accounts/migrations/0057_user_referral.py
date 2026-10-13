@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("accounts", "0056_is_spam"),
         ("studies", "0109_fix_jspsych_plugin_loading"),
