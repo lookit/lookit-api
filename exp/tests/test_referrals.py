@@ -58,7 +58,7 @@ class ReferralCookieTestCase(TestCase):
     def test_cookie_set_for_valid_code(self):
         response = self.client.get(self.url, {"ref": "referring-lab"})
         cookie = response.cookies[REFERRAL_COOKIE]
-        self.assertEqual(cookie["max-age"], 400 * 24 * 60 * 60)
+        self.assertEqual(cookie["max-age"], 14 * 24 * 60 * 60)
         self.assertTrue(cookie["httponly"])
 
     def test_no_cookie_for_invalid_code(self):

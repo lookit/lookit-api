@@ -17,8 +17,8 @@ from studies.models import Lab
 REFERRAL_PARAM = "ref"
 REFERRAL_COOKIE = "chs_referral"
 REFERRAL_COOKIE_SALT = "studies.referrals"
-# Browsers cap cookie lifetimes at 400 days, so this is as long as we can keep it.
-REFERRAL_COOKIE_MAX_AGE = 400 * 24 * 60 * 60
+# A referral counts if the visitor signs up within two weeks of following the link.
+REFERRAL_COOKIE_MAX_AGE = 14 * 24 * 60 * 60
 # Every researcher is added to these labs automatically, so they can't refer anyone.
 EXCLUDED_REFERRAL_LAB_NAMES = ("Demo lab", "Sandbox lab")
 MAX_REFERRAL_URL_LENGTH = 2000
