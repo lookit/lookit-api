@@ -2,7 +2,6 @@ import logging
 import re
 from hashlib import sha256
 from typing import Any, Dict, Text
-from urllib.parse import parse_qs, urlencode, urlparse
 from uuid import UUID
 
 import boto3
@@ -95,19 +94,13 @@ def get_external_url(study: Study, response: Response) -> Text:
     Returns:
         Text: URL string
     """
-    url = urlparse(study.metadata["url"])
-    qs = parse_qs(url.query)
-
-    qs["child"] = hash_id(
+    child_id = hash_id(
         response.child.uuid,
         response.study.uuid,
         response.study.salt,
         response.study.hash_digits,
     )
-    qs["response"] = response.uuid
-
-    url = url._replace(query=urlencode(qs, doseq=True))
-    return url.geturl()
+    return study.add_id_query_params(study.metadata["url"], child_id, response.uuid)
 
 
 def _apply_local_plugin_overlay(plugins):
@@ -1004,6 +997,25 @@ class JsPsychExperimentView(
         # order_by, to preserve the model's default "name" ordering used before.
         context["study_plugins"] = self.object.jspsych_plugins.exclude(autoload=True)
         return context
+
+
+class StudyExitRedirectView(generic.View):
+    """Forward participants to a study's exit URL using its custom query parameter names.
+
+    For studies with custom names, the API gives the experiment runners this view's URL as
+    the exit URL. The runners add the IDs as "child" and "response", and this view passes
+    them on to the real exit URL under the study's chosen names.
+    """
+
+    def get(self, request, uuid):
+        study = get_object_or_404(Study, uuid=uuid)
+        return HttpResponseRedirect(
+            study.add_id_query_params(
+                study.exit_url,
+                request.GET.get("child"),
+                request.GET.get("response"),
+            )
+        )
 
 
 class ScientistsView(generic.TemplateView):
