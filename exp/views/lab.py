@@ -18,6 +18,7 @@ from studies.forms import LabApprovalForm, LabForm
 from studies.helpers import send_mail
 from studies.models import Lab, Study
 from studies.permissions import LabPermission, SiteAdminGroup
+from studies.referrals import referral_links
 
 
 class LabDetailView(
@@ -74,6 +75,16 @@ class LabDetailView(
             reverse("web:lab-studies-list", args=[lab.slug])
         )
         context["lab_stats"] = lab.get_response_stats()
+        # The public lab studies page only exists for labs with a slug.
+        context["referral_links"] = (
+            referral_links(
+                self.request,
+                reverse("web:lab-studies-list", args=[lab.slug]),
+                preferred_lab=lab,
+            )
+            if lab.slug
+            else None
+        )
         return context
 
 

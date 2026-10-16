@@ -1,0 +1,27 @@
+{% load static %}
+{% comment %}
+    Lab referral link picker. Expects `referral_links` (list of {"lab", "url"}) and `input_id`.
+{% endcomment %}
+<script src="{% static 'js/referral-link.js' %}" defer></script>
+<span class="fw-bold">Referral link:</span>
+<span>New families who sign up after following this link are recorded as referred by the lab you choose.</span>
+{% if referral_links %}
+    <div class="input-group">
+        <select class="form-select referral-lab-select flex-grow-0 w-auto"
+                aria-label="Referring lab"
+                data-target="#{{ input_id }}">
+            {% for link in referral_links %}<option value="{{ link.url }}">{{ link.lab.name }}</option>{% endfor %}
+        </select>
+        <input type="text"
+               class="form-control"
+               id="{{ input_id }}"
+               value="{{ referral_links.0.url }}"
+               aria-label="Referral link"
+               readonly />
+        <button type="button"
+                class="btn btn-outline-secondary referral-copy-button"
+                data-clipboard-target="#{{ input_id }}">Copy</button>
+    </div>
+{% else %}
+    <div>Join a lab other than the Demo and Sandbox labs to create referral links.</div>
+{% endif %}

@@ -127,6 +127,11 @@
                     Your study link will show up here when you have built the experiment runner.
                 {% endif %}
             </p>
+            {% if study.show_study_link %}
+                <div class="mb-3">
+                    {% include "studies/_referral_link.html" with input_id="study-referral-link" %}
+                </div>
+            {% endif %}
             {% if study.max_responses %}
                 <div class="mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-1">
