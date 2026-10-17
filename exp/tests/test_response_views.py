@@ -3013,6 +3013,44 @@ class ResponseCountContextDataTests(TestCase):
         self.assertNotIn("total_responses", ctx["summary_statistics"])
         self.assertNotIn("total_children", ctx["summary_statistics"])
 
+    def test_count_summary_internal_ignores_responses_without_completed_consent_frame(
+        self,
+    ):
+        # Responses that never completed the consent frame have no consent ruling and are not judgeable,
+        # so they should not be counted as pending (they don't appear in the consent manager or Individual Responses page).
+        child = G(
+            Child,
+            user=self.participant,
+            given_name="Child",
+            birthday=datetime.date.today() - datetime.timedelta(60),
+        )
+        for completed, is_preview in ((True, False), (False, False), (False, True)):
+            G(
+                Response,
+                child=child,
+                study=self.internal_with_max,
+                study_type=self.internal_with_max.study_type,
+                completed=completed,
+                completed_consent_frame=False,
+                is_preview=is_preview,
+            )
+
+        ctx = self._get_count_summary_context(self.internal_with_max)
+        counts = ctx["response_type_counts"]
+        # counts are unchanged from the base fixture
+        self.assertEqual(counts["tallied"], 3)
+        self.assertEqual(counts["untallied_pending"], 0)
+        self.assertEqual(counts["untallied"], 1)
+        self.assertEqual(counts["preview_pending"], 3)
+        self.assertEqual(counts["total_pending"], 4)
+        self.assertEqual(counts["total"], 10)
+        # and consistent with the consent manager summary statistics
+        stats = ctx["summary_statistics"]["responses"]
+        self.assertEqual(counts["total_available"], stats["accepted"])
+        self.assertEqual(counts["total_pending"], stats["pending"])
+        self.assertEqual(counts["total_rejected"], stats["rejected"])
+        self.assertEqual(counts["total"], stats["total"])
+
     def test_count_summary_external_summary_statistics(self):
         ctx = self._get_count_summary_context(self.external_with_max)
         # external with max responses, summary stats: total_responses, total_children

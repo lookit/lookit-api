@@ -7,7 +7,7 @@
                         Data about {{ summary_statistics.responses.accepted }} response{{ summary_statistics.responses.accepted|pluralize }} {{ summary_statistics.responses.accepted|pluralize:"is,are" }} available.<br>
                         <span class="fw-bold">Approved consent: </span>{{ summary_statistics.responses.accepted }} responses{% if tallied %} (<span id="count-tallied-approved">{{ response_type_counts.tallied_approved }}</span> tallied){% endif %}.<br><span class="fw-bold">Pending consent judgment: </span>{{ summary_statistics.responses.pending }} responses{% if tallied %} (<span id="count-tallied-pending">{{ response_type_counts.tallied_pending }}</span> tallied){% endif %}.<br><span class="fw-bold">Rejected consent: </span>{{ summary_statistics.responses.rejected }} responses.
                         <span id="count-tallied" class="d-none">{{ response_type_counts.tallied }}</span>
-                        <span id="count-untallied" class="d-none">{{ response_type_counts.intallied }}</span>
+                        <span id="count-untallied" class="d-none">{{ response_type_counts.untallied }}</span>
                         <span id="count-preview" class="d-none">{{ response_type_counts.preview }}</span>
                     </div>
                 </div>
