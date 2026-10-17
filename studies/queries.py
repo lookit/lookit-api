@@ -310,6 +310,8 @@ def get_response_type_counts(study) -> Dict:
 
     The breakdown is somewhat non-intuitive because the pending repsonses count towards the study's tallied/untallied response counts (for the purpose of response limits), but rejected counts do not. Responses with rejected consents are automatically untallied, which means that rejected consent responses are not broken down into tallied/untallied.
 
+    Only judgeable responses (completed_consent_frame=True) are counted, to match the Consent Manager and Individual Responses page. Responses that never completed the consent frame have no consent ruling, so they would otherwise be counted as pending.
+
     Returns a dict with the following keys:
     - preview_approved: preview responses with accepted consent
     - preview_pending: preview responses with pending/null consent ruling
@@ -337,7 +339,7 @@ def get_response_type_counts(study) -> Dict:
         .values("action")[:1]
     )
     is_pending_ruling = Q(current_ruling__isnull=True) | Q(current_ruling="pending")
-    counts = study.responses.annotate(current_ruling=newest_ruling).aggregate(
+    counts = study.judgeable_responses.annotate(current_ruling=newest_ruling).aggregate(
         preview_approved=Count(
             "id", filter=Q(is_preview=True) & Q(current_ruling="accepted")
         ),
