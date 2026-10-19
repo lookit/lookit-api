@@ -128,9 +128,7 @@
                 {% endif %}
             </p>
             {% if study.show_study_link %}
-                <div class="mb-3">
-                    {% include "studies/_referral_link.html" with input_id="study-referral-link" %}
-                </div>
+                {% include "studies/_referral_link.html" with input_id="study-referral-link" %}
             {% endif %}
             {% if study.max_responses %}
                 <div class="mb-3">
