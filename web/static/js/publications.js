@@ -87,6 +87,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         pubDiv.replaceChildren(sanitizeHtml(bibs));
     } catch (error) {
         console.error(error.message);
-        pubDiv.innerHTML = `<p class="text-danger">Something went wrong retrieving the publications. Please try again later.</p>`;
+        const errorMessage = document.createElement("p");
+        errorMessage.className = "text-danger";
+        errorMessage.textContent = "Something went wrong retrieving the publications. Please try again later.";
+        pubDiv.replaceChildren(errorMessage);
     }
 });
