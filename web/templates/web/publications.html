@@ -6,6 +6,14 @@
 {% endblock title %}
 {% block head %}
     <script src="{% static 'js/publications.js' %}" defer></script>
+    <style>
+        /* Zotero's inline bibliography styles are stripped during sanitizing, so apply them here */
+        #zotero-publication-list .csl-bib-body {
+            line-height: 2;
+            padding-left: 1em;
+            text-indent: -1em;
+        }
+    </style>
 {% endblock head %}
 {% block content %}
     {% page_title "Publications" %}
