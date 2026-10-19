@@ -174,6 +174,18 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     )
 
     date_created = models.DateTimeField(auto_now_add=True)
+    referred_by_lab = models.ForeignKey(
+        "studies.Lab",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="referred_participants",
+        help_text="The lab whose referral link this participant followed before signing up.",
+    )
+    referral_url = models.TextField(
+        blank=True,
+        help_text="The referral link this participant followed before signing up.",
+    )
 
     def __init__(self, *args, **kwargs):
         super(User, self).__init__(*args, **kwargs)

@@ -1,4 +1,5 @@
 {% extends "web/studies-list.html" %}
+{% load bootstrap_icons %}
 {% load web_extras %}
 {% block content %}
     {% if lab.banner %}
@@ -16,5 +17,29 @@
         {% page_title lab.name %}
     {% endif %}
     {{ lab.description|linebreaks }}
+    {% if request.user.is_researcher %}
+        <div class="accordion mb-4" id="researcher-referral-accordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="researcher-referral-heading">
+                    <button class="accordion-button collapsed bg-light text-muted"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#researcher-referral-collapse"
+                            aria-expanded="false"
+                            aria-controls="researcher-referral-collapse">
+                        {% bs_icon "eye-slash" %}&nbsp;<strong>Researchers only: get referral link</strong>
+                    </button>
+                </h2>
+                <div id="researcher-referral-collapse"
+                     class="accordion-collapse collapse"
+                     aria-labelledby="researcher-referral-heading">
+                    <div class="accordion-body bg-light text-muted">
+                        <p class="mb-3">Families visiting this page won't see this box.</p>
+                        {% include "studies/_referral_link.html" with input_id="lab-page-referral-link" link_page="lab-list" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
     {{ block.super }}
 {% endblock content %}

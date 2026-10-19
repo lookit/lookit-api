@@ -24,7 +24,8 @@ function submitForm() {
     $form.submit()
 }
 
-$('select, input:checkbox').on('change', submitForm)
+// Only the filter form's own controls should re-submit it (not, e.g., the referral link picker).
+$form.find('select, input:checkbox').on('change', submitForm)
 
 // Set active tab based on which "tabs" radio button is checked.
 const checked_radio = document.querySelector('input[name=study_list_tabs]:checked')

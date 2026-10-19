@@ -47,6 +47,7 @@ from studies.helpers import (
 from studies.models import JSPsychPlugin, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 from studies.queries import get_study_list_qs
+from studies.referrals import referral_links
 from studies.tasks import ember_build_and_gcp_deploy
 from studies.workflow import (
     COMMENTS_HELP_TEXT,
@@ -443,6 +444,11 @@ class StudyDetailView(
             study_perms=study_perms,
             ### Since get_obj_perms template tag doesn't collect study + lab perms
             can_edit_study_details="edit_study__<DETAILS>" in study_perms,
+            referral_links=referral_links(
+                self.request,
+                reverse("web:study-detail", kwargs={"uuid": study.uuid}),
+                preferred_lab=study.lab,
+            ),
         )
 
         return context

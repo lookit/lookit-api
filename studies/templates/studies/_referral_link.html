@@ -1,0 +1,45 @@
+{% load static %}
+{% comment %}
+    Lab referral link picker. Expects `referral_links` (list of {"lab", "url"}), `input_id`, and `link_page`: "study" shown on the study page, "lab" if shown on the lab details page, or "lab-list" if shown on the lab's study list page.
+{% endcomment %}
+<script src="{% static 'js/referral-link.js' %}" defer></script>
+<div>
+    <p>
+        <span class="fw-bold">Referral link:</span>
+        {% if link_page == "study" %}
+            <span>This is the study link with a referral code. New families who sign up to CHS after following this link are recorded as referred by the lab you choose.</span>
+        {% elif link_page == "lab" %}
+            <span>This is the lab's custom URL with a referral code. New families who sign up to CHS after following this link are recorded as referred by the lab you choose.</span>
+        {% elif link_page == "lab-list" %}
+            <span>This is a link to this page with a referral code. New families who sign up to CHS after following this link are recorded as referred by the lab you choose.</span>
+        {% else %}
+            <span>New families who sign up to CHS after following this link are recorded as referred by the lab you choose.</span>
+        {% endif %}
+    </p>
+    {% if referral_links %}
+        {# Two input groups so that, for narrow page widths, the lab picker and the link/copy elements wrap onto separate lines. #}
+        <div class="d-flex flex-wrap gap-2">
+            <div class="input-group flex-nowrap w-auto mw-100">
+                <label class="input-group-text" for="{{ input_id }}-lab">Referring lab</label>
+                <select class="form-select referral-lab-select w-auto"
+                        id="{{ input_id }}-lab"
+                        data-target="#{{ input_id }}">
+                    {% for link in referral_links %}<option value="{{ link.url }}">{{ link.lab.name }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="input-group" style="flex: 1 1 20rem;">
+                <input type="text"
+                       class="form-control"
+                       id="{{ input_id }}"
+                       value="{{ referral_links.0.url }}"
+                       aria-label="Referral link"
+                       readonly />
+                <button type="button"
+                        class="btn btn-outline-secondary referral-copy-button"
+                        data-clipboard-target="#{{ input_id }}">Copy</button>
+            </div>
+        </div>
+    {% else %}
+        <div>Join a lab other than the Demo and Sandbox labs to create referral links.</div>
+    {% endif %}
+</div>
