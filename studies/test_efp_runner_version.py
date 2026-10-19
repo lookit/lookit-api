@@ -156,7 +156,8 @@ class GetCommitDatetimeTestCase(TestCase):
     def test_rate_limited_fails_closed(self, mock_get):
         mock_get.return_value = Mock(ok=False, status_code=403)
 
-        commit_datetime, error = get_commit_datetime(DEFAULT_REPO, SUPPORTED_SHA)
+        with self.assertLogs("studies.helpers", level="WARNING"):
+            commit_datetime, error = get_commit_datetime(DEFAULT_REPO, SUPPORTED_SHA)
 
         self.assertIsNone(commit_datetime)
         self.assertEqual(error, EFP_VERSION_UNVERIFIABLE)
@@ -165,7 +166,8 @@ class GetCommitDatetimeTestCase(TestCase):
     def test_unreachable_github_fails_closed(self, mock_get):
         mock_get.side_effect = requests.exceptions.ConnectionError
 
-        commit_datetime, error = get_commit_datetime(DEFAULT_REPO, SUPPORTED_SHA)
+        with self.assertLogs("studies.helpers", level="WARNING"):
+            commit_datetime, error = get_commit_datetime(DEFAULT_REPO, SUPPORTED_SHA)
 
         self.assertIsNone(commit_datetime)
         self.assertEqual(error, EFP_VERSION_UNVERIFIABLE)
@@ -183,7 +185,8 @@ class GetCommitDatetimeTestCase(TestCase):
             ok=True, status_code=HTTPStatus.OK, json=Mock(return_value=payload)
         )
 
-        commit_datetime, error = get_commit_datetime(DEFAULT_REPO, SUPPORTED_SHA)
+        with self.assertLogs("studies.helpers", level="WARNING"):
+            commit_datetime, error = get_commit_datetime(DEFAULT_REPO, SUPPORTED_SHA)
 
         self.assertIsNone(commit_datetime)
         self.assertEqual(error, EFP_VERSION_UNVERIFIABLE)
@@ -220,7 +223,8 @@ class GetBranchHeadShaTestCase(TestCase):
     def test_unreachable_github_is_recoverable(self, mock_get):
         mock_get.side_effect = requests.exceptions.Timeout
 
-        sha, error = get_branch_head_sha(DEFAULT_REPO, "master")
+        with self.assertLogs("studies.helpers", level="WARNING"):
+            sha, error = get_branch_head_sha(DEFAULT_REPO, "master")
 
         self.assertIsNone(sha)
         self.assertEqual(error, EFP_LATEST_VERSION_UNRESOLVABLE)
@@ -229,7 +233,8 @@ class GetBranchHeadShaTestCase(TestCase):
     def test_unknown_branch_is_recoverable(self, mock_get):
         mock_get.return_value = Mock(ok=False, status_code=404)
 
-        sha, error = get_branch_head_sha(DEFAULT_REPO, "no-such-branch")
+        with self.assertLogs("studies.helpers", level="WARNING"):
+            sha, error = get_branch_head_sha(DEFAULT_REPO, "no-such-branch")
 
         self.assertIsNone(sha)
         self.assertEqual(error, EFP_LATEST_VERSION_UNRESOLVABLE)
@@ -242,7 +247,8 @@ class GetBranchHeadShaTestCase(TestCase):
             json=Mock(return_value={"unexpected": "shape"}),
         )
 
-        sha, error = get_branch_head_sha(DEFAULT_REPO, "master")
+        with self.assertLogs("studies.helpers", level="WARNING"):
+            sha, error = get_branch_head_sha(DEFAULT_REPO, "master")
 
         self.assertIsNone(sha)
         self.assertEqual(error, EFP_LATEST_VERSION_UNRESOLVABLE)
@@ -307,10 +313,10 @@ class EFPRunnerVersionErrorTestCase(TestCase):
     def test_github_failure_fails_closed(self, mock_get):
         mock_get.side_effect = requests.exceptions.ConnectionError
 
-        self.assertEqual(
-            efp_runner_version_error(DEFAULT_REPO, SUPPORTED_SHA),
-            EFP_VERSION_UNVERIFIABLE,
-        )
+        with self.assertLogs("studies.helpers", level="WARNING"):
+            error = efp_runner_version_error(DEFAULT_REPO, SUPPORTED_SHA)
+
+        self.assertEqual(error, EFP_VERSION_UNVERIFIABLE)
 
 
 @override_settings(EMBER_EXP_PLAYER_REPO=DEFAULT_REPO)

@@ -1061,7 +1061,8 @@ class TestSendAsEmail(TestCase):
         invalid_user = G(User, username="notanemail")
         self.message.recipients.add(invalid_user)
 
-        self.message.send_as_email()
+        with self.assertLogs("accounts.models", level="WARNING"):
+            self.message.send_as_email()
 
         mock_send_mail.delay.assert_not_called()
 
@@ -1071,7 +1072,8 @@ class TestSendAsEmail(TestCase):
         invalid_user.save()
         self.message.recipients.add(invalid_user)
 
-        self.message.send_as_email()
+        with self.assertLogs("accounts.models", level="WARNING"):
+            self.message.send_as_email()
 
         mock_send_mail.delay.assert_not_called()
 
@@ -1081,7 +1083,8 @@ class TestSendAsEmail(TestCase):
         invalid_user = G(User, username="notanemail")
         self.message.recipients.add(valid_user, invalid_user)
 
-        self.message.send_as_email()
+        with self.assertLogs("accounts.models", level="WARNING"):
+            self.message.send_as_email()
 
         mock_send_mail.delay.assert_called_once()
         call_args = mock_send_mail.delay.call_args
