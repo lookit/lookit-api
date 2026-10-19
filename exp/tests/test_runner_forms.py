@@ -221,10 +221,11 @@ class EFPFormRunnerVersionTestCase(TestCase):
 
         form = EFPForm(data=self.form_data(SUPPORTED_SHA))
 
+        with self.assertLogs("studies.helpers", level="WARNING"):
+            self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors["last_known_player_sha"], [EFP_VERSION_UNVERIFIABLE]
         )
-        self.assertFalse(form.is_valid())
 
     @patch("studies.forms.requests.get")
     def test_custom_repo_keeps_its_old_version(self, mock_get):
@@ -284,10 +285,11 @@ class EFPFormRunnerVersionTestCase(TestCase):
 
         form = EFPForm(data=self.form_data(""))
 
+        with self.assertLogs("studies.helpers", level="WARNING"):
+            self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors["last_known_player_sha"], [EFP_LATEST_VERSION_UNRESOLVABLE]
         )
-        self.assertFalse(form.is_valid())
 
     @patch("studies.forms.requests.get")
     def test_blank_sha_on_a_non_github_repo_asks_for_an_explicit_sha(self, mock_get):

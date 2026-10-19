@@ -713,7 +713,8 @@ class ResponseTestCase(APITestCase):
             data={"exp_data": 42},
             partial=True,
         )
-        self.assertFalse(serializer.is_valid())
+        with self.assertLogs("studies.serializers", level="WARNING"):
+            self.assertFalse(serializer.is_valid())
         self.assertIn("exp_data", serializer.errors)
         self.assertIn(
             "jsPsych exp_data must be a list, instead received int",
@@ -845,7 +846,8 @@ class ResponseTestCase(APITestCase):
             data={"exp_data": new_exp_data_1},
             partial=True,
         )
-        self.assertFalse(serializer_1.is_valid())
+        with self.assertLogs("studies.serializers", level="WARNING"):
+            self.assertFalse(serializer_1.is_valid())
         self.assertIn("exp_data", serializer_1.errors)
         self.assertIn(
             "Rejected jsPsych PATCH update: exp_data cannot reduce in length",
@@ -856,7 +858,8 @@ class ResponseTestCase(APITestCase):
             data={"exp_data": new_exp_data_2},
             partial=True,
         )
-        self.assertFalse(serializer_2.is_valid())
+        with self.assertLogs("studies.serializers", level="WARNING"):
+            self.assertFalse(serializer_2.is_valid())
         self.assertIn("exp_data", serializer_2.errors)
         self.assertIn(
             "Rejected jsPsych PATCH update: exp_data cannot reduce in length",

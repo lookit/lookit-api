@@ -206,7 +206,12 @@ class ParticipantAccountViewsTestCase(TestCase):
 
     @patch("accounts.forms.ParticipantSignupForm.save", side_effect=IntegrityError)
     def test_participant_signup_unrelated_integrity_error_raises(self, mock_save):
-        with self.assertRaises(IntegrityError):
+        # The test client re-raises the error, but Django's request handler still
+        # logs it as an unhandled 500 first.
+        with (
+            self.assertLogs("django.request", level="ERROR"),
+            self.assertRaises(IntegrityError),
+        ):
             self.client.post(
                 reverse("web:participant-signup"),
                 {
