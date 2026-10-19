@@ -17,22 +17,27 @@
         {% endif %}
     </p>
     {% if referral_links %}
-        <div class="input-group">
-            <label class="input-group-text" for="{{ input_id }}-lab">Referring lab</label>
-            <select class="form-select referral-lab-select flex-grow-0 w-auto"
-                    id="{{ input_id }}-lab"
-                    data-target="#{{ input_id }}">
-                {% for link in referral_links %}<option value="{{ link.url }}">{{ link.lab.name }}</option>{% endfor %}
-            </select>
-            <input type="text"
-                   class="form-control"
-                   id="{{ input_id }}"
-                   value="{{ referral_links.0.url }}"
-                   aria-label="Referral link"
-                   readonly />
-            <button type="button"
-                    class="btn btn-outline-secondary referral-copy-button"
-                    data-clipboard-target="#{{ input_id }}">Copy</button>
+        {# Two input groups so that, for narrow page widths, the lab picker and the link/copy elements wrap onto separate lines. #}
+        <div class="d-flex flex-wrap gap-2">
+            <div class="input-group flex-nowrap w-auto mw-100">
+                <label class="input-group-text" for="{{ input_id }}-lab">Referring lab</label>
+                <select class="form-select referral-lab-select w-auto"
+                        id="{{ input_id }}-lab"
+                        data-target="#{{ input_id }}">
+                    {% for link in referral_links %}<option value="{{ link.url }}">{{ link.lab.name }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="input-group" style="flex: 1 1 20rem;">
+                <input type="text"
+                       class="form-control"
+                       id="{{ input_id }}"
+                       value="{{ referral_links.0.url }}"
+                       aria-label="Referral link"
+                       readonly />
+                <button type="button"
+                        class="btn btn-outline-secondary referral-copy-button"
+                        data-clipboard-target="#{{ input_id }}">Copy</button>
+            </div>
         </div>
     {% else %}
         <div>Join a lab other than the Demo and Sandbox labs to create referral links.</div>
