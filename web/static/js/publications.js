@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
         const firstResponse = await fetchPage(0);
-        const totalResults = parseInt(firstResponse.headers.get("Total-Results"), 10) || 0;
+        const totalResults = Number.parseInt(firstResponse.headers.get("Total-Results"), 10) || 0;
         const remainingStarts = [];
         for (let start = pageSize; start < totalResults; start += pageSize) {
             remainingStarts.push(start);
