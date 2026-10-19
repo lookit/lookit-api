@@ -72,6 +72,8 @@ steps:
   env:
     - 'DB_HOST=lookitdb'
     - 'DB_PASSWORD=password'
+    # Unbuffered stdout, so print() output lines up with the test runner's stderr in the build log
+    - 'PYTHONUNBUFFERED=1'
 
 - id: tag-image
   name: gcr.io/cloud-builders/docker

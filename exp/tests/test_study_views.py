@@ -1469,7 +1469,8 @@ class StudyParticipatedViewTestCase(TestCase):
             "exit_url": "https://mit.edu",
             "criteria": "n/a",
             "duration": "n/a",
-            "contact_info": "n/a",
+            "contact_name": "Test PI",
+            "contact_email": "test@example.com",
             "structure": "{}",
         }
 
@@ -1813,7 +1814,7 @@ class StudyUpdateMaxResponsesTestCase(TestCase):
             purpose="test",
             criteria="test",
             duration="test",
-            contact_info="test",
+            contact_info="Test PI (contact: test@example.com)",
             exit_url="https://mit.edu",
         )
         self.study.admin_group.user_set.add(self.user)
@@ -1848,7 +1849,8 @@ class StudyUpdateMaxResponsesTestCase(TestCase):
             "exit_url": self.study.exit_url,
             "criteria": self.study.criteria,
             "duration": self.study.duration,
-            "contact_info": self.study.contact_info,
+            "contact_name": "Test PI",
+            "contact_email": "test@example.com",
         }
         if include_image:
             data["image"] = SimpleUploadedFile(
