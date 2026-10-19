@@ -18,8 +18,9 @@
     </p>
     {% if referral_links %}
         <div class="input-group">
+            <label class="input-group-text" for="{{ input_id }}-lab">Referring lab</label>
             <select class="form-select referral-lab-select flex-grow-0 w-auto"
-                    aria-label="Referring lab"
+                    id="{{ input_id }}-lab"
                     data-target="#{{ input_id }}">
                 {% for link in referral_links %}<option value="{{ link.url }}">{{ link.lab.name }}</option>{% endfor %}
             </select>
