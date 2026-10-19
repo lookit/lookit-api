@@ -1,3 +1,6 @@
+import time
+from unittest.mock import patch
+
 from django.contrib.sites.models import Site
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -8,7 +11,11 @@ from accounts.models import User
 from exp.tests.test_lab_views import Force2FAClient
 from studies.models import Lab, Study, StudyType
 from studies.permissions import StudyPermission
-from studies.referrals import REFERRAL_COOKIE, lab_for_referral_code
+from studies.referrals import (
+    REFERRAL_COOKIE,
+    REFERRAL_COOKIE_MAX_AGE,
+    lab_for_referral_code,
+)
 
 
 class ReferralCodeTestCase(TestCase):
@@ -78,6 +85,45 @@ class ReferralCookieTestCase(TestCase):
         self.signup()
         user = User.objects.get(username="new-participant@mit.edu")
         self.assertIsNone(user.referred_by_lab)
+
+    def test_invalid_code_keeps_existing_referral(self):
+        self.client.get(self.url, {"ref": "referring-lab"})
+        response = self.client.get(self.url, {"ref": "not-a-lab"})
+        self.assertNotIn(REFERRAL_COOKIE, response.cookies)
+        self.signup()
+        user = User.objects.get(username="new-participant@mit.edu")
+        self.assertEqual(user.referred_by_lab, self.lab)
+
+    def test_expired_cookie_ignored(self):
+        # Sign the cookie as if the link had been followed just over two weeks ago.
+        with patch("django.core.signing.time") as mock_time:
+            mock_time.time.return_value = time.time() - REFERRAL_COOKIE_MAX_AGE - 60
+            self.client.get(self.url, {"ref": "referring-lab"})
+        self.signup()
+        user = User.objects.get(username="new-participant@mit.edu")
+        self.assertIsNone(user.referred_by_lab)
+
+    @patch(
+        "accounts.forms.ParticipantSignupForm.clean_username",
+        autospec=True,
+        side_effect=lambda form: form.cleaned_data["username"],
+    )
+    @patch("accounts.forms.ParticipantSignupForm.validate_unique")
+    @patch.object(User.objects, "get_by_natural_key", side_effect=User.DoesNotExist)
+    def test_failed_signup_keeps_cookie(
+        self, mock_get_by_natural_key, mock_validate_unique, mock_clean_username
+    ):
+        # Simulate a concurrent duplicate submission, so the DB unique constraint
+        # rejects the new user (see DuplicateUsernameSignupMixin).
+        existing_user = G(User, username="new-participant@mit.edu")
+        self.client.get(self.url, {"ref": "referring-lab"})
+        response = self.signup()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("username", response.context["form"].errors)
+        self.assertNotIn(REFERRAL_COOKIE, response.cookies)
+        self.assertIn(REFERRAL_COOKIE, self.client.cookies)
+        existing_user.refresh_from_db()
+        self.assertIsNone(existing_user.referred_by_lab)
 
 
 class ReferralLinkViewsTestCase(TestCase):
