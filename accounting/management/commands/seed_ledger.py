@@ -38,7 +38,7 @@ class Command(BaseCommand):
         lab = self._get_lab(lab)
         study = lab.studies.order_by("pk").first()
         now = timezone.now()
-        seed = dict(notes=SEED_NOTE, memo=SEED_NOTE)
+        seed = {"notes": SEED_NOTE, "memo": SEED_NOTE}
 
         with transaction.atomic():
             services.grant(

@@ -30,14 +30,14 @@ class LotConstraintTestCase(TestCase):
         self.now = timezone.now()
 
     def make_lot(self, **kwargs):
-        fields = dict(
-            lab=self.lab,
-            unit=Unit.POINT,
-            grant_type=GrantType.COMPLIMENTARY,
-            amount_granted=10,
-            amount_remaining=10,
-            granted_at=self.now,
-        )
+        fields = {
+            "lab": self.lab,
+            "unit": Unit.POINT,
+            "grant_type": GrantType.COMPLIMENTARY,
+            "amount_granted": 10,
+            "amount_remaining": 10,
+            "granted_at": self.now,
+        }
         fields.update(kwargs)
         with transaction.atomic():
             return Lot.objects.create(**fields)
@@ -74,18 +74,22 @@ class LotConstraintTestCase(TestCase):
         )
 
     def test_one_lab_deficit_per_unit(self):
-        deficit = dict(
-            grant_type=GrantType.DEFICIT, amount_granted=0, amount_remaining=0
-        )
+        deficit = {
+            "grant_type": GrantType.DEFICIT,
+            "amount_granted": 0,
+            "amount_remaining": 0,
+        }
         self.make_lot(**deficit)
         self.make_lot(unit=Unit.STUDY_CREDIT, **deficit)
         with self.assertRaises(IntegrityError):
             self.make_lot(**deficit)
 
     def test_one_deficit_per_study(self):
-        deficit = dict(
-            grant_type=GrantType.DEFICIT, amount_granted=0, amount_remaining=0
-        )
+        deficit = {
+            "grant_type": GrantType.DEFICIT,
+            "amount_granted": 0,
+            "amount_remaining": 0,
+        }
         self.make_lot(study=self.study, **deficit)
         # A lab-level deficit does not collide with a study's.
         self.make_lot(**deficit)
@@ -135,16 +139,16 @@ class LedgerEntryConstraintTestCase(TestCase):
         )
 
     def row(self, lot, **kwargs):
-        fields = dict(
-            lab=self.lab,
-            lot=lot,
-            unit=lot.unit,
-            amount=-1,
-            entry_type=EntryType.CONSUME,
-            lot_balance_after=lot.amount_remaining - 1,
-            group_id=uuid.uuid4(),
-            effective_at=timezone.now(),
-        )
+        fields = {
+            "lab": self.lab,
+            "lot": lot,
+            "unit": lot.unit,
+            "amount": -1,
+            "entry_type": EntryType.CONSUME,
+            "lot_balance_after": lot.amount_remaining - 1,
+            "group_id": uuid.uuid4(),
+            "effective_at": timezone.now(),
+        }
         fields.update(kwargs)
         return LedgerEntry(**fields)
 

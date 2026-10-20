@@ -52,15 +52,15 @@ class CheckLedgerTestCase(TestCase):
         self.assertIn("Ledger check failed", str(raised.exception))
 
     def plant(self, lot, **kwargs):
-        fields = dict(
-            lab=self.lab,
-            lot=lot,
-            unit=lot.unit,
-            amount=-1,
-            entry_type=EntryType.ADJUSTMENT,
-            group_id=uuid.uuid4(),
-            effective_at=timezone.now(),
-        )
+        fields = {
+            "lab": self.lab,
+            "lot": lot,
+            "unit": lot.unit,
+            "amount": -1,
+            "entry_type": EntryType.ADJUSTMENT,
+            "group_id": uuid.uuid4(),
+            "effective_at": timezone.now(),
+        }
         fields.update(kwargs)
         fields.setdefault("lot_balance_after", lot.amount_remaining + fields["amount"])
         entry = LedgerEntry.objects.create(**fields)
