@@ -82,7 +82,7 @@ class Migration(migrations.Migration):
                     "consumption_priority",
                     models.IntegerField(
                         default=0,
-                        help_text="Lower is spent first. When lots have the same consumption priority value, the lot with the soonest expiry will be spent first.",
+                        help_text="Lower priority is spent first. When lots have the same consumption priority value, the lot with the soonest expiry will be spent first.",
                     ),
                 ),
                 ("notes", models.TextField(blank=True)),
@@ -109,7 +109,7 @@ class Migration(migrations.Migration):
                     "study",
                     models.ForeignKey(
                         blank=True,
-                        help_text="The study this allowance belongs to. Always empty for study credits, and empty for points not yet applied to a specific study.",
+                        help_text="The study this allowance belongs to. This is always empty for study credits, and empty for points that are not applied to a specific study.",
                         null=True,
                         on_delete=django.db.models.deletion.PROTECT,
                         related_name="lots",
