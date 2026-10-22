@@ -1,3 +1,5 @@
+from collections import Counter
+
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
@@ -5,6 +7,8 @@ from django.db import transaction
 from web import geoip
 from web.models import BlockRule
 from web.vpn_asns import VPN_NETWORKS
+
+ADDED, KEPT, SKIPPED = "added", "kept", "skipped"
 
 
 class Command(BaseCommand):
@@ -38,35 +42,11 @@ class Command(BaseCommand):
             )
         )
 
-        added = kept = skipped = 0
+        results = Counter()
         with transaction.atomic():
             for network in VPN_NETWORKS:
-                value = f"AS{network.asn}"
-                name = f"{value} ({network.provider})"
-                owner = owners.get(network.asn)
-                if value in existing:
-                    self.stdout.write(f"{name} already has a rule, so leaving it.")
-                    kept += 1
-                elif owner is None:
-                    self.warn(f"Skipping {name}, which isn't in {geoip.ASN_EDITION}.")
-                    skipped += 1
-                elif owner.casefold() != network.organization.casefold():
-                    self.warn(
-                        f"Skipping {name}: {geoip.ASN_EDITION} says {owner!r} owns "
-                        f"it now, not {network.organization!r}. If it's still "
-                        "the provider's, update web/vpn_asns.py."
-                    )
-                    skipped += 1
-                else:
-                    if not dry_run:
-                        BlockRule.objects.create(
-                            kind=BlockRule.Kind.ASN, value=value, reason=network.reason
-                        )
-                    self.stdout.write(
-                        f"{'Would add' if dry_run else 'Added'} a rule for {value}: "
-                        f"{network.reason}"
-                    )
-                    added += 1
+                results[self.add_rule(network, owners, existing, dry_run)] += 1
+        added, kept, skipped = results[ADDED], results[KEPT], results[SKIPPED]
 
         if dry_run:
             summary = (
@@ -84,6 +64,36 @@ class Command(BaseCommand):
                     f"{settings.BLOCK_RULES_CACHE_TIMEOUT} seconds."
                 )
         self.stdout.write(self.style.SUCCESS(summary))
+
+    def add_rule(self, network, owners, existing, dry_run):
+        """Add a rule for `network` unless it already has one or its owner has
+        changed, saying which, and return ADDED, KEPT or SKIPPED.
+        """
+        value = f"AS{network.asn}"
+        name = f"{value} ({network.provider})"
+        owner = owners.get(network.asn)
+        if value in existing:
+            self.stdout.write(f"{name} already has a rule, so leaving it.")
+            return KEPT
+        if owner is None:
+            self.warn(f"Skipping {name}, which isn't in {geoip.ASN_EDITION}.")
+            return SKIPPED
+        if owner.casefold() != network.organization.casefold():
+            self.warn(
+                f"Skipping {name}: {geoip.ASN_EDITION} says {owner!r} owns "
+                f"it now, not {network.organization!r}. If it's still "
+                "the provider's, update web/vpn_asns.py."
+            )
+            return SKIPPED
+        if not dry_run:
+            BlockRule.objects.create(
+                kind=BlockRule.Kind.ASN, value=value, reason=network.reason
+            )
+        self.stdout.write(
+            f"{'Would add' if dry_run else 'Added'} a rule for {value}: "
+            f"{network.reason}"
+        )
+        return ADDED
 
     def warn(self, message):
         self.stderr.write(self.style.WARNING(message))
