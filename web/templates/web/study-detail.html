@@ -145,7 +145,20 @@
                         {% if preview_mode and object.needs_to_be_built %}
                             {% bootstrap_button build_runner href=build_runner_url button_class=btn_secondary_classes id="participate-button" %}
                         {% else %}
-                            {% if object.show_scheduled %}
+                            {% if participation_blocked %}
+                                {# Looks like the participate button, but only spins for a while and then reloads the page. See study-detail-web.js. #}
+                                <button type="button"
+                                        class="{{ btn_primary_classes }}"
+                                        id="participate-button"
+                                        data-participation-bkd
+                                        disabled>
+                                    {% if object.show_scheduled %}
+                                        {{ schedule }}
+                                    {% else %}
+                                        {{ pre_or_part_button_text }}
+                                    {% endif %}
+                                </button>
+                            {% elif object.show_scheduled %}
                                 {% bootstrap_button schedule button_type="submit" button_class=btn_primary_classes id="participate-button" disabled="disabled" %}
                             {% else %}
                                 {% bootstrap_button pre_or_part_button_text button_type="submit" button_class=btn_primary_classes id="participate-button" disabled="disabled" %}
