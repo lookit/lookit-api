@@ -149,6 +149,9 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.locale.LocaleMiddleware",
+    # After LocaleMiddleware so the block page is translated, and before
+    # everything that does real work for the request.
+    "web.middleware.BlockRuleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -198,11 +201,48 @@ LOGGING = {
             "level": "ERROR",
             "propagate": False,
         },
+        # Which block rule stopped a logged-in participant (INFO), and errors
+        # checking the block rules.
+        "web.middleware": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
     },
 }
 
 
 INTERNAL_IPS = ["127.0.0.1"]
+
+# How long each process caches the block rules (web.models.BlockRule). There is
+# no shared cache, so admin changes reach other processes/pods within this many
+# seconds.
+BLOCK_RULES_CACHE_TIMEOUT = int(os.environ.get("BLOCK_RULES_CACHE_TIMEOUT", 60))
+
+# Kill switch for the block rules. Set BLOCK_RULES_ENABLED=false to stop all
+# blocking without touching the database, e.g. if a bad rule locks everyone out.
+# Parsed explicitly for the same reason as JSPSYCH_LOCAL_PLUGINS above.
+BLOCK_RULES_ENABLED = os.environ.get("BLOCK_RULES_ENABLED", "true").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+
+# IP block rules can't be wider than these prefix lengths, so nobody can block
+# e.g. 0.0.0.0/0 (the whole internet).
+BLOCK_RULES_MIN_PREFIX_IPV4 = int(os.environ.get("BLOCK_RULES_MIN_PREFIX_IPV4", 16))
+BLOCK_RULES_MIN_PREFIX_IPV6 = int(os.environ.get("BLOCK_RULES_MIN_PREFIX_IPV6", 32))
+
+# Whether IP block rules may cover private/internal addresses (loopback,
+# RFC 1918, link-local, etc.). Real visitors never have these in production, so
+# blocking them could only break in-cluster traffic. Local development needs it,
+# since requests arrive from the Docker network gateway (e.g. 172.18.0.1).
+BLOCK_RULES_ALLOW_INTERNAL = ENVIRONMENT == "develop"
+
+# request.META key holding the visitor's IP. ingress-nginx sets X-Real-IP and
+# overwrites any client-supplied value; REMOTE_ADDR is the ingress pod.
+CLIENT_IP_HEADER = os.environ.get("CLIENT_IP_HEADER", "HTTP_X_REAL_IP")
 
 AUTHENTICATION_BACKENDS = (
     "accounts.backends.TwoFactorAuthenticationBackend",
