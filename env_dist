@@ -114,3 +114,10 @@ EMAIL_FROM_ADDRESS=lookit.robot@some.domain
 
 # Google tag manager.  You will have to goto https://tagmanager.google.com/ to find the ID.
 GOOGLE_TAG_MANAGER_ID=
+
+# MaxMind account for downloading the GeoLite2 databases that country and network owner block rules use. Sign up for
+# free at https://www.maxmind.com/en/geolite2/signup and create a license key, then run
+# `docker compose exec web uv run ./manage.py download_geoip_databases` and restart the web container. After changing
+# these, recreate the container with `docker compose up -d web`, since restarting it doesn't re-read this file.
+# MAXMIND_ACCOUNT_ID=
+# MAXMIND_LICENSE_KEY=

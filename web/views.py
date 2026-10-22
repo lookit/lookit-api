@@ -51,7 +51,12 @@ from studies.models import (
     StudyTypeEnum,
     Video,
 )
-from web.mixins import AuthenticatedRedirectMixin
+from web.middleware import participation_blocked
+from web.mixins import (
+    AuthenticatedRedirectMixin,
+    ParticipationBlockedMixin,
+    blocked_participation_redirect,
+)
 from web.models import Institution, InstitutionSection
 
 logger = logging.getLogger(__name__)
@@ -814,6 +819,7 @@ class StudyDetailView(generic.DetailView):
         if self.request.user.is_authenticated:
             context["has_demographic"] = self.request.user.latest_demographics
             context["children"] = self.request.user.children.filter(deleted=False)
+        context["participation_blocked"] = participation_blocked(self.request)
 
         return context
 
@@ -828,6 +834,10 @@ class StudyDetailView(generic.DetailView):
 
         if study.state == "active":
             if request.method == "POST":
+                if participation_blocked(request):
+                    # The page's participate button doesn't submit for them, so
+                    # this is only reached by posting some other way.
+                    return blocked_participation_redirect(study.uuid)
                 self.clear_study()
                 child: Child = Child.objects.get(uuid=request.POST["child_id"])
 
@@ -910,6 +920,11 @@ class ExperimentProxyView(
         study_uuid = kwargs.get("uuid", None)
         child_uuid = kwargs.get("child_id", None)
 
+        # Here rather than with ParticipationBlockedMixin, which would only run
+        # after the redirects below.
+        if participation_blocked(request):
+            return blocked_participation_redirect(study_uuid)
+
         # Check if locale (language code) is present in the URL.
         # If so, we need to re-write the request path without the locale
         # so that it points to a working study URL.
@@ -934,6 +949,7 @@ class ExperimentProxyView(
 
 
 class JsPsychExperimentView(
+    ParticipationBlockedMixin,
     AuthenticatedRedirectMixin,
     LoginRequiredMixin,
     UserPassesTestMixin,

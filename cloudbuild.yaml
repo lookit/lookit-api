@@ -36,6 +36,40 @@ steps:
   name: jwilder/dockerize:0.6.1
   args: ['dockerize', '-timeout=60s', '-wait=tcp://lookitdb:5432']
 
+# Download the GeoLite2 databases that country and network owner block rules use
+# (web/geoip.py), so the Dockerfile copies them into the image. Needs a
+# maxmind-geolite2 secret in Secret Manager holding "ACCOUNT_ID:LICENSE_KEY",
+# readable by the Cloud Build service account. If the download fails, the build
+# carries on without them: those rules then don't block anyone, and the app logs
+# an error.
+- id: download-geoip-databases
+  name: gcr.io/cloud-builders/gcloud
+  entrypoint: bash
+  args:
+    - '-c'
+    - |
+      if [[ "$BRANCH_NAME" != "master" && "$BRANCH_NAME" != "develop" ]]; then
+          echo "Branch $BRANCH_NAME isn't deployed, so not downloading GeoIP databases"
+          exit 0
+      fi
+      if ! credentials=$$(gcloud secrets versions access latest --secret=maxmind-geolite2); then
+          echo "WARNING: Couldn't read the maxmind-geolite2 secret, so building without GeoIP databases"
+          exit 0
+      fi
+      mkdir -p geoip
+      for edition in GeoLite2-Country GeoLite2-ASN; do
+          if curl --fail --silent --show-error --location --user "$$credentials" \
+                  --output "/tmp/$$edition.tar.gz" \
+                  "https://download.maxmind.com/geoip/databases/$$edition/download?suffix=tar.gz" \
+              && tar --extract --gzip --file "/tmp/$$edition.tar.gz" --directory geoip \
+                  --strip-components 1 --wildcards "*/$$edition.mmdb"; then
+              echo "Downloaded $$edition"
+          else
+              rm -f "geoip/$$edition.mmdb"
+              echo "WARNING: Couldn't download $$edition, so building without it"
+          fi
+      done
+
 - id: build-image
   name: gcr.io/cloud-builders/docker
   args: [
