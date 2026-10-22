@@ -24,6 +24,8 @@ ENVIRONMENT = os.environ.get("ENVIRONMENT", "develop")
 BASE_DIR = str((Path(__file__) / "..").resolve())
 # root path for ember builds
 EMBER_BUILD_ROOT_PATH = str(Path(BASE_DIR, "..", "ember_build").resolve())
+# GeoLite2 databases for country and network owner block rules (web/geoip.py)
+GEOIP_PATH = os.environ.get("GEOIP_PATH", str(Path(BASE_DIR, "..", "geoip").resolve()))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
