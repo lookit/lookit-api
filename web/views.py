@@ -52,7 +52,11 @@ from studies.models import (
     Video,
 )
 from web.middleware import participation_blocked
-from web.mixins import AuthenticatedRedirectMixin, ParticipationBlockedMixin
+from web.mixins import (
+    AuthenticatedRedirectMixin,
+    ParticipationBlockedMixin,
+    blocked_participation_redirect,
+)
 from web.models import Institution, InstitutionSection
 
 logger = logging.getLogger(__name__)
@@ -833,7 +837,7 @@ class StudyDetailView(generic.DetailView):
                 if participation_blocked(request):
                     # The page's participate button doesn't submit for them, so
                     # this is only reached by posting some other way.
-                    return redirect("web:study-detail", study.uuid)
+                    return blocked_participation_redirect(study.uuid)
                 self.clear_study()
                 child: Child = Child.objects.get(uuid=request.POST["child_id"])
 
@@ -919,7 +923,7 @@ class ExperimentProxyView(
         # Here rather than with ParticipationBlockedMixin, which would only run
         # after the redirects below.
         if participation_blocked(request):
-            return redirect("web:study-detail", uuid=study_uuid)
+            return blocked_participation_redirect(study_uuid)
 
         # Check if locale (language code) is present in the URL.
         # If so, we need to re-write the request path without the locale

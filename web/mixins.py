@@ -20,12 +20,16 @@ class AuthenticatedRedirectMixin(UserPassesTestMixin):
             return redirect("login")
 
 
-class ParticipationBlockedMixin:
-    """Send visitors that a block rule stops participating back to the study
-    detail page, where the participate button only spins and reloads the page.
+def blocked_participation_redirect(study_uuid):
+    """Send a visitor that a block rule stops participating back to the study
+    detail page, where the participate button only spins and reloads the page,
+    so they can't tell they're blocked.
     """
+    return redirect("web:study-detail", uuid=study_uuid)
 
+
+class ParticipationBlockedMixin:
     def dispatch(self, request, *args, **kwargs):
         if participation_blocked(request):
-            return redirect("web:study-detail", uuid=kwargs["uuid"])
+            return blocked_participation_redirect(kwargs["uuid"])
         return super().dispatch(request, *args, **kwargs)
