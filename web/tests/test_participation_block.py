@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.http import HttpResponse
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django_dynamic_fixture import G
@@ -40,13 +41,13 @@ class ParticipationBlockTestCase(TestCase):
         G(DemographicData, user=self.user)
         self.client.force_login(self.user)
 
-    def make_study(self, study_type):
+    def make_study(self, study_type, metadata=None):
         study = G(
             Study,
             lab=G(Lab),
             study_type=study_type,
             # What an external study's page needs.
-            metadata={"url": "", "scheduled": False},
+            metadata=metadata or {"url": "", "scheduled": False},
             public=True,
             image=SimpleUploadedFile(
                 "fake_image.png", b"fake-stuff", content_type="image/png"
@@ -269,19 +270,58 @@ class ParticipationBlockTestCase(TestCase):
         record = ParticipationBlockRecord.objects.get()
         self.assertEqual((record.user, record.rule), (self.user, self.rule))
 
+    def start_study(self, study):
+        """Post the study detail page's form, like the participate button."""
+        return self.client.post(
+            reverse("web:study-detail", kwargs={"uuid": study.uuid}),
+            {"child_id": self.child.uuid},
+            HTTP_X_REAL_IP=BLOCKED_IP,
+        )
+
     @override_settings(BLOCK_RULES_REPORT_ONLY=True)
-    # Mock AWS credentials for jsPsych studies, otherwise part participants are
-    # sent back to the study detail page which is the same thing a block does.
+    # Mock AWS credentials for jsPsych studies, otherwise participants are sent
+    # back to the study detail page, which is the same thing a block does.
     @patch("web.views.get_jspsych_aws_values", return_value={})
-    def test_report_only_lets_participant_start_study(self, _):
+    def test_report_only_lets_participant_start_jspsych_study(self, _):
         study = self.make_study(StudyType.get_jspsych())
+        experiment_url = reverse(
+            "web:jspsych-experiment",
+            kwargs={"uuid": study.uuid, "child_id": self.child.uuid},
+        )
         with self.assertLogs("web.middleware", level="INFO"):
-            response = self.client.get(
-                reverse(
-                    "web:jspsych-experiment",
-                    kwargs={"uuid": study.uuid, "child_id": self.child.uuid},
-                ),
-                HTTP_X_REAL_IP=BLOCKED_IP,
+            self.assertRedirects(
+                self.start_study(study), experiment_url, fetch_redirect_response=False
             )
+            response = self.client.get(experiment_url, HTTP_X_REAL_IP=BLOCKED_IP)
         # Not redirected back to the study detail page.
         self.assertEqual(response.status_code, 200)
+
+    @override_settings(BLOCK_RULES_REPORT_ONLY=True)
+    # Instead of fetching the study's Ember app from EXPERIMENT_BASE_URL.
+    @patch("revproxy.views.ProxyView.dispatch", return_value=HttpResponse("Ember app"))
+    def test_report_only_lets_participant_start_efp_study(self, _):
+        study = self.make_study(StudyType.get_ember_frame_player())
+        experiment_url = reverse(
+            "web:experiment-proxy",
+            kwargs={"uuid": study.uuid, "child_id": self.child.uuid},
+        )
+        with self.assertLogs("web.middleware", level="INFO"):
+            self.assertRedirects(
+                self.start_study(study), experiment_url, fetch_redirect_response=False
+            )
+            response = self.client.get(experiment_url, HTTP_X_REAL_IP=BLOCKED_IP)
+        self.assertContains(response, "Ember app")
+
+    @parameterized.expand([("async", False), ("scheduled", True)])
+    @override_settings(BLOCK_RULES_REPORT_ONLY=True)
+    def test_report_only_lets_participant_start_external_study(self, _, scheduled):
+        study = self.make_study(
+            StudyType.get_external(),
+            metadata={"url": "https://example.com/study", "scheduled": scheduled},
+        )
+        with self.assertLogs("web.middleware", level="INFO"):
+            response = self.start_study(study)
+        external_response = Response.objects.get(study=study, child=self.child)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response["Location"].startswith("https://example.com/study?"))
+        self.assertIn(f"response={external_response.uuid}", response["Location"])
