@@ -33,14 +33,18 @@ def _check_block_rules(lookup, client_ip):
 
 
 def participation_blocked(request):
-    """True if a block rule stops the visitor participating in studies."""
+    """True if a block rule stops the visitor participating in studies.
+
+    With BLOCK_RULES_REPORT_ONLY, logged-in participants that a rule matches are
+    still logged and recorded, but this is always False.
+    """
     block = _check_block_rules(BlockRule.participation_block, get_client_ip(request))
     if not block:
         return False
     if request.user.is_authenticated:
         _log_participation_block(request, block)
         _record_participation_block(request, block)
-    return True
+    return not settings.BLOCK_RULES_REPORT_ONLY
 
 
 def _record_participation_block(request, block):
@@ -72,10 +76,13 @@ def _log_participation_block(request, block):
         if visitor.asn.organization:
             network += f" ({visitor.asn.organization})"
     logger.info(
-        "Block rule %s (%s) stopped user %s participating in studies, at %s %s. "
+        "Block rule %s (%s) %s user %s participating in studies, at %s %s. "
         "They're in %s, on %s, in IP range %s.",
         rule.pk,
         what,
+        "would have stopped (report only)"
+        if settings.BLOCK_RULES_REPORT_ONLY
+        else "stopped",
         request.user.pk,
         request.method,
         request.path,

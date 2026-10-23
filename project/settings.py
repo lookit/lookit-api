@@ -229,6 +229,14 @@ BLOCK_RULES_ENABLED = os.environ.get("BLOCK_RULES_ENABLED", "true").strip().lowe
     "on",
 }
 
+# Set BLOCK_RULES_REPORT_ONLY=true to try out the rules that stop visitors
+# participating in studies without stopping anyone: participants they match are
+# still logged and recorded (web.models.ParticipationBlockRecord), but can
+# participate as usual. Rules that block the entire site still block it.
+BLOCK_RULES_REPORT_ONLY = os.environ.get(
+    "BLOCK_RULES_REPORT_ONLY", "false"
+).strip().lower() in {"1", "true", "yes", "on"}
+
 # IP block rules can't be wider than these prefix lengths, so nobody can block
 # e.g. 0.0.0.0/0 (the whole internet).
 BLOCK_RULES_MIN_PREFIX_IPV4 = int(os.environ.get("BLOCK_RULES_MIN_PREFIX_IPV4", 16))

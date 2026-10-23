@@ -183,6 +183,14 @@ class BlockRuleAdmin(admin.ModelAdmin):
                 "none of these rules are blocking anyone.",
                 messages.WARNING,
             )
+        elif settings.BLOCK_RULES_REPORT_ONLY:
+            self.message_user(
+                request,
+                "Block rules are in report-only mode (BLOCK_RULES_REPORT_ONLY is "
+                "true): participants they match are logged and recorded, but can "
+                "still participate. Rules that block the entire site still block it.",
+                messages.WARNING,
+            )
         try:
             visitor = Visitor(request.GET.get(SEARCH_VAR, "").strip())
         except ValueError:

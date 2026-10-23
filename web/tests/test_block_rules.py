@@ -627,6 +627,12 @@ class BlockRuleAdminTestCase(BlockRuleTestCase):
         self.assertIn("Block rules are switched off", message)
         self.assertEqual(level, messages.WARNING)
 
+    @override_settings(BLOCK_RULES_REPORT_ONLY=True)
+    def test_warns_when_report_only(self):
+        [(message, level)] = self.status_messages()
+        self.assertIn("Block rules are in report-only mode", message)
+        self.assertEqual(level, messages.WARNING)
+
     def test_warns_when_rules_in_effect_need_unusable_geoip_database(self):
         self.problem.side_effect = lambda edition: (
             "GeoLite2-Country.mmdb doesn't exist"

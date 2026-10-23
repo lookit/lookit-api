@@ -252,3 +252,33 @@ class ParticipationBlockTestCase(TestCase):
             self.assertRedirects(
                 response, reverse("web:study-detail", kwargs={"uuid": study.uuid})
             )
+
+    @override_settings(BLOCK_RULES_REPORT_ONLY=True)
+    def test_report_only_logs_and_records_without_blocking(self):
+        url = self.study_detail_url()
+
+        with self.assertLogs("web.middleware", level="INFO") as logs:
+            response = self.client.get(url, HTTP_X_REAL_IP=BLOCKED_IP)
+        self.assertContains(response, 'id="participate-button"')
+        self.assertNotContains(response, BLOCKED_BUTTON)
+        self.assertIn(
+            f"Block rule {self.rule.pk} (IP address or range) would have stopped "
+            f"(report only) user {self.user.pk} participating in studies",
+            logs.output[0],
+        )
+        record = ParticipationBlockRecord.objects.get()
+        self.assertEqual((record.user, record.rule), (self.user, self.rule))
+
+    @override_settings(BLOCK_RULES_REPORT_ONLY=True)
+    def test_report_only_lets_participant_start_study(self):
+        study = self.make_study(StudyType.get_jspsych())
+        with self.assertLogs("web.middleware", level="INFO"):
+            response = self.client.get(
+                reverse(
+                    "web:jspsych-experiment",
+                    kwargs={"uuid": study.uuid, "child_id": self.child.uuid},
+                ),
+                HTTP_X_REAL_IP=BLOCKED_IP,
+            )
+        # Not redirected back to the study detail page.
+        self.assertEqual(response.status_code, 200)
