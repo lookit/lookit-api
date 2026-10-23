@@ -270,7 +270,10 @@ class ParticipationBlockTestCase(TestCase):
         self.assertEqual((record.user, record.rule), (self.user, self.rule))
 
     @override_settings(BLOCK_RULES_REPORT_ONLY=True)
-    def test_report_only_lets_participant_start_study(self):
+    # Mock AWS credentials for jsPsych studies, otherwise part participants are
+    # sent back to the study detail page which is the same thing a block does.
+    @patch("web.views.get_jspsych_aws_values", return_value={})
+    def test_report_only_lets_participant_start_study(self, _):
         study = self.make_study(StudyType.get_jspsych())
         with self.assertLogs("web.middleware", level="INFO"):
             response = self.client.get(
