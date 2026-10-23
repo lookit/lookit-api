@@ -121,3 +121,9 @@ GOOGLE_TAG_MANAGER_ID=
 # these, recreate the container with `docker compose up -d web`, since restarting it doesn't re-read this file.
 # MAXMIND_ACCOUNT_ID=
 # MAXMIND_LICENSE_KEY=
+
+# Block rules (web.models.BlockRule). BLOCK_RULES_ENABLED=false switches all blocking off, e.g. if a bad rule locks
+# everyone out. BLOCK_RULES_REPORT_ONLY=true logs and records the participants that participation rules match,
+# without stopping them. Defaults: true and false.
+# BLOCK_RULES_ENABLED=true
+# BLOCK_RULES_REPORT_ONLY=false
