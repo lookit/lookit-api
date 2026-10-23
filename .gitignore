@@ -160,3 +160,6 @@ scratch/
 .aws
 .aws-new
 aws-lambda/
+
+# GeoLite2 databases for block rules (manage.py download_geoip_databases)
+/geoip/

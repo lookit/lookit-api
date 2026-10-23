@@ -1,0 +1,48 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="robots" content="noindex" />
+        <title>{% trans "Access blocked" %} - {% trans "Children Helping Science" %}</title>
+        <style>
+            body {
+                font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+                color: #212529;
+                background: #f8f9fa;
+                margin: 0;
+                padding: 16px;
+            }
+            main {
+                max-width: 560px;
+                margin: 10vh auto 0;
+                background: #fff;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                padding: 32px;
+            }
+            h1 {
+                font-size: 1.5rem;
+                margin-top: 0;
+            }
+            p {
+                line-height: 1.5;
+            }
+            .ip {
+                color: #6c757d;
+                font-size: 0.875rem;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <h1>{% trans "Access blocked" %}</h1>
+            <p>{% trans "Access to Children Helping Science has been blocked." %}</p>
+            <p>
+                {% trans "If you think this is a mistake, please contact us at" %} <a href="mailto:support@childrenhelpingscience.org">support@childrenhelpingscience.org</a>.
+            </p>
+        </main>
+    </body>
+</html>

@@ -2,6 +2,12 @@ $('.text-warning').hide();
 $("#child-dropdown").val("none");
 childSelected(document.getElementById('child-dropdown'));
 
+$('#participate-button[data-participation-bkd]').on('click', function () {
+    this.disabled = true;
+    $(this).prepend('<span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>');
+    setTimeout(() => window.location.reload(), 8000 + Math.random() * 7000);
+});
+
 function childSelected(selectElement) {
     var participateButton = document.getElementById('participate-button');
     if (selectElement.value === 'none') {
