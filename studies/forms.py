@@ -7,7 +7,7 @@ import requests
 from ace_overlay.widgets import AceOverlayWidget
 from django import forms
 from django.core.exceptions import ValidationError
-from django.core.validators import validate_email
+from django.core.validators import RegexValidator, validate_email
 from django.db.models import Q
 from django.forms import ModelForm, Textarea
 from guardian.shortcuts import get_objects_for_user
@@ -16,9 +16,19 @@ from PIL import Image
 from accounts.queries import compile_expression
 from project import settings
 from studies import helpers
-from studies.models import JSPsychPlugin, Lab, Response, Study
+from studies.models import (
+    DEFAULT_QUERY_PARAM_NAMES,
+    QUERY_PARAM_NAME_RE,
+    JSPsychPlugin,
+    Lab,
+    Response,
+    Study,
+)
 from studies.permissions import LabPermission, StudyPermission
 
+QUERY_PARAM_NAME_ERROR = (
+    "Use 1-100 letters, numbers, or the characters . _ ~ - (no spaces)."
+)
 CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#criteria-expression"
 STUDY_TYPE_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-manage-studies.html#editing-study-type"
 PROTOCOL_CONFIG_HELP_LINK = (
@@ -225,6 +235,22 @@ class StudyForm(ModelForm):
             attrs={"placeholder": "jsmith@science.edu", "inputmode": "email"}
         ),
     )
+    child_param_name = forms.CharField(
+        required=False,
+        max_length=100,
+        label="Child ID Parameter Name",
+        help_text='The query parameter name used to send the child\'s hashed ID to your external study link and exit URL. Leave blank to use "child". If either name is set, participants reach your exit URL through a brief Children Helping Science redirect that applies the names; any other query parameters are passed through.',
+        validators=[RegexValidator(QUERY_PARAM_NAME_RE, QUERY_PARAM_NAME_ERROR)],
+        widget=forms.TextInput(attrs={"placeholder": "child"}),
+    )
+    response_param_name = forms.CharField(
+        required=False,
+        max_length=100,
+        label="Response ID Parameter Name",
+        help_text='The query parameter name used to send the response ID to your external study link and exit URL. Leave blank to use "response". If either name is set, participants reach your exit URL through a brief Children Helping Science redirect that applies the names; any other query parameters are passed through.',
+        validators=[RegexValidator(QUERY_PARAM_NAME_RE, QUERY_PARAM_NAME_ERROR)],
+        widget=forms.TextInput(attrs={"placeholder": "response"}),
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -237,6 +263,9 @@ class StudyForm(ModelForm):
         elif stored.strip():
             # Shown under the contact fields so it can be re-entered.
             self.legacy_contact_info = stored
+        custom_names = self.instance.query_param_names or {}
+        for key in DEFAULT_QUERY_PARAM_NAMES:
+            self.initial.setdefault(f"{key}_param_name", custom_names.get(key, ""))
 
     def clean_contact_name(self):
         # Remove newlines and repeated spaces, matching how stored names are parsed.
@@ -255,6 +284,20 @@ class StudyForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+
+        # Only store names that differ from the defaults; None means all defaults.
+        custom_names = {}
+        for key, default in DEFAULT_QUERY_PARAM_NAMES.items():
+            name = cleaned_data.get(f"{key}_param_name")
+            if name and name != default:
+                custom_names[key] = name
+        names = {**DEFAULT_QUERY_PARAM_NAMES, **custom_names}
+        if names["child"] == names["response"]:
+            self.add_error(
+                "response_param_name",
+                "The child and response parameter names must be different.",
+            )
+        cleaned_data["query_param_names"] = custom_names or None
 
         min_age_days = self.cleaned_data.get("min_age_days")
         min_age_months = self.cleaned_data.get("min_age_months")
@@ -295,6 +338,7 @@ class StudyForm(ModelForm):
         contact_info = self.build_contact_info()
         if contact_info is not None:
             instance.contact_info = contact_info
+        instance.query_param_names = self.cleaned_data.get("query_param_names")
         # Explicitly set max_responses to None if set_response_limit is unchecked
         if not self.cleaned_data.get("set_response_limit"):
             instance.max_responses = None

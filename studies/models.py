@@ -3,6 +3,7 @@ import re
 import uuid
 from datetime import datetime, timedelta, timezone
 from enum import Enum
+from urllib.parse import parse_qs, urlencode, urlparse
 
 import boto3
 import dateutil
@@ -12,6 +13,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import Group, Permission
 from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save
@@ -419,6 +421,35 @@ def default_exit_url():
     return get_absolute_url(reverse("web:studies-history"))
 
 
+# Query parameter names used to pass the hashed child ID and response ID to a study's
+# external URL and exit URL. Researchers can override either name per study.
+DEFAULT_QUERY_PARAM_NAMES = {"child": "child", "response": "response"}
+# Letters, digits and the URL-safe punctuation . _ ~ - (e.g. "CHILD", "entry.264543955").
+QUERY_PARAM_NAME_RE = re.compile(r"^[A-Za-z0-9._~-]{1,100}$")
+
+
+def validate_query_param_names(value):
+    """Allow None, or a dict mapping "child" and/or "response" to valid parameter names."""
+    if value is None:
+        return
+    if not isinstance(value, dict):
+        raise ValidationError("Query parameter names must be a mapping.")
+    unknown_keys = set(value) - set(DEFAULT_QUERY_PARAM_NAMES)
+    if unknown_keys:
+        raise ValidationError(
+            f"Unknown query parameter keys: {', '.join(sorted(map(str, unknown_keys)))}."
+        )
+    for key, name in value.items():
+        if not isinstance(name, str) or not QUERY_PARAM_NAME_RE.match(name):
+            raise ValidationError(
+                f'"{name}" is not a valid {key} parameter name. Use 1-100 letters, '
+                "numbers, or the characters . _ ~ -"
+            )
+    names = {**DEFAULT_QUERY_PARAM_NAMES, **value}
+    if names["child"] == names["response"]:
+        raise ValidationError("The child and response parameter names must differ.")
+
+
 class Study(models.Model):
     MONITORING_FIELDS = [
         "structure",
@@ -463,6 +494,14 @@ class Study(models.Model):
     max_age_years = models.IntegerField(default=0, choices=YEAR_CHOICES)
     image = models.ImageField(null=True, upload_to="study_images/")
     exit_url = models.URLField(default=default_exit_url)
+    query_param_names = models.JSONField(
+        null=True,
+        blank=True,
+        default=None,
+        validators=[validate_query_param_names],
+        help_text='Custom names for the "child" and "response" query parameters, '
+        'e.g. {"child": "CHILD"}. Null means use the defaults.',
+    )
     comments = models.TextField(blank=True, null=True)
     comments_extra = models.JSONField(blank=True, null=True, default=dict)
     study_type = models.ForeignKey(
@@ -853,6 +892,25 @@ class Study(models.Model):
         return f"{user.given_name} {user.family_name}"
 
     # WORKFLOW CALLBACKS
+
+    def get_query_param_names(self):
+        """The child and response query parameter names, with defaults filled in."""
+        return {**DEFAULT_QUERY_PARAM_NAMES, **(self.query_param_names or {})}
+
+    def add_id_query_params(self, url, child_id, response_id, extra_params=None):
+        """Return `url` with the child and response IDs added as query parameters.
+
+        `extra_params` ({name: [values]}) are added as-is, after any already in `url`.
+        """
+        names = self.get_query_param_names()
+        parsed = urlparse(url)
+        query = parse_qs(parsed.query)
+        query.update(extra_params or {})
+        if child_id:
+            query[names["child"]] = child_id
+        if response_id:
+            query[names["response"]] = response_id
+        return parsed._replace(query=urlencode(query, doseq=True)).geturl()
 
     def clone(self):
         """Create a new, unsaved copy of the study."""
