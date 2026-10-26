@@ -210,3 +210,22 @@ class ExitUrlTestCase(TestCase):
             query_of(location),
             {"source": ["chs"], "CHILD": ["abc123"], "entry.123": ["resp-uuid"]},
         )
+
+    def test_redirect_passes_other_params_through(self):
+        Study.objects.filter(pk=self.study.pk).update(
+            query_param_names={"child": "CHILD"}
+        )
+        response = Client().get(
+            reverse("web:study-exit", kwargs={"uuid": self.study.uuid})
+            + "?condition=B&tag=x&tag=y&child=abc123&response=resp-uuid"
+        )
+        self.assertEqual(
+            query_of(response["Location"]),
+            {
+                "source": ["chs"],
+                "condition": ["B"],
+                "tag": ["x", "y"],
+                "CHILD": ["abc123"],
+                "response": ["resp-uuid"],
+            },
+        )

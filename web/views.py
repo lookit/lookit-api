@@ -1004,16 +1004,18 @@ class StudyExitRedirectView(generic.View):
 
     For studies with custom names, the API gives the experiment runners this view's URL as
     the exit URL. The runners add the IDs as "child" and "response", and this view passes
-    them on to the real exit URL under the study's chosen names.
+    them on to the real exit URL under the study's chosen names. Any other query parameters
+    (e.g. ones a researcher's own code added) are passed through unchanged.
     """
 
     def get(self, request, uuid):
         study = get_object_or_404(Study, uuid=uuid)
+        params = request.GET.copy()
+        child_id = params.pop("child", [None])[-1]
+        response_id = params.pop("response", [None])[-1]
         return HttpResponseRedirect(
             study.add_id_query_params(
-                study.exit_url,
-                request.GET.get("child"),
-                request.GET.get("response"),
+                study.exit_url, child_id, response_id, extra_params=dict(params.lists())
             )
         )
 

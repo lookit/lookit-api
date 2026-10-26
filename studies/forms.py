@@ -239,7 +239,7 @@ class StudyForm(ModelForm):
         required=False,
         max_length=100,
         label="Child ID Parameter Name",
-        help_text='The query parameter name used to send the child\'s hashed ID to your external study link and exit URL. Leave blank to use "child".',
+        help_text='The query parameter name used to send the child\'s hashed ID to your external study link and exit URL. Leave blank to use "child". If either name is set, participants reach your exit URL through a brief Children Helping Science redirect that applies the names; any other query parameters are passed through.',
         validators=[RegexValidator(QUERY_PARAM_NAME_RE, QUERY_PARAM_NAME_ERROR)],
         widget=forms.TextInput(attrs={"placeholder": "child"}),
     )
@@ -247,7 +247,7 @@ class StudyForm(ModelForm):
         required=False,
         max_length=100,
         label="Response ID Parameter Name",
-        help_text='The query parameter name used to send the response ID to your external study link and exit URL. Leave blank to use "response".',
+        help_text='The query parameter name used to send the response ID to your external study link and exit URL. Leave blank to use "response". If either name is set, participants reach your exit URL through a brief Children Helping Science redirect that applies the names; any other query parameters are passed through.',
         validators=[RegexValidator(QUERY_PARAM_NAME_RE, QUERY_PARAM_NAME_ERROR)],
         widget=forms.TextInput(attrs={"placeholder": "response"}),
     )

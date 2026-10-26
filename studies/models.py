@@ -897,11 +897,15 @@ class Study(models.Model):
         """The child and response query parameter names, with defaults filled in."""
         return {**DEFAULT_QUERY_PARAM_NAMES, **(self.query_param_names or {})}
 
-    def add_id_query_params(self, url, child_id, response_id):
-        """Return `url` with the child and response IDs added as query parameters."""
+    def add_id_query_params(self, url, child_id, response_id, extra_params=None):
+        """Return `url` with the child and response IDs added as query parameters.
+
+        `extra_params` ({name: [values]}) are added as-is, after any already in `url`.
+        """
         names = self.get_query_param_names()
         parsed = urlparse(url)
         query = parse_qs(parsed.query)
+        query.update(extra_params or {})
         if child_id:
             query[names["child"]] = child_id
         if response_id:
