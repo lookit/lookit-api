@@ -117,6 +117,44 @@ class QueryParamNamesFormTestCase(TestCase):
         form = StudyEditForm(instance=self.study, user=self.study_designer)
         self.assertFalse(form.initial["set_query_param_names"])
 
+    def test_name_inputs_disabled_until_box_checked(self):
+        def name_inputs_disabled(form):
+            return [
+                form.fields[f].widget.attrs["disabled"]
+                for f in ("child_param_name", "response_param_name")
+            ]
+
+        form = StudyEditForm(instance=self.study, user=self.study_designer)
+        self.assertEqual(name_inputs_disabled(form), [True, True])
+        self.assertIn("disabled", str(form["child_param_name"]))
+
+        self.save_edit(child_param_name="CHILD")
+        form = StudyEditForm(instance=self.study, user=self.study_designer)
+        self.assertEqual(name_inputs_disabled(form), [False, False])
+        self.assertNotIn("disabled", str(form["child_param_name"]))
+
+        # A re-rendered form (e.g. after a validation error) follows the submitted box.
+        form = StudyEditForm(
+            data=self.form_data(child_param_name="has space"),
+            instance=self.study,
+            user=self.study_designer,
+        )
+        self.assertEqual(name_inputs_disabled(form), [False, False])
+
+    def test_unchecking_the_box_restores_defaults(self):
+        self.save_edit(child_param_name="CHILD")
+        study = self.save_edit(set_query_param_names=False, child_param_name="CHILD")
+        self.assertIsNone(study.query_param_names)
+
+    def test_names_ignored_when_box_unchecked(self):
+        # Invalid or duplicate names don't block saving when they won't be used.
+        study = self.save_edit(
+            set_query_param_names=False,
+            child_param_name="has space",
+            response_param_name="has space",
+        )
+        self.assertIsNone(study.query_param_names)
+
     def test_editing_names_keeps_approved_study_approved(self):
         # Contact info matching the form data, so only the names change.
         Study.objects.filter(pk=self.study.pk).update(
