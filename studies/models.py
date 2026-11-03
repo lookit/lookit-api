@@ -904,7 +904,7 @@ class Study(models.Model):
         """
         names = self.get_query_param_names()
         parsed = urlparse(url)
-        query = parse_qs(parsed.query)
+        query = parse_qs(parsed.query, keep_blank_values=True)
         query.update(extra_params or {})
         if child_id:
             query[names["child"]] = child_id
