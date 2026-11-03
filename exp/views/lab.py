@@ -10,6 +10,8 @@ from django.shortcuts import get_object_or_404, reverse
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 
+from accounting import services as accounting
+from accounting.models import Unit
 from accounts.models import User
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.views.mixins import ResearcherLoginRequiredMixin, SingleObjectFetchProtocol
@@ -74,7 +76,31 @@ class LabDetailView(
             reverse("web:lab-studies-list", args=[lab.slug])
         )
         context["lab_stats"] = lab.get_response_stats()
+        if user.is_superuser:
+            context["ledger_balances"] = self.get_ledger_balances(lab)
         return context
+
+    def get_ledger_balances(self, lab):
+        """The lab's point and study-credit balances, for superusers only.
+
+        Points are split into the lab's unassigned points and each study's allowance,
+        since a study can only spend its own (accounting spec D10).
+        """
+        unassigned = 0
+        by_study = {}
+        for lot in accounting.lot_balances(lab, Unit.POINT).select_related("study"):
+            if lot.study is None:
+                unassigned += lot.balance
+            else:
+                by_study[lot.study] = by_study.get(lot.study, 0) + lot.balance
+        return {
+            "study_credits": accounting.lab_balance(lab, Unit.STUDY_CREDIT),
+            "points_total": accounting.lab_balance(lab, Unit.POINT),
+            "points_unassigned": unassigned,
+            "points_by_study": sorted(
+                by_study.items(), key=lambda item: item[0].name.lower()
+            ),
+        }
 
 
 class LabMembersView(

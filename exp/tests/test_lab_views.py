@@ -3,6 +3,8 @@ from django.urls import reverse
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
 
+from accounting import services as accounting
+from accounting.models import GrantType, Unit
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import User
 from studies.models import Lab, Study, StudyType
@@ -61,6 +63,46 @@ class LabViewsTestCase(TestCase):
         self.lab_list_url = reverse("exp:lab-list")
         self.lab2_request_url = reverse("exp:lab-request", kwargs={"pk": self.lab2.pk})
         self.lab_update_url = reverse("exp:lab-edit", kwargs={"pk": self.lab.pk})
+
+    # Lab detail view: point balances are shown to superusers only
+    def testLabDetailShowsLedgerBalancesToSuperuserOnly(self):
+        accounting.grant(self.lab, 1000, Unit.POINT, GrantType.TOP_UP)
+        accounting.grant(
+            self.lab, 200, Unit.POINT, GrantType.STUDY_ALLOWANCE, study=self.study
+        )
+        accounting.grant(self.lab, 2, Unit.STUDY_CREDIT, GrantType.COMPLIMENTARY)
+        # Another lab's points never appear on this lab's page.
+        accounting.grant(self.lab2, 50, Unit.POINT, GrantType.TOP_UP)
+
+        self.client.force_login(self.superuser)
+        page = self.client.get(self.lab_detail_url)
+        self.assertEqual(
+            page.context["ledger_balances"],
+            {
+                "study_credits": 2,
+                "points_total": 1200,
+                "points_unassigned": 1000,
+                "points_by_study": [(self.study, 200)],
+            },
+        )
+        self.assertContains(page, "Superusers only")
+
+        for user in (self.researcher, self.researcher_in_lab):
+            client = Force2FAClient()
+            client.force_login(user)
+            page = client.get(self.lab_detail_url)
+            self.assertEqual(page.status_code, 200)
+            self.assertNotIn("ledger_balances", page.context)
+            self.assertNotContains(page, "Superusers only")
+
+    # Lab detail view: superusers see balances on labs they are not a member of
+    def testLabDetailShowsEmptyLedgerToSuperuserOutsideLab(self):
+        self.client.force_login(self.superuser)
+        page = self.client.get(self.lab_detail_url)
+        self.assertFalse(page.context["in_this_lab"])
+        self.assertContains(page, "Superusers only")
+        self.assertNotContains(page, "CHS License and Usage")
+        self.assertEqual(page.context["ledger_balances"]["points_total"], 0)
 
     # Create lab view: can get as researcher
     def testCanGetCreateLabViewAsResearcher(self):
