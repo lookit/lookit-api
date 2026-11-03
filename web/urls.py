@@ -61,6 +61,11 @@ urlpatterns = [
     ),
     path("studies/<uuid:uuid>/", views.StudyDetailView.as_view(), name="study-detail"),
     path(
+        "studies/<uuid:uuid>/exit/",
+        views.StudyExitRedirectView.as_view(),
+        name="study-exit",
+    ),
+    path(
         "studies/<uuid:uuid>/<uuid:child_id>/",
         views.ExperimentProxyView.as_view(),
         name="experiment-proxy",

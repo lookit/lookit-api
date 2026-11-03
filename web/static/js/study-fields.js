@@ -148,6 +148,25 @@ $(document).ready(function () {
         });
     }
 
+    /*
+        Query parameter names checkbox toggle
+    */
+    const setQueryParamNames = document.querySelector('#id_set_query_param_names');
+    const queryParamNameInputs = document.querySelectorAll('#id_child_param_name, #id_response_param_name');
+
+    if (setQueryParamNames && queryParamNameInputs.length) {
+        // Disabled inputs aren't submitted. The form's clean method stores the default names whenever the box is unchecked, so the entered names are kept here (not cleared) in case the box is checked again before saving.
+        function toggleQueryParamNames() {
+            queryParamNameInputs.forEach(input => {
+                input.disabled = !setQueryParamNames.checked;
+                input.parentElement.classList.toggle('text-muted', !setQueryParamNames.checked);
+            });
+        }
+
+        toggleQueryParamNames();
+        setQueryParamNames.addEventListener('change', toggleQueryParamNames);
+    }
+
     // After a failed save, move to the first field with an error rather than leaving the page at the top.
     const firstInvalid = document.querySelector('#study-details-form .is-invalid');
     if (firstInvalid) {

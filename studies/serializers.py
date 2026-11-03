@@ -1,5 +1,6 @@
 import logging
 
+from django.urls import reverse
 from rest_framework_json_api import serializers
 
 from accounts.models import Child
@@ -10,6 +11,7 @@ from api.serializers import (
     UuidHyperlinkedModelSerializer,
     UuidResourceModelSerializer,
 )
+from studies.helpers import get_absolute_url
 from studies.models import Feedback, Response, Study, Video
 
 logger = logging.getLogger(__name__)
@@ -48,6 +50,18 @@ class StudySerializer(UuidHyperlinkedModelSerializer):
             "responses",
             "pk",
         )
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if instance.query_param_names:
+            # Runners always add "child" and "response" to the exit URL, so send them
+            # through a redirect that renames the parameters (see StudyExitRedirectView).
+            path = reverse("web:study-exit", kwargs={"uuid": instance.uuid})
+            request = self.context.get("request")
+            data["exit_url"] = (
+                request.build_absolute_uri(path) if request else get_absolute_url(path)
+            )
+        return data
 
 
 class FeedbackSerializer(UuidResourceModelSerializer):
