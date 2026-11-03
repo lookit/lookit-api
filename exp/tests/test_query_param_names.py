@@ -274,3 +274,22 @@ class ExitUrlTestCase(TestCase):
                 "response": ["resp-uuid"],
             },
         )
+
+    def test_redirect_keeps_blank_params(self):
+        Study.objects.filter(pk=self.study.pk).update(
+            exit_url="https://example.com/done?source=chs&placeholder=",
+            query_param_names={"child": "CHILD"},
+        )
+        response = Client().get(
+            reverse("web:study-exit", kwargs={"uuid": self.study.uuid})
+            + "?condition=&child=abc123"
+        )
+        self.assertEqual(
+            parse_qs(urlparse(response["Location"]).query, keep_blank_values=True),
+            {
+                "source": ["chs"],
+                "placeholder": [""],
+                "condition": [""],
+                "CHILD": ["abc123"],
+            },
+        )
