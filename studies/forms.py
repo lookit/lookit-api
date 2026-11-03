@@ -31,6 +31,9 @@ QUERY_PARAM_NAME_ERROR = (
 )
 CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#criteria-expression"
 STUDY_TYPE_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-manage-studies.html#editing-study-type"
+QUERY_PARAMETER_NAMES_DOC_LINK = (
+    "https://lookit.readthedocs.io/en/master/researchers-edit-design.html#study-url"
+)
 PROTOCOL_CONFIG_HELP_LINK = (
     "https://lookit.readthedocs.io/en/develop/researchers-create-experiment.html"
 )
@@ -439,7 +442,10 @@ class StudyForm(ModelForm):
         help_texts = {
             "lab": "Which lab this study will be affiliated with",
             "image": "This is the image participants will see when browsing studies. Please make sure that your image file dimensions are square and the size is less than 1 MB.",
-            "exit_url": "Specify the page where you want to send your participants after they've completed the study. (The 'Past studies' page on Lookit is a good default option.)",
+            "exit_url": (
+                "Internal studies: Specify the webpage where you want to send your participants after they've completed the study. CHS will automatically add the child and response IDs from each session to the end of this URL, in case you want to capture these on an external site. See "
+                f'<a href={QUERY_PARAMETER_NAMES_DOC_LINK} target="_blank">our documentation</a> for more information about how to do this.<br>External studies: leave this as the default value. You will enter your study URL on the next page.'
+            ),
             "preview_summary": """<p>This is the text (limit 300 characters) that participants will see when browsing studies. Most CHS studies involve a single testing session that a family can complete right now on their own. If your study involves something different, please note this in the description! Use a format something like the following:</p>
             <p>"In this (study)/(scheduled video call with a researcher)/(four-session study), your child/baby will..."</p>
             <p>"Help us learn about [topic] (...in a live video call with a researcher)/(...in a four-session study)"</p>""",
@@ -748,7 +754,10 @@ class ExternalForm(ModelForm):
     )
     url = forms.URLField(
         label="Study URL",
-        help_text="This is the link that participants will be sent to from the Lookit details page.",
+        help_text=(
+            "Specify the webpage where you want to send your participants when they click the participate/schedule button. CHS will automatically add the child and response IDs from each session to the end of this URL so that you can capture them on your external site. By default these query parameter names are called 'child' and 'response'. If you need to customize these names, you can do so on the 'Edit Study Ad' page. See "
+            f'<a href={QUERY_PARAMETER_NAMES_DOC_LINK} target="_blank">our documentation</a> for more information about how to do this.'
+        ),
     )
     scheduling = forms.ChoiceField(
         required=False,
