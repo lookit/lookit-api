@@ -461,7 +461,7 @@ class StudyForm(ModelForm):
             "public": "List this study on the 'Studies' page once you start it.",
             "shared_preview": "Allow other Lookit researchers to preview your study and give feedback.",
             "study_type": "Choose the type of experiment you are creating - this will change the fields that appear on the Study Details page.",
-            "priority": "This affects how studies are ordered at your lab's custom URL, not the main study page. If you leave all studies at the highest priority (99), then all of your lab's active/discoverable studies will be shown in a randomized order on your lab page. If you lower the priority of this study to 1, then it will appear last in the list on your lab page. You can find your lab's custom URL from the <a href='/exp/labs/'>labs page</a>. For more info, see the documentation on <a href='https://lookit.readthedocs.io/en/develop/researchers-manage-org.html#ordering-studies-on-your-lab-page'>study prioritization</a>.",
+            "priority": "This affects how studies are ordered at your lab's custom URL, not the main study page. If you leave all studies at the highest priority (99), then all of your lab's active/discoverable studies will be shown in a randomized order on your lab page. If you lower the priority of this study to 1, then it will appear last in the list on your lab page. You can find your lab's custom URL from the <a href='/exp/labs/'>labs page</a>. For more info, see the documentation on <a href='https://lookit.readthedocs.io/en/master/researchers-manage-org.html#ordering-studies-on-your-lab-page'>study prioritization</a>.",
             "max_responses": "The study will automatically pause when the number of valid responses reaches this limit. You can change this value at any time. Note that participant sessions running when the limit is reached are permitted to continue. See [the documentation] for more information on response limits, valid responses, and changing a response's valid/invaild status. For no response limit, leave this field blank.",
         }
 
@@ -477,7 +477,7 @@ class StudyEditForm(StudyForm):
         self.fields["study_type"].help_text = (
             "<p>NOTE: The study type cannot be changed after creation.</p>"
             "Before saving for the first time, please "
-            '<a rel="noopener noreferrer" target="_blank" href="https://lookit.readthedocs.io/en/develop/index.html?highlight=external#what-is-lookit">review the distinction between experiment builder (internal) studies and external studies</a>'
+            '<a rel="noopener noreferrer" target="_blank" href="https://lookit.readthedocs.io/en/master/index.html?highlight=external#what-is-lookit">review the distinction between experiment builder (internal) studies and external studies</a>'
             ", and ask a question on "
             '<a rel="noopener noreferrer" target="_blank" href="http://lookit-mit.slack.com/">Slack</a>'
             " if you need help selecting the right option!"
