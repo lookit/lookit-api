@@ -7,7 +7,7 @@ import requests
 from ace_overlay.widgets import AceOverlayWidget
 from django import forms
 from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator, validate_email
+from django.core.validators import validate_email
 from django.db.models import Q
 from django.forms import ModelForm, Textarea
 from guardian.shortcuts import get_objects_for_user
@@ -235,20 +235,23 @@ class StudyForm(ModelForm):
             attrs={"placeholder": "jsmith@science.edu", "inputmode": "email"}
         ),
     )
+    set_query_param_names = forms.BooleanField(
+        required=False,
+        label="Customize Child/Response Parameter Names",
+        help_text='Optional. Check this box if your exit URL (internal studies) or study URL (external studies) needs query parameter names other than "child" and "response" for the child/response ID values (e.g. "a", "b", "entry.123", or specific formats like all caps).',
+    )
     child_param_name = forms.CharField(
         required=False,
         max_length=100,
         label="Child ID Parameter Name",
-        help_text='The query parameter name used to send the child\'s hashed ID to your external study link and exit URL. Leave blank to use "child". If either name is set, participants reach your exit URL through a brief Children Helping Science redirect that applies the names; any other query parameters are passed through.',
-        validators=[RegexValidator(QUERY_PARAM_NAME_RE, QUERY_PARAM_NAME_ERROR)],
+        help_text='Leave blank to use the default "child".',
         widget=forms.TextInput(attrs={"placeholder": "child"}),
     )
     response_param_name = forms.CharField(
         required=False,
         max_length=100,
         label="Response ID Parameter Name",
-        help_text='The query parameter name used to send the response ID to your external study link and exit URL. Leave blank to use "response". If either name is set, participants reach your exit URL through a brief Children Helping Science redirect that applies the names; any other query parameters are passed through.',
-        validators=[RegexValidator(QUERY_PARAM_NAME_RE, QUERY_PARAM_NAME_ERROR)],
+        help_text='Leave blank to use the default "response".',
         widget=forms.TextInput(attrs={"placeholder": "response"}),
     )
 
@@ -264,8 +267,15 @@ class StudyForm(ModelForm):
             # Shown under the contact fields so it can be re-entered.
             self.legacy_contact_info = stored
         custom_names = self.instance.query_param_names or {}
+        self.initial.setdefault("set_query_param_names", bool(custom_names))
+        # Render the name inputs disabled while the box is unchecked; study-fields.js
+        # toggles them after that. (Not field.disabled, which would ignore submitted names.)
+        names_enabled = self["set_query_param_names"].value()
         for key in DEFAULT_QUERY_PARAM_NAMES:
             self.initial.setdefault(f"{key}_param_name", custom_names.get(key, ""))
+            self.fields[f"{key}_param_name"].widget.attrs[
+                "disabled"
+            ] = not names_enabled
 
     def clean_contact_name(self):
         # Remove newlines and repeated spaces, matching how stored names are parsed.
@@ -286,17 +296,25 @@ class StudyForm(ModelForm):
         cleaned_data = super().clean()
 
         # Only store names that differ from the defaults; None means all defaults.
+        # Names are ignored (and not validated) unless the box is checked.
         custom_names = {}
-        for key, default in DEFAULT_QUERY_PARAM_NAMES.items():
-            name = cleaned_data.get(f"{key}_param_name")
-            if name and name != default:
-                custom_names[key] = name
-        names = {**DEFAULT_QUERY_PARAM_NAMES, **custom_names}
-        if names["child"] == names["response"]:
-            self.add_error(
-                "response_param_name",
-                "The child and response parameter names must be different.",
-            )
+        if cleaned_data.get("set_query_param_names"):
+            names = dict(DEFAULT_QUERY_PARAM_NAMES)
+            for key, default in DEFAULT_QUERY_PARAM_NAMES.items():
+                field = f"{key}_param_name"
+                name = cleaned_data.get(field)
+                if not name:
+                    continue
+                names[key] = name
+                if not QUERY_PARAM_NAME_RE.match(name):
+                    self.add_error(field, QUERY_PARAM_NAME_ERROR)
+                elif name != default:
+                    custom_names[key] = name
+            if names["child"] == names["response"]:
+                self.add_error(
+                    "response_param_name",
+                    "The child and response parameter names must be different.",
+                )
         cleaned_data["query_param_names"] = custom_names or None
 
         min_age_days = self.cleaned_data.get("min_age_days")
