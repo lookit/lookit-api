@@ -56,6 +56,9 @@ class QueryParamNamesFormTestCase(TestCase):
         data["preview_summary"] = "Summary"
         data["contact_name"] = "Test PI"
         data["contact_email"] = "test@example.com"
+        # Entering names implies checking the box, unless a test sets it explicitly.
+        if names:
+            data["set_query_param_names"] = True
         data.update(names)
         return data
 
@@ -108,8 +111,11 @@ class QueryParamNamesFormTestCase(TestCase):
             {"child": "CHILD"},
         )
         form = StudyEditForm(instance=self.study, user=self.study_designer)
+        self.assertTrue(form.initial["set_query_param_names"])
         self.assertEqual(form.initial["child_param_name"], "CHILD")
         self.assertIsNone(self.save_edit(child_param_name="").query_param_names)
+        form = StudyEditForm(instance=self.study, user=self.study_designer)
+        self.assertFalse(form.initial["set_query_param_names"])
 
     def test_editing_names_keeps_approved_study_approved(self):
         # Contact info matching the form data, so only the names change.
