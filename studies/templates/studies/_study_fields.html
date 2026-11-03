@@ -19,9 +19,16 @@
 {% bootstrap_field form.short_description label_class="form-label fw-bold" wrapper_class="mb-4" %}
 {% bootstrap_field form.purpose label_class="form-label fw-bold" wrapper_class="mb-4" %}
 {% bootstrap_field form.compensation_description label_class="form-label fw-bold" wrapper_class="mb-4" %}
+<hr />
 {% bootstrap_field form.exit_url label_class="form-label fw-bold" wrapper_class="mb-4" %}
-{% bootstrap_field form.child_param_name label_class="form-label fw-bold" wrapper_class="mb-4" %}
-{% bootstrap_field form.response_param_name label_class="form-label fw-bold" wrapper_class="mb-4" %}
+<div class="mb-4">
+    {% bootstrap_field form.set_query_param_names label_class="form-label fw-bold" wrapper_class="mb-2" %}
+    <div id="query-param-names-container" class="ms-4">
+        {% bootstrap_field form.child_param_name label_class="form-label fw-bold" wrapper_class="mb-3" %}
+        {% bootstrap_field form.response_param_name label_class="form-label fw-bold" wrapper_class="mb-0" %}
+    </div>
+</div>
+<hr />
 {% bootstrap_field form.criteria label_class="form-label fw-bold" wrapper_class="mb-4" %}
 {% bootstrap_field form.duration label_class="form-label fw-bold" wrapper_class="mb-4" %}
 {% bootstrap_field form.contact_name label_class="form-label fw-bold" wrapper_class="mb-4" %}
