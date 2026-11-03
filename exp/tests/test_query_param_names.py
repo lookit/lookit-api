@@ -139,6 +139,7 @@ class QueryParamNamesFormTestCase(TestCase):
                 "response_param_name",
             ),
             ({"child_param_name": "response"}, "response_param_name"),
+            ({"response_param_name": "child"}, "response_param_name"),
         ]:
             form = StudyEditForm(
                 data=self.form_data(**names),
