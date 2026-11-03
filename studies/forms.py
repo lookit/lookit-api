@@ -29,16 +29,16 @@ from studies.permissions import LabPermission, StudyPermission
 QUERY_PARAM_NAME_ERROR = (
     "Use 1-100 letters, numbers, or the characters . _ ~ - (no spaces)."
 )
-CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#criteria-expression"
-STUDY_TYPE_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-manage-studies.html#editing-study-type"
+CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/master/researchers-set-study-fields.html#criteria-expression"
+STUDY_TYPE_HELP_LINK = "https://lookit.readthedocs.io/en/master/researchers-manage-studies.html#editing-study-type"
 QUERY_PARAMETER_NAMES_DOC_LINK = (
     "https://lookit.readthedocs.io/en/master/researchers-edit-design.html#study-url"
 )
 PROTOCOL_CONFIG_HELP_LINK = (
-    "https://lookit.readthedocs.io/en/develop/researchers-create-experiment.html"
+    "https://lookit.readthedocs.io/en/master/researchers-create-experiment.html"
 )
 PROTOCOL_GENERATOR_HELP_LINK = (
-    "https://lookit.readthedocs.io/en/develop/researchers-protocol-generators.html"
+    "https://lookit.readthedocs.io/en/master/researchers-protocol-generators.html"
 )
 DEFAULT_GENERATOR = """function generateProtocol(child, pastSessions) {
     /*
