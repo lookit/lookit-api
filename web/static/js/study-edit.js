@@ -1,5 +1,13 @@
 $(document).ready(function () {
     $("#save-button").click(function () {
+        // Check the form before asking for confirmation. Otherwise the browser's
+        // "required field" check only runs from the modal's Save button, where its
+        // message is hidden behind the modal.
+        const form = document.getElementById("study-details-form");
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
         $("#invalidate-build-warning").hide();
         $("#save-study-confirmation-body").show();
         let runner_type_changed = $("#id_study_type").data("previous") != $("#id_study_type").val();
@@ -21,5 +29,6 @@ $(document).ready(function () {
                 $("#save-study-confirmation-body").hide();
             }
         }
+        bootstrap.Modal.getOrCreateInstance(document.getElementById("save-study-confirmation")).show();
     });
 });
