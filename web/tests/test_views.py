@@ -730,6 +730,30 @@ class StudyDetailViewTestCase(TestCase):
             study_detail_view.get_context_data()
             mock_request.user.children.filter.assert_called_once_with(deleted=False)
 
+    def get_study_detail_page(self, lab_slug):
+        study = G(
+            Study,
+            lab=G(Lab, name="Test Lab", slug=lab_slug),
+            study_type=StudyType.get_jspsych(),
+            public=True,
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),
+        )
+        study.state = "active"
+        study.save()
+        return self.client.get(reverse("web:study-detail", kwargs={"uuid": study.uuid}))
+
+    def test_lab_name_links_to_lab_studies(self):
+        response = self.get_study_detail_page(lab_slug="test-lab")
+        lab_url = reverse("web:lab-studies-list", args=["test-lab"])
+        self.assertContains(response, f'<a href="{lab_url}">Test Lab</a>', html=True)
+
+    def test_lab_name_without_slug_is_not_a_link(self):
+        response = self.get_study_detail_page(lab_slug=None)
+        self.assertContains(response, "Test Lab")
+        self.assertNotContains(response, '<a href="/studies/None/"')
+
 
 class DemographicDataUpdateViewTestCase(TestCase):
     @patch.object(DemographicDataUpdateView, "request", create=True)
