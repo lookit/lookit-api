@@ -297,7 +297,11 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return f"{self.given_name} {self.family_name}"
 
     def get_full_name(self):
-        return f"{self.given_name} {self.middle_name} {self.family_name}"
+        return " ".join(
+            name
+            for name in (self.given_name, self.middle_name, self.family_name)
+            if name
+        )
 
     def generate_token(self):
         return TimestampSigner().sign(self.username).split(":", 1)[1]
