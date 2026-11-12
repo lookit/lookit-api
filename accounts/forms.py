@@ -382,6 +382,18 @@ class ChildForm(forms.ModelForm):
         ),
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Show languages alphabetically in the user's language, with English first.
+        # Only reorder the widget's choices. The field's own choices must stay in
+        # LANGUAGES order, because bitfield's BitFormField.clean() uses their
+        # position as the bit index. Reordering them would save the wrong languages.
+        languages = self.fields["languages_spoken"]
+        english, *others = languages.choices
+        languages.widget.choices = [english] + sorted(
+            others, key=lambda choice: str(choice[1]).casefold()
+        )
+
     def clean_birthday(self):
         date = self.cleaned_data["birthday"]
         if date > datetime.date.today():
