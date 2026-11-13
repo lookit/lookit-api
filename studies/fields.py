@@ -53,7 +53,23 @@ MULTIPLE_BIRTH_CHOICES = Choices(
 )
 
 
-# Ranked by # of speakers globally, except English is on top.
+# Child.languages_spoken is a BitField: one 64-bit integer (a Postgres bigint) in
+# which each bit is a yes/no switch for one language. An entry's position in this
+# list is its bit number: English (position 0) becomes 2^0 = 1, Spanish (position 45)
+# becomes 2^45. A child who speaks multiple languages will have a bitwise OR combination
+# of all values (e.g. English and Spanish becomes 1 + 2**45). Every combination
+# of languages gets its own value. The database stores only these bit numbers,
+# not language codes, so this list's order is what gives the stored data meaning.
+#
+# Only append new languages to the end, and add them to LOCKED_LANGUAGE_ORDER in
+# studies/test_languages.py. Inserting, removing or reordering entries changes the
+# meaning of data already saved: inserting Hebrew in January 2023 shifted every
+# language after it. The list is mostly alphabetical with English first, except
+# for languages appended since then (from Welsh onward), which are at the end.
+# The form displays the languages in its own order (see ChildForm.__init__), so
+# appending doesn't affect what parents see.
+#
+# django-bitfield allows at most 63 flags (the sign bit can't be used).
 LANGUAGES = (
     ("en", _("English")),
     ("am", _("Amharic")),
@@ -115,6 +131,8 @@ LANGUAGES = (
     ("hsn", _("Xiang Chinese")),
     ("yo", _("Yoruba")),
     ("yue", _("Chinese (Cantonese)")),
+    ("cy", _("Welsh")),
+    ("hu", _("Hungarian")),
 )
 
 # XXX: These are only *mostly* copied and pasted the corresponding choices in the Child model - do not try to
