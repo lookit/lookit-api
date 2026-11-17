@@ -1278,7 +1278,6 @@ class ExternalEditView(ExperimentRunnerEditView):
 
         initial.update(
             scheduled=scheduled,
-            url=metadata.get("url"),
             scheduling=metadata.get("scheduling"),
             other_scheduling=metadata.get("other_scheduling"),
             study_platform=metadata.get("study_platform"),
@@ -1293,7 +1292,8 @@ class ExternalEditView(ExperimentRunnerEditView):
         metadata = {
             "scheduled": form.cleaned_data["scheduled"]
             == ScheduledChoice.scheduled.value,
-            "url": form.cleaned_data["url"],
+            # URL is now edited on the Edit Study Ad page; preserve what's stored.
+            "url": study.metadata.get("url"),
             "scheduling": form.cleaned_data["scheduling"],
             "other_scheduling": form.cleaned_data["other_scheduling"],
             "study_platform": form.cleaned_data["study_platform"],
