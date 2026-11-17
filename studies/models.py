@@ -493,7 +493,7 @@ class Study(models.Model):
     max_age_months = models.IntegerField(default=0, choices=MONTH_CHOICES)
     max_age_years = models.IntegerField(default=0, choices=YEAR_CHOICES)
     image = models.ImageField(null=True, upload_to="study_images/")
-    exit_url = models.URLField(default=default_exit_url)
+    exit_url = models.URLField(default=default_exit_url, blank=True, null=True)
     query_param_names = models.JSONField(
         null=True,
         blank=True,

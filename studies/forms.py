@@ -27,7 +27,8 @@ from studies.models import (
 from studies.permissions import LabPermission, StudyPermission
 
 QUERY_PARAM_NAME_ERROR = (
-    "Use 1-100 letters, numbers, or the characters . _ ~ - (no spaces)."
+    "Use 1-100 letters, numbers, or the characters . _ ~ - "
+    "(no other special characters and no spaces)."
 )
 CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/master/researchers-set-study-fields.html#criteria-expression"
 STUDY_TYPE_HELP_LINK = "https://lookit.readthedocs.io/en/master/researchers-manage-studies.html#editing-study-type"
@@ -257,9 +258,40 @@ class StudyForm(ModelForm):
         help_text='Leave blank to use the default "response".',
         widget=forms.TextInput(attrs={"placeholder": "response"}),
     )
+    # External studies store their participation URL in Study.metadata rather than a
+    # model field. It is surfaced here (on the Edit Study Ad page) so that, below the
+    # study type dropdown, internal studies show Exit URL and external studies show
+    # Study URL. Required-ness is enforced per study type in clean().
+    url = forms.URLField(
+        required=False,
+        label="Study URL",
+        help_text=(
+            "External studies: Specify the webpage where you want to send your "
+            "participants when they click the participate/schedule button. CHS will "
+            "automatically add the child and response IDs from each session to the end "
+            "of this URL so that you can capture them on your external site. By default "
+            'these query parameter names are "child" and "response"; use the fields '
+            "below to customize them. See "
+            f'<a href={QUERY_PARAMETER_NAMES_DOC_LINK} target="_blank">our documentation</a> '
+            "for more information."
+        ),
+        widget=Textarea(attrs={"rows": 1}),
+    )
+
+    def _study_is_external(self):
+        study_type = self.cleaned_data.get("study_type") if hasattr(
+            self, "cleaned_data"
+        ) else None
+        if study_type is None and self.instance and self.instance.study_type_id:
+            study_type = self.instance.study_type
+        return bool(study_type and study_type.is_external)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if self.instance and self.instance.study_type_id:
+            self.initial.setdefault(
+                "url", (self.instance.metadata or {}).get("url", "")
+            )
         self.legacy_contact_info = None
         stored = self.instance.contact_info if self.instance.pk else ""
         parsed = parse_contact_info(stored)
@@ -320,6 +352,16 @@ class StudyForm(ModelForm):
                 )
         cleaned_data["query_param_names"] = custom_names or None
 
+        # Internal studies use Exit URL; external studies use Study URL (metadata).
+        # Require the one that applies and clear the other so it isn't carried over.
+        if self._study_is_external():
+            if not cleaned_data.get("url"):
+                self.add_error("url", "This field is required for external studies.")
+            cleaned_data["exit_url"] = None
+        else:
+            if not cleaned_data.get("exit_url"):
+                self.add_error("exit_url", "This field is required.")
+
         min_age_days = self.cleaned_data.get("min_age_days")
         min_age_months = self.cleaned_data.get("min_age_months")
         min_age_years = self.cleaned_data.get("min_age_years")
@@ -360,6 +402,12 @@ class StudyForm(ModelForm):
         if contact_info is not None:
             instance.contact_info = contact_info
         instance.query_param_names = self.cleaned_data.get("query_param_names")
+        # External studies store their participation URL in metadata; merge it in so
+        # other metadata keys (scheduling, platform, etc.) are preserved.
+        if self._study_is_external():
+            metadata = dict(instance.metadata or {})
+            metadata["url"] = self.cleaned_data.get("url")
+            instance.metadata = metadata
         # Explicitly set max_responses to None if set_response_limit is unchecked
         if not self.cleaned_data.get("set_response_limit"):
             instance.max_responses = None
@@ -751,13 +799,6 @@ class ExternalForm(ModelForm):
                 f"{ScheduledChoice.unmoderated.value} (Give participants a link to take the study on their own.)",
             ),
         ]
-    )
-    url = forms.URLField(
-        label="Study URL",
-        help_text=(
-            "Specify the webpage where you want to send your participants when they click the participate/schedule button. CHS will automatically add the child and response IDs from each session to the end of this URL so that you can capture them on your external site. By default these query parameter names are called 'child' and 'response'. If you need to customize these names, you can do so on the 'Edit Study Ad' page. See "
-            f'<a href={QUERY_PARAMETER_NAMES_DOC_LINK} target="_blank">our documentation</a> for more information about how to do this.'
-        ),
     )
     scheduling = forms.ChoiceField(
         required=False,

@@ -167,6 +167,27 @@ $(document).ready(function () {
         setQueryParamNames.addEventListener('change', toggleQueryParamNames);
     }
 
+    /*
+        Show the Exit URL field for internal studies and the Study URL field for
+        external studies, based on the selected study type. StudyType id 2 is
+        external (see StudyType.is_external). On the edit page the study type
+        dropdown is disabled but still reports its value here.
+    */
+    const studyType = document.querySelector('#id_study_type');
+    const exitUrlContainer = document.querySelector('#exit-url-container');
+    const studyUrlContainer = document.querySelector('#study-url-container');
+
+    if (studyType && exitUrlContainer && studyUrlContainer) {
+        function toggleUrlFields() {
+            const isExternal = studyType.value === '2';
+            exitUrlContainer.classList.toggle('d-none', isExternal);
+            studyUrlContainer.classList.toggle('d-none', !isExternal);
+        }
+
+        toggleUrlFields();
+        studyType.addEventListener('change', toggleUrlFields);
+    }
+
     // After a failed save, move to the first field with an error rather than leaving the page at the top.
     const firstInvalid = document.querySelector('#study-details-form .is-invalid');
     if (firstInvalid) {
