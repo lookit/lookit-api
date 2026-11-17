@@ -279,9 +279,11 @@ class StudyForm(ModelForm):
     )
 
     def _study_is_external(self):
-        study_type = self.cleaned_data.get("study_type") if hasattr(
-            self, "cleaned_data"
-        ) else None
+        study_type = (
+            self.cleaned_data.get("study_type")
+            if hasattr(self, "cleaned_data")
+            else None
+        )
         if study_type is None and self.instance and self.instance.study_type_id:
             study_type = self.instance.study_type
         return bool(study_type and study_type.is_external)
