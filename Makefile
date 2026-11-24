@@ -78,3 +78,12 @@ makemessages: uv
 
 compilemessages: uv
 	uv run ./manage.py compilemessages
+
+seedledger: uv
+	docker compose run --rm web uv run ./manage.py seed_ledger
+
+resetledger: uv
+	docker compose run --rm web uv run ./manage.py reset_ledger
+
+checkledger: uv
+	docker compose run --rm web uv run ./manage.py check_ledger
