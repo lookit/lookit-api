@@ -43,7 +43,7 @@ broker-perms:
 local-certs:
 	mkdir -p certs 
 	mkcert -install
-	cd certs && mkcert local_lookit.mit.edu
+	cd certs && mkcert -cert-file local_lookit.mit.edu.pem -key-file local_lookit.mit.edu-key.pem local_lookit.mit.edu localhost 127.0.0.1
 
 media:
 	gsutil -m cp -r "gs://lookit-staging/media" ./project
