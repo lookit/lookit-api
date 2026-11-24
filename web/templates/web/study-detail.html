@@ -43,7 +43,14 @@
                     </div>
                     <div class="col-9 col-md-5 px-5">
                         <h1 class="mt-4">{{ study.name }}</h1>
-                        <p>{{ study.lab.name }} ({{ study.lab.institution }})</p>
+                        <p>
+                            {% if study.lab.slug %}
+                                <a href="{% url 'web:lab-studies-list' study.lab.slug %}">{{ study.lab.name }}</a>
+                            {% else %}
+                                {{ study.lab.name }}
+                            {% endif %}
+                            ({{ study.lab.institution }})
+                        </p>
                     </div>
                 </div>
             </div>
