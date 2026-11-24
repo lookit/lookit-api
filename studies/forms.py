@@ -16,16 +16,30 @@ from PIL import Image
 from accounts.queries import compile_expression
 from project import settings
 from studies import helpers
-from studies.models import JSPsychPlugin, Lab, Response, Study
+from studies.models import (
+    DEFAULT_QUERY_PARAM_NAMES,
+    QUERY_PARAM_NAME_RE,
+    JSPsychPlugin,
+    Lab,
+    Response,
+    Study,
+)
 from studies.permissions import LabPermission, StudyPermission
 
-CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#criteria-expression"
-STUDY_TYPE_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-manage-studies.html#editing-study-type"
+QUERY_PARAM_NAME_ERROR = (
+    "Use 1-100 letters, numbers, or the characters . _ ~ - "
+    "(no other special characters and no spaces)."
+)
+CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/master/researchers-set-study-fields.html#criteria-expression"
+STUDY_TYPE_HELP_LINK = "https://lookit.readthedocs.io/en/master/researchers-manage-studies.html#editing-study-type"
+QUERY_PARAMETER_NAMES_DOC_LINK = (
+    "https://lookit.readthedocs.io/en/master/researchers-edit-design.html#study-url"
+)
 PROTOCOL_CONFIG_HELP_LINK = (
-    "https://lookit.readthedocs.io/en/develop/researchers-create-experiment.html"
+    "https://lookit.readthedocs.io/en/master/researchers-create-experiment.html"
 )
 PROTOCOL_GENERATOR_HELP_LINK = (
-    "https://lookit.readthedocs.io/en/develop/researchers-protocol-generators.html"
+    "https://lookit.readthedocs.io/en/master/researchers-protocol-generators.html"
 )
 DEFAULT_GENERATOR = """function generateProtocol(child, pastSessions) {
     /*
@@ -225,9 +239,61 @@ class StudyForm(ModelForm):
             attrs={"placeholder": "jsmith@science.edu", "inputmode": "email"}
         ),
     )
+    set_query_param_names = forms.BooleanField(
+        required=False,
+        label="Customize Child/Response Parameter Names",
+        help_text='Optional. Check this box if your exit URL (internal studies) or study URL (external studies) needs query parameter names other than "child" and "response" for the child/response ID values (e.g. "a", "b", "entry.123", or specific formats like all caps).',
+    )
+    child_param_name = forms.CharField(
+        required=False,
+        max_length=100,
+        label="Child ID Parameter Name",
+        help_text='Leave blank to use the default "child".',
+        widget=forms.TextInput(attrs={"placeholder": "child"}),
+    )
+    response_param_name = forms.CharField(
+        required=False,
+        max_length=100,
+        label="Response ID Parameter Name",
+        help_text='Leave blank to use the default "response".',
+        widget=forms.TextInput(attrs={"placeholder": "response"}),
+    )
+    # External studies store their participation URL in Study.metadata rather than a
+    # model field. It is surfaced here (on the Edit Study Ad page) so that, below the
+    # study type dropdown, internal studies show Exit URL and external studies show
+    # Study URL. Required-ness is enforced per study type in clean().
+    url = forms.URLField(
+        required=False,
+        label="Study URL",
+        help_text=(
+            "External studies: Specify the webpage where you want to send your "
+            "participants when they click the participate/schedule button. CHS will "
+            "automatically add the child and response IDs from each session to the end "
+            "of this URL so that you can capture them on your external site. By default "
+            'these query parameter names are "child" and "response"; use the fields '
+            "below to customize them. See "
+            f'<a href={QUERY_PARAMETER_NAMES_DOC_LINK} target="_blank">our documentation</a> '
+            "for more information."
+        ),
+        widget=Textarea(attrs={"rows": 1}),
+    )
+
+    def _study_is_external(self):
+        study_type = (
+            self.cleaned_data.get("study_type")
+            if hasattr(self, "cleaned_data")
+            else None
+        )
+        if study_type is None and self.instance and self.instance.study_type_id:
+            study_type = self.instance.study_type
+        return bool(study_type and study_type.is_external)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if self.instance and self.instance.study_type_id:
+            self.initial.setdefault(
+                "url", (self.instance.metadata or {}).get("url", "")
+            )
         self.legacy_contact_info = None
         stored = self.instance.contact_info if self.instance.pk else ""
         parsed = parse_contact_info(stored)
@@ -237,6 +303,16 @@ class StudyForm(ModelForm):
         elif stored.strip():
             # Shown under the contact fields so it can be re-entered.
             self.legacy_contact_info = stored
+        custom_names = self.instance.query_param_names or {}
+        self.initial.setdefault("set_query_param_names", bool(custom_names))
+        # Render the name inputs disabled while the box is unchecked; study-fields.js
+        # toggles them after that. (Not field.disabled, which would ignore submitted names.)
+        names_enabled = self["set_query_param_names"].value()
+        for key in DEFAULT_QUERY_PARAM_NAMES:
+            self.initial.setdefault(f"{key}_param_name", custom_names.get(key, ""))
+            self.fields[f"{key}_param_name"].widget.attrs[
+                "disabled"
+            ] = not names_enabled
 
     def clean_contact_name(self):
         # Remove newlines and repeated spaces, matching how stored names are parsed.
@@ -255,6 +331,38 @@ class StudyForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+
+        # Only store names that differ from the defaults; None means all defaults.
+        # Names are ignored (and not validated) unless the box is checked.
+        custom_names = {}
+        if cleaned_data.get("set_query_param_names"):
+            names = dict(DEFAULT_QUERY_PARAM_NAMES)
+            for key, default in DEFAULT_QUERY_PARAM_NAMES.items():
+                field = f"{key}_param_name"
+                name = cleaned_data.get(field)
+                if not name:
+                    continue
+                names[key] = name
+                if not QUERY_PARAM_NAME_RE.match(name):
+                    self.add_error(field, QUERY_PARAM_NAME_ERROR)
+                elif name != default:
+                    custom_names[key] = name
+            if names["child"] == names["response"]:
+                self.add_error(
+                    "response_param_name",
+                    "The child and response parameter names must be different.",
+                )
+        cleaned_data["query_param_names"] = custom_names or None
+
+        # Internal studies use Exit URL; external studies use Study URL (metadata).
+        # Require the one that applies and clear the other so it isn't carried over.
+        if self._study_is_external():
+            if not cleaned_data.get("url"):
+                self.add_error("url", "This field is required for external studies.")
+            cleaned_data["exit_url"] = None
+        else:
+            if not cleaned_data.get("exit_url"):
+                self.add_error("exit_url", "This field is required.")
 
         min_age_days = self.cleaned_data.get("min_age_days")
         min_age_months = self.cleaned_data.get("min_age_months")
@@ -295,6 +403,13 @@ class StudyForm(ModelForm):
         contact_info = self.build_contact_info()
         if contact_info is not None:
             instance.contact_info = contact_info
+        instance.query_param_names = self.cleaned_data.get("query_param_names")
+        # External studies store their participation URL in metadata; merge it in so
+        # other metadata keys (scheduling, platform, etc.) are preserved.
+        if self._study_is_external():
+            metadata = dict(instance.metadata or {})
+            metadata["url"] = self.cleaned_data.get("url")
+            instance.metadata = metadata
         # Explicitly set max_responses to None if set_response_limit is unchecked
         if not self.cleaned_data.get("set_response_limit"):
             instance.max_responses = None
@@ -377,7 +492,10 @@ class StudyForm(ModelForm):
         help_texts = {
             "lab": "Which lab this study will be affiliated with",
             "image": "This is the image participants will see when browsing studies. Please make sure that your image file dimensions are square and the size is less than 1 MB.",
-            "exit_url": "Specify the page where you want to send your participants after they've completed the study. (The 'Past studies' page on Lookit is a good default option.)",
+            "exit_url": (
+                "Internal studies: Specify the webpage where you want to send your participants after they've completed the study. CHS will automatically add the child and response IDs from each session to the end of this URL, in case you want to capture these on an external site. See "
+                f'<a href={QUERY_PARAMETER_NAMES_DOC_LINK} target="_blank">our documentation</a> for more information about how to do this.<br>External studies: leave this as the default value. You will enter your study URL on the next page.'
+            ),
             "preview_summary": """<p>This is the text (limit 300 characters) that participants will see when browsing studies. Most CHS studies involve a single testing session that a family can complete right now on their own. If your study involves something different, please note this in the description! Use a format something like the following:</p>
             <p>"In this (study)/(scheduled video call with a researcher)/(four-session study), your child/baby will..."</p>
             <p>"Help us learn about [topic] (...in a live video call with a researcher)/(...in a four-session study)"</p>""",
@@ -393,7 +511,7 @@ class StudyForm(ModelForm):
             "public": "List this study on the 'Studies' page once you start it.",
             "shared_preview": "Allow other Lookit researchers to preview your study and give feedback.",
             "study_type": "Choose the type of experiment you are creating - this will change the fields that appear on the Study Details page.",
-            "priority": "This affects how studies are ordered at your lab's custom URL, not the main study page. If you leave all studies at the highest priority (99), then all of your lab's active/discoverable studies will be shown in a randomized order on your lab page. If you lower the priority of this study to 1, then it will appear last in the list on your lab page. You can find your lab's custom URL from the <a href='/exp/labs/'>labs page</a>. For more info, see the documentation on <a href='https://lookit.readthedocs.io/en/develop/researchers-manage-org.html#ordering-studies-on-your-lab-page'>study prioritization</a>.",
+            "priority": "This affects how studies are ordered at your lab's custom URL, not the main study page. If you leave all studies at the highest priority (99), then all of your lab's active/discoverable studies will be shown in a randomized order on your lab page. If you lower the priority of this study to 1, then it will appear last in the list on your lab page. You can find your lab's custom URL from the <a href='/exp/labs/'>labs page</a>. For more info, see the documentation on <a href='https://lookit.readthedocs.io/en/master/researchers-manage-org.html#ordering-studies-on-your-lab-page'>study prioritization</a>.",
             "max_responses": "The study will automatically pause when the number of valid responses reaches this limit. You can change this value at any time. Note that participant sessions running when the limit is reached are permitted to continue. See [the documentation] for more information on response limits, valid responses, and changing a response's valid/invaild status. For no response limit, leave this field blank.",
         }
 
@@ -409,7 +527,7 @@ class StudyEditForm(StudyForm):
         self.fields["study_type"].help_text = (
             "<p>NOTE: The study type cannot be changed after creation.</p>"
             "Before saving for the first time, please "
-            '<a rel="noopener noreferrer" target="_blank" href="https://lookit.readthedocs.io/en/develop/index.html?highlight=external#what-is-lookit">review the distinction between experiment builder (internal) studies and external studies</a>'
+            '<a rel="noopener noreferrer" target="_blank" href="https://lookit.readthedocs.io/en/master/index.html?highlight=external#what-is-lookit">review the distinction between experiment builder (internal) studies and external studies</a>'
             ", and ask a question on "
             '<a rel="noopener noreferrer" target="_blank" href="http://lookit-mit.slack.com/">Slack</a>'
             " if you need help selecting the right option!"
@@ -683,10 +801,6 @@ class ExternalForm(ModelForm):
                 f"{ScheduledChoice.unmoderated.value} (Give participants a link to take the study on their own.)",
             ),
         ]
-    )
-    url = forms.URLField(
-        label="Study URL",
-        help_text="This is the link that participants will be sent to from the Lookit details page.",
     )
     scheduling = forms.ChoiceField(
         required=False,

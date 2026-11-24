@@ -190,7 +190,7 @@ def child_in_age_range_for_study_days_difference(child, study):
     # See logic used in web/studies/study-detail.html to display eligibility to participant,
     # help-text provided to researchers in studies/templates/studies/_study_fields.html,
     # and documentation for researchers at
-    # https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#minimum-and-maximum-age-cutoffs
+    # https://lookit.readthedocs.io/en/master/researchers-set-study-fields.html#minimum-and-maximum-age-cutoffs
 
     min_age_in_days_estimate, max_age_in_days_estimate = study_age_range(study)
     age_in_days = (date.today() - child.birthday).days

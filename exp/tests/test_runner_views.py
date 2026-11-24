@@ -66,6 +66,10 @@ class RunnerDetailsViewsTestCase(TestCase):
         user = G(User, is_active=True, is_researcher=True)
         lab = G(Lab)
         study = G(Study, creator=user, lab=lab, study_type=2)
+        # The study URL is now edited on the Edit Study Ad page, so the design
+        # view must preserve the stored metadata url rather than set it here.
+        study.metadata = {"url": "https://mit.edu"}
+        study.save()
         metadata = {
             "url": "https://mit.edu",
             "scheduled": ScheduledChoice.scheduled.value == "Scheduled",
@@ -81,7 +85,7 @@ class RunnerDetailsViewsTestCase(TestCase):
         self.client.force_login(user)
         response = self.client.post(
             reverse("exp:external-study-edit-design", kwargs={"pk": study.id}),
-            {"scheduled": ScheduledChoice.scheduled.value, "url": metadata["url"]},
+            {"scheduled": ScheduledChoice.scheduled.value},
             follow=True,
         )
 

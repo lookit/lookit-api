@@ -117,14 +117,14 @@ release. This way, they can get in any last-minute translations.
 [lookit-orchestrator]: https://github.com/lookit/lookit-orchestrator
 [feature-proposal]: https://docs.google.com/spreadsheets/d/14JMz8bGFCfHVQ-Gfuvux4EjIj6LQlCMRlNewzidMdYs/edit?usp=sharing
 [github]: https://github.com/lookit/lookit-api
-[lookit-setup-instructions]: https://lookit.readthedocs.io/en/develop/install-django-project.html
+[lookit-setup-instructions]: https://lookit.readthedocs.io/en/master/install-django-project.html
 [github-cli]: https://cli.github.com/
 [bug-report]: https://github.com/lookit/lookit-api/issues/new?assignees=&labels=&template=bug_report.md&title=
 [feature-request]: https://github.com/lookit/lookit-api/issues/new?assignees=&labels=&template=feature_request.md&title=
 [scoping-request]: https://github.com/lookit/lookit-api/issues/new?assignees=&labels=Scoping&template=scoping.md&title=
 [developer-request]: https://github.com/lookit/lookit-api/issues/new?assignees=&labels=Developer&template=developer-issue.md&title=
 [slack]: https://lookit-mit.slack.com
-[slack-docs]: https://lookit.readthedocs.io/en/develop/researchers-start-here.html#a-join-the-slack-workspace
+[slack-docs]: https://lookit.readthedocs.io/en/master/researchers-start-here.html#a-join-the-slack-workspace
 [git-flow]: https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow
 [git-flow-cheatsheet]: http://danielkummer.github.io/git-flow-cheatsheet/
 [git-flow-avh]: https://github.com/petervanderdoes/gitflow-avh
