@@ -62,6 +62,12 @@
                     <td>{{ user.last_login|date:"n/d/Y"|default:"N/A" }}</td>
                     <td>{% bootstrap_button "View Profile" href=url_participant_detail button_class=btn_primary_classes %}</td>
                 </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">
+                        <div class="empty-text">No participants found.</div>
+                    </td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>

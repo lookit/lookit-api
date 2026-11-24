@@ -56,11 +56,7 @@
                         {% include "studies/_study_fields.html" with form=form study=study %}
                         {% form_buttons %}
                         {% bootstrap_button "Cancel" button_class=btn_secondary_classes href=url_cancel %}
-                        <button type="button"
-                                class="{% button_primary_classes %}"
-                                data-bs-target="#save-study-confirmation"
-                                id="save-button"
-                                data-bs-toggle="modal">Save Changes</button>
+                        <button type="button" class="{% button_primary_classes %}" id="save-button">Save Changes</button>
                     {% endform_buttons %}
                     <div class="modal fade"
                          id="save-study-confirmation"
