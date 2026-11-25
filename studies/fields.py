@@ -3,7 +3,22 @@
 from django.utils.translation import gettext_lazy as _
 from model_utils import Choices
 
-# Conditions and Multiple birth are bitfield, NOT choices!
+# Child.existing_conditions is a BitField: one 64-bit integer (a Postgres bigint)
+# in which each bit is a yes/no switch for one condition. An entry's position in
+# this list is its bit number: Autism Spectrum Disorder (position 0) becomes
+# 2^0 = 1, Multiple Birth (position 4) becomes 2^4 = 16. A child with more than one
+# condition will have a bitwise OR combination of all values (e.g. Autism Spectrum
+# Disorder and Multiple Birth becomes 1 + 2**4). Every combination of conditions
+# gets its own value. The database stores only these bit numbers, not condition
+# names, so this list's order is what gives the stored data meaning.
+#
+# Only append new conditions to the end, and add them to LOCKED_CONDITION_ORDER in
+# studies/test_conditions.py. Inserting, removing or reordering entries changes the
+# meaning of data already saved. The commented-out entries below are inactive and
+# occupy no bit position; only uncomment one by appending it after the last active
+# entry, never by inserting it ahead of an existing active condition.
+#
+# django-bitfield allows at most 63 flags (the sign bit can't be used).
 CONDITIONS = (
     ("autism_spectrum_disorder", _("Autism Spectrum Disorder")),
     ("deaf", _("Deaf")),
